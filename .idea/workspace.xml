@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f7fd6929-8ff3-4876-8107-d5bfd7bfcb4d" name="Changes" comment="" />
+    <list default="true" id="f7fd6929-8ff3-4876-8107-d5bfd7bfcb4d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/navigation.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/home.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/home_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/timer/timer.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/timer/timer_settings_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sport_timer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sport_timer.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +27,13 @@
   <component name="CodyActiveAccount">
     <option name="activeAccountId" value="VXNlcjoxNzk3OTA=" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dart File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -23,16 +41,31 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2bcm7s3bZdFWCjNfa14ikgfkOCR" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RunOnceActivity.CodyProjectSettingsMigration": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "master"
+    "git-widget-placeholder": "dev",
+    "io.flutter.reload.alreadyRun": "true",
+    "last_opened_file_path": "/Users/oleksandr.tymoshenko/Project/Flutter/sport_timer",
+    "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
