@@ -10,12 +10,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _counter = 0;
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   void _incrementCounter() {
     setState(() => _counter++);
   }
 
   void _goNextPage() {
     context.push(RoutePath.timerSettings.value);
+  }
+
+  void _startCounter() {
+    context.read<TimeCountdownCubit>().restart();
+  }
+
+  void _pauseCounter() {
+    context.read<TimeCountdownCubit>().pause();
   }
 
   @override
@@ -25,51 +38,55 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Flutter Demo Home Page'),
       ),
-      body: Column(
-        children: [
-          Expanded(
+      body: BlocBuilder<TimeCountdownCubit, TimeCountdownState>(
+        builder: (context, state) {
+          return Center(
             child: GestureDetector(
               onTap: _goNextPage,
-              child: const Hero(
+              child: Hero(
                 tag: 'timer',
-                child: CircleAvatar(
-                  radius: 100,
-                  child: Text('22:00'),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: SizedBox.square(
+                        dimension: MediaQuery.of(context).size.width / 2,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 10,
+                          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                          value: state.currentTime.toDouble(),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: CircleAvatar(
+                        radius: MediaQuery.of(context).size.width / 4,
+                        child: Text('${state.formattedTime}'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text('You have pushed the button this many times:'),
-                  Text(
-                    '$_counter',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+          );
+        }
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            heroTag: 'Increment',
-            onPressed: _incrementCounter,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
+            heroTag: 'Start',
+            onPressed: _startCounter,
+            tooltip: 'Start/Restart',
+            child: const Icon(Icons.play_circle),
           ),
           const Gap(20),
           FloatingActionButton(
-            heroTag: 'GoNext',
-            onPressed: _goNextPage,
-            tooltip: 'Go next page',
-            child: const Icon(Icons.next_plan),
+            heroTag: 'Pause',
+            onPressed: _pauseCounter,
+            tooltip: 'Pause',
+            child: const Icon(Icons.pause_circle),
           ),
         ],
       ), // This trailing comma makes auto-formatting nicer for build methods.

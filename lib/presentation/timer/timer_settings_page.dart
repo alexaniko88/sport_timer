@@ -10,7 +10,7 @@ class TimerSettingsPage extends StatelessWidget {
         title: const Text('Timer settings page'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: const SafeArea(
+      body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -19,16 +19,10 @@ class TimerSettingsPage extends StatelessWidget {
                 flex: 2,
                 child: Hero(
                   tag: 'timer',
-                  child: CircleAvatar(
-                    radius: 150,
-                    child: Text(
-                      '22:00',
-                      style: TextStyle(fontSize: 30),
-                    ),
-                  ),
+                  child: Placeholder(),
                 ),
               ),
-              Expanded(
+              const Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

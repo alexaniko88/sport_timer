@@ -31,3 +31,8 @@ doc/api/
 *.ipr
 *.iws
 .idea/
+
+# di related
+lib/di/di.config.dart
+**/*.freezed.dart
+**/*.g.dart
