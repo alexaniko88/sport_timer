@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/navigation.dart';
 
 void main() {
+  configureDependencies();
   runApp(const MyApp());
 }
 
