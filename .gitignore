@@ -25,3 +25,14 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# di related
+lib/di/di.config.dart
+**/*.freezed.dart
+**/*.g.dart
