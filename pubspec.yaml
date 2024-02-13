@@ -24,6 +24,7 @@ dependencies:
   gap: ^3.0.1
   injectable: ^2.3.2
   get_it: ^7.6.7
+  assets_audio_player: ^3.1.1
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +37,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/bell_ring.mp3
