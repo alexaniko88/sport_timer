@@ -26,6 +26,11 @@ dependencies:
   get_it: ^7.6.7
   assets_audio_player: ^3.1.1
 
+  basic_flutter_helper:
+    git:
+      url: https://github.com/alexaniko88/basic_flutter_helper.git
+      ref: master
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

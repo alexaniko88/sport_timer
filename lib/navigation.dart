@@ -6,6 +6,7 @@ import 'package:sport_timer/features/timer/timer.dart';
 
 import 'presentation/home/home.dart';
 import 'presentation/timer/timer.dart';
+import 'presentation/widgets/stopwatch_widget.dart';
 
 enum RoutePath {
   home('/'),
@@ -31,9 +32,10 @@ class Routes {
       ),
       GoRoute(
         path: RoutePath.timerSettings.value,
+        name: RoutePath.timerSettings.value,
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: const TimerSettingsPage(),
+          child: TimerPage(timerParams: state.extra as TimerParams),
         ),
       ),
     ],

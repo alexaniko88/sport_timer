@@ -1,8 +1,24 @@
 part of '../timer.dart';
 
+class TimerParams2 {
+  const TimerParams2({
+    required this.duration,
+    required this.preparationTime,
+    required this.roundTime,
+    required this.restTime,
+    required this.rounds,
+  });
+
+  final int duration;
+  final Duration preparationTime;
+  final Duration roundTime;
+  final Duration restTime;
+  final int rounds;
+}
+
 @injectable
 class TimeCountdownCubit extends Cubit<TimeCountdownState> {
-  TimeCountdownCubit(@factoryParam this._duration)
+  TimeCountdownCubit(@factoryParam this._timerParams)
       : super(
           const TimeCountdownState(
             availabilitySlotsStatus: AvailabilitySlotsStatus.initial,
@@ -12,11 +28,11 @@ class TimeCountdownCubit extends Cubit<TimeCountdownState> {
         );
 
   final interval = const Duration(milliseconds: 100);
-  final int _duration;
+  final TimerParams2 _timerParams;
 
   Timer? _timer;
   bool _isFinished = false;
-  late int _timeout = _duration;
+  late int _timeout = _timerParams.duration;
   late int _currentMilliseconds = _timeout;
   DateTime? _pausedTimestamp;
 
@@ -123,5 +139,5 @@ class TimeCountdownCubit extends Cubit<TimeCountdownState> {
 
   String get _formattedTimeAsMinutesAndSeconds => Duration(milliseconds: _currentMilliseconds).asMinutesAndSeconds;
 
-  double get _currentTimeAsDoubleFractions => _currentMilliseconds / 1000 / (_duration / 1000);
+  double get _currentTimeAsDoubleFractions => _currentMilliseconds / 1000 / (_timerParams.duration / 1000);
 }
