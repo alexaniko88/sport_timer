@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
 import 'package:collection/collection.dart';
+import 'package:sport_timer/theme/styles/styles.dart';
 
 class TimerParams {
   const TimerParams({
@@ -142,11 +143,12 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    final timerStyle = Theme.of(context).extension<TimerStyle>()!;
     Color progressColor;
     if (_animation.value <= 0.90) {
-      progressColor = Color.lerp(Colors.black, Colors.red, (_animation.value - 0.80) / 0.10)!;
+      progressColor = Color.lerp(timerStyle.progressTextTimeStartColor, timerStyle.progressTextTimeEndColor, (_animation.value - 0.80) / 0.10)!;
     } else {
-      progressColor = Colors.red;
+      progressColor = timerStyle.progressTextTimeEndColor;
     }
     return Stack(
       children: [
@@ -154,7 +156,7 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
           duration: const Duration(seconds: 2),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          color: _getBackgroundColorByStatus(),
+          color: _getBackgroundColorByStatus(timerStyle),
         ),
         Visibility(
           visible: _timerStatus != TimerStatus.finished,
@@ -169,7 +171,7 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
                   children: [
                     Expanded(
                       child: Card(
-                        color: Colors.orangeAccent,
+                        color: timerStyle.roundsCountColor,
                         margin: EdgeInsets.zero,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -185,7 +187,7 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
                     const Gap(20),
                     Expanded(
                       child: Card(
-                        color: Colors.redAccent,
+                        color: timerStyle.roundColor,
                         margin: EdgeInsets.zero,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -221,10 +223,10 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
                   child: CustomPaint(
                     painter: ArcPainter(
                       progress: _animation.value,
-                      progressColor1: Colors.green,
-                      progressColor2: Colors.yellow,
-                      progressColor3: Colors.orange,
-                      progressColor4: Colors.red,
+                      progressColor1: timerStyle.progressTimer1Color,
+                      progressColor2: timerStyle.progressTimer2Color,
+                      progressColor3: timerStyle.progressTimer3Color,
+                      progressColor4: timerStyle.progressTimer4Color,
                       backgroundColor: Theme.of(context).primaryColor,
                     ),
                     child: Center(
@@ -284,16 +286,16 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
     super.dispose();
   }
 
-  Color _getBackgroundColorByStatus() {
+  Color _getBackgroundColorByStatus(TimerStyle style) {
     switch (_timerStatus) {
       case TimerStatus.preparation:
-        return Colors.yellow.withOpacity(0.8);
+        return style.preparationColor.withOpacity(0.6);
       case TimerStatus.round:
-        return Colors.redAccent.withOpacity(0.8);
+        return style.roundColor.withOpacity(0.6);
       case TimerStatus.rest:
-        return Colors.lightBlueAccent.withOpacity(0.8);
+        return style.restColor.withOpacity(0.6);
       case TimerStatus.finished:
-        return Colors.green.withOpacity(0.8);
+        return style.finishColor.withOpacity(0.6);
     }
   }
 
