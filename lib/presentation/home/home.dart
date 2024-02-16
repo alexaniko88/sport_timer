@@ -8,5 +8,6 @@ import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/widgets/minutes_seconds_picker.dart';
 import 'package:sport_timer/presentation/widgets/rounds_picker.dart';
 import 'package:sport_timer/presentation/widgets/stopwatch_widget.dart';
+import 'package:sport_timer/theme/styles/styles.dart';
 
 part 'home_page.dart';

@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final timerStyle = Theme.of(context).extension<TimerStyle>()!;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -41,7 +42,7 @@ class _HomePageState extends State<HomePage> {
                           context: context,
                           initialDuration: _preparationTime,
                           maxMinutes: 5,
-                          buttonsColor: Colors.yellow,
+                          buttonsColor: timerStyle.preparationColor,
                           onDurationChanged: (duration) {
                             setState(() {
                               _preparationTime = duration;
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                       child: Card(
-                        color: Colors.yellow,
+                        color: timerStyle.preparationColor,
                         margin: EdgeInsets.zero,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -73,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                         MinutesSecondsPicker.show(
                           context: context,
                           initialDuration: _roundTime,
-                          buttonsColor: Colors.redAccent,
+                          buttonsColor: timerStyle.roundColor,
                           onDurationChanged: (duration) {
                             setState(() {
                               _roundTime = duration;
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                       child: Card(
-                        color: Colors.redAccent,
+                        color: timerStyle.roundColor,
                         margin: EdgeInsets.zero,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -105,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                         MinutesSecondsPicker.show(
                           context: context,
                           initialDuration: _restTime,
-                          buttonsColor: Colors.lightBlueAccent,
+                          buttonsColor: timerStyle.restColor,
                           onDurationChanged: (duration) {
                             setState(() {
                               _restTime = duration;
@@ -114,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                       child: Card(
-                        color: Colors.lightBlueAccent,
+                        color: timerStyle.restColor,
                         margin: EdgeInsets.zero,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -137,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                         RoundsPicker.show(
                           context: context,
                           rounds: _rounds,
-                          buttonsColor: Colors.orangeAccent,
+                          buttonsColor: timerStyle.roundsCountColor,
                           onRoundsChanged: (rounds) {
                             setState(() {
                               _rounds = rounds;
@@ -146,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                         );
                       },
                       child: Card(
-                        color: Colors.orangeAccent,
+                        color: timerStyle.roundsCountColor,
                         margin: EdgeInsets.zero,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
@@ -168,7 +169,7 @@ class _HomePageState extends State<HomePage> {
               ),
               MaterialButton(
                 onPressed: () => context.pushNamed(
-                  RoutePath.timerSettings.value,
+                  RoutePath.timer.value,
                   extra: TimerParams(
                     preparationTime: _preparationTime,
                     roundTime: _roundTime,

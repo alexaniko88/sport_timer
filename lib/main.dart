@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/navigation.dart';
+import 'package:sport_timer/theme/sport_theme.dart';
 
 void main() {
   configureDependencies();
@@ -41,10 +42,7 @@ class MyApp extends StatelessWidget {
       routeInformationProvider: Routes.router.routeInformationProvider,
       routeInformationParser: Routes.router.routeInformationParser,
       routerDelegate: Routes.router.routerDelegate,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
-        useMaterial3: true,
-      ),
+      theme: SportTheme.light,
       debugShowCheckedModeBanner: false,
     );
   }
