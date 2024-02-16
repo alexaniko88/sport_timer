@@ -100,6 +100,7 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
   void _checkForNextTimer() {
     switch (_timerStatus) {
       case TimerStatus.preparation:
+        _totalTime -= widget.timerParams.restTime;
         _setTimerForDurationAndStart(widget.timerParams.roundTime);
         _timerStatus = TimerStatus.round;
         break;
@@ -289,13 +290,13 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
   Color _getBackgroundColorByStatus(TimerStyle style) {
     switch (_timerStatus) {
       case TimerStatus.preparation:
-        return style.preparationColor.withOpacity(0.6);
+        return style.preparationColor.withOpacity(0.2);
       case TimerStatus.round:
-        return style.roundColor.withOpacity(0.6);
+        return style.roundColor.withOpacity(0.2);
       case TimerStatus.rest:
-        return style.restColor.withOpacity(0.6);
+        return style.restColor.withOpacity(0.2);
       case TimerStatus.finished:
-        return style.finishColor.withOpacity(0.6);
+        return style.finishColor.withOpacity(0.8);
     }
   }
 
