@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> {
     _preparationTime = const Duration(seconds: 5);
     _roundTime = const Duration(seconds: 5);
     _restTime = const Duration(seconds: 5);
-    _rounds = 1;
+    _rounds = 2;
     super.initState();
   }
 

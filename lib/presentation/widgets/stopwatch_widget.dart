@@ -1,7 +1,10 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:basic_flutter_helper/basic_flutter_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:lottie/lottie.dart';
+import 'package:sport_timer/di/di.dart';
+import 'package:sport_timer/managers/audio_manager.dart';
+import 'package:collection/collection.dart';
 
 class TimerParams {
   const TimerParams({
@@ -41,14 +44,11 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
   late Animation<double> _animation;
   late Duration _currentTime, _totalTime;
   late TimerStatus _timerStatus;
-  bool _isRunning = false, _isFinished = false;
+  bool _isRunning = false, _isFinished = false, _isPreparationReady = true;
   late int _currentRound;
-
-  final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer();
 
   @override
   void initState() {
-    printLog("INITIALIZING!!");
     _currentRound = widget.timerParams.rounds;
     _totalTime = widget.timerParams.preparationTime +
         widget.timerParams.roundTime * widget.timerParams.rounds +
@@ -71,8 +71,11 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
           _currentTime = Duration(
             milliseconds: (duration.inMilliseconds * (1 - _animation.value)).round(),
           );
-          final timeDifference = oldTime.inMilliseconds - _currentTime.inMilliseconds;
-          _totalTime = _totalTime - Duration(milliseconds: timeDifference);
+          _totalTime = _totalTime - Duration(milliseconds: oldTime.inMilliseconds - _currentTime.inMilliseconds);
+          if (_currentTime.inSeconds <= 3 && _isPreparationReady) {
+            getIt<AudioManager>().playPreparationSound();
+            _isPreparationReady = false;
+          }
         });
       });
 
@@ -83,7 +86,8 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
           _isRunning = false;
         });
         _controller.reset();
-        _playSound();
+        _isPreparationReady = true;
+        getIt<AudioManager>().playRoundFinishSound();
         _checkForNextTimer();
       }
     });
@@ -95,7 +99,6 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
   void _checkForNextTimer() {
     switch (_timerStatus) {
       case TimerStatus.preparation:
-        _totalTime -= widget.timerParams.preparationTime;
         _setTimerForDurationAndStart(widget.timerParams.roundTime);
         _timerStatus = TimerStatus.round;
         break;
@@ -124,13 +127,8 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
     printLog("Current status is: $_timerStatus and round: $_currentRound");
   }
 
-  Future<void> _playSound() async {
-    await _audioPlayer.open(Audio('assets/bell_ring.mp3'));
-    await _audioPlayer.play();
-  }
-
   void _toggleStartStop() {
-    if(!_isFinished) {
+    if (!_isFinished) {
       setState(() {
         if (_isRunning) {
           _controller.stop();
@@ -150,98 +148,132 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
     } else {
       progressColor = Colors.red;
     }
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Stack(
       children: [
-        GestureDetector(
-          onTap: _toggleStartStop,
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width / 1.5,
-            height: MediaQuery.of(context).size.width / 1.5,
-            child: Card(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width / 1.5),
-              ),
-              margin: EdgeInsets.zero,
-              child: CustomPaint(
-                painter: ArcPainter(
-                  progress: _animation.value,
-                  progressColor1: Colors.green,
-                  progressColor2: Colors.yellow,
-                  progressColor3: Colors.orange,
-                  progressColor4: Colors.red,
-                  backgroundColor: Theme.of(context).primaryColor,
-                ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      _currentTime.asMinutesAndSeconds,
-                      style: TextStyle(fontSize: 40, color: progressColor),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+        AnimatedContainer(
+          duration: const Duration(seconds: 2),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: _getBackgroundColorByStatus(),
         ),
-        Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Visibility(
+          visible: _timerStatus != TimerStatus.finished,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
               children: [
-                Expanded(
-                  child: Card(
-                    color: Colors.orangeAccent,
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: Text(
-                          'Round $_currentRound',
-                          style: const TextStyle(fontSize: 20),
+                const Gap(50),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Card(
+                        color: Colors.orangeAccent,
+                        margin: EdgeInsets.zero,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Center(
+                            child: Text(
+                              'Round $_currentRound',
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                const Gap(20),
-                Expanded(
-                  child: Card(
-                    color: Colors.redAccent,
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: Text(
-                          _totalTime.asMinutesAndSeconds,
-                          style: const TextStyle(fontSize: 20),
+                    const Gap(20),
+                    Expanded(
+                      child: Card(
+                        color: Colors.redAccent,
+                        margin: EdgeInsets.zero,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Center(
+                            child: Text(
+                              _totalTime.asMinutesAndSeconds,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
-            const Gap(20),
-            MaterialButton(
-              onPressed: _toggleStartStop,
-              color: Theme.of(context).colorScheme.primary,
-              minWidth: MediaQuery.of(context).size.width / 2,
-              height: MediaQuery.of(context).size.width / 5,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
+          ),
+        ),
+        Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              GestureDetector(
+                onTap: _toggleStartStop,
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  height: MediaQuery.of(context).size.width / 1.5,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                  ),
+                  child: CustomPaint(
+                    painter: ArcPainter(
+                      progress: _animation.value,
+                      progressColor1: Colors.green,
+                      progressColor2: Colors.yellow,
+                      progressColor3: Colors.orange,
+                      progressColor4: Colors.red,
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          _currentTime.asMinutesAndSeconds,
+                          style: TextStyle(fontSize: 40, color: progressColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              child: const Icon(
-                Icons.pause,
-                color: Colors.white,
-                size: 50,
-              ),
+            ],
+          ),
+        ),
+        Visibility(
+          visible: _timerStatus == TimerStatus.round,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Lottie.asset(
+              'assets/animation/round_animation.lottie',
+              decoder: customDecoder,
+              height: 200,
             ),
-          ],
-        )
+          ),
+        ),
+        Visibility(
+          visible: _timerStatus == TimerStatus.preparation || _timerStatus == TimerStatus.rest,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Lottie.asset(
+              'assets/animation/prepare_animation.lottie',
+              decoder: customDecoder,
+              height: 200,
+            ),
+          ),
+        ),
+        Visibility(
+          visible: _timerStatus == TimerStatus.finished,
+          child: Align(
+            alignment: Alignment.center,
+            child: Lottie.asset(
+              'assets/animation/finish_animation.lottie',
+              decoder: customDecoder,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -249,8 +281,26 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
   @override
   void dispose() {
     _controller.dispose();
-    _audioPlayer.dispose(); // Don't forget to dispose of the audio player
     super.dispose();
+  }
+
+  Color _getBackgroundColorByStatus() {
+    switch (_timerStatus) {
+      case TimerStatus.preparation:
+        return Colors.yellow.withOpacity(0.8);
+      case TimerStatus.round:
+        return Colors.redAccent.withOpacity(0.8);
+      case TimerStatus.rest:
+        return Colors.lightBlueAccent.withOpacity(0.8);
+      case TimerStatus.finished:
+        return Colors.green.withOpacity(0.8);
+    }
+  }
+
+  Future<LottieComposition?> customDecoder(List<int> bytes) {
+    return LottieComposition.decodeZip(bytes, filePicker: (files) {
+      return files.firstWhereOrNull((f) => f.name.startsWith('animations/') && f.name.endsWith('.json'));
+    });
   }
 }
 

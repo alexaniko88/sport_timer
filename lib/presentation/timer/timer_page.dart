@@ -11,12 +11,7 @@ class TimerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ArcStopwatch(timerParams: timerParams),
-        ),
-      ),
+      body: ArcStopwatch(timerParams: timerParams),
     );
   }
 }
