@@ -14,29 +14,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    /*
-    child: MaterialApp.router(
-          routeInformationProvider: Routes.router.routeInformationProvider,
-          routeInformationParser: Routes.router.routeInformationParser,
-          routerDelegate: _routerDelegate,
-          title: F.title,
-          theme: GSTheme.lightTheme,
-          localizationsDelegates: [
-            ...Lt.localizationsDelegates,
-            AppLocalizations.delegate,
-          ],
-          supportedLocales: Lt.supportedLocales,
-          debugShowCheckedModeBanner: false,
-          builder: (context, child) {
-            return Column(
-              children: [
-                Expanded(child: EnvBanner(child: child)),
-                Material(child: ConnectivityNotificationView()),
-              ],
-            );
-          },
-        ),
-     */
     return MaterialApp.router(
       title: 'Flutter Demo',
       routeInformationProvider: Routes.router.routeInformationProvider,
