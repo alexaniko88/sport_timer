@@ -11,14 +11,13 @@ class DefaultAudioManager extends AudioManager {
   @override
   void playPreparationSound() {
     audioPlayer.open(
-      Playlist(
-          audios: [
-            Audio("assets/audio/beep.mp3"),
-            Audio("assets/audio/beep.mp3"),
-            Audio("assets/audio/beep.mp3"),
-          ]
-      ),
+      Playlist(audios: [
+        Audio("assets/audio/beep.mp3"),
+        Audio("assets/audio/beep.mp3"),
+        Audio("assets/audio/beep.mp3"),
+      ]),
       autoStart: true,
+      audioFocusStrategy: AudioFocusStrategy.none(),
     );
   }
 
@@ -27,6 +26,9 @@ class DefaultAudioManager extends AudioManager {
     audioPlayer.open(
       Audio('assets/audio/bell_ring.mp3'),
       autoStart: true,
+      audioFocusStrategy: const AudioFocusStrategy.request(
+        resumeOthersPlayersAfterDone: true,
+      ),
     );
   }
 
@@ -35,6 +37,7 @@ class DefaultAudioManager extends AudioManager {
     audioPlayer.open(
       Audio('assets/audio/bell_ring.mp3'),
       autoStart: true,
+      audioFocusStrategy: AudioFocusStrategy.none(),
     );
   }
 

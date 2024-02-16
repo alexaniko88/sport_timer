@@ -1,10 +1,10 @@
 import 'package:basic_flutter_helper/basic_flutter_helper.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
-import 'package:collection/collection.dart';
 import 'package:sport_timer/theme/styles/styles.dart';
 
 class TimerParams {
@@ -147,7 +147,8 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
     final timerStyle = Theme.of(context).extension<TimerStyle>()!;
     Color progressColor;
     if (_animation.value <= 0.90) {
-      progressColor = Color.lerp(timerStyle.progressTextTimeStartColor, timerStyle.progressTextTimeEndColor, (_animation.value - 0.80) / 0.10)!;
+      progressColor = Color.lerp(timerStyle.progressTextTimeStartColor, timerStyle.progressTextTimeEndColor,
+          (_animation.value - 0.80) / 0.10)!;
     } else {
       progressColor = timerStyle.progressTextTimeEndColor;
     }
