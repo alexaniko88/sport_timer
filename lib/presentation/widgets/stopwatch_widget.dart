@@ -1,6 +1,8 @@
 import 'package:basic_flutter_helper/basic_flutter_helper.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sport_timer/di/di.dart';
@@ -152,133 +154,126 @@ class _ArcStopwatchState extends State<ArcStopwatch> with TickerProviderStateMix
     } else {
       progressColor = timerStyle.progressTextTimeEndColor;
     }
-    return Stack(
-      children: [
-        AnimatedContainer(
-          duration: const Duration(seconds: 2),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: _getBackgroundColorByStatus(timerStyle),
-        ),
-        Visibility(
-          visible: _timerStatus != TimerStatus.finished,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
+    return SafeArea(
+      child: Stack(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(seconds: 2),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            color: _getBackgroundColorByStatus(timerStyle),
+          ),
+          Center(
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
-                const Gap(50),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Card(
-                        color: timerStyle.roundsCountColor,
-                        margin: EdgeInsets.zero,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Center(
-                            child: Text(
-                              'Round $_currentRound',
-                              style: const TextStyle(fontSize: 20),
+                const Gap(100),
+                GestureDetector(
+                  onTap: _toggleStartStop,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 1.2,
+                    height: MediaQuery.of(context).size.width / 1.2,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: CustomPaint(
+                      painter: ArcPainter(
+                        progress: _animation.value,
+                        progressColor1: timerStyle.progressTimer1Color,
+                        progressColor2: timerStyle.progressTimer2Color,
+                        progressColor3: timerStyle.progressTimer3Color,
+                        progressColor4: timerStyle.progressTimer4Color,
+                        backgroundColor: Theme.of(context).primaryColor,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Visibility(
+                            visible: _timerStatus != TimerStatus.finished,
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 100),
+                              child: Card(
+                                color: timerStyle.roundsCountColor,
+                                margin: EdgeInsets.zero,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Center(
+                                    child: Text(
+                                      '$_currentRound',
+                                      style: const TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    const Gap(20),
-                    Expanded(
-                      child: Card(
-                        color: timerStyle.roundColor,
-                        margin: EdgeInsets.zero,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Center(
-                            child: Text(
-                              _totalTime.asMinutesAndSeconds,
-                              style: const TextStyle(fontSize: 20),
+                          Text(
+                            _currentTime.asMinutesAndSeconds,
+                            style: TextStyle(fontSize: 90, color: progressColor),
+                          ),
+                          Visibility(
+                            visible: _timerStatus != TimerStatus.finished,
+                            child: Container(
+                              constraints: const BoxConstraints(maxWidth: 100),
+                              child: Card(
+                                color: timerStyle.roundColor,
+                                margin: EdgeInsets.zero,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Center(
+                                    child: Text(
+                                      _totalTime.asMinutesAndSeconds,
+                                      style: const TextStyle(fontSize: 20),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-        Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              GestureDetector(
-                onTap: _toggleStartStop,
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 1.5,
-                  height: MediaQuery.of(context).size.width / 1.5,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: CustomPaint(
-                    painter: ArcPainter(
-                      progress: _animation.value,
-                      progressColor1: timerStyle.progressTimer1Color,
-                      progressColor2: timerStyle.progressTimer2Color,
-                      progressColor3: timerStyle.progressTimer3Color,
-                      progressColor4: timerStyle.progressTimer4Color,
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          _currentTime.asMinutesAndSeconds,
-                          style: TextStyle(fontSize: 40, color: progressColor),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+          Visibility(
+            visible: _timerStatus == TimerStatus.round,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Lottie.asset(
+                'assets/animation/round_animation.lottie',
+                decoder: customDecoder,
+                height: 400,
               ),
-            ],
-          ),
-        ),
-        Visibility(
-          visible: _timerStatus == TimerStatus.round,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Lottie.asset(
-              'assets/animation/round_animation.lottie',
-              decoder: customDecoder,
-              height: 200,
             ),
           ),
-        ),
-        Visibility(
-          visible: _timerStatus == TimerStatus.preparation || _timerStatus == TimerStatus.rest,
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Lottie.asset(
-              'assets/animation/prepare_animation.lottie',
-              decoder: customDecoder,
-              height: 200,
+          Visibility(
+            visible: _timerStatus == TimerStatus.preparation || _timerStatus == TimerStatus.rest,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Lottie.asset(
+                'assets/animation/prepare_animation.lottie',
+                decoder: customDecoder,
+                height: 400,
+              ),
             ),
           ),
-        ),
-        Visibility(
-          visible: _timerStatus == TimerStatus.finished,
-          child: Align(
-            alignment: Alignment.center,
-            child: Lottie.asset(
-              'assets/animation/finish_animation.lottie',
-              decoder: customDecoder,
+          Visibility(
+            visible: _timerStatus == TimerStatus.finished,
+            child: Align(
+              alignment: Alignment.center,
+              child: Lottie.asset(
+                'assets/animation/finish_animation.lottie',
+                decoder: customDecoder,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

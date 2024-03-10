@@ -38,8 +38,9 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        MinutesSecondsPicker.show(
+                        TimerSettingsPicker.show(
                           context: context,
+                          picketType: PicketType.time,
                           initialDuration: _preparationTime,
                           maxMinutes: 5,
                           buttonsColor: timerStyle.preparationColor,
@@ -71,8 +72,9 @@ class _HomePageState extends State<HomePage> {
                     const Gap(20),
                     GestureDetector(
                       onTap: () {
-                        MinutesSecondsPicker.show(
+                        TimerSettingsPicker.show(
                           context: context,
+                          picketType: PicketType.time,
                           initialDuration: _roundTime,
                           buttonsColor: timerStyle.roundColor,
                           onDurationChanged: (duration) {
@@ -103,8 +105,9 @@ class _HomePageState extends State<HomePage> {
                     const Gap(20),
                     GestureDetector(
                       onTap: () {
-                        MinutesSecondsPicker.show(
+                        TimerSettingsPicker.show(
                           context: context,
+                          picketType: PicketType.time,
                           initialDuration: _restTime,
                           buttonsColor: timerStyle.restColor,
                           onDurationChanged: (duration) {
@@ -135,9 +138,10 @@ class _HomePageState extends State<HomePage> {
                     const Gap(20),
                     GestureDetector(
                       onTap: () {
-                        RoundsPicker.show(
+                        TimerSettingsPicker.show(
                           context: context,
-                          rounds: _rounds,
+                          picketType: PicketType.rounds,
+                          maxRounds: _rounds,
                           buttonsColor: timerStyle.roundsCountColor,
                           onRoundsChanged: (rounds) {
                             setState(() {
