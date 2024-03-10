@@ -13,10 +13,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _preparationTime = const Duration(seconds: 5);
-    _roundTime = const Duration(seconds: 5);
-    _restTime = const Duration(seconds: 5);
-    _rounds = 2;
+    _preparationTime = const Duration(seconds: 20);
+    _roundTime = const Duration(seconds: 60);
+    _restTime = const Duration(seconds: 30);
+    _rounds = 5;
     super.initState();
   }
 
