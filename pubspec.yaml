@@ -32,6 +32,7 @@ dependencies:
       ref: master
   lottie: ^3.0.0
   collection: ^1.18.0
+  icons_launcher: ^2.1.7
 
 dev_dependencies:
   flutter_test:
@@ -47,3 +48,12 @@ flutter:
   assets:
     - assets/audio/
     - assets/animation/
+    - assets/icons/
+
+icons_launcher:
+  image_path: "assets/icons/app_icon.png"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
