@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/navigation.dart';
+import 'package:sport_timer/observers/simple_bloc_observer.dart';
 import 'package:sport_timer/theme/sport_theme.dart';
 
 void main() {
+  Bloc.observer = SimpleBlocObserver();
   configureDependencies();
   runApp(const MyApp());
 }
