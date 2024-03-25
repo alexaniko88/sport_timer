@@ -9,4 +9,6 @@ import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/widgets/timer_settings_picker.dart';
 import 'package:sport_timer/theme/styles/styles.dart';
 
+part 'timer_setup_page.dart';
 part 'home_page.dart';
+part 'statistics_page.dart';
