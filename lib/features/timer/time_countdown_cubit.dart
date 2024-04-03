@@ -124,7 +124,7 @@ class TimeCountdownCubit extends Cubit<TimeCountdownState> {
     switch (state.timerStatus) {
       case TimerStatus.preparation:
         emit(TimeCountdownState(
-          currentSeconds: timerParams.restTime.inSeconds - 1,
+          currentSeconds: timerParams.roundTime.inSeconds - 1,
           totalSeconds: state.totalSeconds - 1,
           currentRound: state.currentRound,
           status: TimeCountdownStatus.next,
@@ -137,7 +137,7 @@ class TimeCountdownCubit extends Cubit<TimeCountdownState> {
         final currentRound = state.currentRound - 1;
         if (currentRound > 0) {
           emit(TimeCountdownState(
-            currentSeconds: timerParams.roundTime.inSeconds - 1,
+            currentSeconds: timerParams.restTime.inSeconds - 1,
             totalSeconds: state.totalSeconds - 1,
             currentRound: currentRound,
             status: TimeCountdownStatus.next,
@@ -158,7 +158,7 @@ class TimeCountdownCubit extends Cubit<TimeCountdownState> {
         break;
       case TimerStatus.rest:
         emit(TimeCountdownState(
-          currentSeconds: timerParams.restTime.inSeconds - 1,
+          currentSeconds: timerParams.roundTime.inSeconds - 1,
           totalSeconds: state.totalSeconds - 1,
           currentRound: state.currentRound,
           status: TimeCountdownStatus.next,
