@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sport_timer/di/di.dart';
+import 'package:sport_timer/features/timer/timer.dart';
 
 import 'presentation/home/home.dart';
 import 'presentation/timer/timer.dart';
-import 'presentation/widgets/stopwatch_widget.dart';
 
 enum RoutePath {
   home('/'),
@@ -29,7 +31,10 @@ class Routes {
         name: RoutePath.timer.value,
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
-          child: TimerPage(timerParams: state.extra as TimerParams),
+          child: BlocProvider(
+            create: (context) => getIt<TimeCountdownCubit>(param1: state.extra as TimerParams)..start(),
+            child: const TimerPage(),
+          ),
         ),
       ),
     ],
