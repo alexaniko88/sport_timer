@@ -88,7 +88,10 @@ class TimerPage extends StatelessWidget {
                       value: progress,
                       color: _getProgressColor(progress: progress, timerStyle: timerStyle),
                       backgroundColor: Colors.transparent,
-                      borderRadius: const BorderRadius.all(Radius.circular(4)),
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(4),
+                        bottomRight: Radius.circular(4),
+                      ),
                       minHeight: 40,
                     ),
                   ),
