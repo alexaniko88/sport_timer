@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "510783199717",
+    "project_id": "sport-timer-816b3",
+    "storage_bucket": "sport-timer-816b3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:510783199717:android:15afec23d1aad03335770c",
+        "android_client_info": {
+          "package_name": "com.alexaniko88.sport_timer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATZIW4g2CdWnccbexC9wZ5CcVvYyhQXi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

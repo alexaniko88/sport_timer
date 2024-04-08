@@ -1,4 +1,4 @@
-part of 'timer.dart';
+part of '../timer.dart';
 
 @freezed
 class TimeCountdownState with _$TimeCountdownState {

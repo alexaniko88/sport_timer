@@ -1,4 +1,4 @@
-part of 'timer.dart';
+part of '../timer.dart';
 
 class TimerParams {
   const TimerParams({

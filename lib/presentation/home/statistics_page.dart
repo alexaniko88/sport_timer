@@ -22,6 +22,7 @@ class StatisticPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timerStyle = Theme.of(context).extension<TimerStyle>()!;
+    readData();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -78,5 +79,17 @@ class StatisticPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void readData() async {
+    final statistics = FirebaseFirestore.instance.collection('statistics');
+
+    await FirebaseFirestore.instance.collection('statistics').get().then((event) {
+      for (var doc in event.docs) {
+        printLog("THE DATA IS: ${doc.id} => ${doc.data()}");
+        final data = doc.data();
+        printLog("USER ID: ${doc['userId']}");
+      }
+    });
   }
 }

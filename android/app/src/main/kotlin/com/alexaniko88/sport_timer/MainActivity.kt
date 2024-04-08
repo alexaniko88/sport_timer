@@ -1,4 +1,4 @@
-package com.example.sport_timer
+package com.alexaniko88.sport_timer
 
 import io.flutter.embedding.android.FlutterActivity
 
