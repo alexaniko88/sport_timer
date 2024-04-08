@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sport_timer/di/di.dart';
-import 'package:sport_timer/features/timer/timer.dart';
+import 'package:sport_timer/domain/timer/timer.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
 import 'package:sport_timer/theme/styles/styles.dart';
 

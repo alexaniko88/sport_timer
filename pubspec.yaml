@@ -13,35 +13,39 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.6
-  flutter_bloc: ^8.1.4
-  freezed: ^2.4.7
+  flutter_bloc: ^8.1.5
+  freezed: ^2.5.1
   mockito: ^5.4.4
-  bloc_test: ^9.1.6
+  bloc_test: ^9.1.7
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
-  intl: ^0.19.0
-  go_router: ^13.2.0
+  intl: ^0.18.1
+  go_router: ^13.2.2
   gap: ^3.0.1
-  injectable: ^2.3.2
-  get_it: ^7.6.7
+  injectable: ^2.4.1
+  get_it: ^7.6.8
   assets_audio_player: ^3.1.1
 
   basic_flutter_helper:
     git:
       url: https://github.com/alexaniko88/basic_flutter_helper.git
       ref: master
-  lottie: ^3.0.0
+  lottie: ^3.1.0
   collection: ^1.18.0
   icons_launcher: ^2.1.7
+  firebase_core: ^2.28.0
+  firebase_auth: ^4.19.0
+  firebase_ui_auth: ^1.13.1
+  cloud_firestore: ^4.16.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^3.0.1
-  build_runner: ^2.4.8
+  flutter_lints: ^3.0.2
+  build_runner: ^2.4.9
   json_serializable: ^6.7.1
-  injectable_generator: ^2.4.1
+  injectable_generator: ^2.6.1
 
 flutter:
   uses-material-design: true
