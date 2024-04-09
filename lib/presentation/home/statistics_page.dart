@@ -22,77 +22,37 @@ class StatisticPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timerStyle = Theme.of(context).extension<TimerStyle>()!;
-    readData();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Check out your statistics'),
       ),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            for (final section in [
-              Section(
-                "title",
-                [
-                  Item("A"),
-                  Item("B"),
-                  Item("C"),
-                  Item("D"),
-                  Item("E"),
-                  Item("F"),
-                  Item("A"),
-                  Item("B"),
-                  Item("C"),
-                  Item("D"),
-                  Item("E"),
-                  Item("F"),
-                  Item("A"),
-                  Item("B"),
-                  Item("C"),
-                  Item("D"),
-                  Item("E"),
-                  Item("F"),
-                ],
-              )
-            ])
-              SliverMainAxisGroup(
-                slivers: [
-                  SliverAppBar(
-                    pinned: true,
-                    title: Text(
-                      section.title,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => ListTile(
-                        title: Text(section.items[index].content),
-                      ),
-                      childCount: section.items.length,
-                    ),
-                  ),
-                ],
-              ),
-          ],
+        child: BlocBuilder<StatisticsCubit, StatisticsState>(
+          builder: (context, state) {
+            return switch (state.status) {
+              StatisticsStatus.success => ListView.separated(
+                  separatorBuilder: (context, index) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final item = state.statistics[index];
+                    return ListTile(
+                      leading: Text('${item.rounds} rounds'),
+                      title: Text('Date: ${item.date}'),
+                      subtitle: Text('Total time: ${item.totalTime}'),
+                    );
+                  },
+                  itemCount: state.statistics.length,
+                ),
+              StatisticsStatus.loading => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              _ => Center(
+                  child: Text('Error: ${state.exception}'),
+                ),
+            };
+          },
         ),
       ),
     );
-  }
-
-  void readData() async {
-    getIt<StatisticsRepository>().getStatistics().then((result) {
-      result.fold(
-        (items) {
-          for (var element in items) {
-            printLog("Success: ${element.date}");
-          }
-        },
-        (failure) {
-          printLog("Failure: $failure");
-        },
-      );
-    });
   }
 }
