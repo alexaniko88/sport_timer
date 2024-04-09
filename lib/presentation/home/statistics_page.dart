@@ -82,14 +82,17 @@ class StatisticPage extends StatelessWidget {
   }
 
   void readData() async {
-    final statistics = FirebaseFirestore.instance.collection('statistics');
-
-    await FirebaseFirestore.instance.collection('statistics').get().then((event) {
-      for (var doc in event.docs) {
-        printLog("THE DATA IS: ${doc.id} => ${doc.data()}");
-        final data = doc.data();
-        printLog("USER ID: ${doc['userId']}");
-      }
+    getIt<StatisticsRepository>().getStatistics().then((result) {
+      result.fold(
+        (items) {
+          for (var element in items) {
+            printLog("Success: ${element.date}");
+          }
+        },
+        (failure) {
+          printLog("Failure: $failure");
+        },
+      );
     });
   }
 }

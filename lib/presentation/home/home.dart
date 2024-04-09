@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sport_timer/di/di.dart';
+import 'package:sport_timer/domain/statistics/repositories/statistics_repository.dart';
 import 'package:sport_timer/domain/timer/timer.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/widgets/timer_settings_picker.dart';
