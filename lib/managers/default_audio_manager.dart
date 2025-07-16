@@ -1,4 +1,4 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:injectable/injectable.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
 
@@ -6,39 +6,35 @@ import 'package:sport_timer/managers/audio_manager.dart';
 class DefaultAudioManager extends AudioManager {
   DefaultAudioManager(this.audioPlayer);
 
-  final AssetsAudioPlayer audioPlayer;
+  final AudioPlayer audioPlayer;
 
   @override
-  void playPreparationSound() {
-    audioPlayer.open(
-      Playlist(audios: [
-        Audio("assets/audio/beep.mp3"),
-        Audio("assets/audio/beep.mp3"),
-        Audio("assets/audio/beep.mp3"),
-      ]),
-      autoStart: true,
-      audioFocusStrategy: AudioFocusStrategy.none(),
-    );
+  Future<void> playPreparationSound() async {
+    int playCount = 0;
+    const int maxPlays = 3;
+    await _playBeepSound();
+    audioPlayer.onPlayerComplete.listen((event) async {
+      playCount++;
+      await audioPlayer.stop();
+      if (playCount < maxPlays) {
+        await _playBeepSound();
+      }
+    });
   }
+
+  Future<void> _playBeepSound() => audioPlayer.play(
+        AssetSource('audio/beep.mp3'),
+        position: const Duration(milliseconds: 200),
+      );
 
   @override
   void playRoundFinishSound() {
-    audioPlayer.open(
-      Audio('assets/audio/bell_ring.mp3'),
-      autoStart: true,
-      audioFocusStrategy: const AudioFocusStrategy.request(
-        resumeOthersPlayersAfterDone: true,
-      ),
-    );
+    audioPlayer.play(AssetSource('audio/3beeps.mp3'), volume: 1.0);
   }
 
   @override
   void playRoundStartSound() {
-    audioPlayer.open(
-      Audio('assets/audio/bell_ring.mp3'),
-      autoStart: true,
-      audioFocusStrategy: AudioFocusStrategy.none(),
-    );
+    audioPlayer.play(AssetSource('audio/3beeps.mp3'), volume: 1.0);
   }
 
   @override
