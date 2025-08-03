@@ -122,7 +122,7 @@ class TimerSetupPage extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () {
-        TimerSettingsPicker.show(
+        TimerSettingsPickerWheel.show(
           context: context,
           picketType: picketType,
           initialDuration: duration,

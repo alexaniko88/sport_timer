@@ -10,7 +10,7 @@ import 'package:sport_timer/features/timer/timer.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 import 'package:sport_timer/features/settings/settings.dart';
 import 'package:sport_timer/navigation.dart';
-import 'package:sport_timer/presentation/widgets/timer_settings_picker.dart';
+import 'package:sport_timer/presentation/widgets/timer_settings_picker_wheel.dart';
 import 'package:sport_timer/theme/styles/styles.dart';
 import 'package:sport_timer/di/di.dart';
 
