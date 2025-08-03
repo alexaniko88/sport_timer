@@ -13,6 +13,9 @@ class _HomePageState extends State<HomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      if(index == 0) {
+        context.read<SettingsCubit>().loadSettings();
+      }
     });
   }
 
@@ -24,7 +27,11 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         top: false,
         child: Center(
-          child: _selectedIndex == 0 ? const TimerSetupPage() : const StatisticPage(),
+          child: switch (_selectedIndex) {
+            1 => const TemplatesPage(),
+            2 => const StatisticPage(),
+            _ => const TimerSetupPage(),
+          },
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -34,6 +41,7 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           onTap: _onItemTapped,
           unselectedItemColor: Colors.black,
+          type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
@@ -42,9 +50,15 @@ class _HomePageState extends State<HomePage> {
               tooltip: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_outline),
+              icon: Icon(Icons.assignment_outlined),
+              label: 'Templates',
+              activeIcon: Icon(Icons.assignment),
+              tooltip: 'Workout Templates',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.show_chart_outlined),
               label: 'Statistics',
-              activeIcon: Icon(Icons.favorite),
+              activeIcon: Icon(Icons.show_chart),
               tooltip: 'Statistics',
             ),
           ],
