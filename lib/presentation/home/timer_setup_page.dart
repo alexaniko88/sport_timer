@@ -79,30 +79,6 @@ class TimerSetupPage extends StatelessWidget {
               ],
             ),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          floatingActionButton: FloatingActionButton.large(
-            onPressed: state.status == SettingsStatus.saving
-                ? null
-                : () {
-                    context.read<SettingsCubit>().saveSettings(settings);
-                    context.pushNamed(
-                      RoutePath.timer.value,
-                      extra: TimerParams(
-                        preparationTime: settings.preparationTime,
-                        roundTime: settings.roundTime,
-                        restTime: settings.restTime,
-                        rounds: settings.rounds,
-                      ),
-                    );
-                  },
-            child: state.status == SettingsStatus.saving
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.timer),
-          ),
         );
       },
     );
