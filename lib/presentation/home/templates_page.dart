@@ -75,7 +75,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
           title: const Text('Choose a Workout Template'),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -84,9 +84,10 @@ class _TemplatesPageState extends State<TemplatesPage> {
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
-              const Gap(24),
+              const Gap(8),
               Expanded(
                 child: ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 100), // Add bottom padding to avoid FAB overlap
                   itemCount: templates.length,
                   itemBuilder: (context, index) {
                     final template = templates[index];
@@ -103,6 +104,8 @@ class _TemplatesPageState extends State<TemplatesPage> {
   }
 
   Widget _buildTemplateCard(BuildContext context, WorkoutTemplate template, bool isSelected) {
+    final totalTime = _calculateTotalWorkoutTime(template);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
@@ -193,10 +196,44 @@ class _TemplatesPageState extends State<TemplatesPage> {
                 ],
               ),
               const Gap(16),
+              // Total workout time - most prominent
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: template.color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: template.color.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Total Workout Time',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: template.color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const Gap(4),
+                    Text(
+                      _formatTotalTime(totalTime),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: template.color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(16),
+              // Detailed breakdown
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.1),
+                  color: template.color.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Column(
@@ -276,6 +313,33 @@ class _TemplatesPageState extends State<TemplatesPage> {
       return '${minutes}m ${seconds}s';
     }
     return '${seconds}s';
+  }
+
+  Duration _calculateTotalWorkoutTime(WorkoutTemplate template) {
+    // Preparation time (once) + (Round time + Rest time) * rounds - last rest time
+    final preparationSeconds = template.preparationTime.inSeconds;
+    final roundSeconds = template.roundTime.inSeconds;
+    final restSeconds = template.restTime.inSeconds;
+    final rounds = template.rounds;
+
+    // Total = preparation + (round + rest) * rounds - final rest (since there's no rest after the last round)
+    final totalSeconds = preparationSeconds + (roundSeconds + restSeconds) * rounds - restSeconds;
+
+    return Duration(seconds: totalSeconds);
+  }
+
+  String _formatTotalTime(Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m ${seconds}s';
+    } else if (minutes > 0) {
+      return '${minutes}m ${seconds}s';
+    } else {
+      return '${seconds}s';
+    }
   }
 
   void _applyTemplate(BuildContext context, WorkoutTemplate template) {
