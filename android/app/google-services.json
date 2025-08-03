@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741552942001",
+    "project_id": "sport-timer-503e8",
+    "storage_bucket": "sport-timer-503e8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741552942001:android:47dce3255947d8a07dab90",
+        "android_client_info": {
+          "package_name": "com.example.sport_timer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIdxM_bJ9fWw2OcWZZs91KDDIzkYLwYMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

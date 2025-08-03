@@ -4,7 +4,14 @@ import 'package:sport_timer/managers/audio_manager.dart';
 
 @LazySingleton(as: AudioManager)
 class DefaultAudioManager extends AudioManager {
-  DefaultAudioManager(this.audioPlayer);
+  DefaultAudioManager(this.audioPlayer) {
+    audioPlayer.setAudioContext(AudioContext(
+      android: const AudioContextAndroid(
+        contentType: AndroidContentType.sonification,
+        audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+      ),
+    ));
+  }
 
   final AudioPlayer audioPlayer;
 
