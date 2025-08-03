@@ -10,6 +10,8 @@ class TimerPage extends StatelessWidget {
     final timerStyle = Theme.of(context).extension<TimerStyle>()!;
     return Scaffold(
       body: SafeArea(
+        top: false,
+        bottom: false,
         child: Stack(
           children: [
             BlocBuilder<TimeCountdownCubit, TimeCountdownState>(
@@ -110,13 +112,13 @@ class TimerPage extends StatelessWidget {
   }) {
     switch (timerStatus) {
       case TimerStatus.preparation:
-        return style.preparationColor.withOpacity(0.2);
+        return style.preparationColor.withValues(alpha: 0.2);
       case TimerStatus.round:
-        return style.roundColor.withOpacity(0.2);
+        return style.roundColor.withValues(alpha: 0.2);
       case TimerStatus.rest:
-        return style.restColor.withOpacity(0.2);
+        return style.restColor.withValues(alpha: 0.2);
       case TimerStatus.finished:
-        return style.finishColor.withOpacity(0.8);
+        return style.finishColor.withValues(alpha: 0.8);
     }
   }
 

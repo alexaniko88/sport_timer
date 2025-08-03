@@ -38,7 +38,7 @@ class TimerSettingsPicker extends StatefulWidget {
   }) {
     showModalBottomSheet(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -91,7 +91,7 @@ class _TimerSettingsPickerState extends State<TimerSettingsPicker> {
       child: Scaffold(
         body: SafeArea(
           child: Container(
-            color: widget.buttonsColor?.withOpacity(0.2),
+            color: widget.buttonsColor?.withValues(alpha: 0.5),
             child: Center(
               child: switch (widget.picketType) {
                 PicketType.time => _buildTimePicker(),

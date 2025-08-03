@@ -21,61 +21,61 @@ class StatisticPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final timerStyle = Theme.of(context).extension<TimerStyle>()!;
+    final userRepository = getIt<UserRepository>();
+    final currentUser = userRepository.getCurrentUser();
+    final userName = currentUser?.email?.split('@').first ?? 'User';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Check out your statistics'),
+        title: Text('Hello, $userName!'),
       ),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            for (final section in [
-              Section(
-                "title",
-                [
-                  Item("A"),
-                  Item("B"),
-                  Item("C"),
-                  Item("D"),
-                  Item("E"),
-                  Item("F"),
-                  Item("A"),
-                  Item("B"),
-                  Item("C"),
-                  Item("D"),
-                  Item("E"),
-                  Item("F"),
-                  Item("A"),
-                  Item("B"),
-                  Item("C"),
-                  Item("D"),
-                  Item("E"),
-                  Item("F"),
-                ],
-              )
-            ])
-              SliverMainAxisGroup(
-                slivers: [
-                  SliverAppBar(
-                    pinned: true,
-                    title: Text(
-                      section.title,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+      body: CustomScrollView(
+        slivers: [
+          for (final section in [
+            Section(
+              "Here are your training statistics",
+              [
+                Item("A"),
+                Item("B"),
+                Item("C"),
+                Item("D"),
+                Item("E"),
+                Item("F"),
+                Item("A"),
+                Item("B"),
+                Item("C"),
+                Item("D"),
+                Item("E"),
+                Item("F"),
+                Item("A"),
+                Item("B"),
+                Item("C"),
+                Item("D"),
+                Item("E"),
+                Item("F"),
+              ],
+            )
+          ])
+            SliverMainAxisGroup(
+              slivers: [
+                SliverAppBar(
+                  pinned: true,
+                  title: Text(
+                    section.title,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => ListTile(
-                        title: Text(section.items[index].content),
-                      ),
-                      childCount: section.items.length,
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => ListTile(
+                      title: Text(section.items[index].content),
                     ),
+                    childCount: section.items.length,
                   ),
-                ],
-              ),
-          ],
-        ),
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }
