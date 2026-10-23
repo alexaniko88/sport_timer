@@ -101,7 +101,10 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
             child: Column(
               children: [
                 Expanded(
-                  child: widget.picketType == PicketType.time ? _buildTimePicker() : _buildRoundPicker(),
+                  child: switch (widget.picketType) {
+                    PicketType.time => _buildTimePicker(),
+                    PicketType.rounds => _buildRoundPicker(),
+                  },
                 ),
               ],
             ),
