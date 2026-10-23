@@ -1,9 +1,31 @@
 part of 'timer.dart';
 
-class TimerPage extends StatelessWidget {
+class TimerPage extends StatefulWidget {
+  final TimerParams params;
+
   const TimerPage({
     super.key,
+    required this.params,
   });
+
+  @override
+  State<TimerPage> createState() => _TimerPageState();
+}
+
+class _TimerPageState extends State<TimerPage> {
+  late final TimerViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = TimerViewModel(widget.params, getIt())..start();
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +36,9 @@ class TimerPage extends StatelessWidget {
         bottom: false,
         child: Stack(
           children: [
-            BlocBuilder<TimeCountdownCubit, TimeCountdownState>(
-              builder: (context, state) {
+            ValueListenableBuilder<TimerState>(
+              valueListenable: _viewModel.state,
+              builder: (context, state, _) {
                 return AnimatedContainer(
                   duration: const Duration(seconds: 2),
                   width: MediaQuery.of(context).size.width,
@@ -27,15 +50,16 @@ class TimerPage extends StatelessWidget {
                 );
               },
             ),
-            const Padding(
-              padding: EdgeInsets.only(top: 100),
+            Padding(
+              padding: const EdgeInsets.only(top: 100),
               child: Align(
                 alignment: Alignment.topCenter,
-                child: Stopwatch(),
+                child: Stopwatch(viewModel: _viewModel),
               ),
             ),
-            BlocBuilder<TimeCountdownCubit, TimeCountdownState>(
-              builder: (context, state) {
+            ValueListenableBuilder<TimerState>(
+              valueListenable: _viewModel.state,
+              builder: (context, state, _) {
                 return Visibility(
                   visible: state.timerStatus == TimerStatus.round,
                   child: Align(
@@ -49,8 +73,9 @@ class TimerPage extends StatelessWidget {
                 );
               },
             ),
-            BlocBuilder<TimeCountdownCubit, TimeCountdownState>(
-              builder: (context, state) {
+            ValueListenableBuilder<TimerState>(
+              valueListenable: _viewModel.state,
+              builder: (context, state, _) {
                 return Visibility(
                   visible: state.timerStatus == TimerStatus.preparation || state.timerStatus == TimerStatus.rest,
                   child: Align(
@@ -64,8 +89,9 @@ class TimerPage extends StatelessWidget {
                 );
               },
             ),
-            BlocBuilder<TimeCountdownCubit, TimeCountdownState>(
-              builder: (context, state) {
+            ValueListenableBuilder<TimerState>(
+              valueListenable: _viewModel.state,
+              builder: (context, state, _) {
                 return Visibility(
                   visible: state.timerStatus == TimerStatus.finished,
                   child: Align(
@@ -78,8 +104,9 @@ class TimerPage extends StatelessWidget {
                 );
               },
             ),
-            BlocBuilder<TimeCountdownCubit, TimeCountdownState>(
-              builder: (context, state) {
+            ValueListenableBuilder<TimerState>(
+              valueListenable: _viewModel.state,
+              builder: (context, state, _) {
                 final progress =
                     1 - state.totalSeconds / (state.totalDuration.inSeconds == 0 ? 1 : state.totalDuration.inSeconds);
                 return Visibility(

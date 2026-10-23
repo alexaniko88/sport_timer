@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/features/settings/settings_repository.dart';
-import 'package:sport_timer/features/timer/timer.dart';
+import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 import 'package:sport_timer/features/settings/settings_state.dart';
 import 'package:sport_timer/features/settings/settings_view_model.dart';

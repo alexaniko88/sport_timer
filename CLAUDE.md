@@ -26,14 +26,14 @@ fvm flutter test test/widget_test.dart
 
 This is what the code does today. It is being migrated to the target in the next two sections, see `docs/mvvm-migration.md`. Update this section as each migration step lands, so it stays true.
 
-Feature-first layout. Login and settings are already MVVM (see the target sections). Only the timer still uses Bloc/Cubit state. `get_it` for DI (registered by hand), and `go_router` for navigation.
+Feature-first layout. Login, settings and the timer are MVVM (see the target sections). No feature uses Bloc/Cubit state any more, but `flutter_bloc` and `SimpleBlocObserver` are still in the project until the cleanup step. `get_it` for DI (registered by hand), and `go_router` for navigation.
 
 - `lib/main.dart` holds `main()` and `MyApp`. It initializes Firebase, sets `SimpleBlocObserver`, then calls `configureDependencies()` before `runApp`.
-- `lib/features/<name>/` holds the cubit, state and repository. `login` and `settings` are MVVM (`*_view_model.dart`, `*_state.dart`, normal imports, no barrel). `timer` has a barrel file (`timer.dart`) that declares the imports and the `part` directives, so the cubit, state and `timer.freezed.dart` files are all `part of` that one library. Add imports to the barrel, not to the part files.
+- `lib/features/<name>/` holds the ViewModel, state and repository (`*_view_model.dart`, `*_state.dart`, normal imports, no barrel). The timer feature also has `timer_params.dart`.
 - `lib/presentation/` holds pages and widgets. `home` is a bottom-navigation shell over the setup, templates and statistics pages.
-- `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and creates the timer cubit in a `BlocProvider`. The login and home pages create their own ViewModels, and `HomePage` shares one `SettingsViewModel` with its tabs. `/timer` receives a `TimerParams` through `state.extra`, which goes straight to the `TimeCountdownCubit` constructor.
-- `lib/di/di.dart` registers the app-wide singletons by hand: `AudioPlayer`, `AudioManager`, `UserRepository` and `SettingsRepository`. Cubits are not registered. `AudioManager` plays the round sounds through the `AudioPlayer`.
-- `lib/core/result.dart` holds the sealed `Result<T>` (`Success` and `Failure`). The user and settings repositories return it from the methods that can fail, and the ViewModels and cubits turn it into state.
+- `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and passes the `TimerParams` from `state.extra` to `TimerPage`. Each page creates and disposes its own ViewModel, and `HomePage` shares one `SettingsViewModel` with its tabs.
+- `lib/di/di.dart` registers the app-wide singletons by hand: `AudioPlayer`, `AudioManager`, `UserRepository` and `SettingsRepository`. ViewModels are not registered. `AudioManager` plays the round sounds through the `AudioPlayer`.
+- `lib/core/result.dart` holds the sealed `Result<T>` (`Success` and `Failure`). The user and settings repositories return it from the methods that can fail, and the ViewModels turn it into state.
 - Timer settings are stored in `SharedPreferences` (`SharedPreferencesSettingsRepository`). Sign-in goes through `FirebaseAuth` in `FirebaseUserRepository`.
 - The UI helpers (extensions, mixins, connectivity widgets) come from the separate `basic_flutter_helper` git package, tracked on its `master` branch.
 
@@ -72,7 +72,7 @@ State is held with `ValueNotifier`. There is no state management package.
 
 This section describes the current setup and goes away with the migration.
 
-`**/*.freezed.dart` and `**/*.g.dart` are git-ignored, so the project does not analyze or compile until `build_runner` has run. Freezed classes must be declared `abstract class` (freezed 4).
+No code uses `freezed` or any other generator any more, so `build_runner` has nothing to generate. The packages and the `**/*.freezed.dart` and `**/*.g.dart` ignore rules are removed in the cleanup step.
 
 ## Dependencies and Android build
 

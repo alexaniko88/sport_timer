@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
 
 class DefaultAudioManager extends AudioManager {
+  final AudioPlayer audioPlayer;
+  StreamSubscription<void>? _preparationSubscription;
+
   DefaultAudioManager(this.audioPlayer) {
     audioPlayer.setAudioContext(AudioContext(
       android: const AudioContextAndroid(
@@ -11,18 +16,20 @@ class DefaultAudioManager extends AudioManager {
     ));
   }
 
-  final AudioPlayer audioPlayer;
-
   @override
   Future<void> playPreparationSound() async {
     int playCount = 0;
     const int maxPlays = 3;
+    // Drop the listener of a previous sequence so the beeps do not stack up.
+    await _preparationSubscription?.cancel();
     await _playBeepSound();
-    audioPlayer.onPlayerComplete.listen((event) async {
+    _preparationSubscription = audioPlayer.onPlayerComplete.listen((event) async {
       playCount++;
       await audioPlayer.stop();
       if (playCount < maxPlays) {
         await _playBeepSound();
+      } else {
+        await _preparationSubscription?.cancel();
       }
     });
   }

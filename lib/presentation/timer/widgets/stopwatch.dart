@@ -1,39 +1,20 @@
 part of '../timer.dart';
 
 class Stopwatch extends StatelessWidget {
+  final TimerViewModel viewModel;
+
   const Stopwatch({
     super.key,
+    required this.viewModel,
   });
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TimeCountdownCubit, TimeCountdownState>(
-      listener: (context, state) {
-        switch (state.status) {
-          case TimeCountdownStatus.initial:
-            break;
-          case TimeCountdownStatus.getTime:
-            break;
-          case TimeCountdownStatus.finished:
-            getIt<AudioManager>().playRoundFinishSound();
-            break;
-          case TimeCountdownStatus.paused:
-            break;
-          case TimeCountdownStatus.resumed:
-            break;
-          case TimeCountdownStatus.almostFinishing:
-            getIt<AudioManager>().playPreparationSound();
-            break;
-          case TimeCountdownStatus.counterDone:
-            printLog("Counter done!");
-            break;
-          case TimeCountdownStatus.next:
-            break;
-        }
-      },
-      builder: (context, state) {
+    return ValueListenableBuilder<TimerState>(
+      valueListenable: viewModel.state,
+      builder: (context, state, _) {
         return GestureDetector(
-          onTap: () => context.read<TimeCountdownCubit>().togglePauseResume(),
+          onTap: viewModel.togglePauseResume,
           child: SizedBox(
             width: MediaQuery.of(context).size.width / 1.15,
             child: Column(
