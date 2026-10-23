@@ -83,6 +83,7 @@ Skip this stage for pure UI or text changes with no logic, and for the MVVM migr
 
 - Dispatch `agent-pr-review` on the diff against `master` (`git diff master` for uncommitted work), with the project overrides in the brief so it does not flag Bloc, hardcoded strings or the missing style guide. For UI changes, optionally `agent-flutter-a11y-agent` in parallel.
 - **Fix Critical and General findings** with the Stage 2 agent, without asking, then re-run the Stage 3 tests and `flutter analyze`. Do at most 2 review-and-fix rounds. If Critical findings remain after the second round, stop and show them to the user. Minor findings are not fixed unless trivial; list them in the summary.
+- After a change that applies a rule across the app (a style sweep, a rename), run your own search for the pattern (`grep`) and check the matches by hand. Do not rely only on a subagent's list.
 - Suggest the built-in `/code-review` for a second pass only when the change is large or risky. Do not run it unasked.
 
 ## Stage 5: Hand-off 🛑
