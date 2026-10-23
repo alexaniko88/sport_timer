@@ -1,6 +1,13 @@
 import 'package:sport_timer/features/settings/settings_repository.dart';
 
-enum SettingsStatus { initial, loading, loaded, saving, saved, error }
+enum SettingsStatus {
+  initial,
+  loading,
+  loaded,
+  saving,
+  saved,
+  error,
+}
 
 class SettingsState {
   final SettingsStatus status;
