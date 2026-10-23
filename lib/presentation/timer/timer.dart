@@ -1,5 +1,3 @@
-library timer;
-
 import 'package:basic_flutter_helper/basic_flutter_helper.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';

@@ -50,30 +50,23 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void updatePreparationTime(Duration duration) {
-    if (state.timerSettings != null) {
-      final updatedSettings = state.timerSettings!.copyWith(preparationTime: duration);
-      emit(state.copyWith(timerSettings: updatedSettings));
-    }
+    final updatedSettings =
+        state.timerSettings.copyWith(preparationTime: duration);
+    emit(state.copyWith(timerSettings: updatedSettings));
   }
 
   void updateRoundTime(Duration duration) {
-    if (state.timerSettings != null) {
-      final updatedSettings = state.timerSettings!.copyWith(roundTime: duration);
-      emit(state.copyWith(timerSettings: updatedSettings));
-    }
+    final updatedSettings = state.timerSettings.copyWith(roundTime: duration);
+    emit(state.copyWith(timerSettings: updatedSettings));
   }
 
   void updateRestTime(Duration duration) {
-    if (state.timerSettings != null) {
-      final updatedSettings = state.timerSettings!.copyWith(restTime: duration);
-      emit(state.copyWith(timerSettings: updatedSettings));
-    }
+    final updatedSettings = state.timerSettings.copyWith(restTime: duration);
+    emit(state.copyWith(timerSettings: updatedSettings));
   }
 
   void updateRounds(int rounds) {
-    if (state.timerSettings != null) {
-      final updatedSettings = state.timerSettings!.copyWith(rounds: rounds);
-      emit(state.copyWith(timerSettings: updatedSettings));
-    }
+    final updatedSettings = state.timerSettings.copyWith(rounds: rounds);
+    emit(state.copyWith(timerSettings: updatedSettings));
   }
 }

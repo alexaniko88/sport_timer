@@ -1,5 +1,3 @@
-library timer;
-
 import 'dart:async';
 
 import 'package:basic_flutter_helper/basic_flutter_helper.dart';

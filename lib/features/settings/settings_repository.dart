@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'settings_repository.freezed.dart';
 
 @freezed
-class TimerSettings with _$TimerSettings {
+abstract class TimerSettings with _$TimerSettings {
   const factory TimerSettings({
     required Duration preparationTime,
     required Duration roundTime,

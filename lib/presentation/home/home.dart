@@ -1,5 +1,3 @@
-library home;
-
 import 'package:basic_flutter_helper/basic_flutter_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

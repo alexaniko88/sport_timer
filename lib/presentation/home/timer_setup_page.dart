@@ -9,7 +9,7 @@ class TimerSetupPage extends StatelessWidget {
 
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, state) {
-        final settings = state.timerSettings!;
+        final settings = state.timerSettings;
 
         return Scaffold(
           appBar: AppBar(

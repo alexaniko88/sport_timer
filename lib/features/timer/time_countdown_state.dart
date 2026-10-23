@@ -1,7 +1,7 @@
 part of 'timer.dart';
 
 @freezed
-class TimeCountdownState with _$TimeCountdownState {
+abstract class TimeCountdownState with _$TimeCountdownState {
   const factory TimeCountdownState({
     required int currentSeconds,
     required int totalSeconds,
