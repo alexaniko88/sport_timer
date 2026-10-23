@@ -1,8 +1,8 @@
 class LoginState {
-  const LoginState({this.isLoading = false, this.errorMessage});
-
   final bool isLoading;
   final String? errorMessage;
+
+  const LoginState({this.isLoading = false, this.errorMessage});
 
   @override
   bool operator ==(Object other) =>

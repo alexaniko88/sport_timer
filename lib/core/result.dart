@@ -3,13 +3,13 @@ sealed class Result<T> {
 }
 
 final class Success<T> extends Result<T> {
-  const Success(this.value);
-
   final T value;
+
+  const Success(this.value);
 }
 
 final class Failure<T> extends Result<T> {
-  const Failure(this.error);
-
   final Exception error;
+
+  const Failure(this.error);
 }

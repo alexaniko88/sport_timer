@@ -60,6 +60,7 @@ Rules:
 
 State is held with `ValueNotifier`. There is no state management package.
 
+- In every class, the fields come first, then the constructor, then the methods.
 - Each ViewModel has a private `ValueNotifier<XState>`, exposed as `ValueListenable<XState> get state`. Only the ViewModel changes it, with `_state.value = _state.value.copyWith(...)`.
 - `XState` is a plain immutable Dart class: `final` fields, a `const` constructor, `copyWith`, `==` and `hashCode`. `ValueNotifier` only notifies when the new value is not equal to the old one, so `==` is required. No `freezed`.
 - Views read state with `ValueListenableBuilder`. To rebuild only part of a screen, build a smaller `ValueListenable` from the state for that widget.

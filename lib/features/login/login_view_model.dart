@@ -4,11 +4,11 @@ import 'package:sport_timer/features/login/login_state.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 
 class LoginViewModel {
-  LoginViewModel(this._userRepository);
-
   final UserRepository _userRepository;
   final ValueNotifier<LoginState> _state = ValueNotifier(const LoginState());
   bool _disposed = false;
+
+  LoginViewModel(this._userRepository);
 
   ValueListenable<LoginState> get state => _state;
 
