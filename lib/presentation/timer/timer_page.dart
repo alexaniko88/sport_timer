@@ -15,7 +15,6 @@ class TimerPage extends StatefulWidget {
 class _TimerPageState extends State<TimerPage> {
   static const double _progressBarHeight = 40;
   static const double _stopwatchTopInset = 100;
-  static const double _lottieHeight = 300;
 
   late final TimerViewModel _viewModel;
 
@@ -43,8 +42,7 @@ class _TimerPageState extends State<TimerPage> {
             ValueListenableBuilder<TimerState>(
               valueListenable: _viewModel.state,
               builder: (context, state, _) {
-                return AnimatedContainer(
-                  duration: const Duration(seconds: 2),
+                return Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   color: _getBackgroundColorByStatus(
@@ -64,55 +62,7 @@ class _TimerPageState extends State<TimerPage> {
             ValueListenableBuilder<TimerState>(
               valueListenable: _viewModel.state,
               builder: (context, state, _) {
-                return Visibility(
-                  visible: state.timerStatus == TimerStatus.round,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Lottie.asset(
-                      'assets/animation/round_animation.lottie',
-                      decoder: _customDecoder,
-                      height: _lottieHeight,
-                    ),
-                  ),
-                );
-              },
-            ),
-            ValueListenableBuilder<TimerState>(
-              valueListenable: _viewModel.state,
-              builder: (context, state, _) {
-                return Visibility(
-                  visible: state.timerStatus == TimerStatus.preparation || state.timerStatus == TimerStatus.rest,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Lottie.asset(
-                      'assets/animation/prepare_animation.lottie',
-                      decoder: _customDecoder,
-                      height: _lottieHeight,
-                    ),
-                  ),
-                );
-              },
-            ),
-            ValueListenableBuilder<TimerState>(
-              valueListenable: _viewModel.state,
-              builder: (context, state, _) {
-                return Visibility(
-                  visible: state.timerStatus == TimerStatus.finished,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Lottie.asset(
-                      'assets/animation/finish_animation.lottie',
-                      decoder: _customDecoder,
-                    ),
-                  ),
-                );
-              },
-            ),
-            ValueListenableBuilder<TimerState>(
-              valueListenable: _viewModel.state,
-              builder: (context, state, _) {
-                final progress =
-                    1 - state.totalSeconds / (state.totalDuration.inSeconds == 0 ? 1 : state.totalDuration.inSeconds);
+                final progress = state.progress;
                 return Visibility(
                   visible: state.timerStatus != TimerStatus.finished,
                   child: Align(
@@ -152,17 +102,6 @@ class _TimerPageState extends State<TimerPage> {
     };
   }
 
-  Future<LottieComposition?> _customDecoder(List<int> bytes) {
-    return LottieComposition.decodeZip(
-      bytes,
-      filePicker: (files) {
-        return files.firstWhereOrNull(
-          (f) => f.name.startsWith('animations/') && f.name.endsWith('.json'),
-        );
-      },
-    );
-  }
-
   Color _getProgressColor({
     required double progress,
     required TimerColors timerColors,
@@ -173,11 +112,7 @@ class _TimerPageState extends State<TimerPage> {
           timerColors.progressMiddle,
           progress / 0.70,
         )!,
-      <= 0.80 => Color.lerp(
-          timerColors.progressMiddle,
-          timerColors.progressMiddle,
-          (progress - 0.70) / 0.10,
-        )!,
+      <= 0.80 => timerColors.progressMiddle,
       <= 0.90 => Color.lerp(
           timerColors.progressMiddle,
           timerColors.progressEnd,

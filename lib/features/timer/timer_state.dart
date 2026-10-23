@@ -5,24 +5,12 @@ enum TimerStatus {
   finished,
 }
 
-enum TimeCountdownStatus {
-  initial,
-  getTime,
-  finished,
-  paused,
-  resumed,
-  almostFinishing,
-  next,
-  counterDone,
-}
-
 class TimerState {
   final int currentSeconds;
   final int totalSeconds;
   final int currentRound;
   final Duration totalDuration;
   final TimerStatus timerStatus;
-  final TimeCountdownStatus status;
 
   const TimerState({
     required this.currentSeconds,
@@ -30,8 +18,12 @@ class TimerState {
     required this.currentRound,
     required this.totalDuration,
     required this.timerStatus,
-    required this.status,
   });
+
+  double get progress {
+    final total = totalDuration.inSeconds;
+    return total == 0 ? 0 : 1 - totalSeconds / total;
+  }
 
   TimerState copyWith({
     int? currentSeconds,
@@ -39,7 +31,6 @@ class TimerState {
     int? currentRound,
     Duration? totalDuration,
     TimerStatus? timerStatus,
-    TimeCountdownStatus? status,
   }) {
     return TimerState(
       currentSeconds: currentSeconds ?? this.currentSeconds,
@@ -47,7 +38,6 @@ class TimerState {
       currentRound: currentRound ?? this.currentRound,
       totalDuration: totalDuration ?? this.totalDuration,
       timerStatus: timerStatus ?? this.timerStatus,
-      status: status ?? this.status,
     );
   }
 
@@ -59,8 +49,7 @@ class TimerState {
           other.totalSeconds == totalSeconds &&
           other.currentRound == currentRound &&
           other.totalDuration == totalDuration &&
-          other.timerStatus == timerStatus &&
-          other.status == status;
+          other.timerStatus == timerStatus;
 
   @override
   int get hashCode => Object.hash(
@@ -69,6 +58,5 @@ class TimerState {
         currentRound,
         totalDuration,
         timerStatus,
-        status,
       );
 }

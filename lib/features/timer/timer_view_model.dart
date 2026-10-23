@@ -2,145 +2,150 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
+import 'package:sport_timer/features/timer/timer_schedule.dart';
 import 'package:sport_timer/features/timer/timer_state.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
 
-class TimerViewModel {
-  static const Duration _interval = Duration(seconds: 1);
+/// Returns the time since a fixed start. It must be monotonic.
+typedef TimeSource = Duration Function();
 
-  final TimerParams _params;
+class TimerViewModel {
+  static const int _countdownSeconds = 3;
+  static const int _millisecondsPerSecond = 1000;
+  // A tick further apart than this was late (for example a locked screen),
+  // so the sounds of the seconds it skipped are no longer worth playing.
+  static const Duration _staleGap = Duration(seconds: 2);
+
+  final TimerSchedule _schedule;
   final AudioManager _audioManager;
+  final TimeSource _timeSource;
   final ValueNotifier<TimerState> _state;
   Timer? _timer;
+  Duration? _runningSince;
+  Duration _elapsedBeforeRun = Duration.zero;
+  Duration _lastTickElapsed = Duration.zero;
+  TimerState? _lastTicked;
+  bool _hasStarted = false;
+  bool _disposed = false;
 
-  TimerViewModel(this._params, this._audioManager)
-      : _state = ValueNotifier(
-          TimerState(
-            status: TimeCountdownStatus.initial,
-            currentSeconds: _params.preparationTime.inSeconds,
-            totalSeconds: _getTotalDuration(_params).inSeconds,
-            currentRound: _params.rounds,
-            timerStatus: TimerStatus.preparation,
-            totalDuration: _getTotalDuration(_params),
-          ),
+  TimerViewModel(
+    TimerParams params,
+    AudioManager audioManager, {
+    TimeSource? timeSource,
+  }) : this._(
+          TimerSchedule.fromParams(params),
+          audioManager,
+          timeSource ?? _stopwatchTimeSource(),
         );
+
+  TimerViewModel._(this._schedule, this._audioManager, this._timeSource)
+      : _state = ValueNotifier(_stateFrom(_schedule, _schedule.positionAt(0)));
 
   ValueListenable<TimerState> get state => _state;
 
-  bool get isActive => _timer?.isActive == true;
+  // A Stopwatch is monotonic, so changing the device clock cannot move the timer.
+  static TimeSource _stopwatchTimeSource() {
+    final stopwatch = Stopwatch()..start();
+    return () => stopwatch.elapsed;
+  }
 
-  static Duration _getTotalDuration(TimerParams params) {
-    return Duration(
-      seconds: params.preparationTime.inSeconds +
-          params.roundTime.inSeconds * params.rounds +
-          params.restTime.inSeconds * (params.rounds - 1),
+  static TimerState _stateFrom(TimerSchedule schedule, TimerPosition position) {
+    return TimerState(
+      currentSeconds: position.secondsLeft,
+      totalSeconds: position.totalSecondsLeft,
+      currentRound: position.round,
+      totalDuration: schedule.totalDuration,
+      timerStatus: position.status,
     );
   }
 
-  void togglePauseResume() {
-    final timer = _timer;
-    if (timer == null) return;
-    if (timer.isActive) {
-      debugPrint("$runtimeType:: paused");
-      timer.cancel();
-      _setState(_state.value.copyWith(status: TimeCountdownStatus.paused));
-    } else {
-      debugPrint("$runtimeType:: resumed");
-      _setState(_state.value.copyWith(status: TimeCountdownStatus.resumed));
-      start();
-    }
+  Duration get _elapsed {
+    final runningSince = _runningSince;
+    return runningSince == null ? _elapsedBeforeRun : _elapsedBeforeRun + _timeSource() - runningSince;
   }
 
   void start() {
-    if (isActive) {
-      debugPrint("Timer already started");
-      return;
-    }
+    if (_disposed || _hasStarted) return;
+    _hasStarted = true;
+    _run();
+  }
 
-    if (_state.value.currentSeconds != 0) {
-      _timer = Timer.periodic(_interval, _onTick);
+  void togglePauseResume() {
+    if (_disposed || !_hasStarted || _state.value.timerStatus == TimerStatus.finished) return;
+    if (_runningSince == null) {
+      debugPrint("$runtimeType:: resumed");
+      _run();
+    } else {
+      debugPrint("$runtimeType:: paused");
+      _elapsedBeforeRun = _elapsed;
+      _runningSince = null;
+      _timer?.cancel();
     }
   }
 
   void dispose() {
+    _disposed = true;
     _timer?.cancel();
     _state.dispose();
   }
 
-  void _onTick(Timer timer) {
-    final state = _state.value;
-    if (state.currentSeconds <= 0) {
-      debugPrint(
-        "$runtimeType:: current seconds on finish: ${state.currentSeconds}",
-      );
-      timer.cancel();
-      _setState(state.copyWith(status: TimeCountdownStatus.finished));
-      _checkForNextTimer();
-    } else {
-      final currentSeconds = state.currentSeconds - _interval.inSeconds;
-      debugPrint("$runtimeType:: current seconds: $currentSeconds");
-      _setState(
-        state.copyWith(
-          currentSeconds: currentSeconds,
-          totalSeconds: state.totalSeconds - _interval.inSeconds,
-          status: _isAlmostFinishing() ? TimeCountdownStatus.almostFinishing : TimeCountdownStatus.getTime,
-        ),
-      );
-    }
+  void _run() {
+    _runningSince = _timeSource();
+    _tick();
   }
 
-  void _checkForNextTimer() {
-    final state = _state.value;
-    final next = switch (state.timerStatus) {
-      TimerStatus.preparation || TimerStatus.rest => state.copyWith(
-          currentSeconds: _params.roundTime.inSeconds - 1,
-          totalSeconds: state.totalSeconds - 1,
-          status: TimeCountdownStatus.next,
-          timerStatus: TimerStatus.round,
-        ),
-      TimerStatus.round when state.currentRound > 1 => state.copyWith(
-          currentSeconds: _params.restTime.inSeconds - 1,
-          totalSeconds: state.totalSeconds - 1,
-          currentRound: state.currentRound - 1,
-          status: TimeCountdownStatus.next,
-          timerStatus: TimerStatus.rest,
-        ),
-      TimerStatus.round => state.copyWith(
-          currentSeconds: 0,
-          totalSeconds: 0,
-          currentRound: 0,
-          status: TimeCountdownStatus.finished,
-          timerStatus: TimerStatus.finished,
-        ),
-      TimerStatus.finished => null,
-    };
-    if (next != null) {
-      _setState(next);
-      if (next.timerStatus != TimerStatus.finished) start();
-    }
-    debugPrint(
-      "Current status is: ${_state.value.timerStatus} and round: ${_state.value.currentRound}",
-    );
-  }
-
-  bool _isAlmostFinishing() => _state.value.currentSeconds == 3;
-
-  // Skips an equal state and plays the sound for the new status, like the old listener did.
-  void _setState(TimerState next) {
-    if (next == _state.value) return;
+  // Each tick reads the time source instead of counting ticks, so a late tick
+  // still shows the right time.
+  void _tick() {
+    if (_disposed) return;
+    final elapsed = _elapsed;
+    final position = _schedule.positionAt(elapsed.inSeconds);
+    final next = _stateFrom(_schedule, position);
     _state.value = next;
-    switch (next.status) {
-      case TimeCountdownStatus.finished:
-        _audioManager.playRoundFinishSound();
-      case TimeCountdownStatus.almostFinishing:
-        _audioManager.playPreparationSound();
-      case TimeCountdownStatus.initial ||
-            TimeCountdownStatus.getTime ||
-            TimeCountdownStatus.paused ||
-            TimeCountdownStatus.resumed ||
-            TimeCountdownStatus.next ||
-            TimeCountdownStatus.counterDone:
-        break;
+    _playSounds(
+      previous: _lastTicked,
+      next: next,
+      stageLengthSeconds: position.stageLengthSeconds,
+      isStale: elapsed - _lastTickElapsed > _staleGap,
+    );
+    _lastTicked = next;
+    _lastTickElapsed = elapsed;
+
+    if (next.timerStatus == TimerStatus.finished) {
+      _runningSince = null;
+      _elapsedBeforeRun = elapsed;
+      return;
+    }
+    final millisecondsToNextSecond = _millisecondsPerSecond - elapsed.inMilliseconds % _millisecondsPerSecond;
+    _timer = Timer(Duration(milliseconds: millisecondsToNextSecond), _tick);
+  }
+
+  // Compares the old and new state, so a sound plays once per event. A null
+  // [previous] is the first tick. After a stale tick only the sounds of the
+  // current position play: the start of a round, or the end of the workout.
+  void _playSounds({
+    required TimerState? previous,
+    required TimerState next,
+    required int stageLengthSeconds,
+    required bool isStale,
+  }) {
+    final stageChanged =
+        previous == null || previous.timerStatus != next.timerStatus || previous.currentRound != next.currentRound;
+    final isRoundStart = next.timerStatus == TimerStatus.round && stageChanged;
+    final isRoundEnd = previous != null &&
+        previous.timerStatus == TimerStatus.round &&
+        stageChanged &&
+        (next.timerStatus == TimerStatus.finished || (!isStale && !isRoundStart));
+
+    if (isRoundEnd) _audioManager.playRoundFinishSound();
+    if (isRoundStart) _audioManager.playRoundStartSound();
+
+    final isCountdown = !isStale &&
+        next.timerStatus != TimerStatus.finished &&
+        stageLengthSeconds > _countdownSeconds &&
+        next.currentSeconds <= _countdownSeconds;
+    if (isCountdown && (previous == null || stageChanged || previous.currentSeconds > _countdownSeconds)) {
+      _audioManager.playPreparationSound();
     }
   }
 }
