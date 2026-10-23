@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:injectable/injectable.dart';
 
 abstract class UserRepository {
   Future<void> signIn({required String email, required String password});
@@ -8,7 +7,6 @@ abstract class UserRepository {
   bool isUserLoggedIn();
 }
 
-@LazySingleton(as: UserRepository)
 class FirebaseUserRepository extends UserRepository {
   FirebaseUserRepository();
 

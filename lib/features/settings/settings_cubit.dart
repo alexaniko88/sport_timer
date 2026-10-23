@@ -1,6 +1,5 @@
 part of 'settings.dart';
 
-@injectable
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit(this._settingsRepository)
       : super(

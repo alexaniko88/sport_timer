@@ -1,6 +1,5 @@
 part of 'login.dart';
 
-@injectable
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit(this._userRepository) : super(const LoginState(status: LoginStatus.initial));
 

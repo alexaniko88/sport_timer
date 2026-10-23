@@ -1,8 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:injectable/injectable.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
 
-@LazySingleton(as: AudioManager)
 class DefaultAudioManager extends AudioManager {
   DefaultAudioManager(this.audioPlayer) {
     audioPlayer.setAudioContext(AudioContext(

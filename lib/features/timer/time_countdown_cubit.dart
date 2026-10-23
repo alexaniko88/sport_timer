@@ -14,9 +14,8 @@ class TimerParams {
   final int rounds;
 }
 
-@injectable
 class TimeCountdownCubit extends Cubit<TimeCountdownState> {
-  TimeCountdownCubit(@factoryParam this.timerParams)
+  TimeCountdownCubit(this.timerParams)
       : super(
           TimeCountdownState(
             status: TimeCountdownStatus.initial,

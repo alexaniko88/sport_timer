@@ -68,7 +68,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => getIt<SettingsCubit>(),
+      create: (context) => SettingsCubit(getIt()),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,

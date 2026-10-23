@@ -29,7 +29,7 @@ class Routes {
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: BlocProvider(
-            create: (context) => getIt<LoginCubit>(),
+            create: (context) => LoginCubit(getIt()),
             child: const LoginPage(),
           ),
         ),
@@ -40,7 +40,7 @@ class Routes {
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: BlocProvider(
-            create: (context) => getIt<SettingsCubit>()..loadSettings(),
+            create: (context) => SettingsCubit(getIt())..loadSettings(),
             child: const HomePage(),
           ),
         ),
@@ -51,7 +51,7 @@ class Routes {
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: BlocProvider(
-            create: (context) => getIt<TimeCountdownCubit>(param1: state.extra as TimerParams)..start(),
+            create: (context) => TimeCountdownCubit(state.extra as TimerParams)..start(),
             child: const TimerPage(),
           ),
         ),

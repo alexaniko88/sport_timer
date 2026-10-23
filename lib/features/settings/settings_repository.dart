@@ -1,4 +1,3 @@
-import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -19,7 +18,6 @@ abstract class SettingsRepository {
   Future<void> saveTimerSettings(TimerSettings settings);
 }
 
-@LazySingleton(as: SettingsRepository)
 class SharedPreferencesSettingsRepository implements SettingsRepository {
   static const String _preparationTimeKey = 'preparation_time';
   static const String _roundTimeKey = 'round_time';
