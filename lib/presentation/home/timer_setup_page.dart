@@ -1,14 +1,20 @@
 part of 'home.dart';
 
 class TimerSetupPage extends StatelessWidget {
-  const TimerSetupPage({super.key});
+  final SettingsViewModel viewModel;
+
+  const TimerSetupPage({
+    super.key,
+    required this.viewModel,
+  });
 
   @override
   Widget build(BuildContext context) {
     final timerStyle = Theme.of(context).extension<TimerStyle>()!;
 
-    return BlocBuilder<SettingsCubit, SettingsState>(
-      builder: (context, state) {
+    return ValueListenableBuilder<SettingsState>(
+      valueListenable: viewModel.state,
+      builder: (context, state, _) {
         final settings = state.timerSettings;
 
         return Scaffold(
@@ -32,7 +38,7 @@ class TimerSetupPage extends StatelessWidget {
                         maxMinutes: 5,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
-                          context.read<SettingsCubit>().updatePreparationTime(duration);
+                          viewModel.updatePreparationTime(duration);
                         },
                       ),
                       const Gap(20),
@@ -45,7 +51,7 @@ class TimerSetupPage extends StatelessWidget {
                         maxMinutes: 60,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
-                          context.read<SettingsCubit>().updateRoundTime(duration);
+                          viewModel.updateRoundTime(duration);
                         },
                       ),
                       const Gap(20),
@@ -58,7 +64,7 @@ class TimerSetupPage extends StatelessWidget {
                         maxMinutes: 60,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
-                          context.read<SettingsCubit>().updateRestTime(duration);
+                          viewModel.updateRestTime(duration);
                         },
                       ),
                       const Gap(20),
@@ -70,7 +76,7 @@ class TimerSetupPage extends StatelessWidget {
                         maxRounds: settings.rounds,
                         picketType: PicketType.rounds,
                         onRoundsChanged: (rounds) {
-                          context.read<SettingsCubit>().updateRounds(rounds);
+                          viewModel.updateRounds(rounds);
                         },
                       ),
                     ],

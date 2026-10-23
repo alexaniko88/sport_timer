@@ -1,17 +1,44 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:sport_timer/core/result.dart';
 
-part 'settings_repository.freezed.dart';
+class TimerSettings {
+  final Duration preparationTime;
+  final Duration roundTime;
+  final Duration restTime;
+  final int rounds;
 
-@freezed
-abstract class TimerSettings with _$TimerSettings {
-  const factory TimerSettings({
-    required Duration preparationTime,
-    required Duration roundTime,
-    required Duration restTime,
-    required int rounds,
-  }) = _TimerSettings;
+  const TimerSettings({
+    required this.preparationTime,
+    required this.roundTime,
+    required this.restTime,
+    required this.rounds,
+  });
+
+  TimerSettings copyWith({
+    Duration? preparationTime,
+    Duration? roundTime,
+    Duration? restTime,
+    int? rounds,
+  }) {
+    return TimerSettings(
+      preparationTime: preparationTime ?? this.preparationTime,
+      roundTime: roundTime ?? this.roundTime,
+      restTime: restTime ?? this.restTime,
+      rounds: rounds ?? this.rounds,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimerSettings &&
+          other.preparationTime == preparationTime &&
+          other.roundTime == roundTime &&
+          other.restTime == restTime &&
+          other.rounds == rounds;
+
+  @override
+  int get hashCode => Object.hash(preparationTime, roundTime, restTime, rounds);
 }
 
 abstract class SettingsRepository {

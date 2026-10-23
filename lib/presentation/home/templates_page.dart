@@ -23,7 +23,12 @@ class WorkoutTemplate {
 }
 
 class TemplatesPage extends StatefulWidget {
-  const TemplatesPage({super.key});
+  final SettingsViewModel viewModel;
+
+  const TemplatesPage({
+    super.key,
+    required this.viewModel,
+  });
 
   @override
   State<TemplatesPage> createState() => _TemplatesPageState();
@@ -67,37 +72,34 @@ class _TemplatesPageState extends State<TemplatesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SettingsCubit(getIt()),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Choose a Workout Template'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Select a pre-configured workout to get started quickly.',
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Choose a Workout Template'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Select a pre-configured workout to get started quickly.',
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const Gap(8),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(bottom: 100), // Add bottom padding to avoid FAB overlap
+                itemCount: templates.length,
+                itemBuilder: (context, index) {
+                  final template = templates[index];
+                  final isSelected = _selectedTemplateName == template.name;
+                  return _buildTemplateCard(context, template, isSelected);
+                },
               ),
-              const Gap(8),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 100), // Add bottom padding to avoid FAB overlap
-                  itemCount: templates.length,
-                  itemBuilder: (context, index) {
-                    final template = templates[index];
-                    final isSelected = _selectedTemplateName == template.name;
-                    return _buildTemplateCard(context, template, isSelected);
-                  },
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -113,7 +115,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
-        onTap: () => _applyTemplate(context, template),
+        onTap: () => _applyTemplate(template),
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.all(20),
@@ -260,18 +262,14 @@ class _TemplatesPageState extends State<TemplatesPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  BlocBuilder<SettingsCubit, SettingsState>(
-                    builder: (context, state) {
-                      return ElevatedButton.icon(
-                        onPressed: () => _applyTemplate(context, template),
-                        icon: const Icon(Icons.play_arrow),
-                        label: const Text('Use Template'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: template.color,
-                          foregroundColor: Colors.white,
-                        ),
-                      );
-                    },
+                  ElevatedButton.icon(
+                    onPressed: () => _applyTemplate(template),
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Use Template'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: template.color,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 ],
               ),
@@ -342,8 +340,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
     }
   }
 
-  void _applyTemplate(BuildContext context, WorkoutTemplate template) {
-    final settingsCubit = context.read<SettingsCubit>();
+  void _applyTemplate(WorkoutTemplate template) {
     final timerSettings = TimerSettings(
       preparationTime: template.preparationTime,
       roundTime: template.roundTime,
@@ -355,6 +352,6 @@ class _TemplatesPageState extends State<TemplatesPage> {
       _selectedTemplateName = template.name;
     });
 
-    settingsCubit.saveSettings(timerSettings);
+    widget.viewModel.saveSettings(timerSettings);
   }
 }
