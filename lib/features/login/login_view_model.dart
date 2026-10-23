@@ -3,6 +3,10 @@ import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/login/login_state.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 
+typedef AuthAction = Future<Result<void>> Function();
+typedef AuthCall = Future<bool> Function(
+    {required String email, required String password});
+
 class LoginViewModel {
   final UserRepository _userRepository;
   final ValueNotifier<LoginState> _state = ValueNotifier(const LoginState());
@@ -22,7 +26,7 @@ class LoginViewModel {
       _authenticate(
           () => _userRepository.signUp(email: email, password: password));
 
-  Future<bool> _authenticate(Future<Result<void>> Function() action) async {
+  Future<bool> _authenticate(AuthAction action) async {
     _state.value = const LoginState(isLoading: true);
     final result = await action();
     // The page can be gone by the time the request finishes.

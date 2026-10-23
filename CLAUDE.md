@@ -89,4 +89,6 @@ For an end-to-end change (bug, feature, improvement, refactor), use the `skill-o
 
 Agents, skills, rules and task profiles are not stored in this repo. `~/.claude/{agents,skills,rules,profiles}` and `~/.claude/CLAUDE.md` are symlinks into `~/Projects/my-dev-env`, so every project picks them up with no per-repo setup. To change one, edit it in `~/Projects/my-dev-env`, never copy it here. `~/Projects/my-dev-env/profiles/index.md` says which task profile to read for which task (tests, review, hand-off, merge).
 
+Rules that apply to this project only live in `.claude/rules/` in this repo (for example `.claude/rules/dart-style.md`), not in my-dev-env.
+
 This is a personal repo (`alexaniko88`). Commit with the repo-local noreply email (`git config user.email`), never a company address.

@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<void> _submit(Future<bool> Function({required String email, required String password}) action) async {
+  Future<void> _submit(AuthCall action) async {
     final success = await action(
       email: emailController.text,
       password: passwordController.text,
