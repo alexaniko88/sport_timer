@@ -13,6 +13,9 @@ analyzer:
     - android/**
     - ios/**
     - macos/**
+  errors:
+    parameter_assignments: error
+    prefer_const_constructors: warning
 include: package:flutter_lints/flutter.yaml
 
 formatter:
