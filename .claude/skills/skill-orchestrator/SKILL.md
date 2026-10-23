@@ -24,12 +24,12 @@ There are no tickets. The user's own message is the request. Never look for a ti
 
 `CLAUDE.md` is already loaded: read it for commands, architecture, generated code and pinned dependencies, and do not repeat it in briefs. Every agent brief must carry the **project overrides** below, because the shared global rules in `~/.claude/rules/` and `~/.claude/profiles/` were written for another codebase and some of them are wrong here.
 
-- **State management is Bloc/Cubit** with `injectable` + `get_it` and `go_router`. The global "MVVM + `ValueNotifier`, never BLoC" rule does not apply. Follow the existing feature layout (`lib/features/<name>/`, barrel file with `part` directives).
+- **State management:** the app is moving from Bloc/Cubit to MVVM with `ValueNotifier` state. Follow `CLAUDE.md` ("Target architecture" and "Target state management") for new code and `docs/mvvm-migration.md` for the order. A feature that is not migrated yet keeps its Bloc/Cubit layout (barrel file with `part` directives) until its migration step. Never mix both in one feature. `go_router` stays.
 - **Strings:** the app has no localization. Hardcode user-facing English text in the widget. No `FIXME-ALEX` blocks, ARB files or `Localized` keys.
 - **No `docs/CodeStyleGuide.md`** exists. The Dart style rules in `~/.claude/rules/flutter/dart-core.md` still apply (switch and pattern matching, null safety, trailing commas, format and analyze on touched files only, by literal path).
-- **Tests:** `bloc_test` and `mockito` (mocks generated with `build_runner`). Not `mocktail`, `alchemist` or `patrol_finders`. Test paths mirror `lib/`: `test/features/<name>/<file>_test.dart`.
-- **Generated code:** after changing a freezed class, an `@injectable` class or a `@module`, run `fvm dart run build_runner build`. Generated files are git-ignored.
-- **Dependencies:** `pubspec.yaml` versions stay pinned exactly, with no `^`. Do not bump a package unasked, and never edit `basic_flutter_helper` (it is a separate repo).
+- **Tests:** out of scope for the MVVM migration. For other changes, unit tests use hand-written fakes (no mocking package unless the plan adds one). Not `mocktail`, `alchemist` or `patrol_finders`. Test paths mirror `lib/`: `test/features/<name>/<file>_test.dart`.
+- **Generated code:** only for features not migrated yet. After changing a freezed class, an `@injectable` class or a `@module`, run `fvm dart run build_runner build`. Generated files are git-ignored. New and migrated code has none.
+- **Dependencies:** `pubspec.yaml` versions stay pinned exactly, with no `^`. Do not bump a package unasked, and never edit `basic_flutter_helper` (it is a separate repo). The package is being removed (migration step 8), so do not add new uses of it.
 - **Commands:** always `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
 - **Personal repo (`alexaniko88`):** nothing from any employer in code, comments, commit messages or generated files. No `/Users/<name>/...` paths, no company names or emails.
 - **Git:** agents never stage, commit, push or create branches. Only you, after the Stage 5 approval.
@@ -73,10 +73,10 @@ When the agent reports a surprise, decide it yourself if the answer is clear fro
 
 ## Stage 3: Tests
 
-Skip this stage for pure UI or text changes with no logic. Otherwise dispatch a general-purpose agent with `model: sonnet` (or continue the Stage 2 agent with `SendMessage`) to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
+Skip this stage for pure UI or text changes with no logic, and for the MVVM migration steps (tests are out of scope there). Otherwise dispatch a general-purpose agent with `model: sonnet` (or continue the Stage 2 agent with `SendMessage`) to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
 
 - Use the test rules in the project overrides. Read one existing test of the same kind first if there is one, and copy its structure.
-- If a test needs infrastructure that does not exist yet (mock generation, a first `bloc_test` file), build the smallest version the plan's tests need and say so in the report. Do not add anything else.
+- If a test needs infrastructure that does not exist yet (a first fake or test helper), build the smallest version the plan's tests need and say so in the report. Do not add anything else.
 - Run only the tests it wrote or touched, by file path: `fvm flutter test <path>`. Fix failures that come from the test. If a failure shows a real bug in the code, stop and report it instead of patching production code silently.
 
 ## Stage 4: Review
@@ -89,7 +89,7 @@ Skip this stage for pure UI or text changes with no logic. Otherwise dispatch a 
 
 Run the checks that apply and show the result:
 
-- `fvm dart run build_runner build` ran after any freezed, injectable or module change.
+- `fvm dart run build_runner build` ran after any freezed, injectable or module change (not-yet-migrated features only).
 - `fvm flutter analyze` reports no issues, and the new or touched tests pass.
 - If `android/`, `ios/` or `pubspec.yaml` changed: `fvm flutter build apk --debug` (and `fvm flutter build ios --debug --no-codesign` when `ios/` changed) succeeds.
 - No local absolute path in the diff (`git diff | grep -n "/Users/"` returns nothing), and no company name or work email address when you read it.
