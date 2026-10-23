@@ -1,4 +1,3 @@
-import 'package:basic_flutter_helper/basic_flutter_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +9,7 @@ import 'package:sport_timer/features/settings/settings_view_model.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/widgets/timer_settings_picker_wheel.dart';
 import 'package:sport_timer/theme/styles/styles.dart';
+import 'package:sport_timer/core/duration_extension.dart';
 import 'package:sport_timer/di/di.dart';
 
 part 'timer_setup_page.dart';

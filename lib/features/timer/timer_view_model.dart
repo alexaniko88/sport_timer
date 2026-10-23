@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:basic_flutter_helper/basic_flutter_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/timer/timer_state.dart';
@@ -42,11 +41,11 @@ class TimerViewModel {
     final timer = _timer;
     if (timer == null) return;
     if (timer.isActive) {
-      printLog("$runtimeType:: paused");
+      debugPrint("$runtimeType:: paused");
       timer.cancel();
       _setState(_state.value.copyWith(status: TimeCountdownStatus.paused));
     } else {
-      printLog("$runtimeType:: resumed");
+      debugPrint("$runtimeType:: resumed");
       _setState(_state.value.copyWith(status: TimeCountdownStatus.resumed));
       start();
     }
@@ -54,7 +53,7 @@ class TimerViewModel {
 
   void start() {
     if (isActive) {
-      printLog("Timer already started");
+      debugPrint("Timer already started");
       return;
     }
 
@@ -71,14 +70,14 @@ class TimerViewModel {
   void _onTick(Timer timer) {
     final state = _state.value;
     if (state.currentSeconds <= 0) {
-      printLog(
+      debugPrint(
           "$runtimeType:: current seconds on finish: ${state.currentSeconds}");
       timer.cancel();
       _setState(state.copyWith(status: TimeCountdownStatus.finished));
       _checkForNextTimer();
     } else {
       final currentSeconds = state.currentSeconds - _interval.inSeconds;
-      printLog("$runtimeType:: current seconds: $currentSeconds");
+      debugPrint("$runtimeType:: current seconds: $currentSeconds");
       _setState(
         state.copyWith(
           currentSeconds: currentSeconds,
@@ -141,7 +140,7 @@ class TimerViewModel {
       case TimerStatus.finished:
         break;
     }
-    printLog(
+    debugPrint(
         "Current status is: ${_state.value.timerStatus} and round: ${_state.value.currentRound}");
   }
 

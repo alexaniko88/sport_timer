@@ -29,7 +29,7 @@ There are no tickets. The user's own message is the request. Never look for a ti
 - **No `docs/CodeStyleGuide.md`** exists. The Dart style rules in `~/.claude/rules/flutter/dart-core.md` still apply (switch and pattern matching, null safety, trailing commas, format and analyze on touched files only, by literal path).
 - **Tests:** out of scope for the MVVM migration. For other changes, unit tests use hand-written fakes (no mocking package unless the plan adds one). Not `mocktail`, `alchemist` or `patrol_finders`. Test paths mirror `lib/`: `test/features/<name>/<file>_test.dart`.
 - **Generated code:** only for features not migrated yet. After changing a freezed class, an `@injectable` class or a `@module`, run `fvm dart run build_runner build`. Generated files are git-ignored. New and migrated code has none.
-- **Dependencies:** `pubspec.yaml` versions stay pinned exactly, with no `^`. Do not bump a package unasked, and never edit `basic_flutter_helper` (it is a separate repo). The package is being removed (migration step 8), so do not add new uses of it.
+- **Dependencies:** `pubspec.yaml` versions stay pinned exactly, with no `^`. Do not bump a package unasked. The `basic_flutter_helper` package is gone: put shared helpers in `lib/core/`.
 - **Commands:** always `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
 - **Personal repo (`alexaniko88`):** nothing from any employer in code, comments, commit messages or generated files. No `/Users/<name>/...` paths, no company names or emails.
 - **Git:** agents never stage, commit, push or create branches. Only you, after the Stage 5 approval.
