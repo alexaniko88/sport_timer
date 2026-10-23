@@ -30,6 +30,7 @@ Feature-first layout. Login, settings and the timer are MVVM (see the target sec
 
 - `lib/main.dart` holds `main()` and `MyApp`. It initializes Firebase, sets `SimpleBlocObserver`, then calls `configureDependencies()` before `runApp`.
 - `lib/features/<name>/` holds the ViewModel, state and repository (`*_view_model.dart`, `*_state.dart`, normal imports, no barrel). The timer feature also has `timer_params.dart`.
+- `lib/features/statistics/` has a small `StatisticsViewModel` that gives the statistics page the user name, so the page never reads `UserRepository`.
 - `lib/presentation/` holds pages and widgets. `home` is a bottom-navigation shell over the setup, templates and statistics pages.
 - `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and passes the `TimerParams` from `state.extra` to `TimerPage`. Each page creates and disposes its own ViewModel, and `HomePage` shares one `SettingsViewModel` with its tabs.
 - `lib/di/di.dart` registers the app-wide singletons by hand: `AudioPlayer`, `AudioManager`, `UserRepository` and `SettingsRepository`. ViewModels are not registered. `AudioManager` plays the round sounds through the `AudioPlayer`.

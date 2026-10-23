@@ -16,18 +16,22 @@ final class Item {
   final String content;
 }
 
-class StatisticPage extends StatelessWidget {
+class StatisticPage extends StatefulWidget {
   const StatisticPage({super.key});
 
   @override
+  State<StatisticPage> createState() => _StatisticPageState();
+}
+
+class _StatisticPageState extends State<StatisticPage> {
+  final StatisticsViewModel _viewModel = StatisticsViewModel(getIt());
+
+  @override
   Widget build(BuildContext context) {
-    final userRepository = getIt<UserRepository>();
-    final currentUser = userRepository.getCurrentUser();
-    final userName = currentUser?.email?.split('@').first ?? 'User';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Hello, $userName!'),
+        title: Text('Hello, ${_viewModel.userName}!'),
       ),
       body: CustomScrollView(
         slivers: [
