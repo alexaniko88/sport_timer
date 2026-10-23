@@ -18,33 +18,35 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> loadSettings() async {
     emit(state.copyWith(status: SettingsStatus.loading));
-    try {
-      final settings = await _settingsRepository.getTimerSettings();
-      emit(state.copyWith(
-        status: SettingsStatus.loaded,
-        timerSettings: settings,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        status: SettingsStatus.error,
-        errorMessage: e.toString(),
-      ));
+    final result = await _settingsRepository.getTimerSettings();
+    switch (result) {
+      case Success(:final value):
+        emit(state.copyWith(
+          status: SettingsStatus.loaded,
+          timerSettings: value,
+        ));
+      case Failure(:final error):
+        emit(state.copyWith(
+          status: SettingsStatus.error,
+          errorMessage: error.toString(),
+        ));
     }
   }
 
   Future<void> saveSettings(TimerSettings settings) async {
     emit(state.copyWith(status: SettingsStatus.saving));
-    try {
-      await _settingsRepository.saveTimerSettings(settings);
-      emit(state.copyWith(
-        status: SettingsStatus.saved,
-        timerSettings: settings,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        status: SettingsStatus.error,
-        errorMessage: e.toString(),
-      ));
+    final result = await _settingsRepository.saveTimerSettings(settings);
+    switch (result) {
+      case Success():
+        emit(state.copyWith(
+          status: SettingsStatus.saved,
+          timerSettings: settings,
+        ));
+      case Failure(:final error):
+        emit(state.copyWith(
+          status: SettingsStatus.error,
+          errorMessage: error.toString(),
+        ));
     }
   }
 

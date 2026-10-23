@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sport_timer/core/result.dart';
 
 abstract class UserRepository {
-  Future<void> signIn({required String email, required String password});
-  Future<void> signUp({required String email, required String password});
+  Future<Result<void>> signIn({required String email, required String password});
+  Future<Result<void>> signUp({required String email, required String password});
   User? getCurrentUser();
   bool isUserLoggedIn();
 }
@@ -11,26 +12,32 @@ class FirebaseUserRepository extends UserRepository {
   FirebaseUserRepository();
 
   @override
-  Future<void> signIn({required String email, required String password}) async {
+  Future<Result<void>> signIn({required String email, required String password}) async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      return const Success(null);
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
+      return Failure(Exception(e.message ?? 'Authentication failed'));
+    } catch (e) {
+      return Failure(e is Exception ? e : Exception(e.toString()));
     }
   }
 
   @override
-  Future<void> signUp({required String email, required String password}) async {
+  Future<Result<void>> signUp({required String email, required String password}) async {
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      return const Success(null);
     } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
+      return Failure(Exception(e.message ?? 'Authentication failed'));
+    } catch (e) {
+      return Failure(e is Exception ? e : Exception(e.toString()));
     }
   }
 

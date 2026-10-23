@@ -33,6 +33,7 @@ Feature-first layout with Bloc/Cubit state, `get_it` for DI (registered by hand)
 - `lib/presentation/` holds pages and widgets. `home` is a bottom-navigation shell over the setup, templates and statistics pages.
 - `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and creates each page's cubit in a `BlocProvider`, passing repositories with `getIt()`. `/timer` receives a `TimerParams` through `state.extra`, which goes straight to the `TimeCountdownCubit` constructor.
 - `lib/di/di.dart` registers the app-wide singletons by hand: `AudioPlayer`, `AudioManager`, `UserRepository` and `SettingsRepository`. Cubits are not registered. `AudioManager` plays the round sounds through the `AudioPlayer`.
+- `lib/core/result.dart` holds the sealed `Result<T>` (`Success` and `Failure`). The user and settings repositories return it from the methods that can fail, and the cubits turn it into state.
 - Timer settings are stored in `SharedPreferences` (`SharedPreferencesSettingsRepository`). Sign-in goes through `FirebaseAuth` in `FirebaseUserRepository`.
 - The UI helpers (extensions, mixins, connectivity widgets) come from the separate `basic_flutter_helper` git package, tracked on its `master` branch.
 
