@@ -2,7 +2,7 @@
 
 Goal: move from Bloc/Cubit, `freezed` and `injectable` to MVVM with `ValueNotifier` state and hand-written `get_it` registrations. The target rules are in `CLAUDE.md` ("Target architecture" and "Target state management").
 
-Do one step per change, and keep the app working after each one. Tick the box when a step lands, and update the "Current architecture" section in `CLAUDE.md` in the same change.
+Do one step per change, and keep the app working after each one. Every file you write or rewrite in a step follows `.claude/rules/dart-style.md` from the start. Tick the box when a step lands, and update the "Current architecture" section in `CLAUDE.md` in the same change.
 
 ## Steps
 
@@ -14,7 +14,8 @@ Do one step per change, and keep the app working after each one. Tick the box wh
 - [ ] 6. Timer: write `TimerViewModel`, which owns the `Timer` and plays the sounds through `AudioManager`. `TimerPage` becomes stateful and disposes it. Fix `start()` so it cannot create a second timer.
 - [ ] 7. Statistics: pass the user name in, so `statistics_page.dart` no longer reads `UserRepository` itself.
 - [ ] 8. Remove the `basic_flutter_helper` package completely. The app only uses `printLog` (cubit, bloc observer, `stopwatch.dart`) and `asMinutesAndSeconds` (`timer_setup_page.dart`, `stopwatch.dart`). Replace them with a local logging call and a local `Duration` extension, remove the imports in `lib/features/timer/timer.dart`, `lib/presentation/home/home.dart`, `lib/presentation/timer/timer.dart` and the dependency from `pubspec.yaml`. Then `bloc`, `flutter_bloc` and `provider` leave `pubspec.lock` together with the direct dependency.
-- [ ] 9. Cleanup: remove `SimpleBlocObserver`, `flutter_bloc`, `freezed`, `freezed_annotation` and `build_runner`. Update `rebuild.sh`, `.gitignore`, `.claude/skills/skill-orchestrator/SKILL.md` and the "Commands", "Architecture", "Generated code" and "Dependencies" sections of `CLAUDE.md`. Delete this file and every reference to it.
+- [ ] 9. Apply the project Dart style rules (`.claude/rules/dart-style.md`) to all the code that is left: function types as `typedef`s, a trailing comma on anything with 3 or more parameters or arguments, and the fields, constructor, methods order in every class. Files rewritten in steps 4 to 8 already follow them, so this sweep covers what the migration did not touch. Run `dart format` only on the files changed, and check that `fvm flutter analyze` is clean.
+- [ ] 10. Cleanup: remove `SimpleBlocObserver`, `flutter_bloc`, `freezed`, `freezed_annotation` and `build_runner`. Update `rebuild.sh`, `.gitignore`, `.claude/skills/skill-orchestrator/SKILL.md` and the "Commands", "Architecture", "Generated code" and "Dependencies" sections of `CLAUDE.md`. Delete this file and every reference to it.
 
 Tests are out of scope for this migration. They will be covered later, after it is done.
 
