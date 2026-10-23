@@ -1,11 +1,16 @@
-part of 'login.dart';
+class LoginState {
+  const LoginState({this.isLoading = false, this.errorMessage});
 
-enum LoginStatus { initial, loading, success, failure }
+  final bool isLoading;
+  final String? errorMessage;
 
-@freezed
-abstract class LoginState with _$LoginState {
-  const factory LoginState({
-    required LoginStatus status,
-    String? errorMessage,
-  }) = _LoginState;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LoginState &&
+          other.isLoading == isLoading &&
+          other.errorMessage == errorMessage;
+
+  @override
+  int get hashCode => Object.hash(isLoading, errorMessage);
 }

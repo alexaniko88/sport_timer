@@ -26,12 +26,12 @@ fvm flutter test test/widget_test.dart
 
 This is what the code does today. It is being migrated to the target in the next two sections, see `docs/mvvm-migration.md`. Update this section as each migration step lands, so it stays true.
 
-Feature-first layout with Bloc/Cubit state, `get_it` for DI (registered by hand), and `go_router` for navigation.
+Feature-first layout. Login is already MVVM (see the target sections). Settings and timer still use Bloc/Cubit state. `get_it` for DI (registered by hand), and `go_router` for navigation.
 
 - `lib/main.dart` holds `main()` and `MyApp`. It initializes Firebase, sets `SimpleBlocObserver`, then calls `configureDependencies()` before `runApp`.
-- `lib/features/<name>/` holds the cubit, state and repository. Each feature has a barrel file (`login.dart`, `settings.dart`, `timer.dart`) that declares the imports and the `part` directives, so the cubit, state and `*.freezed.dart` files are all `part of` that one library. Add imports to the barrel, not to the part files.
+- `lib/features/<name>/` holds the cubit, state and repository. `login` is MVVM (`login_view_model.dart`, `login_state.dart`, normal imports, no barrel). `settings` and `timer` each have a barrel file (`settings.dart`, `timer.dart`) that declares the imports and the `part` directives, so the cubit, state and `*.freezed.dart` files are all `part of` that one library. Add imports to the barrel, not to the part files.
 - `lib/presentation/` holds pages and widgets. `home` is a bottom-navigation shell over the setup, templates and statistics pages.
-- `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and creates each page's cubit in a `BlocProvider`, passing repositories with `getIt()`. `/timer` receives a `TimerParams` through `state.extra`, which goes straight to the `TimeCountdownCubit` constructor.
+- `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and creates the settings and timer cubits in a `BlocProvider` (the login page creates its own ViewModel), passing repositories with `getIt()`. `/timer` receives a `TimerParams` through `state.extra`, which goes straight to the `TimeCountdownCubit` constructor.
 - `lib/di/di.dart` registers the app-wide singletons by hand: `AudioPlayer`, `AudioManager`, `UserRepository` and `SettingsRepository`. Cubits are not registered. `AudioManager` plays the round sounds through the `AudioPlayer`.
 - `lib/core/result.dart` holds the sealed `Result<T>` (`Success` and `Failure`). The user and settings repositories return it from the methods that can fail, and the cubits turn it into state.
 - Timer settings are stored in `SharedPreferences` (`SharedPreferencesSettingsRepository`). Sign-in goes through `FirebaseAuth` in `FirebaseUserRepository`.
