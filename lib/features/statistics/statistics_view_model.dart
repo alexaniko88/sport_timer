@@ -5,6 +5,5 @@ class StatisticsViewModel {
 
   StatisticsViewModel(this._userRepository);
 
-  String get userName =>
-      _userRepository.getCurrentUser()?.email?.split('@').first ?? 'User';
+  String? get userName => _userRepository.getCurrentUser()?.email?.split('@').first;
 }

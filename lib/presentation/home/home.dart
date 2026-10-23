@@ -12,6 +12,7 @@ import 'package:sport_timer/theme/app_spacing.dart';
 import 'package:sport_timer/theme/theme_context.dart';
 import 'package:sport_timer/theme/timer_colors.dart';
 import 'package:sport_timer/core/duration_extension.dart';
+import 'package:sport_timer/core/l10n_context.dart';
 import 'package:sport_timer/di/di.dart';
 
 part 'timer_setup_page.dart';

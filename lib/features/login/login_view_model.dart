@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/login/login_state.dart';
+import 'package:sport_timer/features/user/auth_error.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 
 typedef AuthAction = Future<Result<void>> Function();
@@ -39,7 +40,9 @@ class LoginViewModel {
         return true;
       },
       onFailure: (error) {
-        _state.value = LoginState(errorMessage: error.toString());
+        _state.value = LoginState(
+          error: error is AuthException ? error.error : AuthError.unknown,
+        );
         return false;
       },
     );

@@ -6,9 +6,14 @@ enum TemplateAccent {
   red,
 }
 
+enum TemplateId {
+  standard,
+  fullAbs,
+  crossFit,
+}
+
 class WorkoutTemplate {
-  final String name;
-  final String description;
+  final TemplateId id;
   final Duration preparationTime;
   final Duration roundTime;
   final Duration restTime;
@@ -17,8 +22,7 @@ class WorkoutTemplate {
   final TemplateAccent accent;
 
   const WorkoutTemplate({
-    required this.name,
-    required this.description,
+    required this.id,
     required this.preparationTime,
     required this.roundTime,
     required this.restTime,
@@ -46,12 +50,11 @@ class _TemplatesPageState extends State<TemplatesPage> {
   static const double _iconSize = 28;
   static const double _detailBorderWidth = 1;
 
-  String? _selectedTemplateName;
+  TemplateId? _selectedTemplateId;
 
   static const List<WorkoutTemplate> templates = [
     WorkoutTemplate(
-      name: 'Default',
-      description: 'Default workout with standard settings',
+      id: TemplateId.standard,
       preparationTime: Duration(seconds: 20),
       roundTime: Duration(minutes: 1),
       restTime: Duration(seconds: 30),
@@ -60,8 +63,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
       accent: TemplateAccent.blue,
     ),
     WorkoutTemplate(
-      name: 'Full Abs',
-      description: 'Intense abdominal workout with short rounds',
+      id: TemplateId.fullAbs,
       preparationTime: Duration(seconds: 20),
       roundTime: Duration(seconds: 30),
       restTime: Duration(seconds: 10),
@@ -70,8 +72,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
       accent: TemplateAccent.orange,
     ),
     WorkoutTemplate(
-      name: 'CrossFit',
-      description: 'High-intensity functional fitness training',
+      id: TemplateId.crossFit,
       preparationTime: Duration(seconds: 20),
       roundTime: Duration(minutes: 1),
       restTime: Duration(seconds: 20),
@@ -92,11 +93,31 @@ class _TemplatesPageState extends State<TemplatesPage> {
     };
   }
 
+  String _templateName(TemplateId id) {
+    final l10n = context.l10n;
+    return switch (id) {
+      TemplateId.standard => l10n.templateDefaultName,
+      TemplateId.fullAbs => l10n.templateAbsName,
+      TemplateId.crossFit => l10n.templateCrossFitName,
+    };
+  }
+
+  String _templateDescription(TemplateId id) {
+    final l10n = context.l10n;
+    return switch (id) {
+      TemplateId.standard => l10n.templateDefaultDescription,
+      TemplateId.fullAbs => l10n.templateAbsDescription,
+      TemplateId.crossFit => l10n.templateCrossFitDescription,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Choose a Workout Template'),
+        title: Text(l10n.templatesTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.s16),
@@ -104,7 +125,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Select a pre-configured workout to get started quickly.',
+              l10n.templatesSubtitle,
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
@@ -116,7 +137,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
                 itemCount: templates.length,
                 itemBuilder: (context, index) {
                   final template = templates[index];
-                  final isSelected = _selectedTemplateName == template.name;
+                  final isSelected = _selectedTemplateId == template.id;
                   return _buildTemplateCard(
                     context: context,
                     template: template,
@@ -136,6 +157,8 @@ class _TemplatesPageState extends State<TemplatesPage> {
     required WorkoutTemplate template,
     required bool isSelected,
   }) {
+    final l10n = context.l10n;
+    final textTheme = Theme.of(context).textTheme;
     final totalTime = _calculateTotalWorkoutTime(template);
     final timerColors = context.timerColors;
     final accentColor = _resolveAccent(
@@ -192,11 +215,11 @@ class _TemplatesPageState extends State<TemplatesPage> {
                         Row(
                           children: [
                             Text(
-                              template.name,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: accentColor,
-                                  ),
+                              _templateName(template.id),
+                              style: textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: accentColor,
+                              ),
                             ),
                             if (isSelected) ...[
                               const Gap(AppSpacing.s8),
@@ -210,11 +233,11 @@ class _TemplatesPageState extends State<TemplatesPage> {
                                   borderRadius: BorderRadius.circular(AppRadius.r12),
                                 ),
                                 child: Text(
-                                  'APPLIED',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                        color: timerColors.onAccent,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                  l10n.templatesApplied,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: timerColors.onAccent,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -222,8 +245,8 @@ class _TemplatesPageState extends State<TemplatesPage> {
                         ),
                         const Gap(AppSpacing.s4),
                         Text(
-                          template.description,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          _templateDescription(template.id),
+                          style: textTheme.bodyMedium,
                         ),
                       ],
                     ),
@@ -246,19 +269,19 @@ class _TemplatesPageState extends State<TemplatesPage> {
                 child: Column(
                   children: [
                     Text(
-                      'Total Workout Time',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                            color: accentColor,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      l10n.templatesTotalWorkoutTime,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: accentColor,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const Gap(AppSpacing.s4),
                     Text(
                       _formatTotalTime(totalTime),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            color: accentColor,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      style: textTheme.headlineMedium?.copyWith(
+                        color: accentColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -280,14 +303,14 @@ class _TemplatesPageState extends State<TemplatesPage> {
                         Expanded(
                           child: _buildTemplateDetail(
                             context,
-                            'Preparation',
+                            l10n.templatesPreparation,
                             _formatDuration(template.preparationTime),
                           ),
                         ),
                         Expanded(
                           child: _buildTemplateDetail(
                             context,
-                            'Round Time',
+                            l10n.templatesRoundTime,
                             _formatDuration(template.roundTime),
                           ),
                         ),
@@ -299,14 +322,14 @@ class _TemplatesPageState extends State<TemplatesPage> {
                         Expanded(
                           child: _buildTemplateDetail(
                             context,
-                            'Rest Time',
+                            l10n.templatesRestTime,
                             _formatDuration(template.restTime),
                           ),
                         ),
                         Expanded(
                           child: _buildTemplateDetail(
                             context,
-                            'Rounds',
+                            l10n.commonRounds,
                             '${template.rounds}',
                           ),
                         ),
@@ -322,7 +345,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
                   ElevatedButton.icon(
                     onPressed: () => _applyTemplate(template),
                     icon: const Icon(Icons.play_arrow),
-                    label: const Text('Use Template'),
+                    label: Text(l10n.templatesUseButton),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentColor,
                       foregroundColor: timerColors.onAccent,
@@ -338,32 +361,35 @@ class _TemplatesPageState extends State<TemplatesPage> {
   }
 
   Widget _buildTemplateDetail(BuildContext context, String label, String value) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+          style: theme.textTheme.labelMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const Gap(AppSpacing.s2),
         Text(
           value,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );
   }
 
   String _formatDuration(Duration duration) {
+    final l10n = context.l10n;
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds % 60;
     if (minutes > 0) {
-      return '${minutes}m ${seconds}s';
+      return l10n.durationMinutesSeconds(minutes, seconds);
     }
-    return '${seconds}s';
+    return l10n.durationSeconds(seconds);
   }
 
   Duration _calculateTotalWorkoutTime(WorkoutTemplate template) {
@@ -380,16 +406,17 @@ class _TemplatesPageState extends State<TemplatesPage> {
   }
 
   String _formatTotalTime(Duration duration) {
+    final l10n = context.l10n;
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
 
     if (hours > 0) {
-      return '${hours}h ${minutes}m ${seconds}s';
+      return l10n.durationHoursMinutesSeconds(hours, minutes, seconds);
     } else if (minutes > 0) {
-      return '${minutes}m ${seconds}s';
+      return l10n.durationMinutesSeconds(minutes, seconds);
     } else {
-      return '${seconds}s';
+      return l10n.durationSeconds(seconds);
     }
   }
 
@@ -402,7 +429,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
     );
 
     setState(() {
-      _selectedTemplateName = template.name;
+      _selectedTemplateId = template.id;
     });
 
     widget.viewModel.saveSettings(timerSettings);

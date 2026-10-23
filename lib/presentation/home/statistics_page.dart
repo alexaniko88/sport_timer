@@ -28,15 +28,21 @@ class _StatisticPageState extends State<StatisticPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hello, ${_viewModel.userName}!'),
+        title: Text(
+          l10n.statisticsGreeting(
+            _viewModel.userName ?? l10n.statisticsDefaultUserName,
+          ),
+        ),
       ),
       body: CustomScrollView(
         slivers: [
           for (final section in [
             Section(
-              "Here are your training statistics",
+              l10n.statisticsSectionTitle,
               [
                 Item("A"),
                 Item("B"),

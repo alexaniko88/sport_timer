@@ -13,6 +13,7 @@ class TimerSetupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final timerColors = context.timerColors;
+    final l10n = context.l10n;
 
     return ValueListenableBuilder<SettingsState>(
       valueListenable: viewModel.state,
@@ -21,7 +22,7 @@ class TimerSetupPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Prepared for the new challenge?'),
+            title: Text(l10n.timerSetupTitle),
           ),
           body: Padding(
             padding: const EdgeInsets.all(AppSpacing.s16),
@@ -34,7 +35,7 @@ class TimerSetupPage extends StatelessWidget {
                         context: context,
                         color: timerColors.preparation,
                         duration: settings.preparationTime,
-                        label: "Preparation time",
+                        label: l10n.commonPreparationTime,
                         maxMinutes: 5,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
@@ -46,7 +47,7 @@ class TimerSetupPage extends StatelessWidget {
                         context: context,
                         color: timerColors.round,
                         duration: settings.roundTime,
-                        label: "Round time",
+                        label: l10n.commonRoundTime,
                         maxMinutes: 60,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
@@ -58,7 +59,7 @@ class TimerSetupPage extends StatelessWidget {
                         context: context,
                         color: timerColors.rest,
                         duration: settings.restTime,
-                        label: "Rest time",
+                        label: l10n.commonRestTime,
                         maxMinutes: 60,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
@@ -69,7 +70,7 @@ class TimerSetupPage extends StatelessWidget {
                       _buildOption(
                         context: context,
                         color: timerColors.roundsCount,
-                        label: "Rounds",
+                        label: l10n.commonRounds,
                         maxRounds: settings.rounds,
                         picketType: PicketType.rounds,
                         onRoundsChanged: (rounds) {
@@ -98,6 +99,8 @@ class TimerSetupPage extends StatelessWidget {
     ValueChanged<Duration>? onDurationChanged,
     ValueChanged<int>? onRoundsChanged,
   }) {
+    final titleStyle = Theme.of(context).textTheme.titleLarge;
+
     return InkWell(
       onTap: () {
         TimerSettingsPickerWheel.show(
@@ -128,10 +131,10 @@ class TimerSetupPage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: Theme.of(context).textTheme.titleLarge),
+            Text(label, style: titleStyle),
             Text(
               duration?.asMinutesAndSeconds ?? maxRounds?.toString() ?? '',
-              style: Theme.of(context).textTheme.titleLarge,
+              style: titleStyle,
             ),
           ],
         ),

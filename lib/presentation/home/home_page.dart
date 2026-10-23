@@ -34,6 +34,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -53,24 +55,24 @@ class _HomePageState extends State<HomePage> {
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           type: BottomNavigationBarType.fixed,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: 'Home',
-              activeIcon: Icon(Icons.home),
-              tooltip: 'Home',
+              icon: const Icon(Icons.home_outlined),
+              label: l10n.homeTabHome,
+              activeIcon: const Icon(Icons.home),
+              tooltip: l10n.homeTabHomeTooltip,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.assignment_outlined),
-              label: 'Templates',
-              activeIcon: Icon(Icons.assignment),
-              tooltip: 'Workout Templates',
+              icon: const Icon(Icons.assignment_outlined),
+              label: l10n.homeTabTemplates,
+              activeIcon: const Icon(Icons.assignment),
+              tooltip: l10n.homeTabTemplatesTooltip,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.show_chart_outlined),
-              label: 'Statistics',
-              activeIcon: Icon(Icons.show_chart),
-              tooltip: 'Statistics',
+              icon: const Icon(Icons.show_chart_outlined),
+              label: l10n.homeTabStatistics,
+              activeIcon: const Icon(Icons.show_chart),
+              tooltip: l10n.homeTabStatisticsTooltip,
             ),
           ],
         ),

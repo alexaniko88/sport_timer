@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sport_timer/core/l10n_context.dart';
 import 'package:sport_timer/di/di.dart';
+import 'package:sport_timer/features/user/auth_error.dart';
 import 'package:sport_timer/features/login/login_state.dart';
 import 'package:sport_timer/features/login/login_view_model.dart';
 import 'package:sport_timer/navigation.dart';
@@ -48,16 +50,36 @@ class _LoginPageState extends State<LoginPage> {
       context.goNamed(RoutePath.home.value);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_viewModel.state.value.errorMessage ?? 'Login failed with unknown error')),
+        SnackBar(
+          content: Text(
+            _authErrorText(_viewModel.state.value.error ?? AuthError.unknown),
+          ),
+        ),
       );
     }
   }
 
+  String _authErrorText(AuthError error) {
+    final l10n = context.l10n;
+    return switch (error) {
+      AuthError.invalidEmail => l10n.authErrorInvalidEmail,
+      AuthError.invalidCredential => l10n.authErrorInvalidCredential,
+      AuthError.userDisabled => l10n.authErrorUserDisabled,
+      AuthError.emailInUse => l10n.authErrorEmailInUse,
+      AuthError.weakPassword => l10n.authErrorWeakPassword,
+      AuthError.network => l10n.authErrorNetwork,
+      AuthError.tooManyRequests => l10n.authErrorTooManyRequests,
+      AuthError.unknown => l10n.authErrorUnknown,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
+        title: Text(l10n.loginTitle),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -66,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Welcome to Sport Timer',
+                l10n.loginWelcome,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -74,13 +96,13 @@ class _LoginPageState extends State<LoginPage> {
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: InputDecoration(labelText: l10n.loginEmailLabel),
               ),
               const Gap(AppSpacing.s20),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Password'),
+                decoration: InputDecoration(labelText: l10n.loginPasswordLabel),
               ),
               const Gap(AppSpacing.s32),
               ValueListenableBuilder<LoginState>(
@@ -95,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () => _submit(_viewModel.signIn),
-                          child: const Text('Login'),
+                          child: Text(l10n.loginSignInButton),
                         ),
                       ),
                       const Gap(AppSpacing.s16),
@@ -103,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                         width: double.infinity,
                         child: OutlinedButton(
                           onPressed: () => _submit(_viewModel.signUp),
-                          child: const Text('Sign Up'),
+                          child: Text(l10n.loginSignUpButton),
                         ),
                       ),
                     ],

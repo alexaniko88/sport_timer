@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sport_timer/core/l10n_context.dart';
 import 'package:sport_timer/theme/app_palette.dart';
 import 'package:sport_timer/theme/app_spacing.dart';
 import 'package:sport_timer/theme/app_text_styles.dart';
@@ -124,7 +125,8 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
   }
 
   Widget _buildRoundPicker() {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
       child: Stack(
@@ -134,8 +136,8 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
             child: Align(
               alignment: Alignment.topCenter,
               child: Text(
-                "Rounds",
-                style: Theme.of(context).textTheme.titleLarge,
+                context.l10n.commonRounds,
+                style: theme.textTheme.titleLarge,
               ),
             ),
           ),
@@ -201,7 +203,9 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
   }
 
   Widget _buildTimePicker() {
-    final colorScheme = Theme.of(context).colorScheme;
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
       child: Row(
@@ -213,7 +217,7 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                   padding: const EdgeInsets.only(top: AppSpacing.s16),
                   child: Align(
                     alignment: Alignment.topCenter,
-                    child: Text("Minutes", style: Theme.of(context).textTheme.titleLarge),
+                    child: Text(l10n.pickerMinutes, style: theme.textTheme.titleLarge),
                   ),
                 ),
                 Column(
@@ -285,8 +289,8 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Text(
-                      "Seconds",
-                      style: Theme.of(context).textTheme.titleLarge,
+                      l10n.pickerSeconds,
+                      style: theme.textTheme.titleLarge,
                     ),
                   ),
                 ),

@@ -1,0 +1,224 @@
+{
+  "@@locale": "en",
+  "appTitle": "Sport Timer",
+  "@appTitle": {
+    "description": "App title shown by the system, for example in the app switcher."
+  },
+  "authErrorEmailInUse": "This email is already in use.",
+  "@authErrorEmailInUse": {
+    "description": "Login error when the email already belongs to an account."
+  },
+  "authErrorInvalidCredential": "Wrong email or password.",
+  "@authErrorInvalidCredential": {
+    "description": "Login error when the credentials do not match an account."
+  },
+  "authErrorInvalidEmail": "The email address is not valid.",
+  "@authErrorInvalidEmail": {
+    "description": "Login error when the email format is wrong."
+  },
+  "authErrorNetwork": "Network error. Check your connection and try again.",
+  "@authErrorNetwork": {
+    "description": "Login error when the request fails because of the network."
+  },
+  "authErrorTooManyRequests": "Too many attempts. Try again later.",
+  "@authErrorTooManyRequests": {
+    "description": "Login error when the server blocks the user for too many requests."
+  },
+  "authErrorUnknown": "Login failed with an unknown error.",
+  "@authErrorUnknown": {
+    "description": "Login error shown when the cause is not known."
+  },
+  "authErrorUserDisabled": "This account has been disabled.",
+  "@authErrorUserDisabled": {
+    "description": "Login error when the account is disabled."
+  },
+  "authErrorWeakPassword": "The password is too weak.",
+  "@authErrorWeakPassword": {
+    "description": "Login error when the new password is too weak."
+  },
+  "commonPreparationTime": "Preparation time",
+  "@commonPreparationTime": {
+    "description": "Label of the preparation time option."
+  },
+  "commonRestTime": "Rest time",
+  "@commonRestTime": {
+    "description": "Label of the rest time option."
+  },
+  "commonRoundTime": "Round time",
+  "@commonRoundTime": {
+    "description": "Label of the round time option."
+  },
+  "commonRounds": "Rounds",
+  "@commonRounds": {
+    "description": "Label of the number of rounds option."
+  },
+  "durationHoursMinutesSeconds": "{h}h {m}m {s}s",
+  "@durationHoursMinutesSeconds": {
+    "description": "Total time with hours, minutes and seconds.",
+    "placeholders": {
+      "h": {
+        "type": "int"
+      },
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "durationMinutesSeconds": "{m}m {s}s",
+  "@durationMinutesSeconds": {
+    "description": "Time with minutes and seconds.",
+    "placeholders": {
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "durationSeconds": "{s}s",
+  "@durationSeconds": {
+    "description": "Time with seconds only.",
+    "placeholders": {
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTabHome": "Home",
+  "@homeTabHome": {
+    "description": "Label of the home tab in the bottom navigation."
+  },
+  "homeTabHomeTooltip": "Home",
+  "@homeTabHomeTooltip": {
+    "description": "Tooltip of the home tab in the bottom navigation."
+  },
+  "homeTabStatistics": "Statistics",
+  "@homeTabStatistics": {
+    "description": "Label of the statistics tab in the bottom navigation."
+  },
+  "homeTabStatisticsTooltip": "Statistics",
+  "@homeTabStatisticsTooltip": {
+    "description": "Tooltip of the statistics tab in the bottom navigation."
+  },
+  "homeTabTemplates": "Templates",
+  "@homeTabTemplates": {
+    "description": "Label of the templates tab in the bottom navigation."
+  },
+  "homeTabTemplatesTooltip": "Workout Templates",
+  "@homeTabTemplatesTooltip": {
+    "description": "Tooltip of the templates tab in the bottom navigation."
+  },
+  "loginEmailLabel": "Email",
+  "@loginEmailLabel": {
+    "description": "Label of the email field on the login page."
+  },
+  "loginPasswordLabel": "Password",
+  "@loginPasswordLabel": {
+    "description": "Label of the password field on the login page."
+  },
+  "loginSignInButton": "Login",
+  "@loginSignInButton": {
+    "description": "Label of the sign in button on the login page."
+  },
+  "loginSignUpButton": "Sign Up",
+  "@loginSignUpButton": {
+    "description": "Label of the sign up button on the login page."
+  },
+  "loginTitle": "Login",
+  "@loginTitle": {
+    "description": "Title of the login page app bar."
+  },
+  "loginWelcome": "Welcome to Sport Timer",
+  "@loginWelcome": {
+    "description": "Welcome headline on the login page."
+  },
+  "pickerMinutes": "Minutes",
+  "@pickerMinutes": {
+    "description": "Column title above the minutes wheel in the time picker."
+  },
+  "pickerSeconds": "Seconds",
+  "@pickerSeconds": {
+    "description": "Column title above the seconds wheel in the time picker."
+  },
+  "statisticsDefaultUserName": "User",
+  "@statisticsDefaultUserName": {
+    "description": "Name used in the greeting when the user has no email."
+  },
+  "statisticsGreeting": "Hello, {name}!",
+  "@statisticsGreeting": {
+    "description": "Greeting in the statistics app bar.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statisticsSectionTitle": "Here are your training statistics",
+  "@statisticsSectionTitle": {
+    "description": "Title of the statistics section."
+  },
+  "templateAbsDescription": "Intense abdominal workout with short rounds",
+  "@templateAbsDescription": {
+    "description": "Description of the Full Abs workout template."
+  },
+  "templateAbsName": "Full Abs",
+  "@templateAbsName": {
+    "description": "Name of the Full Abs workout template."
+  },
+  "templateCrossFitDescription": "High-intensity functional fitness training",
+  "@templateCrossFitDescription": {
+    "description": "Description of the CrossFit workout template."
+  },
+  "templateCrossFitName": "CrossFit",
+  "@templateCrossFitName": {
+    "description": "Name of the CrossFit workout template."
+  },
+  "templateDefaultDescription": "Default workout with standard settings",
+  "@templateDefaultDescription": {
+    "description": "Description of the default workout template."
+  },
+  "templateDefaultName": "Default",
+  "@templateDefaultName": {
+    "description": "Name of the default workout template."
+  },
+  "templatesApplied": "APPLIED",
+  "@templatesApplied": {
+    "description": "Badge shown on the template that is currently applied."
+  },
+  "templatesPreparation": "Preparation",
+  "@templatesPreparation": {
+    "description": "Detail label for the preparation time on a template card."
+  },
+  "templatesRestTime": "Rest Time",
+  "@templatesRestTime": {
+    "description": "Detail label for the rest time on a template card."
+  },
+  "templatesRoundTime": "Round Time",
+  "@templatesRoundTime": {
+    "description": "Detail label for the round time on a template card."
+  },
+  "templatesSubtitle": "Select a pre-configured workout to get started quickly.",
+  "@templatesSubtitle": {
+    "description": "Subtitle on the templates page."
+  },
+  "templatesTitle": "Choose a Workout Template",
+  "@templatesTitle": {
+    "description": "Title of the templates page app bar."
+  },
+  "templatesTotalWorkoutTime": "Total Workout Time",
+  "@templatesTotalWorkoutTime": {
+    "description": "Label above the total time on a template card."
+  },
+  "templatesUseButton": "Use Template",
+  "@templatesUseButton": {
+    "description": "Label of the button that applies a template."
+  },
+  "timerSetupTitle": "Prepared for the new challenge?",
+  "@timerSetupTitle": {
+    "description": "Title of the timer setup page app bar."
+  }
+}
