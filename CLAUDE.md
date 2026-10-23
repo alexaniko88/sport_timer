@@ -10,8 +10,7 @@ The Flutter version is pinned in `.fvmrc`. Always use `fvm flutter` / `fvm dart`
 
 ```bash
 fvm flutter pub get
-fvm dart run build_runner build      # needed after every fresh clone, see "Generated code"
-./rebuild.sh                         # clean + build_runner + pub get
+./rebuild.sh                         # clean + pub get
 fvm flutter analyze
 fvm flutter run                      # entry point is lib/main.dart
 fvm flutter test                     # all tests
@@ -22,25 +21,20 @@ fvm flutter test test/widget_test.dart
 
 `test/widget_test.dart` is the untouched Flutter counter template and fails: it pumps `MyApp`, which starts on the login page. There are no other tests.
 
-## Current architecture (being replaced)
+## Project layout
 
-This is what the code does today. It is being migrated to the target in the next two sections, see `docs/mvvm-migration.md`. Update this section as each migration step lands, so it stays true.
-
-Feature-first layout. Login, settings and the timer are MVVM (see the target sections). The Bloc packages are gone. `get_it` for DI (registered by hand), and `go_router` for navigation.
+Feature-first layout with MVVM (see the next two sections), `get_it` for DI (registered by hand) and `go_router` for navigation. There is no code generation: a fresh clone needs only `fvm flutter pub get`.
 
 - `lib/main.dart` holds `main()` and `MyApp`. It initializes Firebase, then calls `configureDependencies()` before `runApp`.
-- `lib/features/<name>/` holds the ViewModel, state and repository (`*_view_model.dart`, `*_state.dart`, normal imports, no barrel). The timer feature also has `timer_params.dart`.
+- `lib/features/<name>/` holds the ViewModel, state and repository (`*_view_model.dart`, `*_state.dart`, normal imports). The timer feature also has `timer_params.dart`.
 - `lib/features/statistics/` has a small `StatisticsViewModel` that gives the statistics page the user name, so the page never reads `UserRepository`.
 - `lib/presentation/` holds pages and widgets. `home` is a bottom-navigation shell over the setup, templates and statistics pages.
 - `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and passes the `TimerParams` from `state.extra` to `TimerPage`. Each page creates and disposes its own ViewModel, and `HomePage` shares one `SettingsViewModel` with its tabs.
 - `lib/di/di.dart` registers the app-wide singletons by hand: `AudioPlayer`, `AudioManager`, `UserRepository` and `SettingsRepository`. ViewModels are not registered. `AudioManager` plays the round sounds through the `AudioPlayer`.
-- `lib/core/result.dart` holds the sealed `Result<T>` (`Success` and `Failure`). The user and settings repositories return it from the methods that can fail, and the ViewModels turn it into state.
+- `lib/core/` holds the sealed `Result<T>` (`Success` and `Failure`, with `fold`) and the `Duration` extension (`asMinutesAndSeconds`). The user and settings repositories return `Result` from the methods that can fail, and the ViewModels turn it into state. Logging uses `debugPrint`.
 - Timer settings are stored in `SharedPreferences` (`SharedPreferencesSettingsRepository`). Sign-in goes through `FirebaseAuth` in `FirebaseUserRepository`.
-- `lib/core/` holds the shared `Result` type and the `Duration` extension (`asMinutesAndSeconds`). Logging uses `debugPrint`.
 
-## Target architecture (MVVM)
-
-New code follows this section and the next one. Existing Bloc code stays as it is until its migration step. Do not mix the two inside one feature.
+## Architecture (MVVM)
 
 The layers, from the top:
 
@@ -57,7 +51,7 @@ Rules:
 - `get_it` holds only app-wide singletons: repositories, `AudioManager` and `AudioPlayer`. They are registered by hand in `lib/di/di.dart`, with no `injectable`.
 - ViewModels are not registered in `get_it`. The page creates its ViewModel and takes its dependencies with `getIt<T>()` at that point. A ViewModel shared by several widgets is owned by their closest common parent and passed down through constructors.
 
-## Target state management
+## State management
 
 State is held with `ValueNotifier`. There is no state management package.
 
@@ -69,16 +63,9 @@ State is held with `ValueNotifier`. There is no state management package.
 - Async methods check a `_disposed` flag before setting state, because the page can be gone when the work finishes.
 - Test ViewModels with unit tests and hand-written fake repositories. No `bloc_test`, no mocking package unless it is added on purpose.
 
-## Generated code
-
-This section describes the current setup and goes away with the migration.
-
-No code uses `freezed` or any other generator any more, so `build_runner` has nothing to generate. The packages and the `**/*.freezed.dart` and `**/*.g.dart` ignore rules are removed in the cleanup step.
-
 ## Dependencies and Android build
 
 - All versions in `pubspec.yaml` are pinned exactly, with no `^`. Keep it that way when adding packages.
-- Two packages are held back by conflicts, so check `fvm flutter pub outdated` before bumping them: `freezed` (4.0.3 needs `analyzer` 14, which the Flutter SDK's test package blocks) and `build_runner` (2.17 needs `build` 5; `injectable_generator`, which needed `build` 4, is gone, so this may be free to bump, check `pub outdated`).
 - The Android build uses Gradle 9.3.1, AGP 9.1.0 and Kotlin 2.4.0. `firebase_core` and `firebase_auth` still apply the old Kotlin Gradle plugin, so `android.builtInKotlin=false` in `android/gradle.properties` must stay until they migrate. The "plugins that apply KGP" warning during the build is expected.
 - Firebase config (`lib/firebase_options.dart`, `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`) is generated by `flutterfire configure` for the `sport-timer-503e8` project.
 

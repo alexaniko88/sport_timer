@@ -21,7 +21,7 @@ Sport Timer is a dynamic Flutter application designed to enhance your workout ex
 
 ## Architecture
 
-Sport Timer follows a feature-focused architecture, with state management handled by [Bloc-Cubit][cubit_link]. This ensures a modular and scalable codebase, making it easy to maintain and extend the app's functionality.
+Sport Timer follows a feature-focused MVVM architecture. Each screen has a ViewModel that holds its state in a `ValueNotifier`, with `get_it` for dependency injection. This ensures a modular and scalable codebase, making it easy to maintain and extend the app's functionality.
 
 
 ## Contributing
@@ -38,5 +38,4 @@ Contributions to Sport Timer are welcomed! Whether it's bug fixes, feature enhan
 
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
-[cubit_link]: https://pub.dev/packages/flutter_bloc
 [lottie_link]: https://pub.dev/packages/lottie

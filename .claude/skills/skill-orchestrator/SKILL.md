@@ -22,13 +22,12 @@ There are no tickets. The user's own message is the request. Never look for a ti
 
 ## Project context
 
-`CLAUDE.md` is already loaded: read it for commands, architecture, generated code and pinned dependencies, and do not repeat it in briefs. Every agent brief must carry the **project overrides** below, because the shared global rules in `~/.claude/rules/` and `~/.claude/profiles/` were written for another codebase and some of them are wrong here.
+`CLAUDE.md` is already loaded: read it for commands, architecture and pinned dependencies, and do not repeat it in briefs. Every agent brief must carry the **project overrides** below, because the shared global rules in `~/.claude/rules/` and `~/.claude/profiles/` were written for another codebase and some of them are wrong here.
 
-- **State management:** the app is moving from Bloc/Cubit to MVVM with `ValueNotifier` state. Follow `CLAUDE.md` ("Target architecture" and "Target state management") for new code and `docs/mvvm-migration.md` for the order. A feature that is not migrated yet keeps its Bloc/Cubit layout (barrel file with `part` directives) until its migration step. Never mix both in one feature. `go_router` stays.
+- **State management:** MVVM with `ValueNotifier` state. Follow `CLAUDE.md` ("Architecture (MVVM)" and "State management"). No Bloc, no state management package, no `freezed`, no code generation. `go_router` stays.
 - **Strings:** the app has no localization. Hardcode user-facing English text in the widget. No `FIXME-ALEX` blocks, ARB files or `Localized` keys.
 - **No `docs/CodeStyleGuide.md`** exists. The Dart style rules in `~/.claude/rules/flutter/dart-core.md` still apply (switch and pattern matching, null safety, trailing commas, format and analyze on touched files only, by literal path).
-- **Tests:** out of scope for the MVVM migration. For other changes, unit tests use hand-written fakes (no mocking package unless the plan adds one). Not `mocktail`, `alchemist` or `patrol_finders`. Test paths mirror `lib/`: `test/features/<name>/<file>_test.dart`.
-- **Generated code:** only for features not migrated yet. After changing a freezed class, an `@injectable` class or a `@module`, run `fvm dart run build_runner build`. Generated files are git-ignored. New and migrated code has none.
+- **Tests:** unit tests use hand-written fakes (no mocking package unless the plan adds one). Not `mocktail`, `alchemist` or `patrol_finders`. Test paths mirror `lib/`: `test/features/<name>/<file>_test.dart`.
 - **Dependencies:** `pubspec.yaml` versions stay pinned exactly, with no `^`. Do not bump a package unasked. The `basic_flutter_helper` package is gone: put shared helpers in `lib/core/`.
 - **Commands:** always `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
 - **Personal repo (`alexaniko88`):** nothing from any employer in code, comments, commit messages or generated files. No `/Users/<name>/...` paths, no company names or emails.
@@ -65,7 +64,7 @@ Dispatch one general-purpose agent with `model: sonnet`. Put in the brief: the a
 - Do all the steps in order, without waiting for approval between them. The user approved the plan already.
 - Scope is exactly the plan: no bonus refactors, no unrelated cleanup, no extra tests or docs. Mention an unrelated issue in one line at the end.
 - Comments: one or two short plain sentences explaining why, only where the code is not obvious. Match the density of the surrounding code.
-- Run `build_runner` after a step that changes generated-code inputs. Run `fvm dart format` and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
+- Run `fvm dart format and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
 - **Stop only on a design surprise** that breaks the approved plan (a wrong assumption, a conflict between steps). Return 2 short options with a recommendation and the work done so far. Do not guess.
 - Final report: files touched, what changed and why in a few bullets, the analyze result, and every `TODO` or `FIXME` added.
 
@@ -73,7 +72,7 @@ When the agent reports a surprise, decide it yourself if the answer is clear fro
 
 ## Stage 3: Tests
 
-Skip this stage for pure UI or text changes with no logic, and for the MVVM migration steps (tests are out of scope there). Otherwise dispatch a general-purpose agent with `model: sonnet` (or continue the Stage 2 agent with `SendMessage`) to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
+Skip this stage for pure UI or text changes with no logic. Otherwise dispatch a general-purpose agent with `model: sonnet` (or continue the Stage 2 agent with `SendMessage`) to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
 
 - Use the test rules in the project overrides. Read one existing test of the same kind first if there is one, and copy its structure.
 - If a test needs infrastructure that does not exist yet (a first fake or test helper), build the smallest version the plan's tests need and say so in the report. Do not add anything else.
@@ -90,7 +89,6 @@ Skip this stage for pure UI or text changes with no logic, and for the MVVM migr
 
 Run the checks that apply and show the result:
 
-- `fvm dart run build_runner build` ran after any freezed, injectable or module change (not-yet-migrated features only).
 - `fvm flutter analyze` reports no issues, and the new or touched tests pass.
 - If `android/`, `ios/` or `pubspec.yaml` changed: `fvm flutter build apk --debug` (and `fvm flutter build ios --debug --no-codesign` when `ios/` changed) succeeds.
 - No local absolute path in the diff (`git diff | grep -n "/Users/"` returns nothing), and no company name or work email address when you read it.
