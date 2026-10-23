@@ -91,53 +91,32 @@ class TimerViewModel {
 
   void _checkForNextTimer() {
     final state = _state.value;
-    switch (state.timerStatus) {
-      case TimerStatus.preparation:
-        _setState(
-          state.copyWith(
-            currentSeconds: _params.roundTime.inSeconds - 1,
-            totalSeconds: state.totalSeconds - 1,
-            status: TimeCountdownStatus.next,
-            timerStatus: TimerStatus.round,
-          ),
-        );
-        start();
-      case TimerStatus.round:
-        final currentRound = state.currentRound - 1;
-        if (currentRound > 0) {
-          _setState(
-            state.copyWith(
-              currentSeconds: _params.restTime.inSeconds - 1,
-              totalSeconds: state.totalSeconds - 1,
-              currentRound: currentRound,
-              status: TimeCountdownStatus.next,
-              timerStatus: TimerStatus.rest,
-            ),
-          );
-          start();
-        } else {
-          _setState(
-            state.copyWith(
-              currentSeconds: 0,
-              totalSeconds: 0,
-              currentRound: 0,
-              status: TimeCountdownStatus.finished,
-              timerStatus: TimerStatus.finished,
-            ),
-          );
-        }
-      case TimerStatus.rest:
-        _setState(
-          state.copyWith(
-            currentSeconds: _params.roundTime.inSeconds - 1,
-            totalSeconds: state.totalSeconds - 1,
-            status: TimeCountdownStatus.next,
-            timerStatus: TimerStatus.round,
-          ),
-        );
-        start();
-      case TimerStatus.finished:
-        break;
+    final next = switch (state.timerStatus) {
+      TimerStatus.preparation || TimerStatus.rest => state.copyWith(
+          currentSeconds: _params.roundTime.inSeconds - 1,
+          totalSeconds: state.totalSeconds - 1,
+          status: TimeCountdownStatus.next,
+          timerStatus: TimerStatus.round,
+        ),
+      TimerStatus.round when state.currentRound > 1 => state.copyWith(
+          currentSeconds: _params.restTime.inSeconds - 1,
+          totalSeconds: state.totalSeconds - 1,
+          currentRound: state.currentRound - 1,
+          status: TimeCountdownStatus.next,
+          timerStatus: TimerStatus.rest,
+        ),
+      TimerStatus.round => state.copyWith(
+          currentSeconds: 0,
+          totalSeconds: 0,
+          currentRound: 0,
+          status: TimeCountdownStatus.finished,
+          timerStatus: TimerStatus.finished,
+        ),
+      TimerStatus.finished => null,
+    };
+    if (next != null) {
+      _setState(next);
+      if (next.timerStatus != TimerStatus.finished) start();
     }
     debugPrint(
       "Current status is: ${_state.value.timerStatus} and round: ${_state.value.currentRound}",
