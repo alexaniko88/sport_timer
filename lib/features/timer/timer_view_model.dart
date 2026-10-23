@@ -129,10 +129,18 @@ class TimerViewModel {
   void _setState(TimerState next) {
     if (next == _state.value) return;
     _state.value = next;
-    if (next.status == TimeCountdownStatus.finished) {
-      _audioManager.playRoundFinishSound();
-    } else if (next.status == TimeCountdownStatus.almostFinishing) {
-      _audioManager.playPreparationSound();
+    switch (next.status) {
+      case TimeCountdownStatus.finished:
+        _audioManager.playRoundFinishSound();
+      case TimeCountdownStatus.almostFinishing:
+        _audioManager.playPreparationSound();
+      case TimeCountdownStatus.initial ||
+            TimeCountdownStatus.getTime ||
+            TimeCountdownStatus.paused ||
+            TimeCountdownStatus.resumed ||
+            TimeCountdownStatus.next ||
+            TimeCountdownStatus.counterDone:
+        break;
     }
   }
 }
