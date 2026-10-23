@@ -6,7 +6,7 @@ Do one step per change, and keep the app working after each one. Tick the box wh
 
 ## Steps
 
-- [ ] 1. Remove the unused dependencies: `json_annotation`, `json_serializable`, `mockito`, `bloc_test`. Move `freezed` and `freezed_annotation` out of `dependencies` if they stay for now.
+- [x] 1. Remove the unused dependencies: `json_annotation`, `json_serializable`, `mockito`, `bloc_test`. `freezed` moved to `dev_dependencies`.
 - [ ] 2. Replace `injectable` with hand-written `get_it` registrations in `lib/di/di.dart`. Register only repositories, `AudioManager` and `AudioPlayer`. Cubits are still created in `navigation.dart` (build them with `getIt` arguments, not by registering them). Remove `injectable`, `injectable_generator`, `di_module.dart`, `di.config.dart` and the annotations.
 - [ ] 3. Add a `Result` type for the data layer and make the repositories return it.
 - [ ] 4. Login: `LoginViewModel` with a hand-written `LoginState`. `signIn` returns `Future<bool>`, and `login_page.dart` awaits it instead of using the `BlocListener`. Move the text controllers out of `build`.
