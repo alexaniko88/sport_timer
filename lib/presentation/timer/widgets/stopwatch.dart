@@ -28,11 +28,12 @@ class Stopwatch extends StatelessWidget {
                         alignment: Alignment.topLeft,
                         child: Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.orange,
-                                width: 3,
-                              )),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.orange,
+                              width: 3,
+                            ),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
@@ -56,11 +57,12 @@ class Stopwatch extends StatelessWidget {
                         alignment: Alignment.topRight,
                         child: Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.blue,
-                                width: 5,
-                              )),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 5,
+                            ),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(

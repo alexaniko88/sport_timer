@@ -19,7 +19,7 @@ class SportTheme {
           progressTimer2Color: Colors.yellow,
           progressTimer3Color: Colors.orange,
           progressTimer4Color: Colors.red,
-        )
+        ),
       ],
     );
   }

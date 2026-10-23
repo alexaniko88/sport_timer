@@ -91,7 +91,8 @@ class _TemplatesPageState extends State<TemplatesPage> {
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.only(
-                    bottom: 100), // Add bottom padding to avoid FAB overlap
+                  bottom: 100,
+                ), // Add bottom padding to avoid FAB overlap
                 itemCount: templates.length,
                 itemBuilder: (context, index) {
                   final template = templates[index];
@@ -171,10 +172,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
                           children: [
                             Text(
                               template.name,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: template.color,
                                   ),
@@ -183,7 +181,9 @@ class _TemplatesPageState extends State<TemplatesPage> {
                               const Gap(8),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: template.color,
                                   borderRadius: BorderRadius.circular(12),
@@ -235,11 +235,10 @@ class _TemplatesPageState extends State<TemplatesPage> {
                     const Gap(4),
                     Text(
                       _formatTotalTime(totalTime),
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: template.color,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            color: template.color,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -259,22 +258,34 @@ class _TemplatesPageState extends State<TemplatesPage> {
                     Row(
                       children: [
                         Expanded(
-                            child: _buildTemplateDetail('Preparation',
-                                _formatDuration(template.preparationTime))),
+                          child: _buildTemplateDetail(
+                            'Preparation',
+                            _formatDuration(template.preparationTime),
+                          ),
+                        ),
                         Expanded(
-                            child: _buildTemplateDetail('Round Time',
-                                _formatDuration(template.roundTime))),
+                          child: _buildTemplateDetail(
+                            'Round Time',
+                            _formatDuration(template.roundTime),
+                          ),
+                        ),
                       ],
                     ),
                     const Gap(8),
                     Row(
                       children: [
                         Expanded(
-                            child: _buildTemplateDetail('Rest Time',
-                                _formatDuration(template.restTime))),
+                          child: _buildTemplateDetail(
+                            'Rest Time',
+                            _formatDuration(template.restTime),
+                          ),
+                        ),
                         Expanded(
-                            child: _buildTemplateDetail(
-                                'Rounds', '${template.rounds}')),
+                          child: _buildTemplateDetail(
+                            'Rounds',
+                            '${template.rounds}',
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -343,9 +354,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
     final rounds = template.rounds;
 
     // Total = preparation + (round + rest) * rounds - final rest (since there's no rest after the last round)
-    final totalSeconds = preparationSeconds +
-        (roundSeconds + restSeconds) * rounds -
-        restSeconds;
+    final totalSeconds = preparationSeconds + (roundSeconds + restSeconds) * rounds - restSeconds;
 
     return Duration(seconds: totalSeconds);
   }

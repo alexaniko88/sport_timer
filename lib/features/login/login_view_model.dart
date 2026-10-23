@@ -4,8 +4,10 @@ import 'package:sport_timer/features/login/login_state.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 
 typedef AuthAction = Future<Result<void>> Function();
-typedef AuthCall = Future<bool> Function(
-    {required String email, required String password});
+typedef AuthCall = Future<bool> Function({
+  required String email,
+  required String password,
+});
 
 class LoginViewModel {
   final UserRepository _userRepository;
@@ -18,13 +20,13 @@ class LoginViewModel {
 
   bool isUserLoggedIn() => _userRepository.isUserLoggedIn();
 
-  Future<bool> signIn({required String email, required String password}) =>
-      _authenticate(
-          () => _userRepository.signIn(email: email, password: password));
+  Future<bool> signIn({required String email, required String password}) => _authenticate(
+        () => _userRepository.signIn(email: email, password: password),
+      );
 
-  Future<bool> signUp({required String email, required String password}) =>
-      _authenticate(
-          () => _userRepository.signUp(email: email, password: password));
+  Future<bool> signUp({required String email, required String password}) => _authenticate(
+        () => _userRepository.signUp(email: email, password: password),
+      );
 
   Future<bool> _authenticate(AuthAction action) async {
     _state.value = const LoginState(isLoading: true);

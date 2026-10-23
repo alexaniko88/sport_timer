@@ -58,7 +58,7 @@ class _StatisticPageState extends State<StatisticPage> {
                 Item("E"),
                 Item("F"),
               ],
-            )
+            ),
           ])
             SliverMainAxisGroup(
               slivers: [

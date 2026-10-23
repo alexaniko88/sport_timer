@@ -71,7 +71,8 @@ class TimerViewModel {
     final state = _state.value;
     if (state.currentSeconds <= 0) {
       debugPrint(
-          "$runtimeType:: current seconds on finish: ${state.currentSeconds}");
+        "$runtimeType:: current seconds on finish: ${state.currentSeconds}",
+      );
       timer.cancel();
       _setState(state.copyWith(status: TimeCountdownStatus.finished));
       _checkForNextTimer();
@@ -82,9 +83,7 @@ class TimerViewModel {
         state.copyWith(
           currentSeconds: currentSeconds,
           totalSeconds: state.totalSeconds - _interval.inSeconds,
-          status: _isAlmostFinishing()
-              ? TimeCountdownStatus.almostFinishing
-              : TimeCountdownStatus.getTime,
+          status: _isAlmostFinishing() ? TimeCountdownStatus.almostFinishing : TimeCountdownStatus.getTime,
         ),
       );
     }
@@ -141,7 +140,8 @@ class TimerViewModel {
         break;
     }
     debugPrint(
-        "Current status is: ${_state.value.timerStatus} and round: ${_state.value.currentRound}");
+      "Current status is: ${_state.value.timerStatus} and round: ${_state.value.currentRound}",
+    );
   }
 
   bool _isAlmostFinishing() => _state.value.currentSeconds == 3;

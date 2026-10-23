@@ -65,20 +65,19 @@ class SettingsViewModel {
   }
 
   void updatePreparationTime(Duration duration) => _updateTimerSettings(
-      (settings) => settings.copyWith(preparationTime: duration));
+        (settings) => settings.copyWith(preparationTime: duration),
+      );
 
   void updateRoundTime(Duration duration) => _updateTimerSettings(
-      (settings) => settings.copyWith(roundTime: duration));
+        (settings) => settings.copyWith(roundTime: duration),
+      );
 
-  void updateRestTime(Duration duration) =>
-      _updateTimerSettings((settings) => settings.copyWith(restTime: duration));
+  void updateRestTime(Duration duration) => _updateTimerSettings((settings) => settings.copyWith(restTime: duration));
 
-  void updateRounds(int rounds) =>
-      _updateTimerSettings((settings) => settings.copyWith(rounds: rounds));
+  void updateRounds(int rounds) => _updateTimerSettings((settings) => settings.copyWith(rounds: rounds));
 
   void _updateTimerSettings(TimerSettingsUpdate update) {
-    _state.value = _state.value
-        .copyWith(timerSettings: update(_state.value.timerSettings));
+    _state.value = _state.value.copyWith(timerSettings: update(_state.value.timerSettings));
   }
 
   void dispose() {

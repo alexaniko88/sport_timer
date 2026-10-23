@@ -77,8 +77,7 @@ class _TimerPageState extends State<TimerPage> {
               valueListenable: _viewModel.state,
               builder: (context, state, _) {
                 return Visibility(
-                  visible: state.timerStatus == TimerStatus.preparation ||
-                      state.timerStatus == TimerStatus.rest,
+                  visible: state.timerStatus == TimerStatus.preparation || state.timerStatus == TimerStatus.rest,
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: Lottie.asset(
@@ -108,11 +107,8 @@ class _TimerPageState extends State<TimerPage> {
             ValueListenableBuilder<TimerState>(
               valueListenable: _viewModel.state,
               builder: (context, state, _) {
-                final progress = 1 -
-                    state.totalSeconds /
-                        (state.totalDuration.inSeconds == 0
-                            ? 1
-                            : state.totalDuration.inSeconds);
+                final progress =
+                    1 - state.totalSeconds / (state.totalDuration.inSeconds == 0 ? 1 : state.totalDuration.inSeconds);
                 return Visibility(
                   visible: state.timerStatus != TimerStatus.finished,
                   child: Align(
@@ -120,7 +116,9 @@ class _TimerPageState extends State<TimerPage> {
                     child: LinearProgressIndicator(
                       value: progress,
                       color: _getProgressColor(
-                          progress: progress, timerStyle: timerStyle),
+                        progress: progress,
+                        timerStyle: timerStyle,
+                      ),
                       backgroundColor: Colors.transparent,
                       borderRadius: const BorderRadius.only(
                         topRight: Radius.circular(4),
@@ -131,7 +129,7 @@ class _TimerPageState extends State<TimerPage> {
                   ),
                 );
               },
-            )
+            ),
           ],
         ),
       ),
@@ -151,10 +149,14 @@ class _TimerPageState extends State<TimerPage> {
   }
 
   Future<LottieComposition?> _customDecoder(List<int> bytes) {
-    return LottieComposition.decodeZip(bytes, filePicker: (files) {
-      return files.firstWhereOrNull(
-          (f) => f.name.startsWith('animations/') && f.name.endsWith('.json'));
-    });
+    return LottieComposition.decodeZip(
+      bytes,
+      filePicker: (files) {
+        return files.firstWhereOrNull(
+          (f) => f.name.startsWith('animations/') && f.name.endsWith('.json'),
+        );
+      },
+    );
   }
 
   Color _getProgressColor({

@@ -8,12 +8,14 @@ class DefaultAudioManager extends AudioManager {
   StreamSubscription<void>? _preparationSubscription;
 
   DefaultAudioManager(this.audioPlayer) {
-    audioPlayer.setAudioContext(AudioContext(
-      android: const AudioContextAndroid(
-        contentType: AndroidContentType.sonification,
-        audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+    audioPlayer.setAudioContext(
+      AudioContext(
+        android: const AudioContextAndroid(
+          contentType: AndroidContentType.sonification,
+          audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+        ),
       ),
-    ));
+    );
   }
 
   @override

@@ -12,6 +12,7 @@ void configureDependencies() {
     ..registerLazySingleton(AudioPlayer.new)
     ..registerLazySingleton<UserRepository>(FirebaseUserRepository.new)
     ..registerLazySingleton<SettingsRepository>(
-        SharedPreferencesSettingsRepository.new)
+      SharedPreferencesSettingsRepository.new,
+    )
     ..registerLazySingleton<AudioManager>(() => DefaultAudioManager(getIt()));
 }
