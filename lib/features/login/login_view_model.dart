@@ -31,14 +31,16 @@ class LoginViewModel {
     final result = await action();
     // The page can be gone by the time the request finishes.
     if (_disposed) return false;
-    switch (result) {
-      case Success():
+    return result.fold(
+      onSuccess: (_) {
         _state.value = const LoginState();
         return true;
-      case Failure(:final error):
+      },
+      onFailure: (error) {
         _state.value = LoginState(errorMessage: error.toString());
         return false;
-    }
+      },
+    );
   }
 
   void dispose() {

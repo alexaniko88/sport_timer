@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/settings/settings_repository.dart';
 import 'package:sport_timer/features/settings/settings_state.dart';
 
@@ -29,36 +28,40 @@ class SettingsViewModel {
     final result = await _settingsRepository.getTimerSettings();
     // The page can be gone by the time the request finishes.
     if (_disposed) return;
-    switch (result) {
-      case Success(:final value):
+    result.fold(
+      onSuccess: (value) {
         _state.value = _state.value.copyWith(
           status: SettingsStatus.loaded,
           timerSettings: value,
         );
-      case Failure(:final error):
+      },
+      onFailure: (error) {
         _state.value = _state.value.copyWith(
           status: SettingsStatus.error,
           errorMessage: error.toString(),
         );
-    }
+      },
+    );
   }
 
   Future<void> saveSettings(TimerSettings settings) async {
     _state.value = _state.value.copyWith(status: SettingsStatus.saving);
     final result = await _settingsRepository.saveTimerSettings(settings);
     if (_disposed) return;
-    switch (result) {
-      case Success():
+    result.fold(
+      onSuccess: (_) {
         _state.value = _state.value.copyWith(
           status: SettingsStatus.saved,
           timerSettings: settings,
         );
-      case Failure(:final error):
+      },
+      onFailure: (error) {
         _state.value = _state.value.copyWith(
           status: SettingsStatus.error,
           errorMessage: error.toString(),
         );
-    }
+      },
+    );
   }
 
   void updatePreparationTime(Duration duration) => _updateTimerSettings(

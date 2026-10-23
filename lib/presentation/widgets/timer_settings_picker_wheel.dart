@@ -6,6 +6,14 @@ enum PicketType {
 }
 
 class TimerSettingsPickerWheel extends StatefulWidget {
+  final ValueChanged<Duration>? onDurationChanged;
+  final ValueChanged<int>? onRoundsChanged;
+  final Duration initialDuration;
+  final int maxMinutes;
+  final int rounds;
+  final Color buttonsColor;
+  final PicketType picketType;
+
   const TimerSettingsPickerWheel._({
     required this.initialDuration,
     required this.maxMinutes,
@@ -21,8 +29,8 @@ class TimerSettingsPickerWheel extends StatefulWidget {
     required PicketType picketType,
     required Color buttonsColor,
     Duration? initialDuration,
-    Function(Duration duration)? onDurationChanged,
-    Function(int rounds)? onRoundsChanged,
+    ValueChanged<Duration>? onDurationChanged,
+    ValueChanged<int>? onRoundsChanged,
     int maxMinutes = 60,
     int maxRounds = 2,
   }) {
@@ -47,16 +55,9 @@ class TimerSettingsPickerWheel extends StatefulWidget {
     );
   }
 
-  final Function(Duration duration)? onDurationChanged;
-  final Function(int rounds)? onRoundsChanged;
-  final Duration initialDuration;
-  final int maxMinutes;
-  final int rounds;
-  final Color buttonsColor;
-  final PicketType picketType;
-
   @override
-  State<TimerSettingsPickerWheel> createState() => _TimerSettingsPickerWheelState();
+  State<TimerSettingsPickerWheel> createState() =>
+      _TimerSettingsPickerWheelState();
 }
 
 class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
@@ -101,10 +102,9 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
             child: Column(
               children: [
                 Expanded(
-                  child: switch (widget.picketType) {
-                    PicketType.time => _buildTimePicker(),
-                    PicketType.rounds => _buildRoundPicker(),
-                  },
+                  child: widget.picketType == PicketType.time
+                      ? _buildTimePicker()
+                      : _buildRoundPicker(),
                 ),
               ],
             ),
@@ -159,7 +159,9 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                             return Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : Colors.transparent,
+                                color: isSelected
+                                    ? widget.buttonsColor.withValues(alpha: 0.2)
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: widget.buttonsColor,
@@ -170,8 +172,12 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                                 value.toString(),
                                 style: TextStyle(
                                   fontSize: isSelected ? 35 : 20,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? Colors.black : Colors.grey[600],
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? Colors.black
+                                      : Colors.grey[600],
                                 ),
                               ),
                             );
@@ -221,7 +227,8 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                         onSelectedItemChanged: (index) {
                           setState(() {
                             minutes = index;
-                            widget.onDurationChanged?.call(Duration(minutes: minutes, seconds: seconds));
+                            widget.onDurationChanged?.call(
+                                Duration(minutes: minutes, seconds: seconds));
                           });
                         },
                         childDelegate: ListWheelChildBuilderDelegate(
@@ -231,7 +238,9 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                             return Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : Colors.transparent,
+                                color: isSelected
+                                    ? widget.buttonsColor.withValues(alpha: 0.2)
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: widget.buttonsColor,
@@ -242,8 +251,12 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                                 index.toString().padLeft(2, '0'),
                                 style: TextStyle(
                                   fontSize: isSelected ? 32 : 24,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? Colors.black : Colors.grey[600],
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? Colors.black
+                                      : Colors.grey[600],
                                 ),
                               ),
                             );
@@ -297,7 +310,8 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                         onSelectedItemChanged: (index) {
                           setState(() {
                             seconds = index;
-                            widget.onDurationChanged?.call(Duration(minutes: minutes, seconds: seconds));
+                            widget.onDurationChanged?.call(
+                                Duration(minutes: minutes, seconds: seconds));
                           });
                         },
                         childDelegate: ListWheelChildBuilderDelegate(
@@ -307,7 +321,9 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                             return Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : Colors.transparent,
+                                color: isSelected
+                                    ? widget.buttonsColor.withValues(alpha: 0.2)
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
                                   color: widget.buttonsColor,
@@ -318,8 +334,12 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                                 index.toString().padLeft(2, '0'),
                                 style: TextStyle(
                                   fontSize: isSelected ? 32 : 24,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? Colors.black : Colors.grey[600],
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: isSelected
+                                      ? Colors.black
+                                      : Colors.grey[600],
                                 ),
                               ),
                             );

@@ -99,8 +99,8 @@ class TimerSetupPage extends StatelessWidget {
     Duration? duration,
     int? maxMinutes,
     int? maxRounds,
-    Function(Duration duration)? onDurationChanged,
-    Function(int rounds)? onRoundsChanged,
+    ValueChanged<Duration>? onDurationChanged,
+    ValueChanged<int>? onRoundsChanged,
   }) {
     return InkWell(
       onTap: () {

@@ -90,12 +90,17 @@ class _TemplatesPageState extends State<TemplatesPage> {
             const Gap(8),
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.only(bottom: 100), // Add bottom padding to avoid FAB overlap
+                padding: const EdgeInsets.only(
+                    bottom: 100), // Add bottom padding to avoid FAB overlap
                 itemCount: templates.length,
                 itemBuilder: (context, index) {
                   final template = templates[index];
                   final isSelected = _selectedTemplateName == template.name;
-                  return _buildTemplateCard(context, template, isSelected);
+                  return _buildTemplateCard(
+                    context: context,
+                    template: template,
+                    isSelected: isSelected,
+                  );
                 },
               ),
             ),
@@ -105,7 +110,11 @@ class _TemplatesPageState extends State<TemplatesPage> {
     );
   }
 
-  Widget _buildTemplateCard(BuildContext context, WorkoutTemplate template, bool isSelected) {
+  Widget _buildTemplateCard({
+    required BuildContext context,
+    required WorkoutTemplate template,
+    required bool isSelected,
+  }) {
     final totalTime = _calculateTotalWorkoutTime(template);
 
     return Card(
@@ -162,15 +171,19 @@ class _TemplatesPageState extends State<TemplatesPage> {
                           children: [
                             Text(
                               template.name,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: template.color,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: template.color,
+                                  ),
                             ),
                             if (isSelected) ...[
                               const Gap(8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: template.color,
                                   borderRadius: BorderRadius.circular(12),
@@ -215,17 +228,18 @@ class _TemplatesPageState extends State<TemplatesPage> {
                     Text(
                       'Total Workout Time',
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: template.color,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: template.color,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     const Gap(4),
                     Text(
                       _formatTotalTime(totalTime),
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: template.color,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                color: template.color,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                   ],
                 ),
@@ -244,15 +258,23 @@ class _TemplatesPageState extends State<TemplatesPage> {
                   children: [
                     Row(
                       children: [
-                        Expanded(child: _buildTemplateDetail('Preparation', _formatDuration(template.preparationTime))),
-                        Expanded(child: _buildTemplateDetail('Round Time', _formatDuration(template.roundTime))),
+                        Expanded(
+                            child: _buildTemplateDetail('Preparation',
+                                _formatDuration(template.preparationTime))),
+                        Expanded(
+                            child: _buildTemplateDetail('Round Time',
+                                _formatDuration(template.roundTime))),
                       ],
                     ),
                     const Gap(8),
                     Row(
                       children: [
-                        Expanded(child: _buildTemplateDetail('Rest Time', _formatDuration(template.restTime))),
-                        Expanded(child: _buildTemplateDetail('Rounds', '${template.rounds}')),
+                        Expanded(
+                            child: _buildTemplateDetail('Rest Time',
+                                _formatDuration(template.restTime))),
+                        Expanded(
+                            child: _buildTemplateDetail(
+                                'Rounds', '${template.rounds}')),
                       ],
                     ),
                   ],
@@ -321,7 +343,9 @@ class _TemplatesPageState extends State<TemplatesPage> {
     final rounds = template.rounds;
 
     // Total = preparation + (round + rest) * rounds - final rest (since there's no rest after the last round)
-    final totalSeconds = preparationSeconds + (roundSeconds + restSeconds) * rounds - restSeconds;
+    final totalSeconds = preparationSeconds +
+        (roundSeconds + restSeconds) * rounds -
+        restSeconds;
 
     return Duration(seconds: totalSeconds);
   }
