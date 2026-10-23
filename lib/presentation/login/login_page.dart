@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/login/login_state.dart';
 import 'package:sport_timer/features/login/login_view_model.dart';
 import 'package:sport_timer/navigation.dart';
+import 'package:sport_timer/theme/app_spacing.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -59,55 +61,28 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppSpacing.s16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 'Welcome to Sport Timer',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 40),
+              const Gap(AppSpacing.s40),
               TextField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                decoration: const InputDecoration(labelText: 'Email'),
               ),
-              const SizedBox(height: 20),
+              const Gap(AppSpacing.s20),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                decoration: const InputDecoration(labelText: 'Password'),
               ),
-              const SizedBox(height: 30),
+              const Gap(AppSpacing.s32),
               ValueListenableBuilder<LoginState>(
                 valueListenable: _viewModel.state,
                 builder: (context, state, _) {
@@ -118,41 +93,17 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       SizedBox(
                         width: double.infinity,
-                        height: 50,
                         child: ElevatedButton(
                           onPressed: () => _submit(_viewModel.signIn),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: const Text('Login'),
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const Gap(AppSpacing.s16),
                       SizedBox(
                         width: double.infinity,
-                        height: 50,
                         child: OutlinedButton(
                           onPressed: () => _submit(_viewModel.signUp),
-                          style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: const Text('Sign Up'),
                         ),
                       ),
                     ],

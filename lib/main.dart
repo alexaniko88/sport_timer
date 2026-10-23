@@ -15,15 +15,16 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Flutter Demo',
+      title: 'Sport Timer',
       routeInformationProvider: Routes.router.routeInformationProvider,
       routeInformationParser: Routes.router.routeInformationParser,
       routerDelegate: Routes.router.routerDelegate,
       theme: SportTheme.light,
+      darkTheme: SportTheme.dark,
+      themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
     );
   }

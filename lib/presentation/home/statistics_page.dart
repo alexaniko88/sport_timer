@@ -30,7 +30,6 @@ class _StatisticPageState extends State<StatisticPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Hello, ${_viewModel.userName}!'),
       ),
       body: CustomScrollView(

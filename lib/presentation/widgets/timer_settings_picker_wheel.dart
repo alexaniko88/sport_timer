@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sport_timer/theme/app_palette.dart';
+import 'package:sport_timer/theme/app_spacing.dart';
+import 'package:sport_timer/theme/app_text_styles.dart';
 
 enum PicketType {
   time,
@@ -36,12 +39,8 @@ class TimerSettingsPickerWheel extends StatefulWidget {
   }) {
     showModalBottomSheet(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (context) => ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),
         child: TimerSettingsPickerWheel._(
           onDurationChanged: onDurationChanged,
           onRoundsChanged: onRoundsChanged,
@@ -60,6 +59,16 @@ class TimerSettingsPickerWheel extends StatefulWidget {
 }
 
 class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
+  static const double _sheetHeightFraction = 1 / 3;
+  static const double _wheelHeight = 300;
+  static const double _itemExtent = 60;
+  static const double _perspective = 0.003;
+  static const double _diameterRatio = 0.8;
+  static const double _selectedBorderWidth = 3;
+  static const double _unselectedBorderWidth = 1;
+  static const double _separatorWidth = 40;
+  static const double _separatorHeight = 200;
+
   late FixedExtentScrollController _minutesController;
   late FixedExtentScrollController _secondsController;
   late FixedExtentScrollController _roundsController;
@@ -92,7 +101,7 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).copyWith().size.height / 3,
+      height: MediaQuery.of(context).copyWith().size.height * _sheetHeightFraction,
       child: Scaffold(
         body: SafeArea(
           bottom: false,
@@ -115,17 +124,18 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
   }
 
   Widget _buildRoundPicker() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
       child: Stack(
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.s16),
             child: Align(
               alignment: Alignment.topCenter,
               child: Text(
                 "Rounds",
-                style: TextStyle(fontSize: 22),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
           ),
@@ -137,13 +147,13 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 300,
+                      height: _wheelHeight,
                       width: MediaQuery.of(context).size.width / 2,
                       child: ListWheelScrollView.useDelegate(
                         controller: _roundsController,
-                        itemExtent: 60,
-                        perspective: 0.003,
-                        diameterRatio: 0.8,
+                        itemExtent: _itemExtent,
+                        perspective: _perspective,
+                        diameterRatio: _diameterRatio,
                         physics: const FixedExtentScrollPhysics(),
                         onSelectedItemChanged: (index) {
                           setState(() {
@@ -159,19 +169,20 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                             return Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
+                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : AppPalette.transparent,
+                                borderRadius: BorderRadius.circular(AppRadius.r8),
                                 border: Border.all(
                                   color: widget.buttonsColor,
-                                  width: isSelected ? 3 : 1,
+                                  width: isSelected ? _selectedBorderWidth : _unselectedBorderWidth,
                                 ),
                               ),
                               child: Text(
                                 value.toString(),
-                                style: TextStyle(
-                                  fontSize: isSelected ? 35 : 20,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? Colors.black : Colors.grey[600],
+                                style: (isSelected
+                                        ? AppTextStyles.pickerRoundsSelected
+                                        : AppTextStyles.pickerRoundsUnselected)
+                                    .copyWith(
+                                  color: isSelected ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             );
@@ -190,33 +201,31 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
   }
 
   Widget _buildTimePicker() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
       child: Row(
         children: [
           Expanded(
             child: Stack(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 16),
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.s16),
                   child: Align(
                     alignment: Alignment.topCenter,
-                    child: Text(
-                      "Minutes",
-                      style: TextStyle(fontSize: 22),
-                    ),
+                    child: Text("Minutes", style: Theme.of(context).textTheme.titleLarge),
                   ),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 300,
+                      height: _wheelHeight,
                       child: ListWheelScrollView.useDelegate(
                         controller: _minutesController,
-                        itemExtent: 60,
-                        perspective: 0.003,
-                        diameterRatio: 0.8,
+                        itemExtent: _itemExtent,
+                        perspective: _perspective,
+                        diameterRatio: _diameterRatio,
                         physics: const FixedExtentScrollPhysics(),
                         onSelectedItemChanged: (index) {
                           setState(() {
@@ -233,19 +242,19 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                             return Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
+                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : AppPalette.transparent,
+                                borderRadius: BorderRadius.circular(AppRadius.r8),
                                 border: Border.all(
                                   color: widget.buttonsColor,
-                                  width: isSelected ? 3 : 1,
+                                  width: isSelected ? _selectedBorderWidth : _unselectedBorderWidth,
                                 ),
                               ),
                               child: Text(
                                 index.toString().padLeft(2, '0'),
-                                style: TextStyle(
-                                  fontSize: isSelected ? 32 : 24,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? Colors.black : Colors.grey[600],
+                                style:
+                                    (isSelected ? AppTextStyles.pickerTimeSelected : AppTextStyles.pickerTimeUnselected)
+                                        .copyWith(
+                                  color: isSelected ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             );
@@ -259,29 +268,25 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
             ),
           ),
           SizedBox(
-            width: 40,
-            height: 200,
+            width: _separatorWidth,
+            height: _separatorHeight,
             child: Center(
               child: Text(
                 ':',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
-                  color: widget.buttonsColor,
-                ),
+                style: AppTextStyles.pickerSeparator.copyWith(color: widget.buttonsColor),
               ),
             ),
           ),
           Expanded(
             child: Stack(
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 16),
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.s16),
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Text(
                       "Seconds",
-                      style: TextStyle(fontSize: 22),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
                 ),
@@ -289,12 +294,12 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 300,
+                      height: _wheelHeight,
                       child: ListWheelScrollView.useDelegate(
                         controller: _secondsController,
-                        itemExtent: 60,
-                        perspective: 0.003,
-                        diameterRatio: 0.8,
+                        itemExtent: _itemExtent,
+                        perspective: _perspective,
+                        diameterRatio: _diameterRatio,
                         physics: const FixedExtentScrollPhysics(),
                         onSelectedItemChanged: (index) {
                           setState(() {
@@ -311,19 +316,19 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                             return Container(
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : Colors.transparent,
-                                borderRadius: BorderRadius.circular(8),
+                                color: isSelected ? widget.buttonsColor.withValues(alpha: 0.2) : AppPalette.transparent,
+                                borderRadius: BorderRadius.circular(AppRadius.r8),
                                 border: Border.all(
                                   color: widget.buttonsColor,
-                                  width: isSelected ? 3 : 1,
+                                  width: isSelected ? _selectedBorderWidth : _unselectedBorderWidth,
                                 ),
                               ),
                               child: Text(
                                 index.toString().padLeft(2, '0'),
-                                style: TextStyle(
-                                  fontSize: isSelected ? 32 : 24,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                  color: isSelected ? Colors.black : Colors.grey[600],
+                                style:
+                                    (isSelected ? AppTextStyles.pickerTimeSelected : AppTextStyles.pickerTimeUnselected)
+                                        .copyWith(
+                                  color: isSelected ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             );

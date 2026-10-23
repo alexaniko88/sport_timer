@@ -8,6 +8,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static const double _loaderSize = 24;
+  static const double _loaderStroke = 2;
+
   final SettingsViewModel _viewModel = SettingsViewModel(getIt());
   int _selectedIndex = 0;
 
@@ -48,9 +51,7 @@ class _HomePageState extends State<HomePage> {
         bottom: false,
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           onTap: _onItemTapped,
-          unselectedItemColor: Colors.black,
           type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(
@@ -96,10 +97,9 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                   child: state.status == SettingsStatus.saving
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                      ? const SizedBox.square(
+                          dimension: _loaderSize,
+                          child: CircularProgressIndicator(strokeWidth: _loaderStroke),
                         )
                       : const Icon(Icons.timer),
                 );

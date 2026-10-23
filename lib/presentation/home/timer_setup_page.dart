@@ -1,6 +1,8 @@
 part of 'home.dart';
 
 class TimerSetupPage extends StatelessWidget {
+  static const double _optionBorderWidth = 3;
+
   final SettingsViewModel viewModel;
 
   const TimerSetupPage({
@@ -10,7 +12,7 @@ class TimerSetupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final timerStyle = Theme.of(context).extension<TimerStyle>()!;
+    final timerColors = context.timerColors;
 
     return ValueListenableBuilder<SettingsState>(
       valueListenable: viewModel.state,
@@ -19,11 +21,10 @@ class TimerSetupPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             title: const Text('Prepared for the new challenge?'),
           ),
           body: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(AppSpacing.s16),
             child: Column(
               children: [
                 Expanded(
@@ -31,8 +32,7 @@ class TimerSetupPage extends StatelessWidget {
                     children: [
                       _buildOption(
                         context: context,
-                        color: timerStyle.preparationColor,
-                        timerStyle: timerStyle,
+                        color: timerColors.preparation,
                         duration: settings.preparationTime,
                         label: "Preparation time",
                         maxMinutes: 5,
@@ -41,11 +41,10 @@ class TimerSetupPage extends StatelessWidget {
                           viewModel.updatePreparationTime(duration);
                         },
                       ),
-                      const Gap(20),
+                      const Gap(AppSpacing.s20),
                       _buildOption(
                         context: context,
-                        color: timerStyle.roundColor,
-                        timerStyle: timerStyle,
+                        color: timerColors.round,
                         duration: settings.roundTime,
                         label: "Round time",
                         maxMinutes: 60,
@@ -54,11 +53,10 @@ class TimerSetupPage extends StatelessWidget {
                           viewModel.updateRoundTime(duration);
                         },
                       ),
-                      const Gap(20),
+                      const Gap(AppSpacing.s20),
                       _buildOption(
                         context: context,
-                        color: timerStyle.restColor,
-                        timerStyle: timerStyle,
+                        color: timerColors.rest,
                         duration: settings.restTime,
                         label: "Rest time",
                         maxMinutes: 60,
@@ -67,11 +65,10 @@ class TimerSetupPage extends StatelessWidget {
                           viewModel.updateRestTime(duration);
                         },
                       ),
-                      const Gap(20),
+                      const Gap(AppSpacing.s20),
                       _buildOption(
                         context: context,
-                        color: timerStyle.roundsCountColor,
-                        timerStyle: timerStyle,
+                        color: timerColors.roundsCount,
                         label: "Rounds",
                         maxRounds: settings.rounds,
                         picketType: PicketType.rounds,
@@ -92,7 +89,6 @@ class TimerSetupPage extends StatelessWidget {
 
   Widget _buildOption({
     required BuildContext context,
-    required TimerStyle timerStyle,
     required PicketType picketType,
     required Color color,
     required String label,
@@ -115,27 +111,27 @@ class TimerSetupPage extends StatelessWidget {
           onRoundsChanged: onRoundsChanged,
         );
       },
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadius.r12),
       splashColor: color.withValues(alpha: 0.5),
       hoverColor: color.withValues(alpha: 0.5),
       focusColor: color.withValues(alpha: 0.5),
       highlightColor: color.withValues(alpha: 0.5),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.r12),
           border: Border.all(
             color: color,
-            width: 3,
+            width: _optionBorderWidth,
           ),
         ),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.s16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 20)),
+            Text(label, style: Theme.of(context).textTheme.titleLarge),
             Text(
               duration?.asMinutesAndSeconds ?? maxRounds?.toString() ?? '',
-              style: const TextStyle(fontSize: 20),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ],
         ),

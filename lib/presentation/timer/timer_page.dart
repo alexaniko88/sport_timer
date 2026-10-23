@@ -13,6 +13,10 @@ class TimerPage extends StatefulWidget {
 }
 
 class _TimerPageState extends State<TimerPage> {
+  static const double _progressBarHeight = 40;
+  static const double _stopwatchTopInset = 100;
+  static const double _lottieHeight = 300;
+
   late final TimerViewModel _viewModel;
 
   @override
@@ -29,7 +33,7 @@ class _TimerPageState extends State<TimerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final timerStyle = Theme.of(context).extension<TimerStyle>()!;
+    final timerColors = context.timerColors;
     return Scaffold(
       body: SafeArea(
         top: false,
@@ -45,13 +49,13 @@ class _TimerPageState extends State<TimerPage> {
                   height: MediaQuery.of(context).size.height,
                   color: _getBackgroundColorByStatus(
                     timerStatus: state.timerStatus,
-                    style: timerStyle,
+                    timerColors: timerColors,
                   ),
                 );
               },
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 100),
+              padding: const EdgeInsets.only(top: _stopwatchTopInset),
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Stopwatch(viewModel: _viewModel),
@@ -67,7 +71,7 @@ class _TimerPageState extends State<TimerPage> {
                     child: Lottie.asset(
                       'assets/animation/round_animation.lottie',
                       decoder: _customDecoder,
-                      height: 300,
+                      height: _lottieHeight,
                     ),
                   ),
                 );
@@ -83,7 +87,7 @@ class _TimerPageState extends State<TimerPage> {
                     child: Lottie.asset(
                       'assets/animation/prepare_animation.lottie',
                       decoder: _customDecoder,
-                      height: 300,
+                      height: _lottieHeight,
                     ),
                   ),
                 );
@@ -117,14 +121,14 @@ class _TimerPageState extends State<TimerPage> {
                       value: progress,
                       color: _getProgressColor(
                         progress: progress,
-                        timerStyle: timerStyle,
+                        timerColors: timerColors,
                       ),
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: AppPalette.transparent,
                       borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(4),
-                        bottomRight: Radius.circular(4),
+                        topRight: Radius.circular(AppRadius.r4),
+                        bottomRight: Radius.circular(AppRadius.r4),
                       ),
-                      minHeight: 40,
+                      minHeight: _progressBarHeight,
                     ),
                   ),
                 );
@@ -137,14 +141,14 @@ class _TimerPageState extends State<TimerPage> {
   }
 
   Color _getBackgroundColorByStatus({
-    required TimerStyle style,
+    required TimerColors timerColors,
     required TimerStatus timerStatus,
   }) {
     return switch (timerStatus) {
-      TimerStatus.preparation => style.preparationColor.withValues(alpha: 0.2),
-      TimerStatus.round => style.roundColor.withValues(alpha: 0.2),
-      TimerStatus.rest => style.restColor.withValues(alpha: 0.2),
-      TimerStatus.finished => style.finishColor.withValues(alpha: 0.8),
+      TimerStatus.preparation => timerColors.preparation.withValues(alpha: 0.2),
+      TimerStatus.round => timerColors.round.withValues(alpha: 0.2),
+      TimerStatus.rest => timerColors.rest.withValues(alpha: 0.2),
+      TimerStatus.finished => timerColors.finished.withValues(alpha: 0.8),
     };
   }
 
@@ -161,25 +165,25 @@ class _TimerPageState extends State<TimerPage> {
 
   Color _getProgressColor({
     required double progress,
-    required TimerStyle timerStyle,
+    required TimerColors timerColors,
   }) {
     return switch (progress) {
       <= 0.70 => Color.lerp(
-          timerStyle.progressTimer1Color,
-          timerStyle.progressTimer3Color,
+          timerColors.progressStart,
+          timerColors.progressMiddle,
           progress / 0.70,
         )!,
       <= 0.80 => Color.lerp(
-          timerStyle.progressTimer3Color,
-          timerStyle.progressTimer3Color,
+          timerColors.progressMiddle,
+          timerColors.progressMiddle,
           (progress - 0.70) / 0.10,
         )!,
       <= 0.90 => Color.lerp(
-          timerStyle.progressTimer3Color,
-          timerStyle.progressTimer4Color,
+          timerColors.progressMiddle,
+          timerColors.progressEnd,
           (progress - 0.80) / 0.10,
         )!,
-      _ => timerStyle.progressTimer4Color,
+      _ => timerColors.progressEnd,
     };
   }
 }
