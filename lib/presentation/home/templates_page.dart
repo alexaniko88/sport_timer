@@ -35,11 +35,13 @@ class WorkoutTemplate {
 class TemplatesPage extends StatefulWidget {
   final SettingsViewModel viewModel;
   final AccountViewModel accountViewModel;
+  final VoidCallback onMenuPressed;
 
   const TemplatesPage({
     super.key,
     required this.viewModel,
     required this.accountViewModel,
+    required this.onMenuPressed,
   });
 
   @override
@@ -119,6 +121,11 @@ class _TemplatesPageState extends State<TemplatesPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          tooltip: l10n.homeMenuTooltip,
+          onPressed: widget.onMenuPressed,
+          icon: const Icon(Icons.menu),
+        ),
         title: Text(l10n.templatesTitle),
         actions: [
           AccountAvatarButton(viewModel: widget.accountViewModel),

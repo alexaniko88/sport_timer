@@ -18,10 +18,12 @@ final class Item {
 
 class StatisticPage extends StatefulWidget {
   final AccountViewModel accountViewModel;
+  final VoidCallback onMenuPressed;
 
   const StatisticPage({
     super.key,
     required this.accountViewModel,
+    required this.onMenuPressed,
   });
 
   @override
@@ -35,6 +37,11 @@ class _StatisticPageState extends State<StatisticPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          tooltip: l10n.homeMenuTooltip,
+          onPressed: widget.onMenuPressed,
+          icon: const Icon(Icons.menu),
+        ),
         title: Text(l10n.statisticsTitle),
         actions: [
           AccountAvatarButton(viewModel: widget.accountViewModel),

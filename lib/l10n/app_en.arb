@@ -109,6 +109,14 @@
       }
     }
   },
+  "homeDrawerTimerStyles": "Timer styles",
+  "@homeDrawerTimerStyles": {
+    "description": "Label of the side drawer item that opens the timer styles page."
+  },
+  "homeMenuTooltip": "Open menu",
+  "@homeMenuTooltip": {
+    "description": "Tooltip of the menu button in the app bars that opens the side drawer."
+  },
   "homeStartButton": "Start",
   "@homeStartButton": {
     "description": "Label of the button on the home page that starts the timer."
@@ -238,6 +246,10 @@
   "@timerPause": {
     "description": "Tooltip of the button that pauses the timer."
   },
+  "timerPausedHint": "Paused · tap to resume",
+  "@timerPausedHint": {
+    "description": "Hint on the full color timer shown while the timer is paused."
+  },
   "timerPhaseFinished": "Done",
   "@timerPhaseFinished": {
     "description": "Label of the phase pill when the workout is finished."
@@ -258,9 +270,9 @@
   "@timerResume": {
     "description": "Tooltip of the button that resumes the paused timer."
   },
-  "timerRoundOf": "Round {current} of {total}",
-  "@timerRoundOf": {
-    "description": "Info line on the timer page with the current round and the number of rounds.",
+  "timerRoundNumberOf": "{current} of {total}",
+  "@timerRoundNumberOf": {
+    "description": "Round number under the phase label on the timer page, with the current round and the number of rounds.",
     "placeholders": {
       "current": {
         "type": "int"
@@ -270,9 +282,43 @@
       }
     }
   },
+  "timerRoundsDone": "{count, plural, =1{1 round done} other{{count} rounds done}}",
+  "@timerRoundsDone": {
+    "description": "Line on the finished timer with the number of rounds done.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "timerSetupTitle": "Are you prepared?",
   "@timerSetupTitle": {
     "description": "Title of the timer setup page app bar."
+  },
+  "timerStyleFullColor": "Full color",
+  "@timerStyleFullColor": {
+    "description": "Name of the full color timer style."
+  },
+  "timerStyleRing": "Ring",
+  "@timerStyleRing": {
+    "description": "Name of the progress ring timer style."
+  },
+  "timerStyleRoundsStrip": "Rounds strip",
+  "@timerStyleRoundsStrip": {
+    "description": "Name of the rounds strip timer style."
+  },
+  "timerStylesTitle": "Timer styles",
+  "@timerStylesTitle": {
+    "description": "Title of the timer styles page app bar."
+  },
+  "timerTimeLeft": "{time} left",
+  "@timerTimeLeft": {
+    "description": "Info line on the rounds strip timer with the total time left.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "timerTotal": "Total {time}",
   "@timerTotal": {

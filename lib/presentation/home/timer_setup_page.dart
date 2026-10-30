@@ -3,11 +3,13 @@ part of 'home.dart';
 class TimerSetupPage extends StatelessWidget {
   final SettingsViewModel viewModel;
   final AccountViewModel accountViewModel;
+  final VoidCallback onMenuPressed;
 
   const TimerSetupPage({
     super.key,
     required this.viewModel,
     required this.accountViewModel,
+    required this.onMenuPressed,
   });
 
   @override
@@ -22,6 +24,11 @@ class TimerSetupPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
+            leading: IconButton(
+              tooltip: l10n.homeMenuTooltip,
+              onPressed: onMenuPressed,
+              icon: const Icon(Icons.menu),
+            ),
             title: Text(l10n.timerSetupTitle),
             actions: [
               AccountAvatarButton(viewModel: accountViewModel),
@@ -126,6 +133,7 @@ class TimerSetupPage extends StatelessWidget {
           minDuration: minDuration ?? Duration.zero,
           maxMinutes: maxMinutes ?? 60,
           rounds: rounds ?? 2,
+          maxRounds: TimerSettings.maxRounds,
           buttonsColor: color,
           onDurationChanged: onDurationChanged,
           onRoundsChanged: onRoundsChanged,

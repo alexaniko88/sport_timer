@@ -2,7 +2,7 @@ import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/timer/timer_state.dart';
 
 /// One part of the workout. [round] is the round the screen shows during it:
-/// preparation shows round 1 and a rest shows the round that comes next.
+/// preparation shows round 1 and a rest shows the round that just finished.
 class TimerStage {
   final TimerStatus type;
   final int round;
@@ -83,7 +83,7 @@ class TimerSchedule {
       if (round < params.rounds) {
         add(
           type: TimerStatus.rest,
-          round: round + 1,
+          round: round,
           lengthSeconds: params.restTime.inSeconds,
         );
       }

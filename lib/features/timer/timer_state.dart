@@ -37,6 +37,21 @@ class TimerState {
     return stageSeconds == 0 ? 0 : 1 - currentSeconds / stageSeconds;
   }
 
+  /// The total time left while running, and the time the whole workout took once finished.
+  Duration get totalTime => timerStatus == TimerStatus.finished ? totalDuration : Duration(seconds: totalSeconds);
+
+  /// How full the bar of a round (1-based) is: past rounds are full, the running round fills,
+  /// and a rest keeps the round before it full.
+  double roundFill(int round) {
+    if (timerStatus == TimerStatus.finished || round < currentRound) return 1;
+    if (round > currentRound) return 0;
+    return switch (timerStatus) {
+      TimerStatus.round => stageProgress,
+      TimerStatus.rest => 1,
+      TimerStatus.preparation || TimerStatus.finished => 0,
+    };
+  }
+
   TimerState copyWith({
     int? currentSeconds,
     int? totalSeconds,

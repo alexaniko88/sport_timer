@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/settings/settings_repository.dart';
 import 'package:sport_timer/features/settings/settings_state.dart';
+import 'package:sport_timer/features/settings/timer_style.dart';
 
 typedef TimerSettingsUpdate = TimerSettings Function(TimerSettings settings);
 
@@ -15,9 +17,11 @@ class SettingsViewModel {
         restTime: Duration(seconds: 30),
         rounds: 5,
       ),
+      timerStyle: TimerStyle.ring,
     ),
   );
   bool _disposed = false;
+  bool _styleSelected = false;
 
   SettingsViewModel(this._settingsRepository);
 
@@ -26,8 +30,13 @@ class SettingsViewModel {
   Future<void> loadSettings() async {
     _state.value = _state.value.copyWith(status: SettingsStatus.loading);
     final result = await _settingsRepository.getTimerSettings();
+    final styleResult = await _settingsRepository.getTimerStyle();
     // The page can be gone by the time the request finishes.
     if (_disposed) return;
+    // A failed style read keeps the current style. A style picked while loading wins over the stored one.
+    if (styleResult case Success(:final value) when !_styleSelected) {
+      _state.value = _state.value.copyWith(timerStyle: value);
+    }
     result.fold(
       onSuccess: (value) {
         _state.value = _state.value.copyWith(
@@ -62,6 +71,21 @@ class SettingsViewModel {
         );
       },
     );
+  }
+
+  Future<void> selectTimerStyle(TimerStyle style) async {
+    final previousStyle = _state.value.timerStyle;
+    _styleSelected = true;
+    _state.value = _state.value.copyWith(timerStyle: style);
+    final result = await _settingsRepository.saveTimerStyle(style);
+    if (_disposed) return;
+    if (result case Failure(:final error)) {
+      _state.value = _state.value.copyWith(
+        timerStyle: previousStyle,
+        status: SettingsStatus.error,
+        errorMessage: error.toString(),
+      );
+    }
   }
 
   void updatePreparationTime(Duration duration) => _updateTimerSettings(

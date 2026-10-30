@@ -1,5 +1,6 @@
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sport_timer/features/settings/timer_style.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/timer/timer_state.dart';
 import 'package:sport_timer/features/timer/timer_view_model.dart';
@@ -32,6 +33,7 @@ TimerParams _params({
     roundTime: Duration(seconds: round),
     restTime: Duration(seconds: rest),
     rounds: rounds,
+    style: TimerStyle.ring,
   );
 }
 
@@ -75,7 +77,7 @@ void main() {
         expect(timeline[4], (TimerStatus.preparation, 1, 1, 25));
         expect(timeline[5], (TimerStatus.round, 1, 10, 24));
         expect(timeline[14], (TimerStatus.round, 1, 1, 15));
-        expect(timeline[15], (TimerStatus.rest, 2, 4, 14));
+        expect(timeline[15], (TimerStatus.rest, 1, 4, 14));
         expect(timeline[19], (TimerStatus.round, 2, 10, 10));
         expect(timeline[28], (TimerStatus.round, 2, 1, 1));
         expect(timeline[29], (TimerStatus.finished, 2, 0, 0));

@@ -33,9 +33,19 @@ class _TimerPageState extends State<TimerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Stopwatch(viewModel: _viewModel),
+      // Opaque so a tap anywhere on the screen pauses or resumes, even on empty areas.
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _viewModel.togglePauseResume,
+        child: ValueListenableBuilder<TimerState>(
+          valueListenable: _viewModel.state,
+          builder: (context, state, _) {
+            return switch (widget.params.style) {
+              TimerStyle.ring => RingTimerView(state: state, onTogglePause: _viewModel.togglePauseResume),
+              TimerStyle.fullColor => FullColorTimerView(state: state, onTogglePause: _viewModel.togglePauseResume),
+              TimerStyle.roundsStrip => RoundsStripTimerView(state: state, onTogglePause: _viewModel.togglePauseResume),
+            };
+          },
         ),
       ),
     );

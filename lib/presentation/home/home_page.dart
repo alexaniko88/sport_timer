@@ -10,6 +10,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final SettingsViewModel _viewModel = SettingsViewModel(getIt());
   final AccountViewModel _accountViewModel = AccountViewModel(getIt());
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
 
   @override
@@ -25,6 +26,13 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void _openDrawer() => _scaffoldKey.currentState?.openDrawer();
+
+  void _onDrawerDestinationSelected(int _) {
+    _scaffoldKey.currentState?.closeDrawer();
+    context.pushNamed(RoutePath.timerStyles.value, extra: _viewModel);
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -36,6 +44,23 @@ class _HomePageState extends State<HomePage> {
     final l10n = context.l10n;
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: NavigationDrawer(
+        onDestinationSelected: _onDrawerDestinationSelected,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.s24, AppSpacing.s24, AppSpacing.s16, AppSpacing.s16),
+            child: Text(
+              l10n.appTitle,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          NavigationDrawerDestination(
+            icon: const Icon(Icons.style_outlined),
+            label: Text(l10n.homeDrawerTimerStyles),
+          ),
+        ],
+      ),
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: SafeArea(
@@ -45,11 +70,16 @@ class _HomePageState extends State<HomePage> {
             1 => TemplatesPage(
                 viewModel: _viewModel,
                 accountViewModel: _accountViewModel,
+                onMenuPressed: _openDrawer,
               ),
-            2 => StatisticPage(accountViewModel: _accountViewModel),
+            2 => StatisticPage(
+                accountViewModel: _accountViewModel,
+                onMenuPressed: _openDrawer,
+              ),
             _ => TimerSetupPage(
                 viewModel: _viewModel,
                 accountViewModel: _accountViewModel,
+                onMenuPressed: _openDrawer,
               ),
           },
         ),
@@ -101,6 +131,7 @@ class _HomePageState extends State<HomePage> {
                         roundTime: settings.roundTime,
                         restTime: settings.restTime,
                         rounds: settings.rounds,
+                        style: state.timerStyle,
                       ),
                     );
                   },

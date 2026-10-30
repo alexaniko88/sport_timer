@@ -212,6 +212,18 @@ abstract class AppLocalizations {
   /// **'{s}s'**
   String durationSeconds(int s);
 
+  /// Label of the side drawer item that opens the timer styles page.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer styles'**
+  String get homeDrawerTimerStyles;
+
+  /// Tooltip of the menu button in the app bars that opens the side drawer.
+  ///
+  /// In en, this message translates to:
+  /// **'Open menu'**
+  String get homeMenuTooltip;
+
   /// Label of the button on the home page that starts the timer.
   ///
   /// In en, this message translates to:
@@ -398,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Pause'**
   String get timerPause;
 
+  /// Hint on the full color timer shown while the timer is paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused · tap to resume'**
+  String get timerPausedHint;
+
   /// Label of the phase pill when the workout is finished.
   ///
   /// In en, this message translates to:
@@ -428,17 +446,53 @@ abstract class AppLocalizations {
   /// **'Resume'**
   String get timerResume;
 
-  /// Info line on the timer page with the current round and the number of rounds.
+  /// Round number under the phase label on the timer page, with the current round and the number of rounds.
   ///
   /// In en, this message translates to:
-  /// **'Round {current} of {total}'**
-  String timerRoundOf(int current, int total);
+  /// **'{current} of {total}'**
+  String timerRoundNumberOf(int current, int total);
+
+  /// Line on the finished timer with the number of rounds done.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 round done} other{{count} rounds done}}'**
+  String timerRoundsDone(int count);
 
   /// Title of the timer setup page app bar.
   ///
   /// In en, this message translates to:
   /// **'Are you prepared?'**
   String get timerSetupTitle;
+
+  /// Name of the full color timer style.
+  ///
+  /// In en, this message translates to:
+  /// **'Full color'**
+  String get timerStyleFullColor;
+
+  /// Name of the progress ring timer style.
+  ///
+  /// In en, this message translates to:
+  /// **'Ring'**
+  String get timerStyleRing;
+
+  /// Name of the rounds strip timer style.
+  ///
+  /// In en, this message translates to:
+  /// **'Rounds strip'**
+  String get timerStyleRoundsStrip;
+
+  /// Title of the timer styles page app bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer styles'**
+  String get timerStylesTitle;
+
+  /// Info line on the rounds strip timer with the total time left.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String timerTimeLeft(String time);
 
   /// Info line on the timer page with the total time left.
   ///

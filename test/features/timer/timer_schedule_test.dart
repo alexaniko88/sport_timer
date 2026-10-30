@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sport_timer/features/settings/timer_style.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/timer/timer_schedule.dart';
 import 'package:sport_timer/features/timer/timer_state.dart';
@@ -14,6 +15,7 @@ TimerParams _params({
     roundTime: Duration(seconds: round),
     restTime: Duration(seconds: rest),
     rounds: rounds,
+    style: TimerStyle.ring,
   );
 }
 
@@ -27,9 +29,9 @@ void main() {
         [
           (TimerStatus.preparation, 1, 0, 5),
           (TimerStatus.round, 1, 5, 10),
-          (TimerStatus.rest, 2, 15, 4),
+          (TimerStatus.rest, 1, 15, 4),
           (TimerStatus.round, 2, 19, 10),
-          (TimerStatus.rest, 3, 29, 4),
+          (TimerStatus.rest, 2, 29, 4),
           (TimerStatus.round, 3, 33, 10),
         ],
       );
@@ -97,12 +99,19 @@ void main() {
       expect(first.totalSecondsLeft, 38);
     });
 
-    test('shows the next round during a rest', () {
+    test('keeps the round before it during a rest', () {
       final position = schedule.positionAt(15);
 
       expect(position.status, TimerStatus.rest);
-      expect(position.round, 2);
+      expect(position.round, 1);
       expect(position.secondsLeft, 4);
+    });
+
+    test('starts the next round after a rest', () {
+      final position = schedule.positionAt(19);
+
+      expect(position.status, TimerStatus.round);
+      expect(position.round, 2);
     });
 
     test('is finished at the total and after it', () {

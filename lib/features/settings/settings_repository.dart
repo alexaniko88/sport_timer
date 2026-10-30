@@ -1,7 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sport_timer/core/result.dart';
+import 'package:sport_timer/features/settings/timer_style.dart';
 
 class TimerSettings {
+  static const int maxRounds = 30;
+
   final Duration preparationTime;
   final Duration roundTime;
   final Duration restTime;
@@ -44,6 +47,8 @@ class TimerSettings {
 abstract class SettingsRepository {
   Future<Result<TimerSettings>> getTimerSettings();
   Future<Result<void>> saveTimerSettings(TimerSettings settings);
+  Future<Result<TimerStyle>> getTimerStyle();
+  Future<Result<void>> saveTimerStyle(TimerStyle style);
 }
 
 class SharedPreferencesSettingsRepository implements SettingsRepository {
@@ -51,6 +56,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   static const String _roundTimeKey = 'round_time';
   static const String _restTimeKey = 'rest_time';
   static const String _roundsKey = 'rounds';
+  static const String _timerStyleKey = 'timer_style';
 
   @override
   Future<Result<TimerSettings>> getTimerSettings() async {
@@ -62,7 +68,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
           preparationTime: Duration(seconds: prefs.getInt(_preparationTimeKey) ?? 20),
           roundTime: Duration(seconds: prefs.getInt(_roundTimeKey) ?? 60),
           restTime: Duration(seconds: prefs.getInt(_restTimeKey) ?? 30),
-          rounds: prefs.getInt(_roundsKey) ?? 5,
+          rounds: (prefs.getInt(_roundsKey) ?? 5).clamp(1, TimerSettings.maxRounds),
         ),
       );
     } catch (e) {
@@ -81,6 +87,31 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
         prefs.setInt(_restTimeKey, settings.restTime.inSeconds),
         prefs.setInt(_roundsKey, settings.rounds),
       ]);
+      return const Success(null);
+    } catch (e) {
+      return Failure(e is Exception ? e : Exception(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<TimerStyle>> getTimerStyle() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final name = prefs.getString(_timerStyleKey);
+
+      // A missing or unknown name falls back to the default style.
+      return Success(TimerStyle.values.asNameMap()[name] ?? TimerStyle.ring);
+    } catch (e) {
+      return Failure(e is Exception ? e : Exception(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> saveTimerStyle(TimerStyle style) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      await prefs.setString(_timerStyleKey, style.name);
       return const Success(null);
     } catch (e) {
       return Failure(e is Exception ? e : Exception(e.toString()));

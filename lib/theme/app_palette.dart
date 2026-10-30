@@ -8,7 +8,7 @@ abstract final class AppPalette {
   static const Color darkOnAccent = Color(0xFF1B1B1B);
 
   // Light tints, the same hues the app used before the dark theme.
-  static const Color yellow = Color(0xFFFFEB3B);
+  static const Color yellow = Color(0xFFE1AD01);
   static const Color redAccent = Color(0xFFFF5252);
   static const Color blueAccent = Color(0xFF448AFF);
   static const Color green = Color(0xFF4CAF50);
@@ -18,7 +18,7 @@ abstract final class AppPalette {
   static const Color red = Color(0xFFF44336);
 
   // Dark tints, lighter so they stay readable on a dark surface.
-  static const Color yellowLight = Color(0xFFFFE082);
+  static const Color yellowLight = Color(0xFFE8C23A);
   static const Color redAccentLight = Color(0xFFFF8A80);
   static const Color blueAccentLight = Color(0xFF82B1FF);
   static const Color greenDark = Color(0xFF2E7D32);

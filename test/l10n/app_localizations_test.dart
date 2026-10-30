@@ -19,6 +19,15 @@ Widget _app(Locale locale) {
   );
 }
 
+Widget _roundsDoneApp(Locale locale, int count) {
+  return MaterialApp(
+    locale: locale,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    home: Builder(builder: (context) => Text(context.l10n.timerRoundsDone(count))),
+  );
+}
+
 void main() {
   group('AppLocalizations', () {
     testWidgets('shows the Spanish strings under the es locale', (tester) async {
@@ -35,6 +44,26 @@ void main() {
 
       expect(find.text('Sport Timer'), findsOneWidget);
       expect(find.text('Too many attempts. Try again later.'), findsOneWidget);
+    });
+
+    testWidgets('pluralizes the rounds done in English', (tester) async {
+      await tester.pumpWidget(_roundsDoneApp(const Locale('en'), 1));
+      await tester.pumpAndSettle();
+      expect(find.text('1 round done'), findsOneWidget);
+
+      await tester.pumpWidget(_roundsDoneApp(const Locale('en'), 10));
+      await tester.pumpAndSettle();
+      expect(find.text('10 rounds done'), findsOneWidget);
+    });
+
+    testWidgets('pluralizes the rounds done in Spanish', (tester) async {
+      await tester.pumpWidget(_roundsDoneApp(const Locale('es'), 1));
+      await tester.pumpAndSettle();
+      expect(find.text('1 ronda completada'), findsOneWidget);
+
+      await tester.pumpWidget(_roundsDoneApp(const Locale('es'), 10));
+      await tester.pumpAndSettle();
+      expect(find.text('10 rondas completadas'), findsOneWidget);
     });
   });
 }

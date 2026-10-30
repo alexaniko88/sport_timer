@@ -77,6 +77,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get homeDrawerTimerStyles => 'Estilos del temporizador';
+
+  @override
+  String get homeMenuTooltip => 'Abrir menú';
+
+  @override
   String get homeStartButton => 'Iniciar';
 
   @override
@@ -172,6 +178,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get timerPause => 'Pausar';
 
   @override
+  String get timerPausedHint => 'En pausa · toca para reanudar';
+
+  @override
   String get timerPhaseFinished => 'Listo';
 
   @override
@@ -187,12 +196,40 @@ class AppLocalizationsEs extends AppLocalizations {
   String get timerResume => 'Reanudar';
 
   @override
-  String timerRoundOf(int current, int total) {
-    return 'Ronda $current de $total';
+  String timerRoundNumberOf(int current, int total) {
+    return '$current de $total';
+  }
+
+  @override
+  String timerRoundsDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rondas completadas',
+      one: '1 ronda completada',
+    );
+    return '$_temp0';
   }
 
   @override
   String get timerSetupTitle => '¿Estás listo?';
+
+  @override
+  String get timerStyleFullColor => 'Color completo';
+
+  @override
+  String get timerStyleRing => 'Anillo';
+
+  @override
+  String get timerStyleRoundsStrip => 'Barra de rondas';
+
+  @override
+  String get timerStylesTitle => 'Estilos del temporizador';
+
+  @override
+  String timerTimeLeft(String time) {
+    return 'quedan $time';
+  }
 
   @override
   String timerTotal(String time) {

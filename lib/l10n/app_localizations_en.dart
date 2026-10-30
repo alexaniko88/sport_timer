@@ -77,6 +77,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeDrawerTimerStyles => 'Timer styles';
+
+  @override
+  String get homeMenuTooltip => 'Open menu';
+
+  @override
   String get homeStartButton => 'Start';
 
   @override
@@ -172,6 +178,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timerPause => 'Pause';
 
   @override
+  String get timerPausedHint => 'Paused · tap to resume';
+
+  @override
   String get timerPhaseFinished => 'Done';
 
   @override
@@ -187,12 +196,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timerResume => 'Resume';
 
   @override
-  String timerRoundOf(int current, int total) {
-    return 'Round $current of $total';
+  String timerRoundNumberOf(int current, int total) {
+    return '$current of $total';
+  }
+
+  @override
+  String timerRoundsDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rounds done',
+      one: '1 round done',
+    );
+    return '$_temp0';
   }
 
   @override
   String get timerSetupTitle => 'Are you prepared?';
+
+  @override
+  String get timerStyleFullColor => 'Full color';
+
+  @override
+  String get timerStyleRing => 'Ring';
+
+  @override
+  String get timerStyleRoundsStrip => 'Rounds strip';
+
+  @override
+  String get timerStylesTitle => 'Timer styles';
+
+  @override
+  String timerTimeLeft(String time) {
+    return '$time left';
+  }
 
   @override
   String timerTotal(String time) {
