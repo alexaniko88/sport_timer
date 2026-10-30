@@ -176,11 +176,11 @@ abstract class AppLocalizations {
   /// **'{s}s'**
   String durationSeconds(int s);
 
-  /// Tooltip of the button on the home page that starts the timer.
+  /// Label of the button on the home page that starts the timer.
   ///
   /// In en, this message translates to:
-  /// **'Start timer'**
-  String get homeStartTimerTooltip;
+  /// **'Start'**
+  String get homeStartButton;
 
   /// Label of the home tab in the bottom navigation.
   ///

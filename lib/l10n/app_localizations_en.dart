@@ -57,7 +57,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get homeStartTimerTooltip => 'Start timer';
+  String get homeStartButton => 'Start';
 
   @override
   String get homeTabHome => 'Home';

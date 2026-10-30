@@ -14,7 +14,7 @@
   "durationHoursMinutesSeconds": "{h}h {m}m {s}s",
   "durationMinutesSeconds": "{m}m {s}s",
   "durationSeconds": "{s}s",
-  "homeStartTimerTooltip": "Iniciar temporizador",
+  "homeStartButton": "Iniciar",
   "homeTabHome": "Inicio",
   "homeTabHomeTooltip": "Inicio",
   "homeTabStatistics": "Estadísticas",

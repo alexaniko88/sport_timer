@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sport_timer/theme/app_spacing.dart';
 
-enum _AppButtonVariant { primary, secondary, icon, option }
+enum _AppButtonVariant { primary, secondary, fab, option }
 
 class AppButton extends StatelessWidget {
   static const double _borderWidth = 1;
@@ -17,7 +17,6 @@ class AppButton extends StatelessWidget {
   final String? semanticHint;
   final Widget? icon;
   final VoidCallback? onPressed;
-  final String? tooltip;
   final Color? color;
   final Color? foregroundColor;
   final bool isExpanded;
@@ -34,7 +33,6 @@ class AppButton extends StatelessWidget {
   })  : _variant = _AppButtonVariant.primary,
         value = null,
         semanticHint = null,
-        tooltip = null,
         isLoading = false;
 
   const AppButton.secondary({
@@ -48,18 +46,16 @@ class AppButton extends StatelessWidget {
         value = null,
         semanticHint = null,
         foregroundColor = null,
-        tooltip = null,
         isLoading = false;
 
-  const AppButton.icon({
+  const AppButton.fab({
     super.key,
     required Widget this.icon,
+    required this.label,
     required this.onPressed,
-    required String this.tooltip,
     this.color,
     this.isLoading = false,
-  })  : _variant = _AppButtonVariant.icon,
-        label = '',
+  })  : _variant = _AppButtonVariant.fab,
         value = null,
         semanticHint = null,
         foregroundColor = null,
@@ -74,7 +70,6 @@ class AppButton extends StatelessWidget {
     required String this.semanticHint,
     required this.onPressed,
   })  : _variant = _AppButtonVariant.option,
-        tooltip = null,
         foregroundColor = null,
         isExpanded = true,
         isLoading = false;
@@ -102,16 +97,16 @@ class AppButton extends StatelessWidget {
           ),
           child: _AppButtonContent(label: label, icon: icon),
         ),
-      _AppButtonVariant.icon => FloatingActionButton.large(
+      _AppButtonVariant.fab => FloatingActionButton.extended(
           onPressed: isLoading ? null : onPressed,
-          tooltip: tooltip,
           backgroundColor: color,
-          child: isLoading
+          icon: isLoading
               ? const SizedBox.square(
                   dimension: AppSpacing.s24,
                   child: CircularProgressIndicator(strokeWidth: _loaderStroke),
                 )
               : icon,
+          label: Text(label),
         ),
       _AppButtonVariant.option => _AppOptionTile(
           label: label,

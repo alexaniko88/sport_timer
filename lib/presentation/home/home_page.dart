@@ -74,15 +74,15 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: _selectedIndex != 2
           ? ValueListenableBuilder<SettingsState>(
               valueListenable: _viewModel.state,
               builder: (context, state, _) {
                 final settings = state.timerSettings;
-                return AppButton.icon(
+                return AppButton.fab(
                   icon: const Icon(Icons.timer),
-                  tooltip: l10n.homeStartTimerTooltip,
+                  label: l10n.homeStartButton,
                   isLoading: state.status == SettingsStatus.saving,
                   onPressed: () {
                     _viewModel.saveSettings(settings);

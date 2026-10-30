@@ -57,7 +57,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get homeStartTimerTooltip => 'Iniciar temporizador';
+  String get homeStartButton => 'Iniciar';
 
   @override
   String get homeTabHome => 'Inicio';

@@ -180,14 +180,14 @@ void main() {
       });
     });
 
-    group('icon', () {
+    group('fab', () {
       testWidgets('calls onPressed on tap', (tester) async {
         var taps = 0;
         await tester.pumpWidget(
           _app(
-            AppButton.icon(
+            AppButton.fab(
               icon: const Icon(Icons.timer),
-              tooltip: 'Start',
+              label: 'Start',
               onPressed: () => taps++,
             ),
           ),
@@ -198,19 +198,19 @@ void main() {
         expect(taps, 1);
       });
 
-      testWidgets('sets the tooltip', (tester) async {
+      testWidgets('shows the icon and the label', (tester) async {
         await tester.pumpWidget(
-          _app(AppButton.icon(icon: const Icon(Icons.timer), tooltip: 'Start', onPressed: () {})),
+          _app(AppButton.fab(icon: const Icon(Icons.timer), label: 'Start', onPressed: () {})),
         );
 
-        final fab = tester.widget<FloatingActionButton>(find.byType(FloatingActionButton));
-
-        expect(fab.tooltip, 'Start');
+        expect(find.byIcon(Icons.timer), findsOneWidget);
+        expect(find.text('Start'), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsNothing);
       });
 
       testWidgets('is disabled when onPressed is null', (tester) async {
         await tester.pumpWidget(
-          _app(const AppButton.icon(icon: Icon(Icons.timer), tooltip: 'Start', onPressed: null)),
+          _app(const AppButton.fab(icon: Icon(Icons.timer), label: 'Start', onPressed: null)),
         );
 
         final fab = tester.widget<FloatingActionButton>(find.byType(FloatingActionButton));
@@ -221,9 +221,9 @@ void main() {
       testWidgets('applies color to the fill', (tester) async {
         await tester.pumpWidget(
           _app(
-            AppButton.icon(
+            AppButton.fab(
               icon: const Icon(Icons.timer),
-              tooltip: 'Start',
+              label: 'Start',
               color: _customColor,
               onPressed: () {},
             ),
@@ -235,32 +235,32 @@ void main() {
         expect(fab.backgroundColor, _customColor);
       });
 
-      testWidgets('has no custom border', (tester) async {
+      testWidgets('is 80 dp high under the app theme', (tester) async {
         await tester.pumpWidget(
-          _app(AppButton.icon(icon: const Icon(Icons.timer), tooltip: 'Start', onPressed: () {})),
+          _app(AppButton.fab(icon: const Icon(Icons.timer), label: 'Start', onPressed: () {})),
+        );
+
+        expect(tester.getSize(find.byType(FloatingActionButton)).height, 80);
+      });
+
+      testWidgets('uses the default Material 3 shape and elevation', (tester) async {
+        await tester.pumpWidget(
+          _app(AppButton.fab(icon: const Icon(Icons.timer), label: 'Start', onPressed: () {})),
         );
 
         final fab = tester.widget<FloatingActionButton>(find.byType(FloatingActionButton));
 
         expect(fab.shape, isNull);
+        expect(fab.elevation, isNull);
       });
 
-      testWidgets('shows the icon when not loading', (tester) async {
-        await tester.pumpWidget(
-          _app(AppButton.icon(icon: const Icon(Icons.timer), tooltip: 'Start', onPressed: () {})),
-        );
-
-        expect(find.byIcon(Icons.timer), findsOneWidget);
-        expect(find.byType(CircularProgressIndicator), findsNothing);
-      });
-
-      testWidgets('shows a spinner and is disabled when isLoading is true', (tester) async {
+      testWidgets('shows a spinner, keeps the label and is disabled when isLoading', (tester) async {
         var taps = 0;
         await tester.pumpWidget(
           _app(
-            AppButton.icon(
+            AppButton.fab(
               icon: const Icon(Icons.timer),
-              tooltip: 'Start',
+              label: 'Start',
               isLoading: true,
               onPressed: () => taps++,
             ),
@@ -271,6 +271,7 @@ void main() {
 
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
         expect(find.byIcon(Icons.timer), findsNothing);
+        expect(find.text('Start'), findsOneWidget);
         expect(fab.onPressed, isNull);
         expect(taps, 0);
       });

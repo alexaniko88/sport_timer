@@ -80,9 +80,9 @@
       }
     }
   },
-  "homeStartTimerTooltip": "Start timer",
-  "@homeStartTimerTooltip": {
-    "description": "Tooltip of the button on the home page that starts the timer."
+  "homeStartButton": "Start",
+  "@homeStartButton": {
+    "description": "Label of the button on the home page that starts the timer."
   },
   "homeTabHome": "Home",
   "@homeTabHome": {

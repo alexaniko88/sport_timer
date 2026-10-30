@@ -5,6 +5,8 @@ import 'package:sport_timer/theme/timer_colors.dart';
 
 abstract final class SportTheme {
   static const double _cardElevation = 4;
+  // Larger than the Material 3 default of 56 on purpose, because the start button is the main action.
+  static const double _extendedFabHeight = 80;
 
   static ThemeData get light => _build(
         brightness: Brightness.light,
@@ -45,6 +47,10 @@ abstract final class SportTheme {
         border: inputBorder,
         enabledBorder: inputBorder,
         focusedBorder: inputBorder,
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        extendedSizeConstraints: const BoxConstraints.tightFor(height: _extendedFabHeight),
+        extendedTextStyle: base.textTheme.titleMedium,
       ),
       cardTheme: CardThemeData(
         elevation: _cardElevation,
