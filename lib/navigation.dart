@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sport_timer/presentation/login/login_page.dart';
+import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
+import 'package:sport_timer/features/user/user_repository.dart';
+import 'package:sport_timer/presentation/login/login_page.dart';
 
 import 'presentation/home/home.dart';
 import 'presentation/timer/timer.dart';
@@ -22,6 +24,8 @@ class Routes {
       GoRoute(
         path: RoutePath.login.value,
         name: RoutePath.login.value,
+        // Runs before the page is built, so a signed-in user never sees the login page.
+        redirect: (context, state) => getIt<UserRepository>().isUserLoggedIn() ? RoutePath.home.value : null,
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: const LoginPage(),

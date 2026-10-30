@@ -21,17 +21,6 @@ class _LoginPageState extends State<LoginPage> {
   final LoginViewModel _viewModel = LoginViewModel(getIt());
 
   @override
-  void initState() {
-    super.initState();
-    // Check if user is already authenticated when the page loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _viewModel.isUserLoggedIn()) {
-        context.goNamed(RoutePath.home.value);
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _viewModel.dispose();
     super.dispose();

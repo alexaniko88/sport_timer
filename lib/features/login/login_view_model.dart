@@ -15,8 +15,6 @@ class LoginViewModel {
 
   ValueListenable<LoginState> get state => _state;
 
-  bool isUserLoggedIn() => _userRepository.isUserLoggedIn();
-
   Future<bool> signInWithGoogle() => _authenticate(_userRepository.signInWithGoogle);
 
   Future<bool> _authenticate(AuthAction action) async {
