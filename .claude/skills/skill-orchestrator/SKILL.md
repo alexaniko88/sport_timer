@@ -9,7 +9,7 @@ description: >
   agent-bug-investigator agent directly) or for PR review comments.
 argument-hint: "<what you want, in your own words>"
 model: claude-opus-5-5
-effort: high
+effort: medium
 ---
 
 # Orchestrator
