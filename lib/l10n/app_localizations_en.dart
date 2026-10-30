@@ -178,6 +178,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timerPause => 'Pause';
 
   @override
+  String get timerNotificationTitle => 'Workout in progress';
+
+  @override
   String get timerPausedHint => 'Paused · tap to resume';
 
   @override

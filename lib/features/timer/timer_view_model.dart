@@ -5,6 +5,7 @@ import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/timer/timer_schedule.dart';
 import 'package:sport_timer/features/timer/timer_state.dart';
 import 'package:sport_timer/managers/audio_manager.dart';
+import 'package:sport_timer/managers/background_keep_alive.dart';
 
 /// Returns the time since a fixed start. It must be monotonic.
 typedef TimeSource = Duration Function();
@@ -18,6 +19,7 @@ class TimerViewModel {
 
   final TimerSchedule _schedule;
   final AudioManager _audioManager;
+  final BackgroundKeepAlive _keepAlive;
   final TimeSource _timeSource;
   final ValueNotifier<TimerState> _state;
   Timer? _timer;
@@ -30,15 +32,17 @@ class TimerViewModel {
 
   TimerViewModel(
     TimerParams params,
-    AudioManager audioManager, {
+    AudioManager audioManager,
+    BackgroundKeepAlive keepAlive, {
     TimeSource? timeSource,
   }) : this._(
           TimerSchedule.fromParams(params),
           audioManager,
+          keepAlive,
           timeSource ?? _stopwatchTimeSource(),
         );
 
-  TimerViewModel._(this._schedule, this._audioManager, this._timeSource)
+  TimerViewModel._(this._schedule, this._audioManager, this._keepAlive, this._timeSource)
       : _state = ValueNotifier(_stateFrom(_schedule, _schedule.positionAt(0)));
 
   ValueListenable<TimerState> get state => _state;
@@ -66,9 +70,10 @@ class TimerViewModel {
     return runningSince == null ? _elapsedBeforeRun : _elapsedBeforeRun + _timeSource() - runningSince;
   }
 
-  void start() {
+  void start({required String notificationTitle}) {
     if (_disposed || _hasStarted) return;
     _hasStarted = true;
+    _keepAlive.start(notificationTitle: notificationTitle);
     _run();
   }
 
@@ -89,6 +94,7 @@ class TimerViewModel {
   void dispose() {
     _disposed = true;
     _timer?.cancel();
+    _keepAlive.stop();
     _state.dispose();
   }
 
@@ -117,6 +123,7 @@ class TimerViewModel {
     if (next.timerStatus == TimerStatus.finished) {
       _runningSince = null;
       _elapsedBeforeRun = elapsed;
+      _keepAlive.stop();
       return;
     }
     final millisecondsToNextSecond = _millisecondsPerSecond - elapsed.inMilliseconds % _millisecondsPerSecond;
@@ -135,11 +142,16 @@ class TimerViewModel {
     final stageChanged =
         previous == null || previous.timerStatus != next.timerStatus || previous.currentRound != next.currentRound;
     final isRoundStart = next.timerStatus == TimerStatus.round && stageChanged;
+    final isWorkoutEnd =
+        previous != null && previous.timerStatus == TimerStatus.round && next.timerStatus == TimerStatus.finished;
     final isRoundEnd = previous != null &&
         previous.timerStatus == TimerStatus.round &&
         stageChanged &&
-        (next.timerStatus == TimerStatus.finished || (!isStale && !isRoundStart));
+        !isWorkoutEnd &&
+        !isStale &&
+        !isRoundStart;
 
+    if (isWorkoutEnd) _audioManager.playWorkoutDoneSound();
     if (isRoundEnd) _audioManager.playRoundFinishSound();
     if (isRoundStart) _audioManager.playRoundStartSound();
 

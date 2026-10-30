@@ -410,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Pause'**
   String get timerPause;
 
+  /// Title of the media notification shown while a workout runs in the background.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout in progress'**
+  String get timerNotificationTitle;
+
   /// Hint on the full color timer shown while the timer is paused.
   ///
   /// In en, this message translates to:

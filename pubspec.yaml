@@ -20,6 +20,8 @@ dependencies:
   gap: 3.0.1
   get_it: 9.3.0
   audioplayers: 6.8.1
+  audio_service: 0.18.19
+  permission_handler: 12.0.3
   firebase_core: 5.1.0
   firebase_auth: 7.0.1
   shared_preferences: 2.5.6

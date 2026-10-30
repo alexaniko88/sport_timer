@@ -18,9 +18,17 @@ class _TimerPageState extends State<TimerPage> {
   @override
   void initState() {
     super.initState();
-    _viewModel = TimerViewModel(widget.params, getIt())..start();
+    _viewModel = TimerViewModel(widget.params, getIt(), getIt());
     // Keeps the screen on during a workout.
     WakelockPlus.enable();
+  }
+
+  // The localized title needs the context, which is not ready in initState.
+  // The ViewModel ignores a second start.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _viewModel.start(notificationTitle: context.l10n.timerNotificationTitle);
   }
 
   @override

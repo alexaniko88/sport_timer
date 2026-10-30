@@ -61,6 +61,7 @@
   "timerResume": "Reanudar",
   "timerRoundNumberOf": "{current} de {total}",
   "timerRoundsDone": "{count, plural, =1{1 ronda completada} other{{count} rondas completadas}}",
+  "timerNotificationTitle": "Entrenamiento en curso",
   "timerSetupTitle": "¿Estás listo?",
   "timerStyleFullColor": "Color completo",
   "timerStyleRing": "Anillo",

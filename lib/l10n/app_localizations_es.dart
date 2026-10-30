@@ -178,6 +178,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get timerPause => 'Pausar';
 
   @override
+  String get timerNotificationTitle => 'Entrenamiento en curso';
+
+  @override
   String get timerPausedHint => 'En pausa · toca para reanudar';
 
   @override

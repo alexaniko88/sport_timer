@@ -246,6 +246,10 @@
   "@timerPause": {
     "description": "Tooltip of the button that pauses the timer."
   },
+  "timerNotificationTitle": "Workout in progress",
+  "@timerNotificationTitle": {
+    "description": "Title of the media notification shown while a workout runs in the background."
+  },
   "timerPausedHint": "Paused · tap to resume",
   "@timerPausedHint": {
     "description": "Hint on the full color timer shown while the timer is paused."
