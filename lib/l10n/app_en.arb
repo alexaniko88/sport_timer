@@ -234,8 +234,53 @@
   "@templatesUseButton": {
     "description": "Label of the button that applies a template."
   },
+  "timerPause": "Pause",
+  "@timerPause": {
+    "description": "Tooltip of the button that pauses the timer."
+  },
+  "timerPhaseFinished": "Done",
+  "@timerPhaseFinished": {
+    "description": "Label of the phase pill when the workout is finished."
+  },
+  "timerPhasePreparation": "Prepare",
+  "@timerPhasePreparation": {
+    "description": "Label of the phase pill during the preparation time."
+  },
+  "timerPhaseRest": "Rest",
+  "@timerPhaseRest": {
+    "description": "Label of the phase pill during the rest time."
+  },
+  "timerPhaseRound": "Round",
+  "@timerPhaseRound": {
+    "description": "Label of the phase pill during a round."
+  },
+  "timerResume": "Resume",
+  "@timerResume": {
+    "description": "Tooltip of the button that resumes the paused timer."
+  },
+  "timerRoundOf": "Round {current} of {total}",
+  "@timerRoundOf": {
+    "description": "Info line on the timer page with the current round and the number of rounds.",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "timerSetupTitle": "Are you prepared?",
   "@timerSetupTitle": {
     "description": "Title of the timer setup page app bar."
+  },
+  "timerTotal": "Total {time}",
+  "@timerTotal": {
+    "description": "Info line on the timer page with the total time left.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
   }
 }

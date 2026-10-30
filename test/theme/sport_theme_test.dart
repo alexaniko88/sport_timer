@@ -26,6 +26,7 @@ void main() {
 
       expect(result.preparation, TimerColors.light.preparation);
       expect(result.onAccent, TimerColors.light.onAccent);
+      expect(result.onFinished, TimerColors.light.onFinished);
       expect(result.progressEnd, TimerColors.light.progressEnd);
     });
 
@@ -34,6 +35,7 @@ void main() {
 
       expect(result.preparation, TimerColors.dark.preparation);
       expect(result.onAccent, TimerColors.dark.onAccent);
+      expect(result.onFinished, TimerColors.dark.onFinished);
       expect(result.progressEnd, TimerColors.dark.progressEnd);
     });
 

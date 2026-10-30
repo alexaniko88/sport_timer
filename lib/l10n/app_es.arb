@@ -50,5 +50,13 @@
   "templatesTitle": "Elige tu plantilla",
   "templatesTotalWorkoutTime": "Tiempo total de entrenamiento",
   "templatesUseButton": "Usar plantilla",
-  "timerSetupTitle": "¿Estás listo?"
+  "timerPause": "Pausar",
+  "timerPhaseFinished": "Listo",
+  "timerPhasePreparation": "Preparar",
+  "timerPhaseRest": "Descanso",
+  "timerPhaseRound": "Ronda",
+  "timerResume": "Reanudar",
+  "timerRoundOf": "Ronda {current} de {total}",
+  "timerSetupTitle": "¿Estás listo?",
+  "timerTotal": "Total {time}"
 }

@@ -11,7 +11,6 @@ abstract final class AppSpacing {
 }
 
 abstract final class AppRadius {
-  static const double r4 = 4;
   static const double r8 = 8;
   static const double r10 = 10;
   static const double r12 = 12;

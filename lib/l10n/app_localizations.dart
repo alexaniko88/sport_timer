@@ -392,11 +392,59 @@ abstract class AppLocalizations {
   /// **'Use Template'**
   String get templatesUseButton;
 
+  /// Tooltip of the button that pauses the timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get timerPause;
+
+  /// Label of the phase pill when the workout is finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get timerPhaseFinished;
+
+  /// Label of the phase pill during the preparation time.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare'**
+  String get timerPhasePreparation;
+
+  /// Label of the phase pill during the rest time.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get timerPhaseRest;
+
+  /// Label of the phase pill during a round.
+  ///
+  /// In en, this message translates to:
+  /// **'Round'**
+  String get timerPhaseRound;
+
+  /// Tooltip of the button that resumes the paused timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get timerResume;
+
+  /// Info line on the timer page with the current round and the number of rounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {current} of {total}'**
+  String timerRoundOf(int current, int total);
+
   /// Title of the timer setup page app bar.
   ///
   /// In en, this message translates to:
   /// **'Are you prepared?'**
   String get timerSetupTitle;
+
+  /// Info line on the timer page with the total time left.
+  ///
+  /// In en, this message translates to:
+  /// **'Total {time}'**
+  String timerTotal(String time);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -54,6 +54,8 @@ class TimerViewModel {
       currentSeconds: position.secondsLeft,
       totalSeconds: position.totalSecondsLeft,
       currentRound: position.round,
+      totalRounds: schedule.rounds,
+      stageSeconds: position.stageLengthSeconds,
       totalDuration: schedule.totalDuration,
       timerStatus: position.status,
     );

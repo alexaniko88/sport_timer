@@ -221,6 +221,49 @@ void main() {
       });
     });
 
+    test('exposes the stage length, the round count and no progress at the start of a stage', () {
+      run(_params(), (fake, viewModel) {
+        viewModel.start();
+
+        final state = viewModel.state.value;
+        expect(state.timerStatus, TimerStatus.preparation);
+        expect(state.stageSeconds, 5);
+        expect(state.totalRounds, 2);
+        expect(state.stageProgress, 0);
+
+        fake.elapse(const Duration(seconds: 5));
+
+        expect(viewModel.state.value.timerStatus, TimerStatus.round);
+        expect(viewModel.state.value.stageSeconds, 10);
+        expect(viewModel.state.value.stageProgress, 0);
+      });
+    });
+
+    test('stageProgress follows the current stage only', () {
+      run(_params(), (fake, viewModel) {
+        viewModel.start();
+        fake.elapse(const Duration(seconds: 7));
+
+        final state = viewModel.state.value;
+        expect(state.timerStatus, TimerStatus.round);
+        expect(state.currentSeconds, 8);
+        expect(state.stageProgress, closeTo(0.2, 0.0001));
+      });
+    });
+
+    test('stageProgress is 1 when the workout is finished', () {
+      run(_params(), (fake, viewModel) {
+        viewModel.start();
+        fake.elapse(const Duration(seconds: 40));
+
+        final state = viewModel.state.value;
+        expect(state.timerStatus, TimerStatus.finished);
+        expect(state.stageSeconds, 0);
+        expect(state.totalRounds, 2);
+        expect(state.stageProgress, 1);
+      });
+    });
+
     test('plays only the current start sound after a late tick', () {
       fakeAsync((fake) {
         var skew = Duration.zero;

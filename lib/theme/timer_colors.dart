@@ -14,6 +14,8 @@ class TimerColors extends ThemeExtension<TimerColors> {
     progressMiddle: AppPalette.orange,
     progressEnd: AppPalette.red,
     onAccent: AppPalette.white,
+    onPhase: AppPalette.darkOnAccent,
+    onFinished: AppPalette.darkOnAccent,
   );
 
   static const TimerColors dark = TimerColors(
@@ -28,6 +30,8 @@ class TimerColors extends ThemeExtension<TimerColors> {
     progressMiddle: AppPalette.orangeAccentLight,
     progressEnd: AppPalette.redLight,
     onAccent: AppPalette.darkOnAccent,
+    onPhase: AppPalette.darkOnAccent,
+    onFinished: AppPalette.white,
   );
 
   final Color preparation;
@@ -41,6 +45,8 @@ class TimerColors extends ThemeExtension<TimerColors> {
   final Color progressMiddle;
   final Color progressEnd;
   final Color onAccent;
+  final Color onPhase;
+  final Color onFinished;
 
   const TimerColors({
     required this.preparation,
@@ -54,6 +60,8 @@ class TimerColors extends ThemeExtension<TimerColors> {
     required this.progressMiddle,
     required this.progressEnd,
     required this.onAccent,
+    required this.onPhase,
+    required this.onFinished,
   });
 
   @override
@@ -69,6 +77,8 @@ class TimerColors extends ThemeExtension<TimerColors> {
     Color? progressMiddle,
     Color? progressEnd,
     Color? onAccent,
+    Color? onPhase,
+    Color? onFinished,
   }) {
     return TimerColors(
       preparation: preparation ?? this.preparation,
@@ -82,6 +92,8 @@ class TimerColors extends ThemeExtension<TimerColors> {
       progressMiddle: progressMiddle ?? this.progressMiddle,
       progressEnd: progressEnd ?? this.progressEnd,
       onAccent: onAccent ?? this.onAccent,
+      onPhase: onPhase ?? this.onPhase,
+      onFinished: onFinished ?? this.onFinished,
     );
   }
 
@@ -100,6 +112,8 @@ class TimerColors extends ThemeExtension<TimerColors> {
       progressMiddle: Color.lerp(progressMiddle, other.progressMiddle, t)!,
       progressEnd: Color.lerp(progressEnd, other.progressEnd, t)!,
       onAccent: Color.lerp(onAccent, other.onAccent, t)!,
+      onPhase: Color.lerp(onPhase, other.onPhase, t)!,
+      onFinished: Color.lerp(onFinished, other.onFinished, t)!,
     );
   }
 }

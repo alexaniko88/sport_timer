@@ -169,5 +169,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templatesUseButton => 'Use Template';
 
   @override
+  String get timerPause => 'Pause';
+
+  @override
+  String get timerPhaseFinished => 'Done';
+
+  @override
+  String get timerPhasePreparation => 'Prepare';
+
+  @override
+  String get timerPhaseRest => 'Rest';
+
+  @override
+  String get timerPhaseRound => 'Round';
+
+  @override
+  String get timerResume => 'Resume';
+
+  @override
+  String timerRoundOf(int current, int total) {
+    return 'Round $current of $total';
+  }
+
+  @override
   String get timerSetupTitle => 'Are you prepared?';
+
+  @override
+  String timerTotal(String time) {
+    return 'Total $time';
+  }
 }
