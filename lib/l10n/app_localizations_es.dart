@@ -12,13 +12,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appTitle => 'Sport Timer';
 
   @override
-  String get authErrorEmailInUse => 'Este correo electrónico ya está en uso.';
-
-  @override
-  String get authErrorInvalidCredential => 'Correo electrónico o contraseña incorrectos.';
-
-  @override
-  String get authErrorInvalidEmail => 'El correo electrónico no es válido.';
+  String get authErrorAccountExists => 'Ya existe una cuenta con otro método de inicio de sesión.';
 
   @override
   String get authErrorNetwork => 'Error de red. Revisa tu conexión e inténtalo de nuevo.';
@@ -31,9 +25,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get authErrorUserDisabled => 'Esta cuenta ha sido deshabilitada.';
-
-  @override
-  String get authErrorWeakPassword => 'La contraseña es demasiado débil.';
 
   @override
   String get commonPreparationTime => 'Tiempo de preparación';
@@ -81,16 +72,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeTabTemplatesTooltip => 'Plantillas de entrenamiento';
 
   @override
-  String get loginEmailLabel => 'Correo electrónico';
-
-  @override
-  String get loginPasswordLabel => 'Contraseña';
-
-  @override
-  String get loginSignInButton => 'Iniciar sesión';
-
-  @override
-  String get loginSignUpButton => 'Registrarse';
+  String get loginGoogleButton => 'Continuar con Google';
 
   @override
   String get loginTitle => 'Iniciar sesión';

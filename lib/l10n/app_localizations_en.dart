@@ -12,13 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Sport Timer';
 
   @override
-  String get authErrorEmailInUse => 'This email is already in use.';
-
-  @override
-  String get authErrorInvalidCredential => 'Wrong email or password.';
-
-  @override
-  String get authErrorInvalidEmail => 'The email address is not valid.';
+  String get authErrorAccountExists => 'An account already exists with a different sign-in method.';
 
   @override
   String get authErrorNetwork => 'Network error. Check your connection and try again.';
@@ -31,9 +25,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authErrorUserDisabled => 'This account has been disabled.';
-
-  @override
-  String get authErrorWeakPassword => 'The password is too weak.';
 
   @override
   String get commonPreparationTime => 'Preparation time';
@@ -81,16 +72,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeTabTemplatesTooltip => 'Workout Templates';
 
   @override
-  String get loginEmailLabel => 'Email';
-
-  @override
-  String get loginPasswordLabel => 'Password';
-
-  @override
-  String get loginSignInButton => 'Login';
-
-  @override
-  String get loginSignUpButton => 'Sign Up';
+  String get loginGoogleButton => 'Continue with Google';
 
   @override
   String get loginTitle => 'Login';

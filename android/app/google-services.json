@@ -12,7 +12,20 @@
           "package_name": "com.example.sport_timer"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "741552942001-09ong4i8ngiure9fqjn7eth2diodudh9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sport_timer",
+            "certificate_hash": "acaff5812c684e73d908fb56e875ad587d882d3c"
+          }
+        },
+        {
+          "client_id": "741552942001-qafe788b5rrn1hjpd12jiglivk2ht51h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAIdxM_bJ9fWw2OcWZZs91KDDIzkYLwYMo"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "741552942001-qafe788b5rrn1hjpd12jiglivk2ht51h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "741552942001-bvpa8sc1geg8r8lc01ec18gvkhj85s4p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sportTimer"
+              }
+            }
+          ]
         }
       }
     }

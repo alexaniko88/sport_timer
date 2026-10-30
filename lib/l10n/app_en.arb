@@ -4,17 +4,9 @@
   "@appTitle": {
     "description": "App title shown by the system, for example in the app switcher."
   },
-  "authErrorEmailInUse": "This email is already in use.",
-  "@authErrorEmailInUse": {
-    "description": "Login error when the email already belongs to an account."
-  },
-  "authErrorInvalidCredential": "Wrong email or password.",
-  "@authErrorInvalidCredential": {
-    "description": "Login error when the credentials do not match an account."
-  },
-  "authErrorInvalidEmail": "The email address is not valid.",
-  "@authErrorInvalidEmail": {
-    "description": "Login error when the email format is wrong."
+  "authErrorAccountExists": "An account already exists with a different sign-in method.",
+  "@authErrorAccountExists": {
+    "description": "Login error when the account email is already linked to another sign-in method."
   },
   "authErrorNetwork": "Network error. Check your connection and try again.",
   "@authErrorNetwork": {
@@ -31,10 +23,6 @@
   "authErrorUserDisabled": "This account has been disabled.",
   "@authErrorUserDisabled": {
     "description": "Login error when the account is disabled."
-  },
-  "authErrorWeakPassword": "The password is too weak.",
-  "@authErrorWeakPassword": {
-    "description": "Login error when the new password is too weak."
   },
   "commonPreparationTime": "Preparation time",
   "@commonPreparationTime": {
@@ -112,21 +100,9 @@
   "@homeTabTemplatesTooltip": {
     "description": "Tooltip of the templates tab in the bottom navigation."
   },
-  "loginEmailLabel": "Email",
-  "@loginEmailLabel": {
-    "description": "Label of the email field on the login page."
-  },
-  "loginPasswordLabel": "Password",
-  "@loginPasswordLabel": {
-    "description": "Label of the password field on the login page."
-  },
-  "loginSignInButton": "Login",
-  "@loginSignInButton": {
-    "description": "Label of the sign in button on the login page."
-  },
-  "loginSignUpButton": "Sign Up",
-  "@loginSignUpButton": {
-    "description": "Label of the sign up button on the login page."
+  "loginGoogleButton": "Continue with Google",
+  "@loginGoogleButton": {
+    "description": "Label of the Google sign in button on the login page."
   },
   "loginTitle": "Login",
   "@loginTitle": {

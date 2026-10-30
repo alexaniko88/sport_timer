@@ -98,23 +98,11 @@ abstract class AppLocalizations {
   /// **'Sport Timer'**
   String get appTitle;
 
-  /// Login error when the email already belongs to an account.
+  /// Login error when the account email is already linked to another sign-in method.
   ///
   /// In en, this message translates to:
-  /// **'This email is already in use.'**
-  String get authErrorEmailInUse;
-
-  /// Login error when the credentials do not match an account.
-  ///
-  /// In en, this message translates to:
-  /// **'Wrong email or password.'**
-  String get authErrorInvalidCredential;
-
-  /// Login error when the email format is wrong.
-  ///
-  /// In en, this message translates to:
-  /// **'The email address is not valid.'**
-  String get authErrorInvalidEmail;
+  /// **'An account already exists with a different sign-in method.'**
+  String get authErrorAccountExists;
 
   /// Login error when the request fails because of the network.
   ///
@@ -139,12 +127,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This account has been disabled.'**
   String get authErrorUserDisabled;
-
-  /// Login error when the new password is too weak.
-  ///
-  /// In en, this message translates to:
-  /// **'The password is too weak.'**
-  String get authErrorWeakPassword;
 
   /// Label of the preparation time option.
   ///
@@ -224,29 +206,11 @@ abstract class AppLocalizations {
   /// **'Workout Templates'**
   String get homeTabTemplatesTooltip;
 
-  /// Label of the email field on the login page.
+  /// Label of the Google sign in button on the login page.
   ///
   /// In en, this message translates to:
-  /// **'Email'**
-  String get loginEmailLabel;
-
-  /// Label of the password field on the login page.
-  ///
-  /// In en, this message translates to:
-  /// **'Password'**
-  String get loginPasswordLabel;
-
-  /// Label of the sign in button on the login page.
-  ///
-  /// In en, this message translates to:
-  /// **'Login'**
-  String get loginSignInButton;
-
-  /// Label of the sign up button on the login page.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Up'**
-  String get loginSignUpButton;
+  /// **'Continue with Google'**
+  String get loginGoogleButton;
 
   /// Title of the login page app bar.
   ///

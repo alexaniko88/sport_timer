@@ -1,80 +1,76 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/login/login_state.dart';
 import 'package:sport_timer/features/login/login_view_model.dart';
 import 'package:sport_timer/features/user/auth_error.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 
-class _FakeUserRepository extends UserRepository {
-  Result<void> signInResult = const Success(null);
-  Result<void> signUpResult = const Success(null);
-
-  @override
-  Future<Result<void>> signIn({required String email, required String password}) async => signInResult;
-
-  @override
-  Future<Result<void>> signUp({required String email, required String password}) async => signUpResult;
-
-  @override
-  User? getCurrentUser() => null;
-
-  @override
-  bool isUserLoggedIn() => false;
-}
+class MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
-  late _FakeUserRepository repository;
+  late MockUserRepository repository;
   late LoginViewModel viewModel;
 
   setUp(() {
-    repository = _FakeUserRepository();
+    repository = MockUserRepository();
     viewModel = LoginViewModel(repository);
   });
 
   tearDown(() => viewModel.dispose());
 
-  group('LoginViewModel.signIn', () {
-    test('sets the AuthError of an AuthException', () async {
-      repository.signInResult = const Failure(AuthException(AuthError.invalidCredential));
+  void stubSignInWithGoogle(Result<void> result) {
+    when(() => repository.signInWithGoogle()).thenAnswer((_) async => result);
+  }
 
-      final success = await viewModel.signIn(email: 'a@b.com', password: 'x');
+  group('LoginViewModel.signInWithGoogle', () {
+    test('returns true and keeps a clean state on success', () async {
+      stubSignInWithGoogle(const Success(null));
+
+      final success = await viewModel.signInWithGoogle();
+
+      expect(success, isTrue);
+      expect(viewModel.state.value, const LoginState());
+    });
+
+    test('sets the AuthError of an AuthException', () async {
+      stubSignInWithGoogle(const Failure(AuthException(AuthError.accountExistsWithDifferentCredential)));
+
+      final success = await viewModel.signInWithGoogle();
 
       expect(success, isFalse);
-      expect(viewModel.state.value, const LoginState(error: AuthError.invalidCredential));
+      expect(viewModel.state.value, const LoginState(error: AuthError.accountExistsWithDifferentCredential));
     });
 
     test('falls back to unknown for a failure that is not an AuthException', () async {
-      repository.signInResult = Failure(Exception('boom'));
+      stubSignInWithGoogle(Failure(Exception('boom')));
 
-      final success = await viewModel.signIn(email: 'a@b.com', password: 'x');
+      final success = await viewModel.signInWithGoogle();
 
       expect(success, isFalse);
       expect(viewModel.state.value.error, AuthError.unknown);
       expect(viewModel.state.value.isLoading, isFalse);
     });
 
-    test('clears a previous error on success', () async {
-      repository.signInResult = const Failure(AuthException(AuthError.network));
-      await viewModel.signIn(email: 'a@b.com', password: 'x');
+    test('sets no error and stops loading when the user cancels', () async {
+      stubSignInWithGoogle(const Failure(SignInCancelledException()));
+
+      final success = await viewModel.signInWithGoogle();
+
+      expect(success, isFalse);
+      expect(viewModel.state.value, const LoginState());
+    });
+
+    test('clears a previous error on retry', () async {
+      stubSignInWithGoogle(const Failure(AuthException(AuthError.network)));
+      await viewModel.signInWithGoogle();
       expect(viewModel.state.value.error, AuthError.network);
 
-      repository.signInResult = const Success(null);
-      final success = await viewModel.signIn(email: 'a@b.com', password: 'x');
+      stubSignInWithGoogle(const Success(null));
+      final success = await viewModel.signInWithGoogle();
 
       expect(success, isTrue);
       expect(viewModel.state.value, const LoginState());
-    });
-  });
-
-  group('LoginViewModel.signUp', () {
-    test('sets the AuthError of an AuthException', () async {
-      repository.signUpResult = const Failure(AuthException(AuthError.emailInUse));
-
-      final success = await viewModel.signUp(email: 'a@b.com', password: 'x');
-
-      expect(success, isFalse);
-      expect(viewModel.state.value.error, AuthError.emailInUse);
     });
   });
 }

@@ -5,10 +5,6 @@ import 'package:sport_timer/features/user/auth_error.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 
 typedef AuthAction = Future<Result<void>> Function();
-typedef AuthCall = Future<bool> Function({
-  required String email,
-  required String password,
-});
 
 class LoginViewModel {
   final UserRepository _userRepository;
@@ -21,13 +17,7 @@ class LoginViewModel {
 
   bool isUserLoggedIn() => _userRepository.isUserLoggedIn();
 
-  Future<bool> signIn({required String email, required String password}) => _authenticate(
-        () => _userRepository.signIn(email: email, password: password),
-      );
-
-  Future<bool> signUp({required String email, required String password}) => _authenticate(
-        () => _userRepository.signUp(email: email, password: password),
-      );
+  Future<bool> signInWithGoogle() => _authenticate(_userRepository.signInWithGoogle);
 
   Future<bool> _authenticate(AuthAction action) async {
     _state.value = const LoginState(isLoading: true);
@@ -40,9 +30,12 @@ class LoginViewModel {
         return true;
       },
       onFailure: (error) {
-        _state.value = LoginState(
-          error: error is AuthException ? error.error : AuthError.unknown,
-        );
+        // A cancelled sign in is not an error, so the page shows nothing.
+        _state.value = switch (error) {
+          SignInCancelledException() => const LoginState(),
+          AuthException(error: final authError) => LoginState(error: authError),
+          _ => const LoginState(error: AuthError.unknown),
+        };
         return false;
       },
     );

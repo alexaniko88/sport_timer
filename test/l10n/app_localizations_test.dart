@@ -12,7 +12,7 @@ Widget _app(Locale locale) {
       builder: (context) => Column(
         children: [
           Text(context.l10n.appTitle),
-          Text(context.l10n.authErrorWeakPassword),
+          Text(context.l10n.authErrorTooManyRequests),
         ],
       ),
     ),
@@ -26,7 +26,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sport Timer'), findsOneWidget);
-      expect(find.text('La contraseña es demasiado débil.'), findsOneWidget);
+      expect(find.text('Demasiados intentos. Inténtalo de nuevo más tarde.'), findsOneWidget);
     });
 
     testWidgets('shows the English strings under the en locale', (tester) async {
@@ -34,7 +34,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Sport Timer'), findsOneWidget);
-      expect(find.text('The password is too weak.'), findsOneWidget);
+      expect(find.text('Too many attempts. Try again later.'), findsOneWidget);
     });
   });
 }

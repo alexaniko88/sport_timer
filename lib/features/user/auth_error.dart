@@ -1,9 +1,6 @@
 enum AuthError {
-  invalidEmail,
-  invalidCredential,
   userDisabled,
-  emailInUse,
-  weakPassword,
+  accountExistsWithDifferentCredential,
   network,
   tooManyRequests,
   unknown,
@@ -16,4 +13,11 @@ class AuthException implements Exception {
 
   @override
   String toString() => 'AuthException($error)';
+}
+
+class SignInCancelledException implements Exception {
+  const SignInCancelledException();
+
+  @override
+  String toString() => 'SignInCancelledException()';
 }
