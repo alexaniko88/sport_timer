@@ -6,6 +6,7 @@ import 'package:sport_timer/features/user/auth_error.dart';
 
 abstract class UserRepository {
   Future<Result<void>> signInWithGoogle();
+  Future<Result<void>> signOut();
   User? getCurrentUser();
   bool isUserLoggedIn();
 }
@@ -40,6 +41,24 @@ class FirebaseUserRepository extends UserRepository {
       debugPrint('signInWithGoogle failed: $e');
       return Failure(e is Exception ? e : Exception(e.toString()));
     }
+  }
+
+  @override
+  Future<Result<void>> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      debugPrint('signOut failed: $e');
+      return Failure(e is Exception ? e : Exception(e.toString()));
+    }
+    // App auth state is Firebase, so a Google sign out failure is not fatal.
+    try {
+      await _ensureInitialized();
+      await GoogleSignIn.instance.signOut();
+    } catch (e) {
+      debugPrint('signOut google failed: $e');
+    }
+    return const Success(null);
   }
 
   // google_sign_in 7 requires initialize() once before authenticate(). A failed

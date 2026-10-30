@@ -34,10 +34,12 @@ class WorkoutTemplate {
 
 class TemplatesPage extends StatefulWidget {
   final SettingsViewModel viewModel;
+  final AccountViewModel accountViewModel;
 
   const TemplatesPage({
     super.key,
     required this.viewModel,
+    required this.accountViewModel,
   });
 
   @override
@@ -118,6 +120,10 @@ class _TemplatesPageState extends State<TemplatesPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.templatesTitle),
+        actions: [
+          AccountAvatarButton(viewModel: widget.accountViewModel),
+          const SizedBox(width: AppSpacing.s8),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.s16),

@@ -9,6 +9,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final SettingsViewModel _viewModel = SettingsViewModel(getIt());
+  final AccountViewModel _accountViewModel = AccountViewModel(getIt());
   int _selectedIndex = 0;
 
   @override
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _viewModel.dispose();
+    _accountViewModel.dispose();
     super.dispose();
   }
 
@@ -40,9 +42,15 @@ class _HomePageState extends State<HomePage> {
         top: false,
         child: Center(
           child: switch (_selectedIndex) {
-            1 => TemplatesPage(viewModel: _viewModel),
-            2 => const StatisticPage(),
-            _ => TimerSetupPage(viewModel: _viewModel),
+            1 => TemplatesPage(
+                viewModel: _viewModel,
+                accountViewModel: _accountViewModel,
+              ),
+            2 => StatisticPage(accountViewModel: _accountViewModel),
+            _ => TimerSetupPage(
+                viewModel: _viewModel,
+                accountViewModel: _accountViewModel,
+              ),
           },
         ),
       ),

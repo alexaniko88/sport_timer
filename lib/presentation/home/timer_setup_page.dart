@@ -2,10 +2,12 @@ part of 'home.dart';
 
 class TimerSetupPage extends StatelessWidget {
   final SettingsViewModel viewModel;
+  final AccountViewModel accountViewModel;
 
   const TimerSetupPage({
     super.key,
     required this.viewModel,
+    required this.accountViewModel,
   });
 
   @override
@@ -21,6 +23,10 @@ class TimerSetupPage extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: Text(l10n.timerSetupTitle),
+            actions: [
+              AccountAvatarButton(viewModel: accountViewModel),
+              const SizedBox(width: AppSpacing.s8),
+            ],
           ),
           body: Padding(
             padding: const EdgeInsets.all(AppSpacing.s16),
