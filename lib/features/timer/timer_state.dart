@@ -11,6 +11,7 @@ class TimerState {
   final int currentRound;
   final Duration totalDuration;
   final TimerStatus timerStatus;
+  final bool isPaused;
 
   const TimerState({
     required this.currentSeconds,
@@ -18,6 +19,7 @@ class TimerState {
     required this.currentRound,
     required this.totalDuration,
     required this.timerStatus,
+    this.isPaused = false,
   });
 
   double get progress {
@@ -31,6 +33,7 @@ class TimerState {
     int? currentRound,
     Duration? totalDuration,
     TimerStatus? timerStatus,
+    bool? isPaused,
   }) {
     return TimerState(
       currentSeconds: currentSeconds ?? this.currentSeconds,
@@ -38,6 +41,7 @@ class TimerState {
       currentRound: currentRound ?? this.currentRound,
       totalDuration: totalDuration ?? this.totalDuration,
       timerStatus: timerStatus ?? this.timerStatus,
+      isPaused: isPaused ?? this.isPaused,
     );
   }
 
@@ -49,7 +53,8 @@ class TimerState {
           other.totalSeconds == totalSeconds &&
           other.currentRound == currentRound &&
           other.totalDuration == totalDuration &&
-          other.timerStatus == timerStatus;
+          other.timerStatus == timerStatus &&
+          other.isPaused == isPaused;
 
   @override
   int get hashCode => Object.hash(
@@ -58,5 +63,6 @@ class TimerState {
         currentRound,
         totalDuration,
         timerStatus,
+        isPaused,
       );
 }

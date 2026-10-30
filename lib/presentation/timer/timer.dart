@@ -9,6 +9,7 @@ import 'package:sport_timer/theme/app_spacing.dart';
 import 'package:sport_timer/theme/app_text_styles.dart';
 import 'package:sport_timer/theme/theme_context.dart';
 import 'package:sport_timer/theme/timer_colors.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 part 'timer_page.dart';
 

@@ -80,6 +80,7 @@ class TimerViewModel {
       _elapsedBeforeRun = _elapsed;
       _runningSince = null;
       _timer?.cancel();
+      _state.value = _state.value.copyWith(isPaused: true);
     }
   }
 

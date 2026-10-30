@@ -6,6 +6,7 @@ class Stopwatch extends StatelessWidget {
   static const double _totalTop = 200;
   static const double _roundBorderWidth = 3;
   static const double _totalBorderWidth = 5;
+  static const double _pausedOpacity = 0.4;
 
   final TimerViewModel viewModel;
 
@@ -52,9 +53,12 @@ class Stopwatch extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: _timeTop),
-                      child: Text(
-                        Duration(seconds: state.currentSeconds).asMinutesAndSeconds,
-                        style: AppTextStyles.stopwatchTime,
+                      child: Opacity(
+                        opacity: state.isPaused ? _pausedOpacity : 1,
+                        child: Text(
+                          Duration(seconds: state.currentSeconds).asMinutesAndSeconds,
+                          style: AppTextStyles.stopwatchTime,
+                        ),
                       ),
                     ),
                     Padding(

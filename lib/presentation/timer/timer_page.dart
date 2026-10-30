@@ -22,10 +22,13 @@ class _TimerPageState extends State<TimerPage> {
   void initState() {
     super.initState();
     _viewModel = TimerViewModel(widget.params, getIt())..start();
+    // Keeps the screen on during a workout.
+    WakelockPlus.enable();
   }
 
   @override
   void dispose() {
+    WakelockPlus.disable();
     _viewModel.dispose();
     super.dispose();
   }

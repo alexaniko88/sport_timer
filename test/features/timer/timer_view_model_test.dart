@@ -104,6 +104,35 @@ void main() {
       });
     });
 
+    test('isPaused is true after a pause and false after a resume', () {
+      run(_params(), (fake, viewModel) {
+        viewModel.start();
+        expect(viewModel.state.value.isPaused, isFalse);
+
+        viewModel.togglePauseResume();
+        expect(viewModel.state.value.isPaused, isTrue);
+        fake.elapse(const Duration(seconds: 3));
+        expect(viewModel.state.value.isPaused, isTrue);
+
+        viewModel.togglePauseResume();
+        expect(viewModel.state.value.isPaused, isFalse);
+        fake.elapse(const Duration(seconds: 1));
+        expect(viewModel.state.value.isPaused, isFalse);
+      });
+    });
+
+    test('isPaused stays false when toggling after the end', () {
+      run(_params(), (fake, viewModel) {
+        viewModel.start();
+        fake.elapse(const Duration(seconds: 40));
+
+        viewModel.togglePauseResume();
+
+        expect(viewModel.state.value.timerStatus, TimerStatus.finished);
+        expect(viewModel.state.value.isPaused, isFalse);
+      });
+    });
+
     test('starts on the first round when the preparation is 0', () {
       run(_params(preparation: 0), (fake, viewModel) {
         viewModel.start();
