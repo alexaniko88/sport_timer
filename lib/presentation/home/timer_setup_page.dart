@@ -48,6 +48,7 @@ class TimerSetupPage extends StatelessWidget {
                         duration: settings.roundTime,
                         label: l10n.commonRoundTime,
                         icon: Icons.fitness_center,
+                        minDuration: const Duration(seconds: 1),
                         maxMinutes: 60,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
@@ -73,7 +74,7 @@ class TimerSetupPage extends StatelessWidget {
                         color: timerColors.roundsCount,
                         label: l10n.commonRounds,
                         icon: Icons.repeat,
-                        maxRounds: settings.rounds,
+                        rounds: settings.rounds,
                         picketType: PicketType.rounds,
                         onRoundsChanged: (rounds) {
                           viewModel.updateRounds(rounds);
@@ -97,8 +98,9 @@ class TimerSetupPage extends StatelessWidget {
     required String label,
     required IconData icon,
     Duration? duration,
+    Duration? minDuration,
     int? maxMinutes,
-    int? maxRounds,
+    int? rounds,
     ValueChanged<Duration>? onDurationChanged,
     ValueChanged<int>? onRoundsChanged,
   }) {
@@ -108,15 +110,16 @@ class TimerSetupPage extends StatelessWidget {
       label: label,
       icon: Icon(icon),
       semanticHint: l10n.commonOpensSelectorHint,
-      value: duration?.asMinutesAndSeconds ?? maxRounds?.toString() ?? '',
+      value: duration?.asMinutesAndSeconds ?? rounds?.toString() ?? '',
       color: color,
       onPressed: () {
         TimerSettingsPickerWheel.show(
           context: context,
           picketType: picketType,
           initialDuration: duration,
+          minDuration: minDuration ?? Duration.zero,
           maxMinutes: maxMinutes ?? 60,
-          maxRounds: maxRounds ?? 2,
+          rounds: rounds ?? 2,
           buttonsColor: color,
           onDurationChanged: onDurationChanged,
           onRoundsChanged: onRoundsChanged,
