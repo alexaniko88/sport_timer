@@ -28,7 +28,19 @@ class _TimerPageState extends State<TimerPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _viewModel.start(notificationTitle: context.l10n.timerNotificationTitle);
+    final l10n = context.l10n;
+    _viewModel.start(
+      notificationTitle: l10n.timerNotificationTitle,
+      notificationTextBuilder: (state) {
+        final round = '${l10n.timerPhaseRound} ${l10n.timerRoundNumberOf(state.currentRound, state.totalRounds)}';
+        return switch (state.timerStatus) {
+          TimerStatus.preparation => l10n.timerPhasePreparation,
+          TimerStatus.round => round,
+          TimerStatus.rest => '$round · ${l10n.timerPhaseRest}',
+          TimerStatus.finished => l10n.timerPhaseFinished,
+        };
+      },
+    );
   }
 
   @override

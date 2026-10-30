@@ -11,6 +11,7 @@ typedef AsyncAction = Future<void> Function();
 class DefaultBackgroundKeepAlive extends BackgroundKeepAlive {
   _SilentAudioHandler? _handler;
   Future<_SilentAudioHandler>? _handlerFuture;
+  String _text = '';
   bool _isWanted = false;
   bool _hasAskedPermission = false;
 
@@ -19,21 +20,54 @@ class DefaultBackgroundKeepAlive extends BackgroundKeepAlive {
       defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS;
 
   @override
-  Future<void> start({required String notificationTitle}) async {
+  Future<void> start({
+    required String notificationTitle,
+    required String notificationText,
+    required VoidCallback onPause,
+    required VoidCallback onResume,
+  }) async {
     if (!_isSupported) return;
     _isWanted = true;
+    _text = notificationText;
     // Not awaited, so the dialog does not delay the silent loop.
     unawaited(_requestNotificationPermission());
     try {
       final handler = _handler ??= await (_handlerFuture ??= _createHandler());
       // A stop that came while the handler was being created wins.
       if (!_isWanted) return;
-      await handler.startSilence(notificationTitle);
+      // Read after the awaits, so an update that came meanwhile is not lost.
+      await handler.startSilence(
+        title: notificationTitle,
+        text: _text,
+        onPause: onPause,
+        onResume: onResume,
+      );
     } catch (error) {
       // The timer must keep working when the background session cannot start.
       // A failed init is retried on the next start, a finished one never is.
       if (_handler == null) _handlerFuture = null;
       debugPrint('$runtimeType:: start failed: $error');
+    }
+  }
+
+  @override
+  Future<void> updateText({required String text}) async {
+    _text = text;
+    if (!_isWanted) return;
+    try {
+      await _handler?.updateText(text);
+    } catch (error) {
+      debugPrint('$runtimeType:: update text failed: $error');
+    }
+  }
+
+  @override
+  Future<void> setPaused({required bool isPaused}) async {
+    if (!_isWanted) return;
+    try {
+      await _handler?.setPaused(isPaused);
+    } catch (error) {
+      debugPrint('$runtimeType:: set paused failed: $error');
     }
   }
 
@@ -71,11 +105,13 @@ class DefaultBackgroundKeepAlive extends BackgroundKeepAlive {
 }
 
 /// Loops a silent track so the OS treats the app as playing audio, and shows
-/// the media notification. It has no lock screen controls.
+/// the media notification with a pause or play button.
 class _SilentAudioHandler extends BaseAudioHandler {
   final AudioPlayer _player = AudioPlayer();
   // Start and stop run one after the other, so a stop during a start always wins.
   Future<void> _queue = Future.value();
+  VoidCallback? _onPause;
+  VoidCallback? _onResume;
   bool _isActive = false;
 
   _SilentAudioHandler() {
@@ -95,20 +131,45 @@ class _SilentAudioHandler extends BaseAudioHandler {
     _player.onPlayerStateChanged.listen(_onPlayerStateChanged);
   }
 
-  Future<void> startSilence(String notificationTitle) => _enqueue(() async {
-        mediaItem.add(MediaItem(id: 'workout', title: notificationTitle));
-        playbackState.add(
-          PlaybackState(
-            processingState: AudioProcessingState.ready,
-            playing: true,
-          ),
-        );
+  Future<void> startSilence({
+    required String title,
+    required String text,
+    required VoidCallback onPause,
+    required VoidCallback onResume,
+  }) =>
+      _enqueue(() async {
+        _onPause = onPause;
+        _onResume = onResume;
+        mediaItem.add(MediaItem(id: 'workout', title: title, artist: text));
+        playbackState.add(_playbackStateFor(isPaused: false));
         await _player.play(AssetSource('audio/silence.mp3'));
         _isActive = true;
       });
 
+  Future<void> updateText(String text) => _enqueue(() async {
+        final current = mediaItem.value;
+        if (!_isActive || current == null || current.artist == text) return;
+        mediaItem.add(current.copyWith(artist: text));
+      });
+
+  // The silent loop keeps playing while paused, only the notification state changes.
+  Future<void> setPaused(bool isPaused) => _enqueue(() async {
+        if (!_isActive) return;
+        playbackState.add(_playbackStateFor(isPaused: isPaused));
+      });
+
+  PlaybackState _playbackStateFor({required bool isPaused}) => PlaybackState(
+        processingState: AudioProcessingState.ready,
+        playing: !isPaused,
+        controls: [isPaused ? MediaControl.play : MediaControl.pause],
+        systemActions: const {MediaAction.play, MediaAction.pause},
+        androidCompactActionIndices: const [0],
+      );
+
   Future<void> stopSilence() => _enqueue(() async {
         _isActive = false;
+        _onPause = null;
+        _onResume = null;
         await _player.stop();
         playbackState.add(PlaybackState());
       });
@@ -129,6 +190,12 @@ class _SilentAudioHandler extends BaseAudioHandler {
   // The activity can be gone while this handler lives on, so the loop must end.
   @override
   Future<void> onTaskRemoved() => stopSilence();
+
+  @override
+  Future<void> pause() async => _onPause?.call();
+
+  @override
+  Future<void> play() async => _onResume?.call();
 
   // The handler is a singleton, so it must stay usable for the next workout.
   @override

@@ -1,4 +1,5 @@
 import 'package:fake_async/fake_async.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/features/settings/timer_style.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
@@ -28,7 +29,18 @@ class _FakeAudioManager extends AudioManager {
 
 class _FakeBackgroundKeepAlive extends BackgroundKeepAlive {
   @override
-  Future<void> start({required String notificationTitle}) async {}
+  Future<void> start({
+    required String notificationTitle,
+    required String notificationText,
+    required VoidCallback onPause,
+    required VoidCallback onResume,
+  }) async {}
+
+  @override
+  Future<void> setPaused({required bool isPaused}) async {}
+
+  @override
+  Future<void> updateText({required String text}) async {}
 
   @override
   Future<void> stop() async {}
@@ -83,7 +95,7 @@ void main() {
           timeline.add((s.timerStatus, s.currentRound, s.currentSeconds, s.totalSeconds));
         }
 
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         record();
         for (var i = 0; i < 29; i++) {
           fake.elapse(const Duration(seconds: 1));
@@ -104,7 +116,7 @@ void main() {
 
     test('pause and resume keep the exact remaining time', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(milliseconds: 2500));
         expect(viewModel.state.value.currentSeconds, 3);
 
@@ -125,7 +137,7 @@ void main() {
 
     test('isPaused is true after a pause and false after a resume', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         expect(viewModel.state.value.isPaused, isFalse);
 
         viewModel.togglePauseResume();
@@ -142,7 +154,7 @@ void main() {
 
     test('isPaused stays false when toggling after the end', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(seconds: 40));
 
         viewModel.togglePauseResume();
@@ -154,7 +166,7 @@ void main() {
 
     test('starts on the first round when the preparation is 0', () {
       run(_params(preparation: 0), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
 
         expect(viewModel.state.value.timerStatus, TimerStatus.round);
         expect(viewModel.state.value.currentSeconds, 10);
@@ -164,7 +176,7 @@ void main() {
 
     test('goes from a round to the next round when the rest is 0', () {
       run(_params(preparation: 0, rest: 0), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(seconds: 10));
 
         expect(viewModel.state.value.timerStatus, TimerStatus.round);
@@ -176,7 +188,7 @@ void main() {
 
     test('plays each sound once per event over the whole workout', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(seconds: 40));
 
         expect(audio.calls, [
@@ -194,7 +206,7 @@ void main() {
 
     test('plays the countdown beep at 3 seconds left', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(milliseconds: 1999));
         expect(audio.calls, isEmpty);
 
@@ -206,7 +218,7 @@ void main() {
 
     test('does not beep in a stage of 3 seconds or less', () {
       run(_params(preparation: 3, round: 3, rest: 3, rounds: 1), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(seconds: 6));
 
         expect(audio.calls, ['start', 'done']);
@@ -215,7 +227,7 @@ void main() {
 
     test('tapping after the end does nothing', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(seconds: 40));
         final finished = viewModel.state.value;
         final calls = List.of(audio.calls);
@@ -231,7 +243,7 @@ void main() {
 
     test('finishes at once when the total duration is 0', () {
       run(_params(preparation: 0, round: 0, rest: 0), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
 
         expect(viewModel.state.value.timerStatus, TimerStatus.finished);
         expect(viewModel.state.value.progress, 0);
@@ -242,7 +254,7 @@ void main() {
 
     test('exposes the stage length, the round count and no progress at the start of a stage', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
 
         final state = viewModel.state.value;
         expect(state.timerStatus, TimerStatus.preparation);
@@ -260,7 +272,7 @@ void main() {
 
     test('stageProgress follows the current stage only', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(seconds: 7));
 
         final state = viewModel.state.value;
@@ -272,7 +284,7 @@ void main() {
 
     test('stageProgress is 1 when the workout is finished', () {
       run(_params(), (fake, viewModel) {
-        viewModel.start(notificationTitle: 'Workout');
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(seconds: 40));
 
         final state = viewModel.state.value;
@@ -291,7 +303,7 @@ void main() {
           audio,
           keepAlive,
           timeSource: () => fake.elapsed + skew,
-        )..start(notificationTitle: 'Workout');
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         // The clock jumps ahead while the timer is late, like after a locked screen.
         skew = const Duration(seconds: 6);
 
@@ -312,7 +324,7 @@ void main() {
           audio,
           keepAlive,
           timeSource: () => fake.elapsed + skew,
-        )..start(notificationTitle: 'Workout');
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         audio.calls.clear();
         skew = const Duration(seconds: 60);
 
@@ -332,7 +344,7 @@ void main() {
           audio,
           keepAlive,
           timeSource: () => fake.elapsed + skew,
-        )..start(notificationTitle: 'Workout');
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         audio.calls.clear();
         skew = const Duration(seconds: 12);
 
@@ -351,7 +363,7 @@ void main() {
           audio,
           keepAlive,
           timeSource: () => fake.elapsed,
-        )..start(notificationTitle: 'Workout');
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         expect(fake.nonPeriodicTimerCount, 1);
 
         viewModel.dispose();

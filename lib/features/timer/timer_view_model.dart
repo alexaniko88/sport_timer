@@ -10,6 +10,9 @@ import 'package:sport_timer/managers/background_keep_alive.dart';
 /// Returns the time since a fixed start. It must be monotonic.
 typedef TimeSource = Duration Function();
 
+/// Builds the second line of the background notification for a state.
+typedef NotificationTextBuilder = String Function(TimerState state);
+
 class TimerViewModel {
   static const int _countdownSeconds = 3;
   static const int _millisecondsPerSecond = 1000;
@@ -27,6 +30,9 @@ class TimerViewModel {
   Duration _elapsedBeforeRun = Duration.zero;
   Duration _lastTickElapsed = Duration.zero;
   TimerState? _lastTicked;
+  NotificationTextBuilder? _notificationTextBuilder;
+  TimerStatus? _notifiedStatus;
+  int? _notifiedRound;
   bool _hasStarted = false;
   bool _disposed = false;
 
@@ -70,10 +76,21 @@ class TimerViewModel {
     return runningSince == null ? _elapsedBeforeRun : _elapsedBeforeRun + _timeSource() - runningSince;
   }
 
-  void start({required String notificationTitle}) {
+  void start({
+    required String notificationTitle,
+    required NotificationTextBuilder notificationTextBuilder,
+  }) {
     if (_disposed || _hasStarted) return;
     _hasStarted = true;
-    _keepAlive.start(notificationTitle: notificationTitle);
+    _notificationTextBuilder = notificationTextBuilder;
+    _notifiedStatus = _state.value.timerStatus;
+    _notifiedRound = _state.value.currentRound;
+    _keepAlive.start(
+      notificationTitle: notificationTitle,
+      notificationText: notificationTextBuilder(_state.value),
+      onPause: _pauseIfRunning,
+      onResume: _resumeIfPaused,
+    );
     _run();
   }
 
@@ -81,6 +98,7 @@ class TimerViewModel {
     if (_disposed || !_hasStarted || _state.value.timerStatus == TimerStatus.finished) return;
     if (_runningSince == null) {
       debugPrint("$runtimeType:: resumed");
+      _keepAlive.setPaused(isPaused: false);
       _run();
     } else {
       debugPrint("$runtimeType:: paused");
@@ -88,7 +106,17 @@ class TimerViewModel {
       _runningSince = null;
       _timer?.cancel();
       _state.value = _state.value.copyWith(isPaused: true);
+      _keepAlive.setPaused(isPaused: true);
     }
+  }
+
+  // Taps on the notification can arrive late, so each one checks the current state first.
+  void _pauseIfRunning() {
+    if (_runningSince != null) togglePauseResume();
+  }
+
+  void _resumeIfPaused() {
+    if (_runningSince == null) togglePauseResume();
   }
 
   void dispose() {
@@ -120,6 +148,8 @@ class TimerViewModel {
     _lastTicked = next;
     _lastTickElapsed = elapsed;
 
+    _updateNotificationText(next);
+
     if (next.timerStatus == TimerStatus.finished) {
       _runningSince = null;
       _elapsedBeforeRun = elapsed;
@@ -128,6 +158,16 @@ class TimerViewModel {
     }
     final millisecondsToNextSecond = _millisecondsPerSecond - elapsed.inMilliseconds % _millisecondsPerSecond;
     _timer = Timer(Duration(milliseconds: millisecondsToNextSecond), _tick);
+  }
+
+  // The text only changes with the stage, so it is sent on a stage change and not every second.
+  void _updateNotificationText(TimerState next) {
+    final builder = _notificationTextBuilder;
+    if (builder == null || next.timerStatus == TimerStatus.finished) return;
+    if (next.timerStatus == _notifiedStatus && next.currentRound == _notifiedRound) return;
+    _notifiedStatus = next.timerStatus;
+    _notifiedRound = next.currentRound;
+    _keepAlive.updateText(text: builder(next));
   }
 
   // Compares the old and new state, so a sound plays once per event. A null
