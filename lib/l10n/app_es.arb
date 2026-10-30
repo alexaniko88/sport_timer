@@ -1,11 +1,17 @@
 {
   "@@locale": "es",
+  "accountAvatarTooltip": "Cuenta, {name}",
+  "accountSignOut": "Cerrar sesión",
+  "accountSignOutConfirmMessage": "¿Quieres cerrar sesión en tu cuenta?",
+  "accountSignOutConfirmTitle": "¿Cerrar sesión?",
+  "accountSignOutError": "No se pudo cerrar sesión. Inténtalo de nuevo.",
   "appTitle": "Sport Timer",
   "authErrorAccountExists": "Ya existe una cuenta con otro método de inicio de sesión.",
   "authErrorNetwork": "Error de red. Revisa tu conexión e inténtalo de nuevo.",
   "authErrorTooManyRequests": "Demasiados intentos. Inténtalo de nuevo más tarde.",
   "authErrorUnknown": "El inicio de sesión falló por un error desconocido.",
   "authErrorUserDisabled": "Esta cuenta ha sido deshabilitada.",
+  "commonCancel": "Cancelar",
   "commonOpensSelectorHint": "Abre un selector",
   "commonPreparationTime": "Tiempo de preparación",
   "commonRestTime": "Tiempo de descanso",
@@ -44,5 +50,5 @@
   "templatesTitle": "Elige tu plantilla",
   "templatesTotalWorkoutTime": "Tiempo total de entrenamiento",
   "templatesUseButton": "Usar plantilla",
-  "timerSetupTitle": "¿Listo para el nuevo reto?"
+  "timerSetupTitle": "¿Estás listo?"
 }

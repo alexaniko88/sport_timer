@@ -9,6 +9,23 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String accountAvatarTooltip(String name) {
+    return 'Account, $name';
+  }
+
+  @override
+  String get accountSignOut => 'Sign out';
+
+  @override
+  String get accountSignOutConfirmMessage => 'Do you want to sign out of your account?';
+
+  @override
+  String get accountSignOutConfirmTitle => 'Sign out?';
+
+  @override
+  String get accountSignOutError => 'Could not sign out. Try again.';
+
+  @override
   String get appTitle => 'Sport Timer';
 
   @override
@@ -25,6 +42,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authErrorUserDisabled => 'This account has been disabled.';
+
+  @override
+  String get commonCancel => 'Cancel';
 
   @override
   String get commonOpensSelectorHint => 'Opens a selector';
@@ -149,5 +169,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templatesUseButton => 'Use Template';
 
   @override
-  String get timerSetupTitle => 'Prepared for the new challenge?';
+  String get timerSetupTitle => 'Are you prepared?';
 }

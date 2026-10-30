@@ -92,6 +92,36 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('es')];
 
+  /// Tooltip of the account avatar button in the app bar, with the user name.
+  ///
+  /// In en, this message translates to:
+  /// **'Account, {name}'**
+  String accountAvatarTooltip(String name);
+
+  /// Label of the sign out row in the account sheet and of the confirm button.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get accountSignOut;
+
+  /// Message of the dialog that asks to confirm the sign out.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to sign out of your account?'**
+  String get accountSignOutConfirmMessage;
+
+  /// Title of the dialog that asks to confirm the sign out.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get accountSignOutConfirmTitle;
+
+  /// Snackbar shown when the sign out fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign out. Try again.'**
+  String get accountSignOutError;
+
   /// App title shown by the system, for example in the app switcher.
   ///
   /// In en, this message translates to:
@@ -127,6 +157,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This account has been disabled.'**
   String get authErrorUserDisabled;
+
+  /// Label of a button that dismisses a dialog without acting.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
 
   /// Accessibility hint for the option tiles that open a value selector.
   ///
@@ -359,7 +395,7 @@ abstract class AppLocalizations {
   /// Title of the timer setup page app bar.
   ///
   /// In en, this message translates to:
-  /// **'Prepared for the new challenge?'**
+  /// **'Are you prepared?'**
   String get timerSetupTitle;
 }
 

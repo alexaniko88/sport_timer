@@ -1,5 +1,30 @@
 {
   "@@locale": "en",
+  "accountAvatarTooltip": "Account, {name}",
+  "@accountAvatarTooltip": {
+    "description": "Tooltip of the account avatar button in the app bar, with the user name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "accountSignOut": "Sign out",
+  "@accountSignOut": {
+    "description": "Label of the sign out row in the account sheet and of the confirm button."
+  },
+  "accountSignOutConfirmMessage": "Do you want to sign out of your account?",
+  "@accountSignOutConfirmMessage": {
+    "description": "Message of the dialog that asks to confirm the sign out."
+  },
+  "accountSignOutConfirmTitle": "Sign out?",
+  "@accountSignOutConfirmTitle": {
+    "description": "Title of the dialog that asks to confirm the sign out."
+  },
+  "accountSignOutError": "Could not sign out. Try again.",
+  "@accountSignOutError": {
+    "description": "Snackbar shown when the sign out fails."
+  },
   "appTitle": "Sport Timer",
   "@appTitle": {
     "description": "App title shown by the system, for example in the app switcher."
@@ -23,6 +48,10 @@
   "authErrorUserDisabled": "This account has been disabled.",
   "@authErrorUserDisabled": {
     "description": "Login error when the account is disabled."
+  },
+  "commonCancel": "Cancel",
+  "@commonCancel": {
+    "description": "Label of a button that dismisses a dialog without acting."
   },
   "commonOpensSelectorHint": "Opens a selector",
   "@commonOpensSelectorHint": {
@@ -205,7 +234,7 @@
   "@templatesUseButton": {
     "description": "Label of the button that applies a template."
   },
-  "timerSetupTitle": "Prepared for the new challenge?",
+  "timerSetupTitle": "Are you prepared?",
   "@timerSetupTitle": {
     "description": "Title of the timer setup page app bar."
   }

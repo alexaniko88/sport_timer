@@ -17,7 +17,12 @@ final class Item {
 }
 
 class StatisticPage extends StatefulWidget {
-  const StatisticPage({super.key});
+  final AccountViewModel accountViewModel;
+
+  const StatisticPage({
+    super.key,
+    required this.accountViewModel,
+  });
 
   @override
   State<StatisticPage> createState() => _StatisticPageState();
@@ -31,6 +36,10 @@ class _StatisticPageState extends State<StatisticPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.statisticsTitle),
+        actions: [
+          AccountAvatarButton(viewModel: widget.accountViewModel),
+          const SizedBox(width: AppSpacing.s8),
+        ],
       ),
       body: CustomScrollView(
         slivers: [

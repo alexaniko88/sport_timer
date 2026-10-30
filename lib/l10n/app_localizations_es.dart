@@ -9,6 +9,23 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String accountAvatarTooltip(String name) {
+    return 'Cuenta, $name';
+  }
+
+  @override
+  String get accountSignOut => 'Cerrar sesión';
+
+  @override
+  String get accountSignOutConfirmMessage => '¿Quieres cerrar sesión en tu cuenta?';
+
+  @override
+  String get accountSignOutConfirmTitle => '¿Cerrar sesión?';
+
+  @override
+  String get accountSignOutError => 'No se pudo cerrar sesión. Inténtalo de nuevo.';
+
+  @override
   String get appTitle => 'Sport Timer';
 
   @override
@@ -25,6 +42,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get authErrorUserDisabled => 'Esta cuenta ha sido deshabilitada.';
+
+  @override
+  String get commonCancel => 'Cancelar';
 
   @override
   String get commonOpensSelectorHint => 'Abre un selector';
@@ -149,5 +169,5 @@ class AppLocalizationsEs extends AppLocalizations {
   String get templatesUseButton => 'Usar plantilla';
 
   @override
-  String get timerSetupTitle => '¿Listo para el nuevo reto?';
+  String get timerSetupTitle => '¿Estás listo?';
 }
