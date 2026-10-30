@@ -29,6 +29,7 @@
   "statisticsDefaultUserName": "Usuario",
   "statisticsGreeting": "¡Hola, {name}!",
   "statisticsSectionTitle": "Aquí están tus estadísticas de entrenamiento",
+  "statisticsTitle": "Tus estadísticas",
   "templateAbsDescription": "Entrenamiento abdominal intenso con rondas cortas",
   "templateAbsName": "Abdominales completos",
   "templateCrossFitDescription": "Entrenamiento funcional de alta intensidad",
@@ -40,7 +41,7 @@
   "templatesRestTime": "Descanso",
   "templatesRoundTime": "Ronda",
   "templatesSubtitle": "Elige un entrenamiento preconfigurado para empezar rápido.",
-  "templatesTitle": "Elige una plantilla de entrenamiento",
+  "templatesTitle": "Elige tu plantilla",
   "templatesTotalWorkoutTime": "Tiempo total de entrenamiento",
   "templatesUseButton": "Usar plantilla",
   "timerSetupTitle": "¿Listo para el nuevo reto?"

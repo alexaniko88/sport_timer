@@ -145,6 +145,10 @@
   "@statisticsSectionTitle": {
     "description": "Title of the statistics section."
   },
+  "statisticsTitle": "Your statistics",
+  "@statisticsTitle": {
+    "description": "Title of the statistics page app bar."
+  },
   "templateAbsDescription": "Intense abdominal workout with short rounds",
   "@templateAbsDescription": {
     "description": "Description of the Full Abs workout template."
@@ -189,7 +193,7 @@
   "@templatesSubtitle": {
     "description": "Subtitle on the templates page."
   },
-  "templatesTitle": "Choose a Workout Template",
+  "templatesTitle": "Choose your template",
   "@templatesTitle": {
     "description": "Title of the templates page app bar."
   },

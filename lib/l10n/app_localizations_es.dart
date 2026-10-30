@@ -104,6 +104,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statisticsSectionTitle => 'Aquí están tus estadísticas de entrenamiento';
 
   @override
+  String get statisticsTitle => 'Tus estadísticas';
+
+  @override
   String get templateAbsDescription => 'Entrenamiento abdominal intenso con rondas cortas';
 
   @override
@@ -137,7 +140,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get templatesSubtitle => 'Elige un entrenamiento preconfigurado para empezar rápido.';
 
   @override
-  String get templatesTitle => 'Elige una plantilla de entrenamiento';
+  String get templatesTitle => 'Elige tu plantilla';
 
   @override
   String get templatesTotalWorkoutTime => 'Tiempo total de entrenamiento';

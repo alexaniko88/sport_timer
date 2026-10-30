@@ -104,6 +104,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statisticsSectionTitle => 'Here are your training statistics';
 
   @override
+  String get statisticsTitle => 'Your statistics';
+
+  @override
   String get templateAbsDescription => 'Intense abdominal workout with short rounds';
 
   @override
@@ -137,7 +140,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templatesSubtitle => 'Select a pre-configured workout to get started quickly.';
 
   @override
-  String get templatesTitle => 'Choose a Workout Template';
+  String get templatesTitle => 'Choose your template';
 
   @override
   String get templatesTotalWorkoutTime => 'Total Workout Time';

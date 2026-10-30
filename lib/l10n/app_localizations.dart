@@ -266,6 +266,12 @@ abstract class AppLocalizations {
   /// **'Here are your training statistics'**
   String get statisticsSectionTitle;
 
+  /// Title of the statistics page app bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Your statistics'**
+  String get statisticsTitle;
+
   /// Description of the Full Abs workout template.
   ///
   /// In en, this message translates to:
@@ -335,7 +341,7 @@ abstract class AppLocalizations {
   /// Title of the templates page app bar.
   ///
   /// In en, this message translates to:
-  /// **'Choose a Workout Template'**
+  /// **'Choose your template'**
   String get templatesTitle;
 
   /// Label above the total time on a template card.

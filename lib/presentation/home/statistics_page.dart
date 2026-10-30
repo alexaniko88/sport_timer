@@ -24,19 +24,13 @@ class StatisticPage extends StatefulWidget {
 }
 
 class _StatisticPageState extends State<StatisticPage> {
-  final StatisticsViewModel _viewModel = StatisticsViewModel(getIt());
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n.statisticsGreeting(
-            _viewModel.userName ?? l10n.statisticsDefaultUserName,
-          ),
-        ),
+        title: Text(l10n.statisticsTitle),
       ),
       body: CustomScrollView(
         slivers: [
