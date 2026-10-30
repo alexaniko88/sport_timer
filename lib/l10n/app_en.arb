@@ -24,6 +24,10 @@
   "@authErrorUserDisabled": {
     "description": "Login error when the account is disabled."
   },
+  "commonOpensSelectorHint": "Opens a selector",
+  "@commonOpensSelectorHint": {
+    "description": "Accessibility hint for the option tiles that open a value selector."
+  },
   "commonPreparationTime": "Preparation time",
   "@commonPreparationTime": {
     "description": "Label of the preparation time option."
@@ -75,6 +79,10 @@
         "type": "int"
       }
     }
+  },
+  "homeStartTimerTooltip": "Start timer",
+  "@homeStartTimerTooltip": {
+    "description": "Tooltip of the button on the home page that starts the timer."
   },
   "homeTabHome": "Home",
   "@homeTabHome": {

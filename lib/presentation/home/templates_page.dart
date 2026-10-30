@@ -342,14 +342,12 @@ class _TemplatesPageState extends State<TemplatesPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: () => _applyTemplate(template),
+                  AppButton.primary(
                     icon: const Icon(Icons.play_arrow),
-                    label: Text(l10n.templatesUseButton),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: accentColor,
-                      foregroundColor: timerColors.onAccent,
-                    ),
+                    label: l10n.templatesUseButton,
+                    color: accentColor,
+                    foregroundColor: timerColors.onAccent,
+                    onPressed: () => _applyTemplate(template),
                   ),
                 ],
               ),

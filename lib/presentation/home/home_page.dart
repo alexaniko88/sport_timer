@@ -8,9 +8,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const double _loaderSize = 24;
-  static const double _loaderStroke = 2;
-
   final SettingsViewModel _viewModel = SettingsViewModel(getIt());
   int _selectedIndex = 0;
 
@@ -83,27 +80,22 @@ class _HomePageState extends State<HomePage> {
               valueListenable: _viewModel.state,
               builder: (context, state, _) {
                 final settings = state.timerSettings;
-                return FloatingActionButton.large(
-                  onPressed: state.status == SettingsStatus.saving
-                      ? null
-                      : () {
-                          _viewModel.saveSettings(settings);
-                          context.pushNamed(
-                            RoutePath.timer.value,
-                            extra: TimerParams(
-                              preparationTime: settings.preparationTime,
-                              roundTime: settings.roundTime,
-                              restTime: settings.restTime,
-                              rounds: settings.rounds,
-                            ),
-                          );
-                        },
-                  child: state.status == SettingsStatus.saving
-                      ? const SizedBox.square(
-                          dimension: _loaderSize,
-                          child: CircularProgressIndicator(strokeWidth: _loaderStroke),
-                        )
-                      : const Icon(Icons.timer),
+                return AppButton.icon(
+                  icon: const Icon(Icons.timer),
+                  tooltip: l10n.homeStartTimerTooltip,
+                  isLoading: state.status == SettingsStatus.saving,
+                  onPressed: () {
+                    _viewModel.saveSettings(settings);
+                    context.pushNamed(
+                      RoutePath.timer.value,
+                      extra: TimerParams(
+                        preparationTime: settings.preparationTime,
+                        roundTime: settings.roundTime,
+                        restTime: settings.restTime,
+                        rounds: settings.rounds,
+                      ),
+                    );
+                  },
                 );
               },
             )

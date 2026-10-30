@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'This account has been disabled.'**
   String get authErrorUserDisabled;
 
+  /// Accessibility hint for the option tiles that open a value selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens a selector'**
+  String get commonOpensSelectorHint;
+
   /// Label of the preparation time option.
   ///
   /// In en, this message translates to:
@@ -169,6 +175,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{s}s'**
   String durationSeconds(int s);
+
+  /// Tooltip of the button on the home page that starts the timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Start timer'**
+  String get homeStartTimerTooltip;
 
   /// Label of the home tab in the bottom navigation.
   ///

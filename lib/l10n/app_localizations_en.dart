@@ -27,6 +27,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authErrorUserDisabled => 'This account has been disabled.';
 
   @override
+  String get commonOpensSelectorHint => 'Opens a selector';
+
+  @override
   String get commonPreparationTime => 'Preparation time';
 
   @override
@@ -52,6 +55,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String durationSeconds(int s) {
     return '${s}s';
   }
+
+  @override
+  String get homeStartTimerTooltip => 'Start timer';
 
   @override
   String get homeTabHome => 'Home';

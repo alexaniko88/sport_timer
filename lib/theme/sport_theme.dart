@@ -4,8 +4,6 @@ import 'package:sport_timer/theme/app_spacing.dart';
 import 'package:sport_timer/theme/timer_colors.dart';
 
 abstract final class SportTheme {
-  static const double _buttonHeight = 50;
-  static const double _buttonMinWidth = 64;
   static const double _cardElevation = 4;
 
   static ThemeData get light => _build(
@@ -34,11 +32,6 @@ abstract final class SportTheme {
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.r10),
     );
-    final buttonShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppRadius.r10),
-    );
-    final buttonTextStyle = base.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold);
-    const buttonMinimumSize = Size(_buttonMinWidth, _buttonHeight);
 
     return base.copyWith(
       extensions: <ThemeExtension<dynamic>>[timerColors],
@@ -52,20 +45,6 @@ abstract final class SportTheme {
         border: inputBorder,
         enabledBorder: inputBorder,
         focusedBorder: inputBorder,
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: buttonShape,
-          minimumSize: buttonMinimumSize,
-          textStyle: buttonTextStyle,
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          shape: buttonShape,
-          minimumSize: buttonMinimumSize,
-          textStyle: buttonTextStyle,
-        ),
       ),
       cardTheme: CardThemeData(
         elevation: _cardElevation,

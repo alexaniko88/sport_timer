@@ -1,8 +1,6 @@
 part of 'home.dart';
 
 class TimerSetupPage extends StatelessWidget {
-  static const double _optionBorderWidth = 3;
-
   final SettingsViewModel viewModel;
 
   const TimerSetupPage({
@@ -36,6 +34,7 @@ class TimerSetupPage extends StatelessWidget {
                         color: timerColors.preparation,
                         duration: settings.preparationTime,
                         label: l10n.commonPreparationTime,
+                        icon: Icons.hourglass_top,
                         maxMinutes: 5,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
@@ -48,6 +47,7 @@ class TimerSetupPage extends StatelessWidget {
                         color: timerColors.round,
                         duration: settings.roundTime,
                         label: l10n.commonRoundTime,
+                        icon: Icons.fitness_center,
                         maxMinutes: 60,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
@@ -60,6 +60,7 @@ class TimerSetupPage extends StatelessWidget {
                         color: timerColors.rest,
                         duration: settings.restTime,
                         label: l10n.commonRestTime,
+                        icon: Icons.pause,
                         maxMinutes: 60,
                         picketType: PicketType.time,
                         onDurationChanged: (duration) {
@@ -71,6 +72,7 @@ class TimerSetupPage extends StatelessWidget {
                         context: context,
                         color: timerColors.roundsCount,
                         label: l10n.commonRounds,
+                        icon: Icons.repeat,
                         maxRounds: settings.rounds,
                         picketType: PicketType.rounds,
                         onRoundsChanged: (rounds) {
@@ -93,16 +95,22 @@ class TimerSetupPage extends StatelessWidget {
     required PicketType picketType,
     required Color color,
     required String label,
+    required IconData icon,
     Duration? duration,
     int? maxMinutes,
     int? maxRounds,
     ValueChanged<Duration>? onDurationChanged,
     ValueChanged<int>? onRoundsChanged,
   }) {
-    final titleStyle = Theme.of(context).textTheme.titleLarge;
+    final l10n = context.l10n;
 
-    return InkWell(
-      onTap: () {
+    return AppButton.option(
+      label: label,
+      icon: Icon(icon),
+      semanticHint: l10n.commonOpensSelectorHint,
+      value: duration?.asMinutesAndSeconds ?? maxRounds?.toString() ?? '',
+      color: color,
+      onPressed: () {
         TimerSettingsPickerWheel.show(
           context: context,
           picketType: picketType,
@@ -114,31 +122,6 @@ class TimerSetupPage extends StatelessWidget {
           onRoundsChanged: onRoundsChanged,
         );
       },
-      borderRadius: BorderRadius.circular(AppRadius.r12),
-      splashColor: color.withValues(alpha: 0.5),
-      hoverColor: color.withValues(alpha: 0.5),
-      focusColor: color.withValues(alpha: 0.5),
-      highlightColor: color.withValues(alpha: 0.5),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppRadius.r12),
-          border: Border.all(
-            color: color,
-            width: _optionBorderWidth,
-          ),
-        ),
-        padding: const EdgeInsets.all(AppSpacing.s16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: titleStyle),
-            Text(
-              duration?.asMinutesAndSeconds ?? maxRounds?.toString() ?? '',
-              style: titleStyle,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

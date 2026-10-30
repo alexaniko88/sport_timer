@@ -27,6 +27,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get authErrorUserDisabled => 'Esta cuenta ha sido deshabilitada.';
 
   @override
+  String get commonOpensSelectorHint => 'Abre un selector';
+
+  @override
   String get commonPreparationTime => 'Tiempo de preparación';
 
   @override
@@ -52,6 +55,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String durationSeconds(int s) {
     return '${s}s';
   }
+
+  @override
+  String get homeStartTimerTooltip => 'Iniciar temporizador';
 
   @override
   String get homeTabHome => 'Inicio';
