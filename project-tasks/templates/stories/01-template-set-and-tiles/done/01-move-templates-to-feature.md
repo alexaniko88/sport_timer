@@ -1,8 +1,8 @@
 # TASK 1.1: Move templates into a feature folder
 
-Story: [Story 1 overview](index.md)
+Story: [Story 1 overview](../index.md)
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../index.md)
 
 Status: Done — implementation and checks complete; user approved delivery on 2026-10-31.
 
@@ -13,7 +13,7 @@ Template data and the total-time calculation live outside the page widget, in a 
 ## Scope
 
 - Create the template data and the total-time calculation under `lib/features/` (a `templates` feature), following the existing feature-first layout. Views must not own this logic.
-- Define the 5 templates and their values from the [epic](../../index.md): Default, Full Abs, Hyrox, Stretching, Strength. Remove CrossFit and the per-template accent.
+- Define the 5 templates and their values from the [epic](../../../index.md): Default, Full Abs, Hyrox, Stretching, Strength. Remove CrossFit and the per-template accent.
 - Add localized names for each template in the English and Spanish ARB files. Remove the unused description texts and the old CrossFit and "applied badge" texts only when nothing uses them any more.
 - Out of scope: the tile, the page, and the selected-state logic.
 

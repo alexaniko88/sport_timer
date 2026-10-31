@@ -22,7 +22,7 @@ A reusable tile widget that shows one template, or one set of timer values, in t
 
 ## Dependencies
 
-[Task 1.1](../01-move-templates-to-feature.md).
+[Task 1.1](01-move-templates-to-feature.md).
 
 ## Acceptance criteria
 

@@ -28,7 +28,7 @@ Out of scope: the computed selected state and the Custom card ([Story 2](../02-s
 
 ## Tasks
 
-1. [Move templates into a feature folder](01-move-templates-to-feature.md).
+1. [Move templates into a feature folder](done/01-move-templates-to-feature.md).
 2. [Build the compact template tile](done/02-build-template-tile.md).
 3. [Rebuild the Templates page](03-rebuild-templates-page.md).
 

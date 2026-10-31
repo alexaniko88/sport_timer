@@ -50,7 +50,7 @@ Epic: [Templates](templates/index.md).
 
 | Task | Status | Prerequisite or reason | Output when done |
 | --- | --- | --- | --- |
-| [1.1 Move templates into a feature folder](templates/stories/01-template-set-and-tiles/01-move-templates-to-feature.md) | ✅ Done | Checks pass; user approved delivery 2026-10-31. Available on `feat/templates-feature`. | The 5 templates as data, total-time calculation, en/es names. |
+| [1.1 Move templates into a feature folder](templates/stories/01-template-set-and-tiles/done/01-move-templates-to-feature.md) | ✅ Done | Checks pass; user approved delivery 2026-10-31. Available on `feat/templates-feature`. | The 5 templates as data, total-time calculation, en/es names. |
 | [1.2 Build the compact template tile](templates/stories/01-template-set-and-tiles/done/02-build-template-tile.md) | ✅ Done | Task 1.1. | Reusable compact tile with summary, total time and phase bar. |
 | [1.3 Rebuild the Templates page](templates/stories/01-template-set-and-tiles/03-rebuild-templates-page.md) | 🟢 Ready | Task 1.2 on `feat/template-tile`; verify it is merged or the checkout has it. | New Templates tab; tap applies the template. |
 | [2.1 Add a templates view model](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md) | 🔴 Blocked | Story 1 completed. | Computed selected template or custom, with tests. |
@@ -80,7 +80,7 @@ When work starts, record the task, actual branch/worktree if applicable, approve
 
 ## Completed tasks and reusable outputs
 
-- Templates 1.1, completed 2026-10-31: [task](templates/stories/01-template-set-and-tiles/01-move-templates-to-feature.md). Built-in data in [built_in_templates.dart](../lib/features/templates/built_in_templates.dart); shared calculation in [workout_template.dart](../lib/features/templates/workout_template.dart); English/Spanish names in `lib/l10n/`. Existing page consumes feature data.
+- Templates 1.1, completed 2026-10-31: [task](templates/stories/01-template-set-and-tiles/done/01-move-templates-to-feature.md). Built-in data in [built_in_templates.dart](../lib/features/templates/built_in_templates.dart); shared calculation in [workout_template.dart](../lib/features/templates/workout_template.dart); English/Spanish names in `lib/l10n/`. Existing page consumes feature data.
 - Approved plan completed: plain feature model and five constants; minimal existing-page integration; localized names and unused-key cleanup; focused tests; review and handoff checks. Per-template accents replaced with an existing shared color; descriptions removed; layout and last-tap selection retained. User requested removal of redundant memory/plan files; this tracker retains the handoff.
 - Evidence: 5 tests pass across both `test/features/templates/` files; touched-file and full analysis clean; changed Dart formatting and shared `verify-branch.sh master` pass. Independent review: no findings. No added TODO/FIXME, personal absolute paths, dependency or platform changes. User approved delivery, commit, push and PR on 2026-10-31.
 - Location: branch `feat/templates-feature`, worktree `.worktrees/templates-feature`. Available on this branch; Done does not imply merged into `master`. Task 1.2 is ready where this output exists. Existing large cards and last-tap selection remain until later tasks.
