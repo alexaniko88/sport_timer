@@ -43,7 +43,7 @@ project-tasks/
             └── 01-<task-slug>.md
 ```
 
-Use lowercase kebab-case for these documentation paths, including in Flutter projects. Epics are unnumbered; stories and tasks use two-digit sequence prefixes, reflecting the intended order. Tasks live directly inside their story folder. Every epic and story has an `index.md` overview. Keep existing identifiers and filenames stable when extending a backlog; avoid renumbering existing work just to insert a dependency.
+Use lowercase kebab-case for these documentation paths, including in Flutter projects. Epics are unnumbered; stories and tasks use two-digit sequence prefixes, reflecting the intended order. Active tasks live directly inside their story folder; completed, merged tasks move into its `done/` folder at the next task start, as described below. Every epic and story has an `index.md` overview. Keep existing identifiers and filenames stable when extending a backlog; avoid renumbering existing work just to insert a dependency.
 
 ### Standalone bugs and improvements
 
@@ -93,6 +93,17 @@ Read [references/templates.md](references/templates.md) when generating the back
 - Update the tracker when creating, moving, splitting, or removing tasks. Keep repeated task/story statuses consistent, and preserve completion history.
 
 When reorganizing, preserve the existing requirements and provisional status, move rather than duplicate files, update affected inbound/outbound links, and remove obsolete paths only as part of the requested move. Do not replace unrelated content.
+
+## Archiving completed work
+
+Archive earlier work when the next local task starts, in that task's feature worktree and PR. Mark completion at handoff, but defer moves until this next start. Done alone is not merge evidence: verify the earlier PR is merged into the target branch and its output is present in the new worktree. Use current Git/PR evidence, including the merge commit for squash merges; do not infer merging from a closed PR or deleted branch. If evidence or output is missing, leave the paths unchanged and record why; do not merge or cherry-pick as part of archival.
+
+- Move a completed, merged task file into `done/` under its current parent, preserving its filename. For example, `stories/01-template-set-and-tiles/01-move-templates-to-feature.md` becomes `stories/01-template-set-and-tiles/done/01-move-templates-to-feature.md`. Apply the same rule to standalone files in `bugs/` and `improvements/`.
+- Move a whole story folder into `stories/done/` only when every task is Done and merged and the story acceptance criteria are verified. For example, `stories/01-template-set-and-tiles/` becomes `stories/done/01-template-set-and-tiles/`. Preserve any existing task-level `done/` folder. Pending, blocked or provisional tasks keep the story active.
+- Create `done/` only when needed, move rather than copy, and never overwrite an existing destination. Keep identifiers, scope, completion history and evidence intact.
+- Update all affected inbound and outbound relative links, including task parent links, dependencies, story/epic indexes, the shared tracker and references from other epics. Record the new paths and merge evidence in `project-tasks/status.md`; validate targets and search for stale paths.
+
+Do not start another task just to archive finished work, or create a separate archival PR at completion. Discover parent indexes from the actual path: a task or story under `done/` has an extra directory level.
 
 ## 4. Validate and hand off
 
