@@ -2,8 +2,8 @@
 name: skill-orchestrator
 description: >
   End-to-end workflow for a change in the Sport Timer app, from a request the user writes in their own
-  words: plan, implementation, tests, review and hand-off. The user approves one plan up front and one
-  commit at the end. There are no tickets. Use when the user says "orchestrate", "let's build",
+  words: feature branch and worktree, plan, implementation, tests, review, hand-off and optional PR.
+  The user approves the plan, the commit and whether to open a PR. There are no tickets. Use when the user says "orchestrate", "let's build",
   "work on this", "handle this", or describes a bug, feature, improvement or refactor to be done
   end-to-end in this repo. Not for read-only investigation (use the
   agent-bug-investigator agent directly) or for PR review comments.
@@ -18,7 +18,7 @@ You are the conductor. Read-heavy work (investigate, plan, estimate, review) goe
 
 There are no tickets. The user's own message is the request. Never look for a ticket, a Linear link or a ticket ID.
 
-**The user stops you twice: to approve the plan (Stage 1) and to approve the commit (Stage 5). Everything in between runs without asking.** Do not ask for confirmation of the request, of each step, of tests, or of review fixes.
+**Ask for approval of the plan (Stage 1), the commit (Stage 5), and then whether to open a PR (Stage 6). Everything between plan approval and the commit hand-off runs without asking.** Do not ask for confirmation of the request, of each step, of tests, or of review fixes. Reuse explicit approval already given in the session rather than asking again.
 
 ## Project context
 
@@ -31,9 +31,23 @@ There are no tickets. The user's own message is the request. Never look for a ti
 - **Dependencies:** `pubspec.yaml` versions stay pinned exactly, with no `^`. Do not bump a package unasked. The `basic_flutter_helper` package is gone: put shared helpers in `lib/core/`.
 - **Commands:** always `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
 - **Personal repo (`alexaniko88`):** nothing from any employer in code, comments, commit messages or generated files. No `/Users/<name>/...` paths, no company names or emails.
-- **Git:** agents never stage, commit, push or create branches. Only you, after the Stage 5 approval.
+- **Git:** subagents never stage, commit, push or create branches or worktrees. The conductor creates the feature branch and worktree in Stage 0 without a separate approval, and stages and commits only after the Stage 5 approval. Approval to open the PR in Stage 6 also authorizes pushing its feature branch. Otherwise, never push without separate explicit approval.
 
 Briefs: ask each agent for a short report (about 300 words, findings first, no file dumps). Run independent agents in parallel in one message. Model and effort of the named agents come from their own frontmatter, so do not override them. Do not use `agent-terminal-app-solution-impl` or `agent-test`: both are built to ask before every edit and to read test rules written for another codebase.
+
+## Stage 0: Create the feature branch and worktree
+
+Before planning or implementation for a new request, create a dedicated Git worktree with a new branch named `feat/<short-feature-summary>`. Use a brief lowercase, hyphen-separated summary, usually 2–5 words, such as `feat/workout-templates` or `feat/timer-pause-fix`. This step is authorized by starting the orchestration; do not ask for separate branch or worktree approval, except when environment permissions require it.
+
+Check the current branch, working tree and `git worktree list` first. Use the current `HEAD` as the starting point unless the user specifies another base. Preserve existing changes; do not reset, discard, stash or copy them into the new worktree automatically. If the feature depends on uncommitted changes, report that dependency before proceeding.
+
+Use the repo's established worktree location, or default to `<repo-root>/.worktrees/<short-feature-summary>` and ensure `.worktrees/` is ignored locally before creation. For example, run `git worktree add -b feat/workout-templates <worktree-path> HEAD`. Do not overwrite an existing branch or directory; choose a short unique suffix when needed. When resuming the same orchestration, reuse its existing branch and worktree.
+
+Run all feature investigation, edits, dependency setup, tests, review and approved commits from that worktree. Give every subagent its explicit working directory and verify the branch before editing or committing. Leave the original checkout on its existing branch. Report the feature branch, worktree path and starting commit, and record them with the approved plan. Keep the worktree for hand-off; remove it only when the user requests cleanup, preserving any uncommitted work.
+
+## Scope changes during an orchestration
+
+Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own `feat/...` branch, worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
 
 ## Stage 1: Plan 🛑
 
@@ -94,4 +108,10 @@ Run the checks that apply and show the result:
 - No local absolute path in the diff (`git diff | grep -n "/Users/"` returns nothing), and no company name or work email address when you read it.
 - List every `TODO` or `FIXME` the diff adds, with `file:line`.
 
-Then give a short summary of what was done and which decisions changed on the way. Draft the commit: a message in the format of `.claude/rules/git-commits.md` (`<type>: <description>`, such as `feat: add workout templates page`), the `Co-Authored-By` trailer, and the exact list of files. Show it and wait for approval. After approval, check that `git config user.email` is the repo-local noreply address, then commit. Never push without a separate explicit approval.
+Then give a short summary of what was done and which decisions changed on the way. Draft the commit: a message in the format of `.claude/rules/git-commits.md` (`<type>: <description>`, such as `feat: add workout templates page`), the `Co-Authored-By` trailer, and the exact list of files. Show it and wait for approval. After approval, check that `git config user.email` is the repo-local noreply address, then commit and proceed to Stage 6. Commit approval alone does not authorize a push.
+
+## Stage 6: Offer to open the PR 🛑
+
+Once implementation and review are complete, required checks pass, and the approved commit exists, prepare a short PR title and description covering the final change, validation results and any remaining limitations. Show the source branch, target branch (`master` unless the user specifies another), title and description, then ask: "Would you like me to push this branch and open the PR?" Wait for the answer unless the user has already explicitly requested this PR in the current orchestration. Do not offer a ready-for-review PR while required checks fail or blocking review findings remain.
+
+If the user agrees, push the feature branch with its upstream and create the PR against the stated target. Check for an existing open PR for the same source and target first; reuse it rather than creating a duplicate. Return the PR link. If the user declines, leave the commit and worktree available locally. Do not merge the PR or remove the worktree without a separate user request.
