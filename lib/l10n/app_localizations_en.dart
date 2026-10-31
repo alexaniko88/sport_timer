@@ -148,6 +148,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templateStrengthName => 'Strength';
 
   @override
+  String templateTileSemantics(String name, String round, String rest, int rounds, String total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      rounds,
+      locale: localeName,
+      other: '$rounds rounds',
+      one: '1 round',
+    );
+    return '$name. Round time $round, rest time $rest, $_temp0, total time $total';
+  }
+
+  @override
+  String templateTileSummary(String work, String rest, int rounds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      rounds,
+      locale: localeName,
+      other: '$rounds rounds',
+      one: '1 round',
+    );
+    return '$work work · $rest rest · $_temp0';
+  }
+
+  @override
   String get templatesApplied => 'APPLIED';
 
   @override

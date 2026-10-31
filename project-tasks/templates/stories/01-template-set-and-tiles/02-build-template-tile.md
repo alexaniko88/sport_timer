@@ -4,7 +4,7 @@ Story: [Story 1 overview](index.md)
 
 Epic: [Templates](../../index.md)
 
-Status: Ready for planning where Task 1.1 is available (`feat/templates-feature`); verify checkout before starting.
+Status: Done on `feat/template-tile` (2026-10-31).
 
 ## Goal
 

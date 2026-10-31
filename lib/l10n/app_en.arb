@@ -206,6 +206,42 @@
   "@templateStrengthName": {
     "description": "Name of the strength workout template."
   },
+  "templateTileSemantics": "{name}. Round time {round}, rest time {rest}, {rounds, plural, =1{1 round} other{{rounds} rounds}}, total time {total}",
+  "@templateTileSemantics": {
+    "description": "Screen reader label of a template tile with its name and values.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "round": {
+        "type": "String"
+      },
+      "rest": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "int"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "templateTileSummary": "{work} work · {rest} rest · {rounds, plural, =1{1 round} other{{rounds} rounds}}",
+  "@templateTileSummary": {
+    "description": "Summary line of a template tile with the round time, rest time and number of rounds.",
+    "placeholders": {
+      "work": {
+        "type": "String"
+      },
+      "rest": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "int"
+      }
+    }
+  },
   "templatesApplied": "APPLIED",
   "@templatesApplied": {
     "description": "Badge shown on the template that is currently applied."
