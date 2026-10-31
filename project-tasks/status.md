@@ -76,7 +76,7 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 
 No implementation in progress. Templates 1.2 is complete on branch `feat/template-tile` (worktree `.worktrees/template-tile`, base `397403b`), PR #11 open. No next task started.
 
-When work starts, record the task, actual branch/worktree if applicable, approved plan location, completed substeps, remaining work, checks run, and blockers. Use repository-relative paths and branch/commit identifiers rather than machine-specific absolute paths. This section must be enough for another session to resume safely.
+When work starts, record the task, the actual branch if applicable, approved plan location, completed substeps, remaining work, checks run, and blockers. Use repository-relative paths and branch/commit identifiers rather than machine-specific absolute paths. This section must be enough for another session to resume safely.
 
 ## Completed tasks and reusable outputs
 
@@ -93,7 +93,7 @@ For each completed task, record its identifier/link, completion date, delivered 
 ## Maintenance
 
 - Use this file as the shared execution-status summary. Task/story files retain detailed scope and acceptance criteria; keep any repeated status consistent.
-- Before implementation, check dependencies and confirm completed outputs exist in the current checkout or intended worktree. A Done row alone is not proof the code is available here.
+- Before implementation, check dependencies and confirm completed outputs exist in the current checkout or intended branch. A Done row alone is not proof the code is available here.
 - Mark In progress when actual work starts, and preserve a useful handoff whenever work stops before completion.
 - Mark Done only after meeting the task's acceptance criteria and relevant checks, including required user validation. Record the evidence in the same update.
 - After completion, reevaluate dependent rows, update the overview and next task, and state which outputs can now be reused. Do not automatically start another task.
