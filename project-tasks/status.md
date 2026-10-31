@@ -17,10 +17,11 @@ Ready does not mean implementation is already approved. Done does not imply comm
 ## Current overview
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
+- **Templates:** 0 of 8 tasks done; 0 in progress; 1 ready; 4 blocked; 3 provisional.
 - **Bugs:** 0 tasks reported.
-- **Improvements:** 0 tasks proposed.
-- **Available to reuse:** no statistics implementation has been completed yet. The existing files describe planned capabilities only.
-- **Next task:** Statistics 1.1 — verify Serverpod local integration and approve the data model.
+- **Improvements:** 0 of 2 tasks done; both provisional.
+- **Available to reuse:** no statistics or templates implementation has been completed yet. The existing files describe planned capabilities only.
+- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 1.1 — move templates into a feature folder. The two epics are independent.
 
 ## Statistics
 
@@ -43,13 +44,33 @@ The output column describes the intended deliverable. It becomes available for r
 | [3.3 Show day details](statistics/stories/03-day-details/03-show-day-details.md) | ⚪ Provisional | Story 3 agreement and Task 3.2. | Day-detail navigation and view. |
 | [3.4 Verify day details](statistics/stories/03-day-details/04-verify-day-details.md) | ⚪ Provisional | Story 3 agreement and Task 3.3. | Verified day-detail behavior. |
 
+## Templates
+
+Epic: [Templates](templates/index.md).
+
+| Task | Status | Prerequisite or reason | Output when done |
+| --- | --- | --- | --- |
+| [1.1 Move templates into a feature folder](templates/stories/01-template-set-and-tiles/01-move-templates-to-feature.md) | 🟢 Ready | None. | The 5 templates as data, total-time calculation, en/es names. |
+| [1.2 Build the compact template tile](templates/stories/01-template-set-and-tiles/02-build-template-tile.md) | 🔴 Blocked | Task 1.1. | Reusable compact tile with summary, total time and phase bar. |
+| [1.3 Rebuild the Templates page](templates/stories/01-template-set-and-tiles/03-rebuild-templates-page.md) | 🔴 Blocked | Task 1.2. | New Templates tab; tap applies the template. |
+| [2.1 Add a templates view model](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md) | 🔴 Blocked | Story 1 completed. | Computed selected template or custom, with tests. |
+| [2.2 Show the selection and the Custom card](templates/stories/02-selection-follows-settings/02-show-selection-and-custom-card.md) | 🔴 Blocked | Task 2.1. | Highlighted row and visual-only Custom card. |
+| [3.1 Confirm the creation behavior](templates/stories/03-create-own-templates/01-confirm-creation-behavior.md) | ⚪ Provisional | Revisit Story 3 after Stories 1 and 2. | Agreed creation, edit, delete and storage decisions. |
+| [3.2 Store custom templates](templates/stories/03-create-own-templates/02-store-custom-templates.md) | ⚪ Provisional | Story 3 agreement and Task 3.1. | Repository for own templates. |
+| [3.3 Add the creation flow](templates/stories/03-create-own-templates/03-add-creation-flow.md) | ⚪ Provisional | Story 3 agreement and Task 3.2. | "+" action and creation flow. |
+
 ## Bugs
 
 Folder: [Bugs](bugs/index.md). Only bug tasks belong here. None reported yet; add a linked row with status, dependencies/blockers, and intended result when a report is created.
 
 ## Improvements
 
-Folder: [Improvements](improvements/index.md). Only improvement tasks belong here. None proposed yet; add a linked row with status, dependencies/blockers, and intended result when a task is created.
+Folder: [Improvements](improvements/index.md). Only improvement tasks belong here.
+
+| Task | Status | Prerequisite or reason | Output when done |
+| --- | --- | --- | --- |
+| [IMP-01 Unify styles across the app](improvements/01-unify-styles-app-wide.md) | ⚪ Provisional | Best after Templates Story 1; scope to be agreed. | Consistent look across screens. |
+| [IMP-02 Rethink the navigation drawer](improvements/02-rethink-navigation-drawer.md) | ⚪ Provisional | Direction to be agreed. | Agreed role for the drawer. |
 
 ## Active work and handoff
 
