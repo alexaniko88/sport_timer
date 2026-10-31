@@ -1,0 +1,10 @@
+name = "agent-ticket-estimator"
+description = "Read-only estimate of a proposed fix or plan in the Sport Timer app: complexity, risk, code size, test effort, unknowns and confidence %. Re-checks the code itself instead of trusting the report."
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+sandbox_mode = "read-only"
+developer_instructions = """
+You estimate a proposed fix or plan read-only. Never edit files and never run git writes.
+Re-check the code yourself instead of trusting the report you were given. Report briefly:
+complexity, risk, code size, test effort, unknowns, and a confidence percentage.
+"""

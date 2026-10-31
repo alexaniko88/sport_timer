@@ -16,6 +16,8 @@ effort: medium
 
 You are the conductor. Read-heavy work (investigate, plan, estimate, review) goes to read-only subagents so their file dumps stay out of the main chat. Code edits and tests go to a Sonnet subagent, so the conductor and the investigation and planning agents run on Opus and the editing runs on the cheaper model.
 
+This skill runs on Claude and on Codex. The models match: Opus is `gpt-6.1-sol` and Sonnet is `gpt-6.1-terra`. On Claude, the named agents are Markdown files in `~/.claude/agents/` and the conductor model comes from the frontmatter above. On Codex, the same agent names are TOML files in `.codex/agents/`, and the conductor model comes from `.codex/config.toml`. Codex has no per-call `model` option, so every step must use a named agent.
+
 There are no tickets. The user's own message is the request. Never look for a ticket, a Linear link or a ticket ID.
 
 **Ask for approval of the plan (Stage 1), the commit (Stage 5), and then whether to open a PR (Stage 6). Everything between plan approval and the commit hand-off runs without asking.** Do not ask for confirmation of the request, of each step, of tests, or of review fixes. Reuse explicit approval already given in the session rather than asking again.
@@ -33,7 +35,21 @@ There are no tickets. The user's own message is the request. Never look for a ti
 - **Personal repo (`alexaniko88`):** nothing from any employer in code, comments, commit messages or generated files. No `/Users/<name>/...` paths, no company names or emails.
 - **Git:** subagents never stage, commit, push or create branches or worktrees. The conductor creates the feature branch and worktree in Stage 0 without a separate approval, and stages and commits only after the Stage 5 approval. Approval to open the PR in Stage 6 also authorizes pushing its feature branch. Otherwise, never push without separate explicit approval.
 
-Briefs: ask each agent for a short report (about 300 words, findings first, no file dumps). Run independent agents in parallel in one message. Model and effort of the named agents come from their own frontmatter, so do not override them. Do not use `agent-terminal-app-solution-impl` or `agent-test`: both are built to ask before every edit and to read test rules written for another codebase.
+Briefs: ask each agent for a short report (about 300 words, findings first, no file dumps). Run independent agents in parallel in one message. Model and effort of the named agents come from their own file (frontmatter on Claude, TOML on Codex), so do not override them. Do not use `agent-terminal-app-solution-impl` or `agent-test`: both are built to ask before every edit and to read test rules written for another codebase.
+
+## Stage 0: Create the feature branch and worktree
+
+Before planning or implementation for a new request, create a dedicated Git worktree with a new branch named `feat/<short-feature-summary>`. Use a brief lowercase, hyphen-separated summary, usually 2–5 words, such as `feat/workout-templates` or `feat/timer-pause-fix`. This step is authorized by starting the orchestration; do not ask for separate branch or worktree approval, except when environment permissions require it.
+
+Check the current branch, working tree and `git worktree list` first. Use the current `HEAD` as the starting point unless the user specifies another base. Preserve existing changes; do not reset, discard, stash or copy them into the new worktree automatically. If the feature depends on uncommitted changes, report that dependency before proceeding.
+
+Use the repo's established worktree location, or default to `<repo-root>/.worktrees/<short-feature-summary>` and ensure `.worktrees/` is ignored locally before creation. For example, run `git worktree add -b feat/workout-templates <worktree-path> HEAD`. Do not overwrite an existing branch or directory; choose a short unique suffix when needed. When resuming the same orchestration, reuse its existing branch and worktree.
+
+Run all feature investigation, edits, dependency setup, tests, review and approved commits from that worktree. Give every subagent its explicit working directory and verify the branch before editing or committing. Leave the original checkout on its existing branch. Report the feature branch, worktree path and starting commit, and record them with the approved plan. Keep the worktree for hand-off; remove it only when the user requests cleanup, preserving any uncommitted work.
+
+## Scope changes during an orchestration
+
+Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own `feat/...` branch, worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
 
 ## Stage 0: Create the feature branch and worktree
 
@@ -73,7 +89,7 @@ After approval, write the plan and the step list to a project memory file `proje
 
 ## Stage 2: Implement
 
-Dispatch one general-purpose agent with `model: sonnet`. Put in the brief: the approved plan, the decisions, the step list, the project overrides, and these rules:
+Dispatch one agent: on Claude a general-purpose agent with `model: sonnet`, on Codex `agent-implementer`. Put in the brief: the approved plan, the decisions, the step list, the project overrides, and these rules:
 
 - Do all the steps in order, without waiting for approval between them. The user approved the plan already.
 - Scope is exactly the plan: no bonus refactors, no unrelated cleanup, no extra tests or docs. Mention an unrelated issue in one line at the end.
@@ -86,7 +102,7 @@ When the agent reports a surprise, decide it yourself if the answer is clear fro
 
 ## Stage 3: Tests
 
-Skip this stage for pure UI or text changes with no logic. Otherwise dispatch a general-purpose agent with `model: sonnet` (or continue the Stage 2 agent with `SendMessage`) to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
+Skip this stage for pure UI or text changes with no logic. Otherwise dispatch the Stage 2 kind of agent (Claude: general-purpose with `model: sonnet`, Codex: `agent-implementer`), or continue the Stage 2 agent, to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
 
 - Use the test rules in the project overrides. Read one existing test of the same kind first if there is one, and copy its structure.
 - If a test needs infrastructure that does not exist yet (a first fake or test helper), build the smallest version the plan's tests need and say so in the report. Do not add anything else.
