@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
@@ -25,14 +27,16 @@ Future<void> _openTimePicker(
 }) async {
   await tester.pumpWidget(_app());
   final context = tester.element(find.byType(Scaffold));
-  TimerSettingsPickerWheel.show(
-    context: context,
-    picketType: PicketType.time,
-    buttonsColor: _color,
-    initialDuration: initialDuration,
-    minDuration: minDuration,
-    maxMinutes: maxMinutes,
-    onDurationChanged: changes.add,
+  unawaited(
+    TimerSettingsPickerWheel.show(
+      context: context,
+      picketType: PicketType.time,
+      buttonsColor: _color,
+      initialDuration: initialDuration,
+      minDuration: minDuration,
+      maxMinutes: maxMinutes,
+      onDurationChanged: changes.add,
+    ),
   );
   await tester.pumpAndSettle();
 }
@@ -45,13 +49,15 @@ Future<void> _openRoundsPicker(
 }) async {
   await tester.pumpWidget(_app());
   final context = tester.element(find.byType(Scaffold));
-  TimerSettingsPickerWheel.show(
-    context: context,
-    picketType: PicketType.rounds,
-    buttonsColor: _color,
-    rounds: rounds,
-    maxRounds: maxRounds,
-    onRoundsChanged: changes.add,
+  unawaited(
+    TimerSettingsPickerWheel.show(
+      context: context,
+      picketType: PicketType.rounds,
+      buttonsColor: _color,
+      rounds: rounds,
+      maxRounds: maxRounds,
+      onRoundsChanged: changes.add,
+    ),
   );
   await tester.pumpAndSettle();
 }

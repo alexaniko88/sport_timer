@@ -7,7 +7,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final SettingsViewModel _viewModel = SettingsViewModel(getIt());
   final AccountViewModel _accountViewModel = AccountViewModel(getIt());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -16,11 +16,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _viewModel.loadSettings();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      unawaited(_viewModel.flushSettings());
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _viewModel.dispose();
     _accountViewModel.dispose();
     super.dispose();
@@ -121,9 +130,8 @@ class _HomePageState extends State<HomePage> {
                 return AppButton.fab(
                   icon: const Icon(Icons.timer),
                   label: l10n.homeStartButton,
-                  isLoading: state.status == SettingsStatus.saving,
                   onPressed: () {
-                    _viewModel.saveSettings(settings);
+                    unawaited(_viewModel.flushSettings());
                     context.pushNamed(
                       RoutePath.timer.value,
                       extra: TimerParams(

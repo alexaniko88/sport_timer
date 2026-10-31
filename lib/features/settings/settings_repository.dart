@@ -58,6 +58,8 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
   static const String _roundsKey = 'rounds';
   static const String _timerStyleKey = 'timer_style';
 
+  final Set<String> _failedWrites = {};
+
   @override
   Future<Result<TimerSettings>> getTimerSettings() async {
     try {
@@ -81,12 +83,29 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      await Future.wait([
-        prefs.setInt(_preparationTimeKey, settings.preparationTime.inSeconds),
-        prefs.setInt(_roundTimeKey, settings.roundTime.inSeconds),
-        prefs.setInt(_restTimeKey, settings.restTime.inSeconds),
-        prefs.setInt(_roundsKey, settings.rounds),
-      ]);
+      final values = {
+        _preparationTimeKey: settings.preparationTime.inSeconds,
+        _roundTimeKey: settings.roundTime.inSeconds,
+        _restTimeKey: settings.restTime.inSeconds,
+        _roundsKey: settings.rounds,
+      };
+      const defaults = {
+        _preparationTimeKey: 20,
+        _roundTimeKey: 60,
+        _restTimeKey: 30,
+        _roundsKey: 5,
+      };
+      for (final entry in values.entries) {
+        if (!_failedWrites.contains(entry.key) && (prefs.getInt(entry.key) ?? defaults[entry.key]) == entry.value) {
+          continue;
+        }
+        // SharedPreferences updates its cache even when the platform write fails.
+        _failedWrites.add(entry.key);
+        if (!await prefs.setInt(entry.key, entry.value)) {
+          return Failure(Exception('Could not save timer settings'));
+        }
+        _failedWrites.remove(entry.key);
+      }
       return const Success(null);
     } catch (e) {
       return Failure(e is Exception ? e : Exception(e.toString()));

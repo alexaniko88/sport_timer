@@ -34,7 +34,7 @@ class TimerSettingsPickerWheel extends StatefulWidget {
     this.onRoundsChanged,
   });
 
-  static void show({
+  static Future<void> show({
     required BuildContext context,
     required PicketType picketType,
     required Color buttonsColor,
@@ -46,7 +46,7 @@ class TimerSettingsPickerWheel extends StatefulWidget {
     int rounds = 2,
     int maxRounds = 100,
   }) {
-    showModalBottomSheet(
+    return showModalBottomSheet<void>(
       context: context,
       builder: (context) => ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),

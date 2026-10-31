@@ -65,6 +65,20 @@ Run all feature investigation, edits, dependency setup, tests, review and approv
 
 Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own `feat/...` branch, worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
 
+## Stage 0: Create the feature branch and worktree
+
+Before planning or implementation for a new request, create a dedicated Git worktree with a new branch named `feat/<short-feature-summary>`. Use a brief lowercase, hyphen-separated summary, usually 2–5 words, such as `feat/workout-templates` or `feat/timer-pause-fix`. This step is authorized by starting the orchestration; do not ask for separate branch or worktree approval, except when environment permissions require it.
+
+Check the current branch, working tree and `git worktree list` first. Use the current `HEAD` as the starting point unless the user specifies another base. Preserve existing changes; do not reset, discard, stash or copy them into the new worktree automatically. If the feature depends on uncommitted changes, report that dependency before proceeding.
+
+Use the repo's established worktree location, or default to `<repo-root>/.worktrees/<short-feature-summary>` and ensure `.worktrees/` is ignored locally before creation. For example, run `git worktree add -b feat/workout-templates <worktree-path> HEAD`. Do not overwrite an existing branch or directory; choose a short unique suffix when needed. When resuming the same orchestration, reuse its existing branch and worktree.
+
+Run all feature investigation, edits, dependency setup, tests, review and approved commits from that worktree. Give every subagent its explicit working directory and verify the branch before editing or committing. Leave the original checkout on its existing branch. Report the feature branch, worktree path and starting commit, and record them with the approved plan. Keep the worktree for hand-off; remove it only when the user requests cleanup, preserving any uncommitted work.
+
+## Scope changes during an orchestration
+
+Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own `feat/...` branch, worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
+
 ## Stage 1: Plan 🛑
 
 1. **Understand the request.** If something blocks you (missing repro steps, unclear behaviour), ask at most 3 short questions, each with a suggested answer, and wait. If it is clear enough, go on without asking.
