@@ -20,7 +20,7 @@ The matching logic lives in a ViewModel that exposes which template is selected,
 
 ## Dependencies
 
-[Task 1.1](../01-template-set-and-tiles/01-move-templates-to-feature.md) and Story 1 completed.
+[Task 1.1](../01-template-set-and-tiles/done/01-move-templates-to-feature.md) and Story 1 completed.
 
 ## Acceptance criteria
 
