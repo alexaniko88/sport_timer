@@ -1,10 +1,10 @@
 # TASK 1.3: Rebuild the Templates page
 
-Story: [Story 1 overview](index.md)
+Story: [Story 1 overview](../index.md)
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../../index.md)
 
-Status: Blocked by Task 1.2.
+Status: Done — automated checks and user manual validation passed 2026-10-31. Committed as `42a6af5` on `improve/templates-page`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open.
 
 ## Goal
 
@@ -21,7 +21,7 @@ The Templates tab shows the 5 new tiles, and tapping one applies it to the saved
 
 ## Dependencies
 
-[Task 1.2](done/02-build-template-tile.md).
+[Task 1.2](02-build-template-tile.md).
 
 ## Acceptance criteria
 

@@ -2,7 +2,7 @@
 
 Story: [Story 1 overview](../index.md)
 
-Epic: [Templates](../../../index.md)
+Epic: [Templates](../../../../index.md)
 
 Status: Done on `feat/template-tile` (2026-10-31); PR #11 open.
 

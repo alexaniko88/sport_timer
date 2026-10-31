@@ -20,7 +20,7 @@ The Templates page highlights the matching row, or shows the Custom card when no
 
 ## Dependencies
 
-[Task 2.1](01-add-templates-view-model.md) and [Task 1.3](../01-template-set-and-tiles/03-rebuild-templates-page.md).
+[Task 2.1](01-add-templates-view-model.md) and [Task 1.3](../done/01-template-set-and-tiles/done/03-rebuild-templates-page.md).
 
 ## Acceptance criteria
 

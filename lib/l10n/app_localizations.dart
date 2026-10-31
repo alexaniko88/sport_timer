@@ -362,53 +362,11 @@ abstract class AppLocalizations {
   /// **'{work} work · {rest} rest · {rounds, plural, =1{1 round} other{{rounds} rounds}}'**
   String templateTileSummary(String work, String rest, int rounds);
 
-  /// Badge shown on the template that is currently applied.
-  ///
-  /// In en, this message translates to:
-  /// **'APPLIED'**
-  String get templatesApplied;
-
-  /// Detail label for the preparation time on a template card.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparation'**
-  String get templatesPreparation;
-
-  /// Detail label for the rest time on a template card.
-  ///
-  /// In en, this message translates to:
-  /// **'Rest Time'**
-  String get templatesRestTime;
-
-  /// Detail label for the round time on a template card.
-  ///
-  /// In en, this message translates to:
-  /// **'Round Time'**
-  String get templatesRoundTime;
-
-  /// Subtitle on the templates page.
-  ///
-  /// In en, this message translates to:
-  /// **'Select a pre-configured workout to get started quickly.'**
-  String get templatesSubtitle;
-
   /// Title of the templates page app bar.
   ///
   /// In en, this message translates to:
   /// **'Choose your template'**
   String get templatesTitle;
-
-  /// Label above the total time on a template card.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Workout Time'**
-  String get templatesTotalWorkoutTime;
-
-  /// Label of the button that applies a template.
-  ///
-  /// In en, this message translates to:
-  /// **'Use Template'**
-  String get templatesUseButton;
 
   /// Tooltip of the button that pauses the timer.
   ///

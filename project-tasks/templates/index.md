@@ -1,6 +1,6 @@
 # EPIC: Templates
 
-Status: Agreed scope for Stories 1 and 2; Story 3 is provisional. Task 1.1 complete on `feat/templates-feature`; Story 1 remains in progress.
+Status: Story 1 complete on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open; Story 2 ready for planning where that output is available. Story 3 is provisional.
 
 Progress and reusable outputs: [Project task status](../status.md).
 
@@ -49,7 +49,7 @@ Decisions:
 
 ## Stories
 
-1. [New template set and tile redesign](stories/01-template-set-and-tiles/index.md) — the 5 templates and the new compact tiles. Task 1.1 complete; Task 1.2 next.
+1. [New template set and tile redesign](stories/done/01-template-set-and-tiles/index.md) — complete on `improve/templates-page`: 5 templates, compact tiles and rebuilt page.
 2. [Selection follows real settings](stories/02-selection-follows-settings/index.md) — computed highlight and the Custom card. Depends on Story 1.
 3. [Create your own templates](stories/03-create-own-templates/index.md) — provisional; confirm before implementation.
 

@@ -2,7 +2,7 @@
 
 Epic: [Templates](../../index.md)
 
-Status: Depends on [Story 1](../01-template-set-and-tiles/index.md).
+Status: Ready for planning where completed [Story 1](../done/01-template-set-and-tiles/index.md) is available (`improve/templates-page`, PR #14 open, not yet merged).
 
 ## User outcome
 
@@ -34,4 +34,4 @@ Out of scope: saving the Custom card as a template ([Story 3](../03-create-own-t
 
 ## Dependencies and open decisions
 
-Needs the template data and the tile from [Story 1](../01-template-set-and-tiles/index.md). The exact "provisional" color is decided while planning Task 2.2, within the existing timer colors.
+Needs the template data and the tile from [Story 1](../done/01-template-set-and-tiles/index.md). The exact "provisional" color is decided while planning Task 2.2, within the existing timer colors.

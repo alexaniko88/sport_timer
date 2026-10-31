@@ -13,6 +13,7 @@ import 'package:sport_timer/features/templates/workout_template.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/widgets/account_avatar_button.dart';
 import 'package:sport_timer/presentation/widgets/app_button.dart';
+import 'package:sport_timer/presentation/widgets/template_tile.dart';
 import 'package:sport_timer/presentation/widgets/timer_settings_picker_wheel.dart';
 import 'package:sport_timer/theme/app_spacing.dart';
 import 'package:sport_timer/theme/theme_context.dart';

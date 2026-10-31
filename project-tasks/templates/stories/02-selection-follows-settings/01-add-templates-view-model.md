@@ -4,7 +4,7 @@ Story: [Story 2 overview](index.md)
 
 Epic: [Templates](../../index.md)
 
-Status: Blocked by Story 1.
+Status: Ready for planning where Story 1 is available (`improve/templates-page`, PR #14 open, not yet merged).
 
 ## Goal
 
@@ -20,7 +20,7 @@ The matching logic lives in a ViewModel that exposes which template is selected,
 
 ## Dependencies
 
-[Task 1.1](../01-template-set-and-tiles/done/01-move-templates-to-feature.md) and Story 1 completed.
+[Task 1.1](../done/01-template-set-and-tiles/done/01-move-templates-to-feature.md) and Story 1 completed.
 
 ## Acceptance criteria
 
