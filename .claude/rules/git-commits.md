@@ -7,3 +7,9 @@ Rules for this project only.
 - Add a body after a blank line only when the reason is not obvious from the first line.
 - End with the `Co-Authored-By` trailer from the session instructions.
 - Existing commits keep their old messages. The format applies to new commits.
+
+## Branch names
+
+- A new branch starts with `feat/`, `fix/` or `improve/`: `feat/` for new behavior (or planning of it), `fix/` for a bug, `improve/` for a change to something that already works. Never `chore/`, `docs/` or `refactor/`, even when the commit type is `chore` or `docs`.
+- After the prefix, use a short lowercase, hyphen-separated summary, for example `feat/workout-templates`.
+- Existing branches keep their names.

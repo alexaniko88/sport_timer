@@ -39,7 +39,7 @@ Briefs: ask each agent for a short report (about 300 words, findings first, no f
 
 ## Stage 0: Create the feature branch and worktree
 
-Before planning or implementation for a new request, create a dedicated Git worktree with a new branch named `feat/<short-feature-summary>`. Use a brief lowercase, hyphen-separated summary, usually 2–5 words, such as `feat/workout-templates` or `feat/timer-pause-fix`. This step is authorized by starting the orchestration; do not ask for separate branch or worktree approval, except when environment permissions require it.
+Before planning or implementation for a new request, create a dedicated Git worktree with a new branch named `<prefix>/<short-summary>`. The prefix is `feat` for new behavior, `fix` for a bug, or `improve` for a change to something that already works. Never use `chore`, `docs` or any other prefix. Use a brief lowercase, hyphen-separated summary, usually 2–5 words, such as `feat/workout-templates`, `fix/timer-pause` or `improve/template-tiles`. This step is authorized by starting the orchestration; do not ask for separate branch or worktree approval, except when environment permissions require it.
 
 Check the current branch, working tree and `git worktree list` first. Use the current `HEAD` as the starting point unless the user specifies another base. Preserve existing changes; do not reset, discard, stash or copy them into the new worktree automatically. If the feature depends on uncommitted changes, report that dependency before proceeding.
 
@@ -49,11 +49,11 @@ Run all feature investigation, edits, dependency setup, tests, review and approv
 
 ## Scope changes during an orchestration
 
-Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own `feat/...` branch, worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
+Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own branch (`feat/`, `fix/` or `improve/`), worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
 
 ## Stage 0: Create the feature branch and worktree
 
-Before planning or implementation for a new request, create a dedicated Git worktree with a new branch named `feat/<short-feature-summary>`. Use a brief lowercase, hyphen-separated summary, usually 2–5 words, such as `feat/workout-templates` or `feat/timer-pause-fix`. This step is authorized by starting the orchestration; do not ask for separate branch or worktree approval, except when environment permissions require it.
+Before planning or implementation for a new request, create a dedicated Git worktree with a new branch named `<prefix>/<short-summary>`. The prefix is `feat` for new behavior, `fix` for a bug, or `improve` for a change to something that already works. Never use `chore`, `docs` or any other prefix. Use a brief lowercase, hyphen-separated summary, usually 2–5 words, such as `feat/workout-templates`, `fix/timer-pause` or `improve/template-tiles`. This step is authorized by starting the orchestration; do not ask for separate branch or worktree approval, except when environment permissions require it.
 
 Check the current branch, working tree and `git worktree list` first. Use the current `HEAD` as the starting point unless the user specifies another base. Preserve existing changes; do not reset, discard, stash or copy them into the new worktree automatically. If the feature depends on uncommitted changes, report that dependency before proceeding.
 
@@ -63,7 +63,7 @@ Run all feature investigation, edits, dependency setup, tests, review and approv
 
 ## Scope changes during an orchestration
 
-Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own `feat/...` branch, worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
+Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own branch (`feat/`, `fix/` or `improve/`), worktree and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
 
 ## Stage 0: Create the feature branch and worktree
 
