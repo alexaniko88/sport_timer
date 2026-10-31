@@ -71,11 +71,11 @@ State is held with `ValueNotifier`. There is no state management package.
 
 ## Workflow
 
-For an end-to-end change (bug, feature, improvement, refactor), use the `skill-orchestrator` skill in `.claude/skills/`. Never use `skill-ticket-orchestrator` here: this project has no tickets and no Linear. The skill asks for approval twice, on the plan and on the commit.
+For an end-to-end change (bug, feature, improvement, refactor), read and follow `.agents/skills/skill-orchestrator/SKILL.md`. This is the single repo-local skill folder shared by Claude, Codex and Gemini. Never use `skill-ticket-orchestrator` here: this project has no tickets and no Linear. The skill asks for approval twice, on the plan and on the commit.
 
 ## Shared dev environment (my-dev-env)
 
-Agents, skills, rules and task profiles are not stored in this repo. `~/.claude/{agents,skills,rules,profiles}` and `~/.claude/CLAUDE.md` are symlinks into `~/Projects/my-dev-env`, so every project picks them up with no per-repo setup. To change one, edit it in `~/Projects/my-dev-env`, never copy it here. `~/Projects/my-dev-env/profiles/index.md` says which task profile to read for which task (tests, review, hand-off, merge).
+Shared agents, global skills, rules and task profiles live outside this repo. The project-specific `skill-orchestrator` is stored only in `.agents/skills/skill-orchestrator/`. `~/.claude/{agents,skills,rules,profiles}` and `~/.claude/CLAUDE.md` are symlinks into `~/Projects/my-dev-env`, so every project picks them up with no per-repo setup. To change one, edit it in `~/Projects/my-dev-env`, never copy it here. `~/Projects/my-dev-env/profiles/index.md` says which task profile to read for which task (tests, review, hand-off, merge).
 
 Rules that apply to this project only live in `.claude/rules/` in this repo (for example `.claude/rules/dart-style.md`), not in my-dev-env.
 
