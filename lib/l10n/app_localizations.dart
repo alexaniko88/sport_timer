@@ -350,6 +350,18 @@ abstract class AppLocalizations {
   /// **'Strength'**
   String get templateStrengthName;
 
+  /// Screen reader label of a template tile with its name and values.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}. Round time {round}, rest time {rest}, {rounds, plural, =1{1 round} other{{rounds} rounds}}, total time {total}'**
+  String templateTileSemantics(String name, String round, String rest, int rounds, String total);
+
+  /// Summary line of a template tile with the round time, rest time and number of rounds.
+  ///
+  /// In en, this message translates to:
+  /// **'{work} work · {rest} rest · {rounds, plural, =1{1 round} other{{rounds} rounds}}'**
+  String templateTileSummary(String work, String rest, int rounds);
+
   /// Badge shown on the template that is currently applied.
   ///
   /// In en, this message translates to:

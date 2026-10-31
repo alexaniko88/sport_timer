@@ -21,7 +21,7 @@ The Templates tab shows the 5 new tiles, and tapping one applies it to the saved
 
 ## Dependencies
 
-[Task 1.2](02-build-template-tile.md).
+[Task 1.2](done/02-build-template-tile.md).
 
 ## Acceptance criteria
 

@@ -2,7 +2,7 @@
 
 Epic: [Templates](../../index.md)
 
-Status: Partially complete — Task 1.1 Done; Task 1.2 ready for planning where its prerequisite is available.
+Status: Partially complete — Tasks 1.1 and 1.2 Done; Task 1.3 ready for planning where Task 1.2 is available.
 
 ## User outcome
 
@@ -29,7 +29,7 @@ Out of scope: the computed selected state and the Custom card ([Story 2](../02-s
 ## Tasks
 
 1. [Move templates into a feature folder](01-move-templates-to-feature.md).
-2. [Build the compact template tile](02-build-template-tile.md).
+2. [Build the compact template tile](done/02-build-template-tile.md).
 3. [Rebuild the Templates page](03-rebuild-templates-page.md).
 
 ## Dependencies and open decisions

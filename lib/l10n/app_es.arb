@@ -43,6 +43,8 @@
   "templateHyroxName": "Hyrox",
   "templateStretchingName": "Estiramientos",
   "templateStrengthName": "Fuerza",
+  "templateTileSemantics": "{name}. Tiempo de ronda {round}, tiempo de descanso {rest}, {rounds, plural, =1{1 ronda} other{{rounds} rondas}}, tiempo total {total}",
+  "templateTileSummary": "{work} trabajo · {rest} descanso · {rounds, plural, =1{1 ronda} other{{rounds} rondas}}",
   "templatesApplied": "APLICADA",
   "templatesPreparation": "Preparación",
   "templatesRestTime": "Descanso",
