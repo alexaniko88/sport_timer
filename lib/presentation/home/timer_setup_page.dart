@@ -125,8 +125,8 @@ class TimerSetupPage extends StatelessWidget {
       semanticHint: l10n.commonOpensSelectorHint,
       value: duration?.asMinutesAndSeconds ?? rounds?.toString() ?? '',
       color: color,
-      onPressed: () {
-        TimerSettingsPickerWheel.show(
+      onPressed: () async {
+        await TimerSettingsPickerWheel.show(
           context: context,
           picketType: picketType,
           initialDuration: duration,
@@ -138,6 +138,7 @@ class TimerSetupPage extends StatelessWidget {
           onDurationChanged: onDurationChanged,
           onRoundsChanged: onRoundsChanged,
         );
+        await viewModel.flushSettings();
       },
     );
   }
