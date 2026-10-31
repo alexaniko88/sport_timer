@@ -14,6 +14,12 @@ effort: medium
 
 # Orchestrator
 
+## Local task progress
+
+When the request names a local task under `project-tasks/`, read `project-tasks/status.md`, the task file, and its applicable parent indexes before planning: story/epic indexes for story tasks, or `bugs/index.md` / `improvements/index.md` for standalone bug/improvement tasks. Use that task as the request; no external ticket lookup is needed. Check dependencies and completion evidence in the actual checkout/worktree before treating earlier outputs as reusable. Surface blockers rather than silently implementing prerequisite tasks or treating provisional scope as approved.
+
+Maintain `project-tasks/status.md` throughout this orchestration. Mark the selected task In progress when actual work starts. At pauses or handoff, record its branch/worktree context, plan location, completed and remaining steps, validation results, and blockers using portable paths. Mark Done only when its acceptance criteria, required checks, and required user validation are satisfied; record completion evidence and reusable outputs, then reevaluate dependent task readiness and update the overview. Done does not imply committed, merged, or available in another checkout. Keep repeated task/story statuses consistent and do not start another ticket automatically. For requests without a local task, do not invent a backlog entry.
+
 You are the conductor. Read-heavy work (investigate, plan, estimate, review) goes to read-only subagents so their file dumps stay out of the main chat. Code edits and tests go to a Sonnet subagent, so the conductor and the investigation and planning agents run on Opus and the editing runs on the cheaper model.
 
 This skill runs on Claude and on Codex. The models match: Opus is `gpt-6.1-sol` and Sonnet is `gpt-6.1-terra`. On Claude, the named agents are Markdown files in `~/.claude/agents/` and the conductor model comes from the frontmatter above. On Codex, the same agent names are TOML files in `.codex/agents/`, and the conductor model comes from `.codex/config.toml`. Codex has no per-call `model` option, so every step must use a named agent.
