@@ -320,41 +320,35 @@ abstract class AppLocalizations {
   /// **'Your statistics'**
   String get statisticsTitle;
 
-  /// Description of the Full Abs workout template.
-  ///
-  /// In en, this message translates to:
-  /// **'Intense abdominal workout with short rounds'**
-  String get templateAbsDescription;
-
   /// Name of the Full Abs workout template.
   ///
   /// In en, this message translates to:
   /// **'Full Abs'**
   String get templateAbsName;
 
-  /// Description of the CrossFit workout template.
-  ///
-  /// In en, this message translates to:
-  /// **'High-intensity functional fitness training'**
-  String get templateCrossFitDescription;
-
-  /// Name of the CrossFit workout template.
-  ///
-  /// In en, this message translates to:
-  /// **'CrossFit'**
-  String get templateCrossFitName;
-
-  /// Description of the default workout template.
-  ///
-  /// In en, this message translates to:
-  /// **'Default workout with standard settings'**
-  String get templateDefaultDescription;
-
   /// Name of the default workout template.
   ///
   /// In en, this message translates to:
   /// **'Default'**
   String get templateDefaultName;
+
+  /// Name of the Hyrox workout template.
+  ///
+  /// In en, this message translates to:
+  /// **'Hyrox'**
+  String get templateHyroxName;
+
+  /// Name of the stretching workout template.
+  ///
+  /// In en, this message translates to:
+  /// **'Stretching'**
+  String get templateStretchingName;
+
+  /// Name of the strength workout template.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get templateStrengthName;
 
   /// Badge shown on the template that is currently applied.
   ///

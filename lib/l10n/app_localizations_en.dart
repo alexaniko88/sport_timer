@@ -133,22 +133,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statisticsTitle => 'Your statistics';
 
   @override
-  String get templateAbsDescription => 'Intense abdominal workout with short rounds';
-
-  @override
   String get templateAbsName => 'Full Abs';
 
   @override
-  String get templateCrossFitDescription => 'High-intensity functional fitness training';
-
-  @override
-  String get templateCrossFitName => 'CrossFit';
-
-  @override
-  String get templateDefaultDescription => 'Default workout with standard settings';
-
-  @override
   String get templateDefaultName => 'Default';
+
+  @override
+  String get templateHyroxName => 'Hyrox';
+
+  @override
+  String get templateStretchingName => 'Stretching';
+
+  @override
+  String get templateStrengthName => 'Strength';
 
   @override
   String get templatesApplied => 'APPLIED';

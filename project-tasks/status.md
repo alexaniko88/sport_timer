@@ -17,11 +17,11 @@ Ready does not mean implementation is already approved. Done does not imply comm
 ## Current overview
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
-- **Templates:** 0 of 8 tasks done; 0 in progress; 1 ready; 4 blocked; 3 provisional.
+- **Templates:** 1 of 8 tasks done; 0 in progress; 1 ready; 3 blocked; 3 provisional.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
-- **Available to reuse:** no statistics or templates implementation has been completed yet. The existing files describe planned capabilities only.
-- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 1.1 — move templates into a feature folder. The two epics are independent.
+- **Available to reuse:** Templates 1.1 data, total-time calculation and en/es names on `feat/templates-feature`; verify availability in the intended checkout. No statistics implementation completed yet.
+- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 1.2 — build the compact template tile where Task 1.1 is available. The two epics are independent.
 
 ## Statistics
 
@@ -50,8 +50,8 @@ Epic: [Templates](templates/index.md).
 
 | Task | Status | Prerequisite or reason | Output when done |
 | --- | --- | --- | --- |
-| [1.1 Move templates into a feature folder](templates/stories/01-template-set-and-tiles/01-move-templates-to-feature.md) | 🟢 Ready | None. | The 5 templates as data, total-time calculation, en/es names. |
-| [1.2 Build the compact template tile](templates/stories/01-template-set-and-tiles/02-build-template-tile.md) | 🔴 Blocked | Task 1.1. | Reusable compact tile with summary, total time and phase bar. |
+| [1.1 Move templates into a feature folder](templates/stories/01-template-set-and-tiles/01-move-templates-to-feature.md) | ✅ Done | Checks pass; user approved delivery 2026-10-31. Available on `feat/templates-feature`. | The 5 templates as data, total-time calculation, en/es names. |
+| [1.2 Build the compact template tile](templates/stories/01-template-set-and-tiles/02-build-template-tile.md) | 🟢 Ready | Task 1.1 available on `feat/templates-feature`; verify intended checkout. | Reusable compact tile with summary, total time and phase bar. |
 | [1.3 Rebuild the Templates page](templates/stories/01-template-set-and-tiles/03-rebuild-templates-page.md) | 🔴 Blocked | Task 1.2. | New Templates tab; tap applies the template. |
 | [2.1 Add a templates view model](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md) | 🔴 Blocked | Story 1 completed. | Computed selected template or custom, with tests. |
 | [2.2 Show the selection and the Custom card](templates/stories/02-selection-follows-settings/02-show-selection-and-custom-card.md) | 🔴 Blocked | Task 2.1. | Highlighted row and visual-only Custom card. |
@@ -74,13 +74,16 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 
 ## Active work and handoff
 
-None. No task implementation has started.
+No implementation in progress. Templates 1.1 is complete; commit, push and PR authorized by the user. Worktree `.worktrees/templates-feature`, branch `feat/templates-feature`, base `a82927d`. No next task started.
 
 When work starts, record the task, actual branch/worktree if applicable, approved plan location, completed substeps, remaining work, checks run, and blockers. Use repository-relative paths and branch/commit identifiers rather than machine-specific absolute paths. This section must be enough for another session to resume safely.
 
 ## Completed tasks and reusable outputs
 
-None yet.
+- Templates 1.1, completed 2026-10-31: [task](templates/stories/01-template-set-and-tiles/01-move-templates-to-feature.md). Built-in data in [built_in_templates.dart](../lib/features/templates/built_in_templates.dart); shared calculation in [workout_template.dart](../lib/features/templates/workout_template.dart); English/Spanish names in `lib/l10n/`. Existing page consumes feature data.
+- Approved plan completed: plain feature model and five constants; minimal existing-page integration; localized names and unused-key cleanup; focused tests; review and handoff checks. Per-template accents replaced with an existing shared color; descriptions removed; layout and last-tap selection retained. User requested removal of redundant memory/plan files; this tracker retains the handoff.
+- Evidence: 5 tests pass across both `test/features/templates/` files; touched-file and full analysis clean; changed Dart formatting and shared `verify-branch.sh master` pass. Independent review: no findings. No added TODO/FIXME, personal absolute paths, dependency or platform changes. User approved delivery, commit, push and PR on 2026-10-31.
+- Location: branch `feat/templates-feature`, worktree `.worktrees/templates-feature`. Available on this branch; Done does not imply merged into `master`. Task 1.2 is ready where this output exists. Existing large cards and last-tap selection remain until later tasks.
 
 For each completed task, record its identifier/link, completion date, delivered result, relevant file/decision links, validation results, known limits, and where the work exists (branch, commit, or uncommitted checkout). For research, link the approved decision rather than implying feature code exists.
 

@@ -186,29 +186,25 @@
   "@statisticsTitle": {
     "description": "Title of the statistics page app bar."
   },
-  "templateAbsDescription": "Intense abdominal workout with short rounds",
-  "@templateAbsDescription": {
-    "description": "Description of the Full Abs workout template."
-  },
   "templateAbsName": "Full Abs",
   "@templateAbsName": {
     "description": "Name of the Full Abs workout template."
   },
-  "templateCrossFitDescription": "High-intensity functional fitness training",
-  "@templateCrossFitDescription": {
-    "description": "Description of the CrossFit workout template."
-  },
-  "templateCrossFitName": "CrossFit",
-  "@templateCrossFitName": {
-    "description": "Name of the CrossFit workout template."
-  },
-  "templateDefaultDescription": "Default workout with standard settings",
-  "@templateDefaultDescription": {
-    "description": "Description of the default workout template."
-  },
   "templateDefaultName": "Default",
   "@templateDefaultName": {
     "description": "Name of the default workout template."
+  },
+  "templateHyroxName": "Hyrox",
+  "@templateHyroxName": {
+    "description": "Name of the Hyrox workout template."
+  },
+  "templateStretchingName": "Stretching",
+  "@templateStretchingName": {
+    "description": "Name of the stretching workout template."
+  },
+  "templateStrengthName": "Strength",
+  "@templateStrengthName": {
+    "description": "Name of the strength workout template."
   },
   "templatesApplied": "APPLIED",
   "@templatesApplied": {
