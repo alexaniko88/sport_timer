@@ -14,4 +14,7 @@ An improvement task does not authorize implementation. Plan and agree the change
 
 ## Tasks
 
-No improvements proposed yet. Add each new task here and in the shared status tracker.
+1. [IMP-01: Unify styles across the app](01-unify-styles-app-wide.md) — Provisional.
+2. [IMP-02: Rethink the navigation drawer](02-rethink-navigation-drawer.md) — Provisional.
+
+Add each new task here and in the shared status tracker.
