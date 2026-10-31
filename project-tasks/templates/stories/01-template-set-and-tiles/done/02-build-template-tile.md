@@ -1,10 +1,10 @@
 # TASK 1.2: Build the compact template tile
 
-Story: [Story 1 overview](index.md)
+Story: [Story 1 overview](../index.md)
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../index.md)
 
-Status: Done on `feat/template-tile` (2026-10-31).
+Status: Done on `feat/template-tile` (2026-10-31); PR #11 open.
 
 ## Goal
 
@@ -22,7 +22,7 @@ A reusable tile widget that shows one template, or one set of timer values, in t
 
 ## Dependencies
 
-[Task 1.1](01-move-templates-to-feature.md).
+[Task 1.1](../01-move-templates-to-feature.md).
 
 ## Acceptance criteria
 
