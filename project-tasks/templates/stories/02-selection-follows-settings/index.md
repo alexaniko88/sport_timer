@@ -2,7 +2,7 @@
 
 Epic: [Templates](../../index.md)
 
-Status: Depends on [Story 1](../01-template-set-and-tiles/index.md).
+Status: Ready for planning where completed [Story 1](../01-template-set-and-tiles/index.md) is available (`improve/templates-page`, not yet committed or merged).
 
 ## User outcome
 

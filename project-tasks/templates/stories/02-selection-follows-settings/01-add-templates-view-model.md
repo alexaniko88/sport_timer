@@ -4,7 +4,7 @@ Story: [Story 2 overview](index.md)
 
 Epic: [Templates](../../index.md)
 
-Status: Blocked by Story 1.
+Status: Ready for planning where Story 1 is available (`improve/templates-page`, not yet committed or merged).
 
 ## Goal
 

@@ -170,28 +170,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get templatesApplied => 'APLICADA';
-
-  @override
-  String get templatesPreparation => 'Preparación';
-
-  @override
-  String get templatesRestTime => 'Descanso';
-
-  @override
-  String get templatesRoundTime => 'Ronda';
-
-  @override
-  String get templatesSubtitle => 'Elige un entrenamiento preconfigurado para empezar rápido.';
-
-  @override
   String get templatesTitle => 'Elige tu plantilla';
-
-  @override
-  String get templatesTotalWorkoutTime => 'Tiempo total de entrenamiento';
-
-  @override
-  String get templatesUseButton => 'Usar plantilla';
 
   @override
   String get timerPause => 'Pausar';

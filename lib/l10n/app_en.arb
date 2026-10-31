@@ -242,37 +242,9 @@
       }
     }
   },
-  "templatesApplied": "APPLIED",
-  "@templatesApplied": {
-    "description": "Badge shown on the template that is currently applied."
-  },
-  "templatesPreparation": "Preparation",
-  "@templatesPreparation": {
-    "description": "Detail label for the preparation time on a template card."
-  },
-  "templatesRestTime": "Rest Time",
-  "@templatesRestTime": {
-    "description": "Detail label for the rest time on a template card."
-  },
-  "templatesRoundTime": "Round Time",
-  "@templatesRoundTime": {
-    "description": "Detail label for the round time on a template card."
-  },
-  "templatesSubtitle": "Select a pre-configured workout to get started quickly.",
-  "@templatesSubtitle": {
-    "description": "Subtitle on the templates page."
-  },
   "templatesTitle": "Choose your template",
   "@templatesTitle": {
     "description": "Title of the templates page app bar."
-  },
-  "templatesTotalWorkoutTime": "Total Workout Time",
-  "@templatesTotalWorkoutTime": {
-    "description": "Label above the total time on a template card."
-  },
-  "templatesUseButton": "Use Template",
-  "@templatesUseButton": {
-    "description": "Label of the button that applies a template."
   },
   "timerPause": "Pause",
   "@timerPause": {

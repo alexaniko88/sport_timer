@@ -4,7 +4,7 @@ Story: [Story 1 overview](index.md)
 
 Epic: [Templates](../../index.md)
 
-Status: Blocked by Task 1.2.
+Status: Done — automated checks and user manual validation passed 2026-10-31. Uncommitted on `improve/templates-page`; commit approval pending.
 
 ## Goal
 

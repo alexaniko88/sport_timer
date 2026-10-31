@@ -17,11 +17,11 @@ Ready does not mean implementation is already approved. Done does not imply comm
 ## Current overview
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
-- **Templates:** 2 of 8 tasks done; 0 in progress; 1 ready; 2 blocked; 3 provisional.
+- **Templates:** 3 of 8 tasks done; 0 in progress; 1 ready; 1 blocked; 3 provisional.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
-- **Available to reuse:** Templates 1.2 `TemplateTile` on `feat/template-tile`; Templates 1.1 data, total-time calculation and en/es names on `feat/templates-feature`; verify availability in the intended checkout. No statistics implementation completed yet.
-- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 1.3 — rebuild the Templates page where Task 1.2 is available. The two epics are independent.
+- **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are complete on `improve/templates-page`, awaiting commit approval. No statistics implementation completed yet.
+- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.1 — plan the templates view model where completed Story 1 is available. The two epics are independent. No next task started.
 
 ## Statistics
 
@@ -52,8 +52,8 @@ Epic: [Templates](templates/index.md).
 | --- | --- | --- | --- |
 | [1.1 Move templates into a feature folder](templates/stories/01-template-set-and-tiles/done/01-move-templates-to-feature.md) | ✅ Done | Checks pass; user approved delivery 2026-10-31. Available on `feat/templates-feature`. | The 5 templates as data, total-time calculation, en/es names. |
 | [1.2 Build the compact template tile](templates/stories/01-template-set-and-tiles/done/02-build-template-tile.md) | ✅ Done | Task 1.1. | Reusable compact tile with summary, total time and phase bar. |
-| [1.3 Rebuild the Templates page](templates/stories/01-template-set-and-tiles/03-rebuild-templates-page.md) | 🟢 Ready | Task 1.2 on `feat/template-tile`; verify it is merged or the checkout has it. | New Templates tab; tap applies the template. |
-| [2.1 Add a templates view model](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md) | 🔴 Blocked | Story 1 completed. | Computed selected template or custom, with tests. |
+| [1.3 Rebuild the Templates page](templates/stories/01-template-set-and-tiles/03-rebuild-templates-page.md) | ✅ Done | Checks and user manual validation passed 2026-10-31; uncommitted on `improve/templates-page`. | New Templates tab; tap applies the template. |
+| [2.1 Add a templates view model](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md) | 🟢 Ready | Story 1 complete on `improve/templates-page`; verify availability in the intended checkout. | Computed selected template or custom, with tests. |
 | [2.2 Show the selection and the Custom card](templates/stories/02-selection-follows-settings/02-show-selection-and-custom-card.md) | 🔴 Blocked | Task 2.1. | Highlighted row and visual-only Custom card. |
 | [3.1 Confirm the creation behavior](templates/stories/03-create-own-templates/01-confirm-creation-behavior.md) | ⚪ Provisional | Revisit Story 3 after Stories 1 and 2. | Agreed creation, edit, delete and storage decisions. |
 | [3.2 Store custom templates](templates/stories/03-create-own-templates/02-store-custom-templates.md) | ⚪ Provisional | Story 3 agreement and Task 3.1. | Repository for own templates. |
@@ -74,7 +74,7 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 
 ## Active work and handoff
 
-No implementation in progress. Templates 1.2 is complete on branch `feat/template-tile` (worktree `.worktrees/template-tile`, base `397403b`), PR #11 open. No next task started.
+Templates 1.3 is complete on `improve/templates-page` in the main checkout, from `master` at `de93de8`. All [plan](project_templates_page.md) steps complete; user confirmed manual checks passed on 2026-10-31. Awaiting commit approval, then separate push/PR approval. Nothing staged or committed. User owns all manual testing: no ADB, app launch or device control unless explicitly requested. Task 2.1 is ready where this branch's output is available; no next task started.
 
 When work starts, record the task, the actual branch if applicable, approved plan location, completed substeps, remaining work, checks run, and blockers. Use repository-relative paths and branch/commit identifiers rather than machine-specific absolute paths. This section must be enough for another session to resume safely.
 
@@ -89,6 +89,8 @@ For each completed task, record its identifier/link, completion date, delivered 
 
 - Templates 1.2, completed 2026-10-31: [task](templates/stories/01-template-set-and-tiles/done/02-build-template-tile.md). `TemplateTile` in `lib/presentation/widgets/template_tile.dart` (name, icon, settings, totalTime, isSelected, isCustom, optional onTap), phase bar of alternating preparation/round/rest segments, `templateTileSummary` and `templateTileSemantics` in en/es. Location: branch `feat/template-tile`, PR #11 open (not merged); task file archived under `done/`. Page still uses old cards; old strings removed in Task 1.3.
 - Evidence: 18 tests pass (tile tests plus `test/l10n`); full `fvm flutter analyze` clean; independent review: no critical findings, semantics tap action, border size shift and context reads fixed. Known limits: `totalTime` is passed in by the caller; `isCustom` has a basic outlined style to refine in Story 2; duration formatter duplicates the page one until Task 1.3.
+
+- Templates 1.3, completed 2026-10-31: [task](templates/stories/01-template-set-and-tiles/03-rebuild-templates-page.md). Rebuilt `lib/presentation/home/templates_page.dart` with the five compact tiles, existing save flow, localized names and bottom clearance. Removed old card UI, subtitle, last-tap selection and seven unused en/es texts. Added `test/presentation/home/templates_page_test.dart` with six widget tests for order/icons, each save, Setup values and Start parameters. `verify-branch.sh master` passed full analysis, changed-file formatting, six tests, generated-file and marker checks; diff whitespace clean. Independent code and accessibility reviews found no blocking issues. User confirmed manual language/theme, fit/clearance and timer checks passed. No added TODO/FIXME, personal absolute paths, dependency or platform changes. Output is uncommitted on `improve/templates-page`; Story 1 complete there. Selection and Custom remain Story 2 scope. Commit and PR approvals pending.
 
 ## Maintenance
 
