@@ -14,12 +14,12 @@ fvm flutter pub get
 fvm flutter analyze
 fvm flutter run                      # entry point is lib/main.dart
 fvm flutter test                     # all tests
-fvm flutter test test/widget_test.dart
+fvm flutter test test/features/timer # one folder or file
 ```
 
 `.zed/tasks.json` (local, git-excluded) wraps run, pub get, rebuild and test as Zed tasks.
 
-`test/widget_test.dart` is the untouched Flutter counter template and fails: it pumps `MyApp`, which starts on the login page. There are no other tests.
+Tests live under `test/` and mirror `lib/`. The CI workflow (`.github/workflows/ci.yml`) runs `flutter analyze` and `flutter test` on every pull request.
 
 ## Project layout
 
