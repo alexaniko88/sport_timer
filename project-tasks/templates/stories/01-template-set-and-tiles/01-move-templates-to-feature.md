@@ -4,7 +4,7 @@ Story: [Story 1 overview](index.md)
 
 Epic: [Templates](../../index.md)
 
-Status: Ready for planning.
+Status: Done — implementation and checks complete; user approved delivery on 2026-10-31.
 
 ## Goal
 

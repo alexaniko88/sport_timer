@@ -2,7 +2,7 @@
 
 Epic: [Templates](../../index.md)
 
-Status: Ready for planning.
+Status: Partially complete — Task 1.1 Done; Task 1.2 ready for planning where its prerequisite is available.
 
 ## User outcome
 

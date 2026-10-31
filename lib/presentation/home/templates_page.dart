@@ -1,37 +1,5 @@
 part of 'home.dart';
 
-enum TemplateAccent {
-  blue,
-  orange,
-  red,
-}
-
-enum TemplateId {
-  standard,
-  fullAbs,
-  crossFit,
-}
-
-class WorkoutTemplate {
-  final TemplateId id;
-  final Duration preparationTime;
-  final Duration roundTime;
-  final Duration restTime;
-  final int rounds;
-  final IconData icon;
-  final TemplateAccent accent;
-
-  const WorkoutTemplate({
-    required this.id,
-    required this.preparationTime,
-    required this.roundTime,
-    required this.restTime,
-    required this.rounds,
-    required this.icon,
-    required this.accent,
-  });
-}
-
 class TemplatesPage extends StatefulWidget {
   final SettingsViewModel viewModel;
   final AccountViewModel accountViewModel;
@@ -56,62 +24,24 @@ class _TemplatesPageState extends State<TemplatesPage> {
 
   TemplateId? _selectedTemplateId;
 
-  static const List<WorkoutTemplate> templates = [
-    WorkoutTemplate(
-      id: TemplateId.standard,
-      preparationTime: Duration(seconds: 20),
-      roundTime: Duration(minutes: 1),
-      restTime: Duration(seconds: 30),
-      rounds: 5,
-      icon: Icons.assignment,
-      accent: TemplateAccent.blue,
-    ),
-    WorkoutTemplate(
-      id: TemplateId.fullAbs,
-      preparationTime: Duration(seconds: 20),
-      roundTime: Duration(seconds: 30),
-      restTime: Duration(seconds: 10),
-      rounds: 20,
-      icon: Icons.sports_gymnastics,
-      accent: TemplateAccent.orange,
-    ),
-    WorkoutTemplate(
-      id: TemplateId.crossFit,
-      preparationTime: Duration(seconds: 20),
-      roundTime: Duration(minutes: 1),
-      restTime: Duration(seconds: 20),
-      rounds: 15,
-      icon: Icons.fitness_center,
-      accent: TemplateAccent.red,
-    ),
-  ];
-
-  Color _resolveAccent({
-    required TemplateAccent accent,
-    required TimerColors timerColors,
-  }) {
-    return switch (accent) {
-      TemplateAccent.blue => timerColors.totalTimeBorder,
-      TemplateAccent.orange => timerColors.roundCounterBorder,
-      TemplateAccent.red => timerColors.progressEnd,
-    };
-  }
-
   String _templateName(TemplateId id) {
     final l10n = context.l10n;
     return switch (id) {
       TemplateId.standard => l10n.templateDefaultName,
       TemplateId.fullAbs => l10n.templateAbsName,
-      TemplateId.crossFit => l10n.templateCrossFitName,
+      TemplateId.hyrox => l10n.templateHyroxName,
+      TemplateId.stretching => l10n.templateStretchingName,
+      TemplateId.strength => l10n.templateStrengthName,
     };
   }
 
-  String _templateDescription(TemplateId id) {
-    final l10n = context.l10n;
+  IconData _templateIcon(TemplateId id) {
     return switch (id) {
-      TemplateId.standard => l10n.templateDefaultDescription,
-      TemplateId.fullAbs => l10n.templateAbsDescription,
-      TemplateId.crossFit => l10n.templateCrossFitDescription,
+      TemplateId.standard => Icons.assignment,
+      TemplateId.fullAbs => Icons.sports_gymnastics,
+      TemplateId.hyrox => Icons.directions_run,
+      TemplateId.stretching => Icons.self_improvement,
+      TemplateId.strength => Icons.fitness_center,
     };
   }
 
@@ -147,9 +77,9 @@ class _TemplatesPageState extends State<TemplatesPage> {
               child: ListView.builder(
                 // Bottom padding keeps the last card clear of the FAB.
                 padding: const EdgeInsets.only(bottom: _listBottomInset),
-                itemCount: templates.length,
+                itemCount: builtInTemplates.length,
                 itemBuilder: (context, index) {
-                  final template = templates[index];
+                  final template = builtInTemplates[index];
                   final isSelected = _selectedTemplateId == template.id;
                   return _buildTemplateCard(
                     context: context,
@@ -172,12 +102,9 @@ class _TemplatesPageState extends State<TemplatesPage> {
   }) {
     final l10n = context.l10n;
     final textTheme = Theme.of(context).textTheme;
-    final totalTime = _calculateTotalWorkoutTime(template);
+    final totalTime = template.totalTime;
     final timerColors = context.timerColors;
-    final accentColor = _resolveAccent(
-      accent: template.accent,
-      timerColors: timerColors,
-    );
+    final accentColor = timerColors.totalTimeBorder;
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.s16),
@@ -215,7 +142,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
                       borderRadius: BorderRadius.circular(AppRadius.r8),
                     ),
                     child: Icon(
-                      template.icon,
+                      _templateIcon(template.id),
                       color: accentColor,
                       size: _iconSize,
                     ),
@@ -255,11 +182,6 @@ class _TemplatesPageState extends State<TemplatesPage> {
                               ),
                             ],
                           ],
-                        ),
-                        const Gap(AppSpacing.s4),
-                        Text(
-                          _templateDescription(template.id),
-                          style: textTheme.bodyMedium,
                         ),
                       ],
                     ),
@@ -317,14 +239,14 @@ class _TemplatesPageState extends State<TemplatesPage> {
                           child: _buildTemplateDetail(
                             context,
                             l10n.templatesPreparation,
-                            _formatDuration(template.preparationTime),
+                            _formatDuration(template.settings.preparationTime),
                           ),
                         ),
                         Expanded(
                           child: _buildTemplateDetail(
                             context,
                             l10n.templatesRoundTime,
-                            _formatDuration(template.roundTime),
+                            _formatDuration(template.settings.roundTime),
                           ),
                         ),
                       ],
@@ -336,14 +258,14 @@ class _TemplatesPageState extends State<TemplatesPage> {
                           child: _buildTemplateDetail(
                             context,
                             l10n.templatesRestTime,
-                            _formatDuration(template.restTime),
+                            _formatDuration(template.settings.restTime),
                           ),
                         ),
                         Expanded(
                           child: _buildTemplateDetail(
                             context,
                             l10n.commonRounds,
-                            '${template.rounds}',
+                            '${template.settings.rounds}',
                           ),
                         ),
                       ],
@@ -403,19 +325,6 @@ class _TemplatesPageState extends State<TemplatesPage> {
     return l10n.durationSeconds(seconds);
   }
 
-  Duration _calculateTotalWorkoutTime(WorkoutTemplate template) {
-    // Preparation time (once) + (Round time + Rest time) * rounds - last rest time
-    final preparationSeconds = template.preparationTime.inSeconds;
-    final roundSeconds = template.roundTime.inSeconds;
-    final restSeconds = template.restTime.inSeconds;
-    final rounds = template.rounds;
-
-    // Total = preparation + (round + rest) * rounds - final rest (since there's no rest after the last round)
-    final totalSeconds = preparationSeconds + (roundSeconds + restSeconds) * rounds - restSeconds;
-
-    return Duration(seconds: totalSeconds);
-  }
-
   String _formatTotalTime(Duration duration) {
     final l10n = context.l10n;
     final hours = duration.inHours;
@@ -432,17 +341,10 @@ class _TemplatesPageState extends State<TemplatesPage> {
   }
 
   void _applyTemplate(WorkoutTemplate template) {
-    final timerSettings = TimerSettings(
-      preparationTime: template.preparationTime,
-      roundTime: template.roundTime,
-      restTime: template.restTime,
-      rounds: template.rounds,
-    );
-
     setState(() {
       _selectedTemplateId = template.id;
     });
 
-    widget.viewModel.saveSettings(timerSettings);
+    widget.viewModel.saveSettings(template.settings);
   }
 }

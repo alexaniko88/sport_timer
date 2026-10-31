@@ -4,7 +4,7 @@ Story: [Story 1 overview](index.md)
 
 Epic: [Templates](../../index.md)
 
-Status: Blocked by Task 1.1.
+Status: Ready for planning where Task 1.1 is available (`feat/templates-feature`); verify checkout before starting.
 
 ## Goal
 
