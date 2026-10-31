@@ -29,4 +29,4 @@ To be written when the behavior is confirmed in [Task 3.1](01-confirm-creation-b
 
 ## Dependencies and open decisions
 
-Depends on [Story 1](../01-template-set-and-tiles/index.md) and [Story 2](../02-selection-follows-settings/index.md). Open: where saving starts, how names and icons are chosen, how editing and deleting work, how built-in and own templates are ordered, where data is stored, and whether to cap the number of templates.
+Depends on [Story 1](../done/01-template-set-and-tiles/index.md) and [Story 2](../02-selection-follows-settings/index.md). Open: where saving starts, how names and icons are chosen, how editing and deleting work, how built-in and own templates are ordered, where data is stored, and whether to cap the number of templates.

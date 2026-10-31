@@ -19,7 +19,7 @@ Agree what creating, editing and deleting a template does, and where it lives in
 
 ## Dependencies
 
-[Story 1](../01-template-set-and-tiles/index.md) and [Story 2](../02-selection-follows-settings/index.md) completed.
+[Story 1](../done/01-template-set-and-tiles/index.md) and [Story 2](../02-selection-follows-settings/index.md) completed.
 
 ## Acceptance criteria
 

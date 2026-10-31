@@ -1,6 +1,6 @@
 # Templates page approved plan
 
-Task: [Templates 1.3](templates/stories/01-template-set-and-tiles/03-rebuild-templates-page.md).
+Task: [Templates 1.3](templates/stories/done/01-template-set-and-tiles/done/03-rebuild-templates-page.md).
 Branch: `improve/templates-page`; base: `master` at `de93de8`.
 Approved in the orchestration conversation on 2026-10-31.
 

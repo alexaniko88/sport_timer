@@ -1,8 +1,8 @@
 # STORY 1: New template set and tile redesign
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../index.md)
 
-Status: Done — Tasks 1.1 and 1.2 available in `master`; Task 1.3 completed and manually validated on `improve/templates-page`, awaiting commit approval.
+Status: Done — Tasks 1.1 and 1.2 available in `master`; Task 1.3 completed and manually validated on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open.
 
 ## User outcome
 
@@ -10,12 +10,12 @@ As a user, I want a short list of good-looking, ready-made workouts so that I ca
 
 ## Scope
 
-- The 5 templates, their values, names, icons and en/es texts, as listed in the [epic](../../index.md).
+- The 5 templates, their values, names, icons and en/es texts, as listed in the [epic](../../../index.md).
 - The compact tile with a summary line, the total time and the phase bar, built on shared app tokens.
 - The rebuilt Templates page: app bar title kept, subtitle removed, list of tiles, clear of the Start button.
 - Tapping a tile applies its values to the saved settings and stays on the page.
 
-Out of scope: the computed selected state and the Custom card ([Story 2](../02-selection-follows-settings/index.md)), and creating templates ([Story 3](../03-create-own-templates/index.md)). In this story the page may show no selection at all.
+Out of scope: the computed selected state and the Custom card ([Story 2](../../02-selection-follows-settings/index.md)), and creating templates ([Story 3](../../03-create-own-templates/index.md)). In this story the page may show no selection at all.
 
 ## Acceptance criteria
 
@@ -30,7 +30,7 @@ Out of scope: the computed selected state and the Custom card ([Story 2](../02-s
 
 1. [Move templates into a feature folder](done/01-move-templates-to-feature.md).
 2. [Build the compact template tile](done/02-build-template-tile.md).
-3. [Rebuild the Templates page](03-rebuild-templates-page.md).
+3. [Rebuild the Templates page](done/03-rebuild-templates-page.md).
 
 ## Dependencies and open decisions
 
