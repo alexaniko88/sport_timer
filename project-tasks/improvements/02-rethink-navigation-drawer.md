@@ -20,7 +20,7 @@ A clearer, more discoverable place for secondary options.
 
 ## Scope and exclusions
 
-- Templates stay in the bottom tab and do not move into the drawer. That was decided in [Epic Templates](../templates/index.md).
+- Moving Templates into the drawer is agreed separately in [UI refactor Story 2](../ui-refactor/stories/02-templates-in-drawer/index.md). This improvement covers only the remaining provisional drawer rethink and must not duplicate that work.
 - No change to how timer styles work.
 
 ## Dependencies
@@ -29,7 +29,7 @@ None. Easier to judge once more secondary options exist.
 
 ## Open decisions
 
-- Keep, replace or remove the drawer.
+- Whether a broader drawer redesign is needed after the agreed Templates move.
 - Which items belong in it.
 
 ## Acceptance criteria
