@@ -15,7 +15,7 @@ As a user, I want a short list of good-looking, ready-made workouts so that I ca
 - The rebuilt Templates page: app bar title kept, subtitle removed, list of tiles, clear of the Start button.
 - Tapping a tile applies its values to the saved settings and stays on the page.
 
-Out of scope: the computed selected state and the Custom card ([Story 2](../../02-selection-follows-settings/index.md)), and creating templates ([Story 3](../../03-create-own-templates/index.md)). In this story the page may show no selection at all.
+Out of scope: the computed selected state and the Custom card ([Story 2](../02-selection-follows-settings/index.md)), and creating templates ([Story 3](../../03-create-own-templates/index.md)). In this story the page may show no selection at all.
 
 ## Acceptance criteria
 

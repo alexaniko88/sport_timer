@@ -41,7 +41,7 @@ Out of scope: custom-template creation, a permanent Setup shortcut when nothing 
 
 ## Dependencies and open decisions
 
-Depends on the shared matching and application flow delivered by [Task 2.1](../02-selection-follows-settings/done/01-add-templates-view-model.md), plus the existing built-in template data and page from [Story 1](../done/01-template-set-and-tiles/index.md). Does not depend on Task 2.2 or provisional Story 3; numbering preserves existing story paths rather than imposing delivery order.
+Depends on the shared matching and application flow delivered by [Task 2.1](../done/02-selection-follows-settings/done/01-add-templates-view-model.md), plus the existing built-in template data and page from [Story 1](../done/01-template-set-and-tiles/index.md). Does not depend on Task 2.2 or provisional Story 3; numbering preserves existing story paths rather than imposing delivery order.
 
 No product decisions remain open. During implementation planning, settle ownership and lifecycle of explicit selection, how it is saved consistently with timer settings, and navigation wiring through the existing Home navigation. The current computed match alone cannot establish explicit selection, and reopening Templates must not recreate cleared selection. Detailed styling and storage mechanics follow existing project patterns.
 
