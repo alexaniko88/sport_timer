@@ -20,7 +20,7 @@ Exclusions are listed in the parent story. This is one cohesive deliverable; fil
 
 ## Dependencies
 
-- [Task 2.1: Add a templates view model](../02-selection-follows-settings/done/01-add-templates-view-model.md), marked Done; verify its output exists in the implementation checkout.
+- [Task 2.1: Add a templates view model](../done/02-selection-follows-settings/done/01-add-templates-view-model.md), marked Done; verify its output exists in the implementation checkout.
 - Existing built-in templates and Templates page from [Story 1](../done/01-template-set-and-tiles/index.md).
 - No dependency on Task 2.2 or provisional custom-template creation.
 

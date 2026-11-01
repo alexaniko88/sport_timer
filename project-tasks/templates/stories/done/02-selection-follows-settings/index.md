@@ -1,8 +1,8 @@
 # STORY 2: Selection follows real settings
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../index.md)
 
-Status: Task 2.1 Done, with approved code/tests and clean review, on `feat/templates-view-model`. Task 2.2 Ready where that output is available; not started. Story remains incomplete until Task 2.2 is delivered.
+Completed on `feat/template-selection-card`; Task 2.2 delivered in `4195b20`. Both tasks are archived below.
 
 ## User outcome
 
@@ -16,7 +16,7 @@ As a user, I want the Templates tab to tell me truthfully what is set, so that I
 - The Custom card uses the same row layout, a clear "custom" icon and a slightly different "provisional" color, so it reads as temporary. It shows the current values and the phase bar.
 - The Custom card is visual only: it cannot be tapped and it has no save action.
 
-Out of scope: saving the Custom card as a template ([Story 3](../03-create-own-templates/index.md)).
+Out of scope: saving the Custom card as a template ([Story 3](../../03-create-own-templates/index.md)).
 
 ## Acceptance criteria
 
@@ -30,8 +30,8 @@ Out of scope: saving the Custom card as a template ([Story 3](../03-create-own-t
 ## Tasks
 
 1. [Add a templates view model](done/01-add-templates-view-model.md).
-2. [Show the selection and the Custom card](02-show-selection-and-custom-card.md).
+2. [Show the selection and the Custom card](done/02-show-selection-and-custom-card.md).
 
 ## Dependencies and open decisions
 
-Needs the template data and the tile from [Story 1](../done/01-template-set-and-tiles/index.md). The exact "provisional" color is decided while planning Task 2.2, within the existing timer colors.
+Needs the template data and the tile from [Story 1](../01-template-set-and-tiles/index.md). The exact "provisional" color is decided while planning Task 2.2, within the existing timer colors.

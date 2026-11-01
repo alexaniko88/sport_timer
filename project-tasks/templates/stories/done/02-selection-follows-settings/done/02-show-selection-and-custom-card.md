@@ -1,10 +1,10 @@
 # TASK 2.2: Show the selection and the Custom card
 
-Story: [Story 2 overview](index.md)
+Story: [Story 2 overview](../index.md)
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../../index.md)
 
-Status: Ready for planning where completed Task 2.1 output is available (currently on `feat/templates-view-model`).
+Completed in `4195b20` on `feat/template-selection-card`; validation and user approval recorded in the [saved plan](../../../../../project_template_selection_card.md).
 
 ## Goal
 
@@ -20,11 +20,11 @@ The Templates page highlights the matching row, or shows the Custom card when no
 
 ## Dependencies
 
-[Task 2.1](done/01-add-templates-view-model.md) and [Task 1.3](../done/01-template-set-and-tiles/done/03-rebuild-templates-page.md).
+[Task 2.1](01-add-templates-view-model.md) and [Task 1.3](../../01-template-set-and-tiles/done/03-rebuild-templates-page.md).
 
 ## Acceptance criteria
 
-- All acceptance criteria of [Story 2](index.md) hold in the running app.
+- All acceptance criteria of [Story 2](../index.md) hold in the running app.
 - The Custom card cannot be mistaken for one of the 5 templates, and the list does not jump or flicker when it appears or disappears.
 - Screen readers announce the selected state and the custom state.
 

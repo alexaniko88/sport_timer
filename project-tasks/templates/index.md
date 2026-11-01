@@ -51,7 +51,7 @@ Decisions:
 ## Stories
 
 1. [New template set and tile redesign](stories/done/01-template-set-and-tiles/index.md) — complete on `improve/templates-page`: 5 templates, compact tiles and rebuilt page.
-2. [Selection follows real settings](stories/02-selection-follows-settings/index.md) — computed highlight and the Custom card. Depends on Story 1.
+2. [Selection follows real settings](stories/done/02-selection-follows-settings/index.md) — computed highlight and the Custom card. Depends on Story 1.
 3. [Create your own templates](stories/03-create-own-templates/index.md) — provisional; confirm before implementation.
 4. [Show the selected template in Timer Setup](stories/04-selected-template-in-setup/index.md) — agreed; persistent explicit selection, a named Setup label and shortcut to Templates. Ready for planning where Task 2.1 is available.
 

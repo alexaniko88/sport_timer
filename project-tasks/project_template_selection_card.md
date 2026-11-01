@@ -1,7 +1,7 @@
 # Templates 2.2: Selection and Custom card
 
 Branch: `feat/template-selection-card`. Base: `master` at `726bbb1`.
-Task: [Templates 2.2](templates/stories/02-selection-follows-settings/02-show-selection-and-custom-card.md).
+Task: [Templates 2.2](templates/stories/done/02-selection-follows-settings/done/02-show-selection-and-custom-card.md).
 Plan and completed implementation/tests approved by user on 2026-11-01.
 
 ## Scope and decisions
@@ -25,7 +25,7 @@ All 30 focused widget tests pass in `test/presentation/home/templates_page_test.
 
 Round 1 review found two General issues: preparation was absent from the Custom summary/announcement, and outgoing Custom disappeared before collapse ended. Both fixed with localized full summaries and an AnimatedSwitcher size transition retaining the last unmatched values. Round 2 passes with no findings or suggestions.
 
-User owns device/manual checks; no app launch or device control performed. User approved completed delivery. Commit approval pending; no commit or push yet.
+User owns device/manual checks; no app launch or device control performed. User approved completed delivery. Implementation committed as `4195b20`. User approved push and PR; task and completed Story 2 archived before the initial push. PR creation follows the archival commit.
 
 ## Requested workflow changes
 

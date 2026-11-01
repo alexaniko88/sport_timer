@@ -1,6 +1,6 @@
 # Templates ViewModel approved plan
 
-Task: [Templates 2.1](templates/stories/02-selection-follows-settings/done/01-add-templates-view-model.md).
+Task: [Templates 2.1](templates/stories/done/02-selection-follows-settings/done/01-add-templates-view-model.md).
 Branch: `feat/templates-view-model`, from `master` at `8c751c7`.
 Approved: 2026-11-01.
 
