@@ -3,7 +3,7 @@ name: skill-orchestrator
 description: >
   End-to-end workflow for a change in the Sport Timer app, from a request the user writes in their own
   words: feature branch, plan, implementation, tests, review, hand-off and optional PR.
-  The user approves the plan, the commit and whether to open a PR. There are no tickets. Use when the user says "orchestrate", "let's build",
+  The user approves the plan, completed implementation with passing tests, and commit once each; review suggestions are discussed when present, then the user decides whether to open a PR. There are no tickets. Use when the user says "orchestrate", "let's build",
   "work on this", "handle this", or describes a bug, feature, improvement or refactor to be done
   end-to-end in this repo. Not for read-only investigation (use the
   agent-bug-investigator agent directly) or for PR review comments.
@@ -28,7 +28,7 @@ This skill runs on Claude and on Codex. The models match: Opus is `gpt-6.1-sol` 
 
 There are no tickets. The user's own message is the request. Never look for a ticket, a Linear link or a ticket ID.
 
-**Ask for approval of the plan (Stage 1), the commit (Stage 5), and then whether to open a PR (Stage 6). Everything between plan approval and the commit hand-off runs without asking.** Do not ask for confirmation of the request, of each step, of tests, or of review fixes. Reuse explicit approval already given in the session rather than asking again.
+**Approval cadence:** approve the plan (Stage 1), then all implementation and tests together after the code is applied and required tests pass (end of Stage 3, or end of Stage 2 when tests do not apply), then the commit proposal (Stage 5). Run review only after approval of the completed implementation and tests. If review leaves suggestions for the user, present them and wait for their choice; a clean review proceeds directly to the commit hand-off without a separate review approval. Then ask whether to open a PR (Stage 6). Complete each stage without asking between files, edits, tests or required review fixes. Reuse explicit approval already given in the session, including after a resume; never repeat approval for unchanged work or ask for commit approval twice. This is the user's chosen cadence, replacing the general one-step-per-turn validation workflow. Carry it in every agent brief.
 
 ## Project context
 
@@ -83,7 +83,7 @@ After approval, write the plan and the step list to a project memory file `proje
 
 Dispatch one agent: on Claude a general-purpose agent with `model: sonnet`, on Codex `agent-implementer`. Put in the brief: the approved plan, the decisions, the step list, the project overrides, and these rules:
 
-- Do all the steps in order, without waiting for approval between them. The user approved the plan already.
+- Do all implementation steps in order, without waiting for approval between them. The user approved the plan already. Leave writing tests to Stage 3 and return to the conductor when implementation and its checks are complete.
 - Scope is exactly the plan: no bonus refactors, no unrelated cleanup, no extra tests or docs. Mention an unrelated issue in one line at the end.
 - Comments: one or two short plain sentences explaining why, only where the code is not obvious. Match the density of the surrounding code.
 - Run `fvm dart format and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
@@ -92,7 +92,9 @@ Dispatch one agent: on Claude a general-purpose agent with `model: sonnet`, on C
 
 When the agent reports a surprise, decide it yourself if the answer is clear from the code and tell the user in one line afterwards. Ask the user only when the choice changes the approved plan in a way they would care about.
 
-## Stage 3: Tests
+After all implementation steps are applied and format/analyze checks pass, continue directly to Stage 3. Do not ask for implementation approval before tests. If tests do not apply, explain why and present the completed implementation and checks for approval once before review. Do not seek validation of individual steps.
+
+## Stage 3: Tests and implementation approval 🛑
 
 Skip this stage for pure UI or text changes with no logic. Otherwise dispatch the Stage 2 kind of agent (Claude: general-purpose with `model: sonnet`, Codex: `agent-implementer`), or continue the Stage 2 agent, to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
 
@@ -100,12 +102,16 @@ Skip this stage for pure UI or text changes with no logic. Otherwise dispatch th
 - If a test needs infrastructure that does not exist yet (a first fake or test helper), build the smallest version the plan's tests need and say so in the report. Do not add anything else.
 - Run only the tests it wrote or touched, by file path: `fvm flutter test <path>`. Fix failures that come from the test. If a failure shows a real bug in the code, stop and report it instead of patching production code silently.
 
+After all planned tests are written and passing, present the completed implementation, changed files, test coverage and check results together. Ask once for approval of this completed code and tests, then wait before starting Stage 4. Do not ask separately for tests or before writing or running each test. When tests do not apply, use the combined completion checkpoint described at the end of Stage 2.
+
 ## Stage 4: Review
 
 - Dispatch `agent-pr-review` on the diff against `master` (`git diff master` for uncommitted work), with the project overrides in the brief so it does not flag Bloc, hardcoded strings or the missing style guide. For UI changes, optionally `agent-flutter-a11y-agent` in parallel.
-- **Fix Critical and General findings** with the Stage 2 agent, without asking, then re-run the Stage 3 tests and `flutter analyze`. Do at most 2 review-and-fix rounds. If Critical findings remain after the second round, stop and show them to the user. Minor findings are not fixed unless trivial; list them in the summary.
+- **Fix Critical and General findings** with the Stage 2 agent, without asking, then re-run the Stage 3 tests and `flutter analyze`. Do at most 2 review-and-fix rounds. If Critical or General findings remain after the second round, stop and show them to the user; do not report review as passed. Minor findings are not fixed unless trivial; list them in the summary. These fixes and their test updates stay within this stage and do not reopen the combined implementation-and-tests approval checkpoint.
 - After a change that applies a rule across the app (a style sweep, a rename), run your own search for the pattern (`grep`) and check the matches by hand. Do not rely only on a subagent's list.
 - Suggest the built-in `/code-review` for a second pass only when the change is large or risky. Do not run it unasked.
+
+Once review and checks pass, report the verdict, fixes applied and remaining suggestions. If there are no remaining suggestions, proceed directly to Stage 5 without asking for review approval. If suggestions remain, present each with a recommended action and wait for the user's choice. Apply selected in-scope suggestions and validate them within this stage without asking for each edit, then proceed to the commit hand-off. Never treat a blocked review as successful.
 
 ## Stage 5: Hand-off 🛑
 
@@ -116,7 +122,7 @@ Run the checks that apply and show the result:
 - No local absolute path in the diff (`git diff | grep -n "/Users/"` returns nothing), and no company name or work email address when you read it.
 - List every `TODO` or `FIXME` the diff adds, with `file:line`.
 
-Then give a short summary of what was done and which decisions changed on the way. Draft the commit: a message in the format of `.claude/rules/git-commits.md` (`<type>: <description>`, such as `feat: add workout templates page`), the `Co-Authored-By` trailer, and the exact list of files. Show it and wait for approval. After approval, check that `git config user.email` is the repo-local noreply address, then commit and proceed to Stage 6. Commit approval alone does not authorize a push.
+Then give a short summary of what was done and which decisions changed on the way. Draft the commit: a message in the format of `.claude/rules/git-commits.md` (`<type>: <description>`, such as `feat: add workout templates page`), the `Co-Authored-By` trailer, and the exact list of files. Show it and ask for commit approval once. After approval, check that `git config user.email` is the repo-local noreply address, stage only the approved files, commit, and proceed to Stage 6 without another confirmation before staging or committing. Reuse existing explicit approval for this same message and file list. If the proposed commit materially changes, show the changed proposal for approval rather than treating the old approval as covering it. Commit approval alone does not authorize a push.
 
 ## Stage 6: Offer to open the PR 🛑
 
