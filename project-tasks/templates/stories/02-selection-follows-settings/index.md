@@ -2,7 +2,7 @@
 
 Epic: [Templates](../../index.md)
 
-Status: Ready for planning where completed [Story 1](../done/01-template-set-and-tiles/index.md) is available (`improve/templates-page`, PR #14 open, not yet merged).
+Status: Task 2.1 Done, with approved code/tests and clean review, on `feat/templates-view-model`. Task 2.2 Ready where that output is available; not started. Story remains incomplete until Task 2.2 is delivered.
 
 ## User outcome
 
@@ -29,7 +29,7 @@ Out of scope: saving the Custom card as a template ([Story 3](../03-create-own-t
 
 ## Tasks
 
-1. [Add a templates view model](01-add-templates-view-model.md).
+1. [Add a templates view model](done/01-add-templates-view-model.md).
 2. [Show the selection and the Custom card](02-show-selection-and-custom-card.md).
 
 ## Dependencies and open decisions

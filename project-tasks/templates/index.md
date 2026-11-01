@@ -1,6 +1,6 @@
 # EPIC: Templates
 
-Status: Story 1 complete on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open; Story 2 ready for planning where that output is available. Story 3 is provisional.
+Status: Story 1 merged into `master` at `8c751c7`. Story 2 Task 2.1 Done, on `feat/templates-view-model`; Task 2.2 Ready where that output is available. Story 3 is provisional.
 
 Progress and reusable outputs: [Project task status](../status.md).
 
