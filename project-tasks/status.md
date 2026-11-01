@@ -17,12 +17,12 @@ Ready does not mean implementation is already approved. Done does not imply comm
 ## Current overview
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
-- **Templates:** 4 of 8 tasks done; 0 in progress; 1 ready; 0 blocked; 3 provisional.
+- **Templates:** 4 of 9 tasks done; 0 in progress; 2 ready; 0 blocked; 3 provisional.
 - **UI refactor:** 0 of 7 tasks done; 0 in progress; 4 ready; 2 blocked; 1 provisional. Grid, Templates navigation, Start button and app-wide border/radius scope agreed on 2026-11-01.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
 - **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are merged into `master` at `8c751c7` ([PR #14](https://github.com/alexaniko88/sport_timer/pull/14)). No statistics implementation completed yet.
-- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.2 — ready for planning where the committed Task 2.1 output on `feat/templates-view-model` is available. No next task started. The two epics are independent.
+- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.2 and 4.1 — ready for planning where the completed Task 2.1 output is available; verify the intended checkout. Task 4.1 can proceed independently of Task 2.2 and provisional Story 3. No next task started. The Statistics and Templates epics are independent.
 - **Next UI task:** [UI refactor 1.1](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md) — plan the reusable centered setting cards, adaptive four-option grid and existing selector integration. No implementation started.
 
 ## Statistics
@@ -60,6 +60,7 @@ Epic: [Templates](templates/index.md).
 | [3.1 Confirm the creation behavior](templates/stories/03-create-own-templates/01-confirm-creation-behavior.md) | ⚪ Provisional | Revisit Story 3 after Stories 1 and 2. | Agreed creation, edit, delete and storage decisions. |
 | [3.2 Store custom templates](templates/stories/03-create-own-templates/02-store-custom-templates.md) | ⚪ Provisional | Story 3 agreement and Task 3.1. | Repository for own templates. |
 | [3.3 Add the creation flow](templates/stories/03-create-own-templates/03-add-creation-flow.md) | ⚪ Provisional | Story 3 agreement and Task 3.2. | "+" action and creation flow. |
+| [4.1 Track explicit selection and show the Setup shortcut](templates/stories/04-selected-template-in-setup/01-track-selection-and-show-setup-shortcut.md) | 🟢 Ready | Task 2.1 and Story 1 output; verify availability. Independent of Task 2.2 and provisional Story 3. | Persistent explicit selection and a tappable named Setup label that opens Templates. |
 
 ## UI refactor
 
@@ -89,6 +90,8 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 | [IMP-02 Rethink the navigation drawer](improvements/02-rethink-navigation-drawer.md) | ⚪ Provisional | Direction to be agreed. | Agreed role for the drawer. |
 
 ## Active work and handoff
+
+Templates Story 4 agreed on 2026-11-01 after product grilling: [story and decisions](templates/stories/04-selected-template-in-setup/index.md). Task 4.1 is Ready for planning, not started; no application code changes approved. Setup requires explicit selection, clears it on a divergent edit without automatic restoration, restores valid selection after restart, and provides a shortcut to Templates. Templates retains settings-based matching and stays open after selection. Follow the separately recorded UI refactor navigation decision if the drawer move is present; do not reintroduce a tab. No unresolved product decisions; state ownership, consistent persistence and navigation wiring belong to implementation planning. Existing Task 2.1 evidence and handoff remain relevant prerequisites.
 
 Templates 2.1 completed and user approved code/tests on 2026-11-01. Branch `feat/templates-view-model`, base `master` at `8c751c7`; all [plan](project_templates_view_model.md) steps complete. Added immutable templates state, live four-field matching from shared settings, delegated apply, and page lifecycle/tap wiring without visual changes. Fifteen focused unit tests pass; `verify-branch.sh master` passed full analysis, changed-file formatting, tests and generated/marker checks. Independent production review: no findings or suggestions, no fixes required. No added code TODO/FIXME, personal absolute paths, platform or dependency changes. User confirmed the app works on 2026-11-01; runtime concern resolved without code changes. The existing six page integration tests also pass, including every template saving values, updating all four Home values and supplying Start parameters. Implementation committed as `511ce33`; skill update committed as `eb3aad5`. Push and PR approved. Task 2.1 archived under its story’s `done/` before the initial PR push; archival commit and PR creation in progress. Story 2 remains active because Task 2.2 is pending. Task 2.2 is Ready only where these files are available; not started. The separate orchestrator skill update remains outside the task commit.
 
