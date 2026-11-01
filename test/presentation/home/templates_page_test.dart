@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
+import 'package:sport_timer/features/account/account_view_model.dart';
 import 'package:sport_timer/features/settings/settings_repository.dart';
+import 'package:sport_timer/features/settings/settings_view_model.dart';
+import 'package:sport_timer/features/templates/workout_template.dart';
 import 'package:sport_timer/features/settings/timer_style.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
@@ -17,6 +22,7 @@ import 'package:sport_timer/theme/sport_theme.dart';
 
 class _SettingsRepository implements SettingsRepository {
   final List<TimerSettings> saves = [];
+  Completer<void>? readGate;
   TimerSettings stored = const TimerSettings(
     preparationTime: Duration(seconds: 10),
     roundTime: Duration(seconds: 90),
@@ -25,7 +31,10 @@ class _SettingsRepository implements SettingsRepository {
   );
 
   @override
-  Future<Result<TimerSettings>> getTimerSettings() async => Success(stored);
+  Future<Result<TimerSettings>> getTimerSettings() async {
+    await readGate?.future;
+    return Success(stored);
+  }
 
   @override
   Future<Result<void>> saveTimerSettings(TimerSettings settings) async {
@@ -166,14 +175,16 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('shows the five templates in order with their icons and no selection', (tester) async {
+  testWidgets('shows Custom first followed by the five templates in order', (tester) async {
     await openTemplates(tester);
 
     final tiles = tester.widgetList<TemplateTile>(find.byType(TemplateTile)).toList();
-    expect(tiles, hasLength(5));
-    expect(tiles.map((tile) => tile.name), _cases.map((item) => item.name));
-    expect(tiles.map((tile) => tile.icon), _cases.map((item) => item.icon));
-    expect(tiles.every((tile) => !tile.isSelected && !tile.isCustom), isTrue);
+    expect(tiles, hasLength(6));
+    expect(tiles.first.name, 'Custom');
+    expect(tiles.first.isCustom, isTrue);
+    expect(tiles.skip(1).map((tile) => tile.name), _cases.map((item) => item.name));
+    expect(tiles.skip(1).map((tile) => tile.icon), _cases.map((item) => item.icon));
+    expect(tiles.every((tile) => !tile.isSelected), isTrue);
     expect(find.text('Choose your template'), findsOneWidget);
   });
 
@@ -188,7 +199,9 @@ void main() {
       expect(find.byType(TemplatesPage), findsOneWidget);
       expect(find.byType(SnackBar), findsNothing);
       expect(startedParams, isNull);
-      expect(tester.widgetList<TemplateTile>(find.byType(TemplateTile)).every((tile) => !tile.isSelected), isTrue);
+      final selected = tester.widgetList<TemplateTile>(find.byType(TemplateTile)).where((tile) => tile.isSelected);
+      expect(selected.map((tile) => tile.name), [item.name]);
+      expect(find.text('Custom'), findsNothing);
 
       await tester.tap(find.text('Home'));
       await tester.pumpAndSettle();
@@ -208,4 +221,181 @@ void main() {
       expect(startedParams?.style, TimerStyle.ring);
     });
   }
+
+  testWidgets('shows the Custom card label in Spanish', (tester) async {
+    final settings = SettingsViewModel(repository);
+    final account = AccountViewModel(_UserRepository());
+    addTearDown(settings.dispose);
+    addTearDown(account.dispose);
+    await settings.loadSettings();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: SportTheme.dark,
+        locale: const Locale('es'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Personalizado'), findsOneWidget);
+  });
+
+  for (final locale in [const Locale('en'), const Locale('es')]) {
+    testWidgets('shows a preparation-only edit in ${locale.languageCode}', (tester) async {
+      tester.view.physicalSize = const Size(800, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      repository.stored = _cases.first.settings;
+      final settings = SettingsViewModel(repository);
+      final account = AccountViewModel(_UserRepository());
+      addTearDown(settings.dispose);
+      addTearDown(account.dispose);
+      final handle = tester.ensureSemantics();
+      await settings.loadSettings();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: SportTheme.light,
+          locale: locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+        ),
+      );
+      settings.updatePreparationTime(const Duration(seconds: 25));
+      await tester.pumpAndSettle();
+      final custom = find.byKey(const ValueKey('custom-template'));
+      expect(custom, findsOneWidget);
+      expect(
+        find.text(
+          locale.languageCode == 'en'
+              ? '0:25 prep · 1:00 work · 0:30 rest · 5 rounds'
+              : '0:25 preparación · 1:00 trabajo · 0:30 descanso · 5 rondas',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.getSemantics(custom).label,
+        contains(locale.languageCode == 'en' ? 'Preparation time 25s' : 'Tiempo de preparación 25s'),
+      );
+      expect(tester.widget<TemplateTile>(custom).totalTime, const Duration(minutes: 7, seconds: 25));
+      handle.dispose();
+    });
+  }
+
+  testWidgets('waits for persisted settings before showing the matching selection', (tester) async {
+    repository.stored = _cases[2].settings;
+    final gate = Completer<void>();
+    repository.readGate = gate;
+    final settings = SettingsViewModel(repository);
+    final account = AccountViewModel(_UserRepository());
+    addTearDown(settings.dispose);
+    addTearDown(account.dispose);
+    final loading = settings.loadSettings();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+      ),
+    );
+    expect(tester.widgetList<TemplateTile>(find.byType(TemplateTile)).any((tile) => tile.isSelected), isFalse);
+    expect(find.text('Custom'), findsNothing);
+
+    gate.complete();
+    await loading;
+    await tester.pumpAndSettle();
+    final selected = tester.widgetList<TemplateTile>(find.byType(TemplateTile)).where((tile) => tile.isSelected);
+    expect(selected.map((tile) => tile.name), ['Hyrox']);
+    expect(find.text('Custom'), findsNothing);
+  });
+
+  testWidgets('animates Custom for live changes and restores the matching row', (tester) async {
+    tester.view.physicalSize = const Size(800, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    repository.stored = _cases.first.settings;
+    final settings = SettingsViewModel(repository);
+    final account = AccountViewModel(_UserRepository());
+    addTearDown(settings.dispose);
+    addTearDown(account.dispose);
+    await settings.loadSettings();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final defaultRow = find.byKey(const ValueKey(TemplateId.standard));
+    final initialElement = tester.element(defaultRow);
+    final initialRect = tester.getRect(defaultRow);
+    expect(
+      tester.widgetList<TemplateTile>(find.byType(TemplateTile)).where((tile) => tile.isSelected).single.name,
+      'Default',
+    );
+    expect(find.text('Custom'), findsNothing);
+
+    settings.updateRounds(6);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final duringRect = tester.getRect(defaultRow);
+    await tester.pumpAndSettle();
+    final customRect = tester.getRect(defaultRow);
+    expect(duringRect.top, greaterThan(initialRect.top));
+    expect(duringRect.top, lessThan(customRect.top));
+    expect(customRect.size, initialRect.size);
+    expect(tester.element(defaultRow), same(initialElement));
+    expect(tester.widgetList<TemplateTile>(find.byType(TemplateTile)).any((tile) => tile.isSelected), isFalse);
+    final custom = tester.widget<TemplateTile>(find.byKey(const ValueKey('custom-template')));
+    expect(custom.settings, _cases.first.settings.copyWith(rounds: 6));
+    expect(custom.totalTime, const Duration(minutes: 8, seconds: 50));
+    expect(find.text('0:20 prep · 1:00 work · 0:30 rest · 6 rounds'), findsOneWidget);
+    expect(find.text('8m 50s'), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('custom-template')),
+        matching: find.byKey(const Key('phase-bar')),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Custom'));
+    await tester.pumpAndSettle();
+    expect(repository.saves, isEmpty);
+    expect(settings.state.value.timerSettings.rounds, 6);
+
+    settings.updateRounds(5);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('Custom'), findsOneWidget);
+    expect(tester.widget<TemplateTile>(find.byKey(const ValueKey('custom-template'))).settings.rounds, 6);
+    final restoringRect = tester.getRect(defaultRow);
+    expect(restoringRect.top, lessThan(customRect.top));
+    expect(restoringRect.top, greaterThan(initialRect.top));
+    await tester.pumpAndSettle();
+    expect(find.text('Custom'), findsNothing);
+    expect(tester.element(defaultRow), same(initialElement));
+    expect(tester.getRect(defaultRow), initialRect);
+    expect(
+      tester.widgetList<TemplateTile>(find.byType(TemplateTile)).where((tile) => tile.isSelected).single.name,
+      'Default',
+    );
+
+    settings.updateRounds(6);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    settings.updateRounds(5);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    settings.updateRounds(7);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(tester.widget<TemplateTile>(find.byKey(const ValueKey('custom-template'))).settings.rounds, 7);
+    expect(tester.element(defaultRow), same(initialElement));
+  });
 }

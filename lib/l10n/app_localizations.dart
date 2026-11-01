@@ -326,6 +326,24 @@ abstract class AppLocalizations {
   /// **'Full Abs'**
   String get templateAbsName;
 
+  /// Name of the tile showing current settings that match no template.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get templateCustomName;
+
+  /// Screen reader label for the current custom workout settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom settings. Preparation time {preparation}, round time {round}, rest time {rest}, {rounds, plural, =1{1 round} other{{rounds} rounds}}, total time {total}'**
+  String templateCustomTileSemantics(String preparation, String round, String rest, int rounds, String total);
+
+  /// Summary of the current custom workout settings.
+  ///
+  /// In en, this message translates to:
+  /// **'{preparation} prep · {work} work · {rest} rest · {rounds, plural, =1{1 round} other{{rounds} rounds}}'**
+  String templateCustomTileSummary(String preparation, String work, String rest, int rounds);
+
   /// Name of the default workout template.
   ///
   /// In en, this message translates to:

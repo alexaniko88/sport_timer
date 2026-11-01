@@ -136,6 +136,31 @@ class AppLocalizationsEs extends AppLocalizations {
   String get templateAbsName => 'Abdominales completos';
 
   @override
+  String get templateCustomName => 'Personalizado';
+
+  @override
+  String templateCustomTileSemantics(String preparation, String round, String rest, int rounds, String total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      rounds,
+      locale: localeName,
+      other: '$rounds rondas',
+      one: '1 ronda',
+    );
+    return 'Ajustes personalizados. Tiempo de preparación $preparation, tiempo de ronda $round, tiempo de descanso $rest, $_temp0, tiempo total $total';
+  }
+
+  @override
+  String templateCustomTileSummary(String preparation, String work, String rest, int rounds) {
+    String _temp0 = intl.Intl.pluralLogic(
+      rounds,
+      locale: localeName,
+      other: '$rounds rondas',
+      one: '1 ronda',
+    );
+    return '$preparation preparación · $work trabajo · $rest descanso · $_temp0';
+  }
+
+  @override
   String get templateDefaultName => 'Por defecto';
 
   @override

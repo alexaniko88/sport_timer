@@ -7,6 +7,7 @@ import 'package:sport_timer/features/templates/workout_template.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
 import 'package:sport_timer/presentation/widgets/template_tile.dart';
 import 'package:sport_timer/theme/sport_theme.dart';
+import 'package:sport_timer/theme/timer_colors.dart';
 
 const double _screenWidth = 400;
 
@@ -122,6 +123,52 @@ void main() {
         handle.dispose();
       });
 
+      for (final locale in [const Locale('en'), const Locale('es')]) {
+        for (final theme in [SportTheme.light, SportTheme.dark]) {
+          testWidgets('announces selected and custom states in ${locale.languageCode}, ${theme.brightness.name}',
+              (tester) async {
+            _setScreenSize(tester);
+            final handle = tester.ensureSemantics();
+            await tester.pumpWidget(
+              _app(
+                _tile(_template(TemplateId.standard), name: 'Default', isSelected: true, onTap: () {}),
+                locale: locale,
+                theme: theme,
+              ),
+            );
+            var data = tester.getSemantics(find.byType(TemplateTile));
+            expect(data.flagsCollection.isSelected, Tristate.isTrue);
+            expect(data.flagsCollection.isButton, isTrue);
+            expect(data.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+            expect(find.byIcon(Icons.check_circle), findsOneWidget);
+
+            await tester.pumpWidget(
+              _app(
+                _tile(_template(TemplateId.standard), name: 'Custom', isCustom: true),
+                locale: locale,
+                theme: theme,
+              ),
+            );
+            data = tester.getSemantics(find.byType(TemplateTile));
+            expect(
+              data.label,
+              startsWith(locale.languageCode == 'en' ? 'Custom settings.' : 'Ajustes personalizados.'),
+            );
+            expect(data.flagsCollection.isButton, isFalse);
+            expect(data.flagsCollection.isSelected, isNot(Tristate.isTrue));
+            expect(data.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
+            final visibility = tester.widget<Visibility>(
+              find.ancestor(
+                of: find.byIcon(Icons.check_circle),
+                matching: find.byType(Visibility),
+              ),
+            );
+            expect(visibility.visible, isFalse);
+            handle.dispose();
+          });
+        }
+      }
+
       testWidgets('reads name and values in Spanish', (tester) async {
         _setScreenSize(tester);
         final handle = tester.ensureSemantics();
@@ -158,16 +205,19 @@ void main() {
         expect(border.top.color, SportTheme.light.colorScheme.outlineVariant);
       });
 
-      testWidgets('custom is outlined with a transparent background', (tester) async {
-        _setScreenSize(tester);
-        await tester.pumpWidget(_app(_tile(_template(TemplateId.standard), isCustom: true)));
+      for (final theme in [SportTheme.light, SportTheme.dark]) {
+        testWidgets('custom uses the timer color in ${theme.brightness.name} theme', (tester) async {
+          _setScreenSize(tester);
+          await tester.pumpWidget(_app(_tile(_template(TemplateId.standard), isCustom: true), theme: theme));
 
-        final decoration = _decoration(tester);
-        final border = decoration.border! as Border;
-
-        expect(decoration.color, Colors.transparent);
-        expect(border.top.color, SportTheme.light.colorScheme.outline);
-      });
+          final decoration = _decoration(tester);
+          final border = decoration.border! as Border;
+          final customColor = theme.extension<TimerColors>()!.roundCounterBorder;
+          expect(border.top.color, customColor);
+          expect(decoration.color, isNot(theme.colorScheme.surfaceContainer));
+          expect(decoration.color, isNot(Colors.transparent));
+        });
+      }
     });
 
     group('phase bar', () {

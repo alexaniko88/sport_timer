@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:sport_timer/core/l10n_context.dart';
 import 'package:sport_timer/features/settings/settings_repository.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
@@ -37,6 +38,7 @@ class TemplateTile extends StatelessWidget {
     final textTheme = theme.textTheme;
     final borderRadius = BorderRadius.circular(AppRadius.r12);
     final total = _formatDuration(l10n: l10n, duration: totalTime);
+    final customColor = context.timerColors.roundCounterBorder;
 
     final Color background;
     final Color borderColor;
@@ -46,8 +48,8 @@ class TemplateTile extends StatelessWidget {
       borderColor = colorScheme.primary;
       borderWidth = _selectedBorderWidth;
     } else if (isCustom) {
-      background = Colors.transparent;
-      borderColor = colorScheme.outline;
+      background = Color.alphaBlend(customColor.withValues(alpha: 0.08), colorScheme.surfaceContainer);
+      borderColor = customColor;
       borderWidth = _borderWidth;
     } else {
       background = colorScheme.surfaceContainer;
@@ -58,16 +60,24 @@ class TemplateTile extends StatelessWidget {
     return Semantics(
       container: true,
       button: onTap != null,
-      selected: isSelected,
+      selected: isCustom ? null : isSelected,
       onTap: onTap,
       excludeSemantics: true,
-      label: l10n.templateTileSemantics(
-        name,
-        _formatDuration(l10n: l10n, duration: settings.roundTime),
-        _formatDuration(l10n: l10n, duration: settings.restTime),
-        settings.rounds,
-        total,
-      ),
+      label: isCustom
+          ? l10n.templateCustomTileSemantics(
+              _formatDuration(l10n: l10n, duration: settings.preparationTime),
+              _formatDuration(l10n: l10n, duration: settings.roundTime),
+              _formatDuration(l10n: l10n, duration: settings.restTime),
+              settings.rounds,
+              total,
+            )
+          : l10n.templateTileSemantics(
+              name,
+              _formatDuration(l10n: l10n, duration: settings.roundTime),
+              _formatDuration(l10n: l10n, duration: settings.restTime),
+              settings.rounds,
+              total,
+            ),
       child: Material(
         color: Colors.transparent,
         child: Ink(
@@ -90,7 +100,7 @@ class TemplateTile extends StatelessWidget {
                   Row(
                     children: [
                       Icon(icon, color: colorScheme.primary),
-                      const SizedBox(width: AppSpacing.s12),
+                      const Gap(AppSpacing.s12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,19 +112,34 @@ class TemplateTile extends StatelessWidget {
                               style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              l10n.templateTileSummary(
-                                _formatClock(settings.roundTime),
-                                _formatClock(settings.restTime),
-                                settings.rounds,
-                              ),
-                              maxLines: 2,
+                              isCustom
+                                  ? l10n.templateCustomTileSummary(
+                                      _formatClock(settings.preparationTime),
+                                      _formatClock(settings.roundTime),
+                                      _formatClock(settings.restTime),
+                                      settings.rounds,
+                                    )
+                                  : l10n.templateTileSummary(
+                                      _formatClock(settings.roundTime),
+                                      _formatClock(settings.restTime),
+                                      settings.rounds,
+                                    ),
+                              maxLines: isCustom ? null : 2,
                               overflow: TextOverflow.ellipsis,
                               style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.s12),
+                      const Gap(AppSpacing.s8),
+                      Visibility(
+                        visible: isSelected,
+                        maintainSize: true,
+                        maintainAnimation: true,
+                        maintainState: true,
+                        child: Icon(Icons.check_circle, color: colorScheme.primary),
+                      ),
+                      const Gap(AppSpacing.s8),
                       Text(
                         total,
                         maxLines: 1,
@@ -123,7 +148,7 @@ class TemplateTile extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppSpacing.s12),
+                  const Gap(AppSpacing.s12),
                   _PhaseBar(settings: settings),
                 ],
               ),

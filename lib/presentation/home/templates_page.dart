@@ -56,34 +56,89 @@ class _TemplatesPageState extends State<TemplatesPage> {
         title: Text(l10n.templatesTitle),
         actions: [
           AccountAvatarButton(viewModel: widget.accountViewModel),
-          const SizedBox(width: AppSpacing.s8),
+          const Gap(AppSpacing.s8),
         ],
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s16,
-          AppSpacing.s16,
-          AppSpacing.s16,
-          _listBottomInset,
-        ),
-        itemCount: builtInTemplates.length,
-        separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.s8),
-        itemBuilder: (context, index) {
-          final template = builtInTemplates[index];
-          final (name, icon) = switch (template.id) {
-            TemplateId.standard => (l10n.templateDefaultName, Icons.assignment),
-            TemplateId.fullAbs => (l10n.templateAbsName, Icons.sports_gymnastics),
-            TemplateId.hyrox => (l10n.templateHyroxName, Icons.directions_run),
-            TemplateId.stretching => (l10n.templateStretchingName, Icons.self_improvement),
-            TemplateId.strength => (l10n.templateStrengthName, Icons.fitness_center),
-          };
+      body: ValueListenableBuilder<SettingsState>(
+        valueListenable: widget.viewModel.state,
+        builder: (context, settingsState, _) {
+          final isLoading =
+              settingsState.status == SettingsStatus.initial || settingsState.status == SettingsStatus.loading;
+          return ValueListenableBuilder<TemplatesState>(
+            valueListenable: _templatesViewModel.state,
+            builder: (context, state, _) {
+              final settings = state.timerSettings;
+              final showCustom = !isLoading && state.selectedTemplateId == null;
+              final totalTime = settings.preparationTime +
+                  settings.roundTime * settings.rounds +
+                  settings.restTime * (settings.rounds - 1);
 
-          return TemplateTile(
-            name: name,
-            icon: icon,
-            settings: template.settings,
-            totalTime: template.totalTime,
-            onTap: () => _templatesViewModel.applyTemplate(template),
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s16,
+                  AppSpacing.s16,
+                  AppSpacing.s16,
+                  _listBottomInset,
+                ),
+                children: [
+                  AnimatedSwitcher(
+                    duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : Durations.medium2,
+                    switchInCurve: Curves.easeInOut,
+                    switchOutCurve: Curves.easeInOut,
+                    layoutBuilder: (currentChild, previousChildren) => Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        ...previousChildren,
+                        if (currentChild != null) currentChild,
+                      ],
+                    ),
+                    transitionBuilder: (child, animation) => SizeTransition(
+                      sizeFactor: animation,
+                      alignment: Alignment.topCenter,
+                      child: child,
+                    ),
+                    child: showCustom
+                        ? Padding(
+                            key: const ValueKey('custom-header'),
+                            padding: const EdgeInsets.only(bottom: AppSpacing.s8),
+                            child: TemplateTile(
+                              key: const ValueKey('custom-template'),
+                              name: l10n.templateCustomName,
+                              icon: Icons.tune,
+                              settings: settings,
+                              totalTime: totalTime,
+                              isCustom: true,
+                            ),
+                          )
+                        : const SizedBox(key: ValueKey('no-custom-header'), width: double.infinity),
+                  ),
+                  for (final template in builtInTemplates) ...[
+                    if (template != builtInTemplates.first) const Gap(AppSpacing.s8),
+                    Builder(
+                      key: ValueKey(template.id),
+                      builder: (context) {
+                        final (name, icon) = switch (template.id) {
+                          TemplateId.standard => (l10n.templateDefaultName, Icons.assignment),
+                          TemplateId.fullAbs => (l10n.templateAbsName, Icons.sports_gymnastics),
+                          TemplateId.hyrox => (l10n.templateHyroxName, Icons.directions_run),
+                          TemplateId.stretching => (l10n.templateStretchingName, Icons.self_improvement),
+                          TemplateId.strength => (l10n.templateStrengthName, Icons.fitness_center),
+                        };
+
+                        return TemplateTile(
+                          name: name,
+                          icon: icon,
+                          settings: template.settings,
+                          totalTime: template.totalTime,
+                          isSelected: !isLoading && template.id == state.selectedTemplateId,
+                          onTap: () => _templatesViewModel.applyTemplate(template),
+                        );
+                      },
+                    ),
+                  ],
+                ],
+              );
+            },
           );
         },
       ),

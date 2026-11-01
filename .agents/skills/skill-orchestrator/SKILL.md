@@ -3,7 +3,7 @@ name: skill-orchestrator
 description: >
   End-to-end workflow for a change in the Sport Timer app, from a request the user writes in their own
   words: feature branch, plan, implementation, tests, review, hand-off and optional PR.
-  The user approves the plan, completed implementation with passing tests, and commit once each; review suggestions are discussed when present, then the user decides whether to open a PR. There are no tickets. Use when the user says "orchestrate", "let's build",
+  Clear plans proceed without approval. The user approves completed implementation with passing tests and the commit once each; review suggestions are discussed when present, then the user decides whether to open a PR. There are no tickets. Use when the user says "orchestrate", "let's build",
   "work on this", "handle this", or describes a bug, feature, improvement or refactor to be done
   end-to-end in this repo. Not for read-only investigation (use the
   agent-bug-investigator agent directly) or for PR review comments.
@@ -14,13 +14,13 @@ effort: medium
 
 # Orchestrator
 
-## Local task progress
+## Local tasks
 
-When the request names a local task under `project-tasks/`, read `project-tasks/status.md`, the task file, and its applicable parent indexes before planning: story/epic indexes for story tasks, or `bugs/index.md` / `improvements/index.md` for standalone bug/improvement tasks. Use that task as the request; no external ticket lookup is needed. Check dependencies and completion evidence in the actual checkout and branch before treating earlier outputs as reusable. Surface blockers rather than silently implementing prerequisite tasks or treating provisional scope as approved.
+When the request names a local task under `project-tasks/`, read the task file and its applicable parent indexes before planning: story/epic indexes for story tasks, or `bugs/index.md` / `improvements/index.md` for standalone bug/improvement tasks. Use that task as the request; no external ticket lookup is needed. Check dependencies and completion evidence in the actual checkout and branch before treating earlier outputs as reusable. Surface blockers rather than silently implementing prerequisite tasks or treating provisional scope as approved.
 
-Maintain `project-tasks/status.md` throughout this orchestration. Mark the selected task In progress when actual work starts. At pauses or handoff, record its branch context, plan location, completed and remaining steps, validation results, and blockers using portable paths. Mark Done only when its acceptance criteria, required checks, and required user validation are satisfied; record completion evidence and reusable outputs, then reevaluate dependent task readiness and update the overview. Done does not imply committed, merged, or available in another checkout. Keep repeated task/story statuses consistent and do not start another ticket automatically. For requests without a local task, do not invent a backlog entry.
+Do not maintain traffic-light statuses, readiness counts, or repeated progress summaries in `project-tasks/status.md`, task files, or parent indexes. Keep implementation steps and validation evidence in the saved plan and report progress in conversation. Do not start another task automatically.
 
-After the commit and PR are approved, but before pushing the branch and creating the PR (Stage 6), archive the completed task on the same branch using [Project tasks — Archiving completed work](../skill-project-tasks/SKILL.md#archiving-completed-work): move the task file into its parent's `done/`, then the whole story into `stories/done/` when no task is left outside its `done/`, then the whole epic into `project-tasks/done/` when no story is left outside `stories/done/`. Update and validate affected links and record completion evidence and branch context in the tracker. Commit the archive as a `docs:` commit before the initial PR push, so the PR includes it when created. Approval to open the PR covers this archival commit and push; no extra confirmation is needed. Do not wait for an open PR or create a post-creation archival commit. Archive only this task's own file; previously archived tasks may move with their completed parent story or epic. Do not start another task solely for cleanup.
+After the commit and PR are approved, but before pushing the branch and creating the PR (Stage 6), archive the completed task on the same branch using [Project tasks — Archiving completed work](../skill-project-tasks/SKILL.md#archiving-completed-work): move the task file into its parent's `done/`, then the whole story into `stories/done/` when no task is left outside its `done/`, then the whole epic into `project-tasks/done/` when no story is left outside `stories/done/`. Update and validate affected links. Keep completion evidence and branch context in the saved plan. Commit the archive as a `docs:` commit before the initial PR push, so the PR includes it when created. Approval to open the PR covers this archival commit and push; no extra confirmation is needed. Do not wait for an open PR or create a post-creation archival commit. Archive only this task's own file; previously archived tasks may move with their completed parent story or epic. Do not start another task solely for cleanup.
 
 You are the conductor. Read-heavy work (investigate, plan, estimate, review) goes to read-only subagents so their file dumps stay out of the main chat. Code edits and tests go to a Sonnet subagent, so the conductor and the investigation and planning agents run on Opus and the editing runs on the cheaper model.
 
@@ -28,7 +28,7 @@ This skill runs on Claude and on Codex. The models match: Opus is `gpt-6.1-sol` 
 
 There are no tickets. The user's own message is the request. Never look for a ticket, a Linear link or a ticket ID.
 
-**Approval cadence:** approve the plan (Stage 1), then all implementation and tests together after the code is applied and required tests pass (end of Stage 3, or end of Stage 2 when tests do not apply), then the commit proposal (Stage 5). Run review only after approval of the completed implementation and tests. If review leaves suggestions for the user, present them and wait for their choice; a clean review proceeds directly to the commit hand-off without a separate review approval. Then ask whether to open a PR (Stage 6). Complete each stage without asking between files, edits, tests or required review fixes. Reuse explicit approval already given in the session, including after a resume; never repeat approval for unchanged work or ask for commit approval twice. This is the user's chosen cadence, replacing the general one-step-per-turn validation workflow. Carry it in every agent brief.
+**Approval cadence:** present and save the plan (Stage 1), then proceed without asking for plan approval unless an important requirement or decision is unclear and cannot be resolved from the request or code. Ask for clarification only on that uncertainty. Ask for approval of all implementation and tests together after the code is applied and required tests pass (end of Stage 3, or end of Stage 2 when tests do not apply), then the commit proposal (Stage 5). Run review only after approval of the completed implementation and tests. If review leaves suggestions for the user, present them and wait for their choice; a clean review proceeds directly to the commit hand-off without a separate review approval. Then ask whether to open a PR (Stage 6). Complete each stage without asking between files, edits, tests or required review fixes. Reuse explicit approval already given in the session, including after a resume; never repeat approval for unchanged work or ask for commit approval twice. This is the user's chosen cadence, replacing the general one-step-per-turn validation workflow. Carry it in every agent brief.
 
 ## Project context
 
@@ -51,13 +51,13 @@ Before planning or implementation for a new request, create a new branch named `
 
 Run `git status -sb` first. If there are uncommitted changes, report them and do not carry them into the new branch unless they belong to the request. Then run `git switch master`, `git pull --ff-only` and `git switch -c <prefix>/<short-summary>`. Start from another base only when the user says so, for example when the task depends on a branch that is not merged yet. Do not overwrite an existing branch; choose a short unique suffix when needed. When resuming the same orchestration, reuse its existing branch.
 
-Run all investigation, edits, tests, review and approved commits on that branch. Give every subagent the repo path and verify the branch before editing or committing. Report the feature branch and the starting commit, and record them with the approved plan.
+Run all investigation, edits, tests, review and approved commits on that branch. Give every subagent the repo path and verify the branch before editing or committing. Report the feature branch and the starting commit, and record them with the saved plan.
 
 ## Scope changes during an orchestration
 
-Use the original request and, once approved, the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own branch (`feat/`, `fix/` or `improve/`) and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan and obtain approval for the expanded scope before implementing it. Necessary fixes and clarifications that fulfill the original plan are not separate features.
+Use the original request and the saved plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own branch (`feat/`, `fix/` or `improve/`) and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the saved plan and proceed within that explicitly requested scope. Ask only if an important requirement or decision remains unclear. Necessary fixes and clarifications that fulfill the original plan are not separate features.
 
-## Stage 1: Plan 🛑
+## Stage 1: Plan
 
 1. **Understand the request.** If something blocks you (missing repro steps, unclear behaviour), ask at most 3 short questions, each with a suggested answer, and wait. If it is clear enough, go on without asking.
 2. **Investigate or plan**, read-only, with the project overrides in the brief:
@@ -75,22 +75,22 @@ Use the original request and, once approved, the saved plan as the scope boundar
    - **Tests:** which logic gets tests and which kind, or why none.
    - **Risks:** anything that could break, and the estimate if you ran one.
 
-   Then stop. **Do not touch code until the user approves the plan.** If they change it, update the plan and continue without asking again unless the change is large.
+   **Proceed without asking for plan approval when the request and approach are clear.** Pause only to clarify an important uncertainty that cannot be resolved from the request or code. If the user changes the plan, update it and continue within their requested scope; do not add a plan approval checkpoint.
 
-After approval, write the plan and the step list to a project memory file `project_<short-slug>.md` (pointer line in `MEMORY.md`, per the memory rules), and tick steps off as they finish. On a new session, look for that file first and continue from the next open step.
+Before implementation, write the plan and the step list to a project memory file `project_<short-slug>.md` (pointer line in `MEMORY.md`, per the memory rules), and tick steps off as they finish. On a new session, look for that file first and continue from the next open step.
 
 ## Stage 2: Implement
 
-Dispatch one agent: on Claude a general-purpose agent with `model: sonnet`, on Codex `agent-implementer`. Put in the brief: the approved plan, the decisions, the step list, the project overrides, and these rules:
+Dispatch one agent: on Claude a general-purpose agent with `model: sonnet`, on Codex `agent-implementer`. Put in the brief: the saved plan, the decisions, the step list, the project overrides, and these rules:
 
-- Do all implementation steps in order, without waiting for approval between them. The user approved the plan already. Leave writing tests to Stage 3 and return to the conductor when implementation and its checks are complete.
+- Do all implementation steps in order, without waiting for approval between them. The user authorized the task; a clear saved plan needs no separate approval. Leave writing tests to Stage 3 and return to the conductor when implementation and its checks are complete.
 - Scope is exactly the plan: no bonus refactors, no unrelated cleanup, no extra tests or docs. Mention an unrelated issue in one line at the end.
 - Comments: one or two short plain sentences explaining why, only where the code is not obvious. Match the density of the surrounding code.
 - Run `fvm dart format and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
-- **Stop only on a design surprise** that breaks the approved plan (a wrong assumption, a conflict between steps). Return 2 short options with a recommendation and the work done so far. Do not guess.
+- **Stop only on a design surprise** that breaks the saved plan (a wrong assumption, a conflict between steps). Return 2 short options with a recommendation and the work done so far. Do not guess.
 - Final report: files touched, what changed and why in a few bullets, the analyze result, and every `TODO` or `FIXME` added.
 
-When the agent reports a surprise, decide it yourself if the answer is clear from the code and tell the user in one line afterwards. Ask the user only when the choice changes the approved plan in a way they would care about.
+When the agent reports a surprise, decide it yourself if the answer is clear from the code and tell the user in one line afterwards. Ask the user only when the choice changes the saved plan in a way they would care about.
 
 After all implementation steps are applied and format/analyze checks pass, continue directly to Stage 3. Do not ask for implementation approval before tests. If tests do not apply, explain why and present the completed implementation and checks for approval once before review. Do not seek validation of individual steps.
 
@@ -128,4 +128,4 @@ Then give a short summary of what was done and which decisions changed on the wa
 
 Once implementation and review are complete, required checks pass, and the approved commit exists, prepare a short PR title and description covering the final change. The title starts with the same prefix as the branch (`feat: ...` for `feat/...`, `fix: ...` for `fix/...`, `improve: ...` for `improve/...`), never `chore:`. Cover validation results and any remaining limitations. Show the source branch, target branch (`master` unless the user specifies another), title and description, then ask: "Would you like me to push this branch and open the PR?" Wait for the answer unless the user has already explicitly requested this PR in the current orchestration. Do not offer a ready-for-review PR while required checks fail or blocking review findings remain.
 
-If the user agrees, first archive any completed local task and eligible parent story/epic as described above, validate links, and commit the documentation changes on the feature branch. Then push the feature branch with its upstream and create the PR against the stated target. Check for an existing open PR for the same source and target first; reuse it rather than creating a duplicate, and include the archive in that branch update. Return the PR link. The tracker may identify the branch before a PR URL exists; do not require a follow-up commit solely to add the URL. If the user declines, leave the commit on the branch locally without starting PR archival. Do not merge the PR without a separate user request.
+If the user agrees, first archive any completed local task and eligible parent story/epic as described above, validate links, and commit the documentation changes on the feature branch. Then push the feature branch with its upstream and create the PR against the stated target. Check for an existing open PR for the same source and target first; reuse it rather than creating a duplicate, and include the archive in that branch update. Return the PR link. Do not create a follow-up documentation commit solely to record the PR URL. If the user declines, leave the commit on the branch locally without starting PR archival. Do not merge the PR without a separate user request.

@@ -190,6 +190,31 @@
   "@templateAbsName": {
     "description": "Name of the Full Abs workout template."
   },
+  "templateCustomName": "Custom",
+  "@templateCustomName": {
+    "description": "Name of the tile showing current settings that match no template."
+  },
+  "templateCustomTileSemantics": "Custom settings. Preparation time {preparation}, round time {round}, rest time {rest}, {rounds, plural, =1{1 round} other{{rounds} rounds}}, total time {total}",
+  "@templateCustomTileSemantics": {
+    "description": "Screen reader label for the current custom workout settings.",
+    "placeholders": {
+      "preparation": {"type": "String"},
+      "round": {"type": "String"},
+      "rest": {"type": "String"},
+      "rounds": {"type": "int"},
+      "total": {"type": "String"}
+    }
+  },
+  "templateCustomTileSummary": "{preparation} prep · {work} work · {rest} rest · {rounds, plural, =1{1 round} other{{rounds} rounds}}",
+  "@templateCustomTileSummary": {
+    "description": "Summary of the current custom workout settings.",
+    "placeholders": {
+      "preparation": {"type": "String"},
+      "work": {"type": "String"},
+      "rest": {"type": "String"},
+      "rounds": {"type": "int"}
+    }
+  },
   "templateDefaultName": "Default",
   "@templateDefaultName": {
     "description": "Name of the default workout template."
