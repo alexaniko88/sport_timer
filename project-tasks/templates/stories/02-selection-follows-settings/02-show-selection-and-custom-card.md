@@ -4,7 +4,7 @@ Story: [Story 2 overview](index.md)
 
 Epic: [Templates](../../index.md)
 
-Status: Blocked by Task 2.1.
+Status: Ready for planning where completed Task 2.1 output is available (currently on `feat/templates-view-model`).
 
 ## Goal
 

@@ -17,11 +17,11 @@ Ready does not mean implementation is already approved. Done does not imply comm
 ## Current overview
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
-- **Templates:** 3 of 8 tasks done; 0 in progress; 1 ready; 1 blocked; 3 provisional.
+- **Templates:** 4 of 8 tasks done; 0 in progress; 1 ready; 0 blocked; 3 provisional.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
-- **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are complete on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open. No statistics implementation completed yet.
-- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.1 — plan the templates view model where completed Story 1 is available. The two epics are independent. No next task started.
+- **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are merged into `master` at `8c751c7` ([PR #14](https://github.com/alexaniko88/sport_timer/pull/14)). No statistics implementation completed yet.
+- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.2 — ready for planning where the uncommitted Task 2.1 output on `feat/templates-view-model` is available. No next task started. The two epics are independent.
 
 ## Statistics
 
@@ -53,8 +53,8 @@ Epic: [Templates](templates/index.md).
 | [1.1 Move templates into a feature folder](templates/stories/done/01-template-set-and-tiles/done/01-move-templates-to-feature.md) | ✅ Done | Checks pass; user approved delivery 2026-10-31. Available on `feat/templates-feature`. | The 5 templates as data, total-time calculation, en/es names. |
 | [1.2 Build the compact template tile](templates/stories/done/01-template-set-and-tiles/done/02-build-template-tile.md) | ✅ Done | Task 1.1. | Reusable compact tile with summary, total time and phase bar. |
 | [1.3 Rebuild the Templates page](templates/stories/done/01-template-set-and-tiles/done/03-rebuild-templates-page.md) | ✅ Done | Checks and user manual validation passed 2026-10-31; committed as `42a6af5` on `improve/templates-page`, [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open. | New Templates tab; tap applies the template. |
-| [2.1 Add a templates view model](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md) | 🟢 Ready | Story 1 complete on `improve/templates-page`; verify availability in the intended checkout. | Computed selected template or custom, with tests. |
-| [2.2 Show the selection and the Custom card](templates/stories/02-selection-follows-settings/02-show-selection-and-custom-card.md) | 🔴 Blocked | Task 2.1. | Highlighted row and visual-only Custom card. |
+| [2.1 Add a templates view model](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md) | ✅ Done | Code and 15 tests approved 2026-11-01; independent review clean. On `feat/templates-view-model`. | Computed selected template or custom, with tests. |
+| [2.2 Show the selection and the Custom card](templates/stories/02-selection-follows-settings/02-show-selection-and-custom-card.md) | 🟢 Ready | Task 2.1 complete on `feat/templates-view-model`; verify output availability. | Highlighted row and visual-only Custom card. |
 | [3.1 Confirm the creation behavior](templates/stories/03-create-own-templates/01-confirm-creation-behavior.md) | ⚪ Provisional | Revisit Story 3 after Stories 1 and 2. | Agreed creation, edit, delete and storage decisions. |
 | [3.2 Store custom templates](templates/stories/03-create-own-templates/02-store-custom-templates.md) | ⚪ Provisional | Story 3 agreement and Task 3.1. | Repository for own templates. |
 | [3.3 Add the creation flow](templates/stories/03-create-own-templates/03-add-creation-flow.md) | ⚪ Provisional | Story 3 agreement and Task 3.2. | "+" action and creation flow. |
@@ -74,6 +74,8 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 
 ## Active work and handoff
 
+Templates 2.1 completed and user approved code/tests on 2026-11-01. Branch `feat/templates-view-model`, base `master` at `8c751c7`; all [plan](project_templates_view_model.md) steps complete. Added immutable templates state, live four-field matching from shared settings, delegated apply, and page lifecycle/tap wiring without visual changes. Fifteen focused unit tests pass; `verify-branch.sh master` passed full analysis, changed-file formatting, tests and generated/marker checks. Independent production review: no findings or suggestions, no fixes required. No added code TODO/FIXME, personal absolute paths, platform or dependency changes. User confirmed the app works on 2026-11-01; runtime concern resolved without code changes. The existing six page integration tests also pass, including every template saving values, updating all four Home values and supplying Start parameters. Implementation commit approved; PR/push not yet authorized. Task 2.2 is Ready only where these files are available; not started. The separate orchestrator skill update remains outside the task commit.
+
 Templates 1.3 is complete on `improve/templates-page` in the main checkout, from `master` at `de93de8`. All [plan](project_templates_page.md) steps complete; user confirmed manual checks passed on 2026-10-31. Implementation committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open against `master`. Task 1.3 and completed Story 1 archived in the follow-up documentation commit on this PR branch. User owns all manual testing: no ADB, app launch or device control unless explicitly requested. Task 2.1 is ready where this branch's output is available; no next task started.
 
 When work starts, record the task, the actual branch if applicable, approved plan location, completed substeps, remaining work, checks run, and blockers. Use repository-relative paths and branch/commit identifiers rather than machine-specific absolute paths. This section must be enough for another session to resume safely.
@@ -91,6 +93,8 @@ For each completed task, record its identifier/link, completion date, delivered 
 - Evidence: 18 tests pass (tile tests plus `test/l10n`); full `fvm flutter analyze` clean; independent review: no critical findings, semantics tap action, border size shift and context reads fixed. Known limits: `totalTime` is passed in by the caller; `isCustom` has a basic outlined style to refine in Story 2; duration formatter duplicates the page one until Task 1.3.
 
 - Templates 1.3, completed 2026-10-31: [task](templates/stories/done/01-template-set-and-tiles/done/03-rebuild-templates-page.md). Rebuilt `lib/presentation/home/templates_page.dart` with the five compact tiles, existing save flow, localized names and bottom clearance. Removed old card UI, subtitle, last-tap selection and seven unused en/es texts. Added `test/presentation/home/templates_page_test.dart` with six widget tests for order/icons, each save, Setup values and Start parameters. `verify-branch.sh master` passed full analysis, changed-file formatting, six tests, generated-file and marker checks; diff whitespace clean. Independent code and accessibility reviews found no blocking issues. User confirmed manual language/theme, fit/clearance and timer checks passed. No added TODO/FIXME, personal absolute paths, dependency or platform changes. Output is committed as `42a6af5` on `improve/templates-page`, [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open; Story 1 complete there. Selection and Custom remain Story 2 scope. User requested the PR; implementation committed and pushed. Task 1.3 and completed Story 1 archived in this PR.
+
+- Templates 2.1, completed 2026-11-01: [task](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md). Reusable `TemplatesState` and `TemplatesViewModel` in `lib/features/templates/`, observing the shared settings ViewModel and applying through its save flow. Page owns/disposes only the templates ViewModel. Fifteen unit tests cover matching, custom transitions, loading, saving/failure and disposal. Full branch checks passed; independent review clean; user approved implementation/tests. On `feat/templates-view-model` from `8c751c7`. Visible highlight and Custom card remain Task 2.2.
 
 ## Maintenance
 

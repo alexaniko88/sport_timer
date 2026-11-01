@@ -1,8 +1,6 @@
 part of 'home.dart';
 
-class TemplatesPage extends StatelessWidget {
-  static const double _listBottomInset = 100;
-
+class TemplatesPage extends StatefulWidget {
   final SettingsViewModel viewModel;
   final AccountViewModel accountViewModel;
   final VoidCallback onMenuPressed;
@@ -15,6 +13,36 @@ class TemplatesPage extends StatelessWidget {
   });
 
   @override
+  State<TemplatesPage> createState() => _TemplatesPageState();
+}
+
+class _TemplatesPageState extends State<TemplatesPage> {
+  static const double _listBottomInset = 100;
+
+  late TemplatesViewModel _templatesViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _templatesViewModel = TemplatesViewModel(widget.viewModel);
+  }
+
+  @override
+  void didUpdateWidget(covariant TemplatesPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.viewModel != widget.viewModel) {
+      _templatesViewModel.dispose();
+      _templatesViewModel = TemplatesViewModel(widget.viewModel);
+    }
+  }
+
+  @override
+  void dispose() {
+    _templatesViewModel.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
@@ -22,12 +50,12 @@ class TemplatesPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           tooltip: l10n.homeMenuTooltip,
-          onPressed: onMenuPressed,
+          onPressed: widget.onMenuPressed,
           icon: const Icon(Icons.menu),
         ),
         title: Text(l10n.templatesTitle),
         actions: [
-          AccountAvatarButton(viewModel: accountViewModel),
+          AccountAvatarButton(viewModel: widget.accountViewModel),
           const SizedBox(width: AppSpacing.s8),
         ],
       ),
@@ -55,7 +83,7 @@ class TemplatesPage extends StatelessWidget {
             icon: icon,
             settings: template.settings,
             totalTime: template.totalTime,
-            onTap: () => viewModel.saveSettings(template.settings),
+            onTap: () => _templatesViewModel.applyTemplate(template),
           );
         },
       ),

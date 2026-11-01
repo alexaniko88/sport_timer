@@ -9,6 +9,7 @@ import 'package:sport_timer/features/timer/timer_params.dart';
 import 'package:sport_timer/features/settings/settings_state.dart';
 import 'package:sport_timer/features/settings/settings_view_model.dart';
 import 'package:sport_timer/features/templates/built_in_templates.dart';
+import 'package:sport_timer/features/templates/templates_view_model.dart';
 import 'package:sport_timer/features/templates/workout_template.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/widgets/account_avatar_button.dart';

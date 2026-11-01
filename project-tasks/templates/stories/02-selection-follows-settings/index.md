@@ -2,7 +2,7 @@
 
 Epic: [Templates](../../index.md)
 
-Status: Ready for planning where completed [Story 1](../done/01-template-set-and-tiles/index.md) is available (`improve/templates-page`, PR #14 open, not yet merged).
+Status: Task 2.1 Done, with approved code/tests and clean review, on `feat/templates-view-model`. Task 2.2 Ready where that output is available; not started. Story remains incomplete until Task 2.2 is delivered.
 
 ## User outcome
 
