@@ -56,3 +56,7 @@ Decisions:
 ## Delivery order
 
 Story 1, then Story 2. Together they are the first usable release. Story 3 is not needed for it and depends on both.
+
+## Navigation decision update — 2026-11-01
+
+[UI refactor Story 2](../ui-refactor/stories/02-templates-in-drawer/index.md) supersedes the original tab/shared-Start navigation assumptions above: Templates moves to a separate drawer page, applies settings and stays open, and has no Start button. Back simply pops to the originating Home tab and preserves saved settings/selection. Start exists only on Timer Setup. Selection highlighting and Custom remain owned by this epic; navigation must not reset them. Historical implementation notes above describe the earlier delivery.

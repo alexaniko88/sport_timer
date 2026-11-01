@@ -18,7 +18,7 @@ Ready does not mean implementation is already approved. Done does not imply comm
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
 - **Templates:** 3 of 8 tasks done; 0 in progress; 1 ready; 1 blocked; 3 provisional.
-- **UI refactor:** 0 of 2 tasks done; 0 in progress; 1 ready; 1 provisional. Centered timer setup grid design agreed on 2026-11-01.
+- **UI refactor:** 0 of 3 tasks done; 0 in progress; 2 ready; 1 provisional. Centered timer setup grid design agreed on 2026-11-01.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
 - **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are complete on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open. No statistics implementation completed yet.
@@ -69,6 +69,7 @@ Epic: [UI refactor](ui-refactor/index.md). Story: [Timer setup refactor](ui-refa
 | --- | --- | --- | --- |
 | [UI 1.1 Build the timer setup grid widget](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md) | 🟢 Ready | Centered design and behavior agreed; current checkout contains the Templates styling reference. Verify it in the implementation branch. | Reusable themed setting cards, adaptive grid of four options and current selector integration; shared Start preserved. |
 | [UI 1.2 Align picker wheel styling](ui-refactor/stories/01-timer-setup-refactor/02-align-picker-wheel-styling.md) | ⚪ Provisional | Intended after UI 1.1; confirm sheet tint and selected-value treatment. | Theme-aligned time/rounds wheels retaining phase colors with 1px value borders. |
+| [UI 2.1 Move Templates navigation into the drawer](ui-refactor/stories/02-templates-in-drawer/01-move-templates-navigation.md) | 🟢 Ready | Compact Templates page available; verify implementation checkout. Independent of pending UI, Statistics and selection tasks. | Two Home tabs, separate Templates drawer page, apply-and-stay, ordinary Back, Start only on Setup. |
 
 ## Bugs
 
@@ -84,6 +85,8 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 | [IMP-02 Rethink the navigation drawer](improvements/02-rethink-navigation-drawer.md) | ⚪ Provisional | Direction to be agreed. | Agreed role for the drawer. |
 
 ## Active work and handoff
+
+UI navigation planning, 2026-11-01: [UI Story 2](ui-refactor/stories/02-templates-in-drawer/index.md) agreed. Templates above Timer styles in the drawer; Home retains Setup and Statistics. Templates uses title/Back with no Start, menu or avatar. Selection applies and stays; Back pops to the original tab and preserves saved settings/selection. Visible computed selection remains Templates Story 2 scope. UI 2.1 is Ready for planning independently; no application code or implementation plan approved. The broader drawer rethink remains provisional.
 
 UI refactor planning, 2026-11-01: user selected the centered square-card design and approved four existing options, adaptive 2-column layout, Templates border treatment and whole-card button behavior. Requirements and a portable design image are recorded in the [story](ui-refactor/stories/01-timer-setup-refactor/index.md). UI 1.1 is Ready for planning; UI 1.2 remains Provisional. Existing light/dark themes and shared Start on Setup/Templates are preserved. No UI implementation or implementation plan approved; resume with UI 1.1 through orchestration when requested.
 
