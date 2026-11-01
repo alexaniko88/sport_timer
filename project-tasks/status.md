@@ -18,10 +18,12 @@ Ready does not mean implementation is already approved. Done does not imply comm
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
 - **Templates:** 3 of 8 tasks done; 0 in progress; 1 ready; 1 blocked; 3 provisional.
+- **UI refactor:** 0 of 2 tasks done; 0 in progress; 1 ready; 1 provisional. Centered timer setup grid design agreed on 2026-11-01.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
 - **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are complete on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open. No statistics implementation completed yet.
 - **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.1 — plan the templates view model where completed Story 1 is available. The two epics are independent. No next task started.
+- **Next UI task:** [UI refactor 1.1](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md) — plan the reusable centered setting cards, adaptive four-option grid and existing selector integration. No implementation started.
 
 ## Statistics
 
@@ -59,6 +61,15 @@ Epic: [Templates](templates/index.md).
 | [3.2 Store custom templates](templates/stories/03-create-own-templates/02-store-custom-templates.md) | ⚪ Provisional | Story 3 agreement and Task 3.1. | Repository for own templates. |
 | [3.3 Add the creation flow](templates/stories/03-create-own-templates/03-add-creation-flow.md) | ⚪ Provisional | Story 3 agreement and Task 3.2. | "+" action and creation flow. |
 
+## UI refactor
+
+Epic: [UI refactor](ui-refactor/index.md). Story: [Timer setup refactor](ui-refactor/stories/01-timer-setup-refactor/index.md).
+
+| Task | Status | Prerequisite or reason | Output when done |
+| --- | --- | --- | --- |
+| [UI 1.1 Build the timer setup grid widget](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md) | 🟢 Ready | Centered design and behavior agreed; current checkout contains the Templates styling reference. Verify it in the implementation branch. | Reusable themed setting cards, adaptive grid of four options and current selector integration; shared Start preserved. |
+| [UI 1.2 Align picker wheel styling](ui-refactor/stories/01-timer-setup-refactor/02-align-picker-wheel-styling.md) | ⚪ Provisional | Intended after UI 1.1; confirm sheet tint and selected-value treatment. | Theme-aligned time/rounds wheels retaining phase colors with 1px value borders. |
+
 ## Bugs
 
 Folder: [Bugs](bugs/index.md). Only bug tasks belong here. None reported yet; add a linked row with status, dependencies/blockers, and intended result when a report is created.
@@ -69,10 +80,12 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 
 | Task | Status | Prerequisite or reason | Output when done |
 | --- | --- | --- | --- |
-| [IMP-01 Unify styles across the app](improvements/01-unify-styles-app-wide.md) | ⚪ Provisional | Best after Templates Story 1; scope to be agreed. | Consistent look across screens. |
+| [IMP-01 Unify styles across the app](improvements/01-unify-styles-app-wide.md) | ⚪ Provisional | Remaining app-wide scope to be agreed; Timer Setup work tracked in UI refactor. | Consistent look across the remaining agreed screens. |
 | [IMP-02 Rethink the navigation drawer](improvements/02-rethink-navigation-drawer.md) | ⚪ Provisional | Direction to be agreed. | Agreed role for the drawer. |
 
 ## Active work and handoff
+
+UI refactor planning, 2026-11-01: user selected the centered square-card design and approved four existing options, adaptive 2-column layout, Templates border treatment and whole-card button behavior. Requirements and a portable design image are recorded in the [story](ui-refactor/stories/01-timer-setup-refactor/index.md). UI 1.1 is Ready for planning; UI 1.2 remains Provisional. Existing light/dark themes and shared Start on Setup/Templates are preserved. No UI implementation or implementation plan approved; resume with UI 1.1 through orchestration when requested.
 
 Templates 1.3 is complete on `improve/templates-page` in the main checkout, from `master` at `de93de8`. All [plan](project_templates_page.md) steps complete; user confirmed manual checks passed on 2026-10-31. Implementation committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open against `master`. Task 1.3 and completed Story 1 archived in the follow-up documentation commit on this PR branch. User owns all manual testing: no ADB, app launch or device control unless explicitly requested. Task 2.1 is ready where this branch's output is available; no next task started.
 
