@@ -21,6 +21,7 @@ A consistent look, and less one-off styling code to maintain.
 ## Scope and exclusions
 
 - Timer Setup's grid, Start button refactor and provisional wheel styling are tracked in [UI refactor](../ui-refactor/index.md). Keep this proposal for remaining app-wide scope; do not duplicate those tasks here.
+- App-wide corner radii and border widths are owned by [UI refactor Story 4](../ui-refactor/stories/04-unify-borders-and-corners/index.md), including Templates. Exclude that work from this broader proposal.
 - The Templates tab is excluded: [Epic Templates](../templates/index.md) restyles it first, and its tile may become a shared pattern.
 - No behavior changes and no new features.
 

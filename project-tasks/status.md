@@ -18,7 +18,7 @@ Ready does not mean implementation is already approved. Done does not imply comm
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
 - **Templates:** 3 of 8 tasks done; 0 in progress; 1 ready; 1 blocked; 3 provisional.
-- **UI refactor:** 0 of 4 tasks done; 0 in progress; 3 ready; 1 provisional. Grid, Templates navigation and Start button refactor scope agreed on 2026-11-01.
+- **UI refactor:** 0 of 6 tasks done; 0 in progress; 4 ready; 1 blocked; 1 provisional. Grid, Templates navigation, Start button and app-wide border/radius scope agreed on 2026-11-01.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
 - **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are complete on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open. No statistics implementation completed yet.
@@ -63,7 +63,7 @@ Epic: [Templates](templates/index.md).
 
 ## UI refactor
 
-Epic: [UI refactor](ui-refactor/index.md). Stories: [Timer setup refactor](ui-refactor/stories/01-timer-setup-refactor/index.md), [Templates in the drawer](ui-refactor/stories/02-templates-in-drawer/index.md), and [Start button refactor](ui-refactor/stories/03-start-button-refactor/index.md).
+Epic: [UI refactor](ui-refactor/index.md). Stories: [Timer setup refactor](ui-refactor/stories/01-timer-setup-refactor/index.md), [Templates in the drawer](ui-refactor/stories/02-templates-in-drawer/index.md), [Start button refactor](ui-refactor/stories/03-start-button-refactor/index.md), and [Unify borders and corner radii](ui-refactor/stories/04-unify-borders-and-corners/index.md).
 
 | Task | Status | Prerequisite or reason | Output when done |
 | --- | --- | --- | --- |
@@ -71,6 +71,8 @@ Epic: [UI refactor](ui-refactor/index.md). Stories: [Timer setup refactor](ui-re
 | [UI 1.2 Align picker wheel styling](ui-refactor/stories/01-timer-setup-refactor/02-align-picker-wheel-styling.md) | ⚪ Provisional | Intended after UI 1.1; confirm sheet tint and selected-value treatment. | Theme-aligned time/rounds wheels retaining phase colors with 1px value borders. |
 | [UI 2.1 Move Templates navigation into the drawer](ui-refactor/stories/02-templates-in-drawer/01-move-templates-navigation.md) | 🟢 Ready | Compact Templates page available; verify implementation checkout. Independent of pending UI, Statistics and selection tasks. | Two Home tabs, separate Templates drawer page, apply-and-stay, ordinary Back, Start only on Setup. |
 | [UI 3.1 Replace Timer Setup's floating Start button](ui-refactor/stories/03-start-button-refactor/01-refactor-timer-setup-start-button.md) | 🟢 Ready | Design agreed; verify available grid/navigation work. No pending implementation prerequisite. | Fixed wide primary Start on Setup, play icon, localized label, clear scrollable settings; launch behavior and Templates preserved. |
+| [UI 4.1 Audit and agree shared border and radius rules](ui-refactor/stories/04-unify-borders-and-corners/01-agree-border-and-radius-rules.md) | 🟢 Ready | No implementation prerequisite; values and exceptions require agreement. | Approved app-wide inventory and shared role/state rules. |
+| [UI 4.2 Apply shared border and radius rules app-wide](ui-refactor/stories/04-unify-borders-and-corners/02-apply-border-and-radius-rules.md) | 🔴 Blocked | UI 4.1 approved decision. | Consistent radii and border widths across screens and overlays, with documented exceptions. |
 
 ## Bugs
 
@@ -82,10 +84,12 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 
 | Task | Status | Prerequisite or reason | Output when done |
 | --- | --- | --- | --- |
-| [IMP-01 Unify styles across the app](improvements/01-unify-styles-app-wide.md) | ⚪ Provisional | Remaining app-wide scope to be agreed; Timer Setup work tracked in UI refactor. | Consistent look across the remaining agreed screens. |
+| [IMP-01 Unify styles across the app](improvements/01-unify-styles-app-wide.md) | ⚪ Provisional | Remaining app-wide scope to be agreed; Timer Setup and border/radius work tracked in UI refactor. | Consistent look across the remaining agreed screens. |
 | [IMP-02 Rethink the navigation drawer](improvements/02-rethink-navigation-drawer.md) | ⚪ Provisional | Direction to be agreed. | Agreed role for the drawer. |
 
 ## Active work and handoff
+
+Border/radius backlog, 2026-11-01: [UI Story 4](ui-refactor/stories/04-unify-borders-and-corners/index.md) records app-wide corner-radius and border-width consistency. UI 4.1 is Ready for planning to inventory current treatments and agree values, state rules and exceptions; UI 4.2 is Blocked by that decision. No numeric values or application code changes approved. IMP-01 excludes this scope; preserve other UI stories' layout and behavior ownership.
 
 Start button planning, 2026-11-01: [UI Story 3](ui-refactor/stories/03-start-button-refactor/index.md) agreed after grilling. UI refactor only: fixed wide primary filled button above Setup's bottom navigation, card-matching corners, play icon and localized Start label. Settings scroll independently with reserved space; support light/dark, English/Spanish, small screens, large text and accessibility. Timer launch stays unchanged. Templates Start removal belongs to UI 2.1; UI 3.1 preserves whichever Templates navigation/Start state exists when implemented. UI 3.1 is Ready for planning on `improve/ui-refactor`; no application code or implementation plan approved. Wheel styling remains Provisional.
 
