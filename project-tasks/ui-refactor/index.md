@@ -1,6 +1,6 @@
 # EPIC: UI refactor
 
-Status: Timer setup grid, Templates navigation, Start button refactor and app-wide border/radius scope agreed; wheel styling remains provisional.
+Status: Timer setup grid, Templates navigation, Start button refactor and app-wide border/radius scope agreed; Timer tab icon and naming agreed after the Start refactor; wheel styling remains provisional.
 
 Progress: [Project task status](../status.md).
 
@@ -20,7 +20,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 
 ## Stories
 
-1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — grid ready for planning; wheel styling provisional.
+1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — grid ready for planning; wheel styling provisional; timer tab icon and label blocked by UI 3.1.
 
 2. [Access Templates from the drawer](stories/02-templates-in-drawer/index.md) — Ready for planning; one navigation task.
 3. [Refactor the Start button](stories/03-start-button-refactor/index.md) — Ready for planning; one UI task for a fixed, wide primary action on Timer Setup.
@@ -35,3 +35,5 @@ Story 2 is independent of Story 1 and the provisional wheel task. Its Start visi
 Story 3 can be planned independently of the other pending stories. It changes only Timer Setup's Start presentation and preserves the navigation and Templates Start visibility available in its implementation checkout. Settings scroll above the fixed button; timer-launch behavior stays unchanged.
 
 Story 4 can audit the current app independently. Agree shared values and exceptions in UI 4.1 before UI 4.2 migrates the app. Coordinate those rules with pending UI stories without taking on their layout or behavior changes.
+
+UI 1.3 replaces the Home house icon with outlined/filled timer icons and renames its label, tooltip and accessible name to Timer / Temporizador. Deliver after UI 3.1 changes Start to play. This does not change navigation behavior or require wheel styling or the Templates drawer move.

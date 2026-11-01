@@ -18,7 +18,7 @@ Ready does not mean implementation is already approved. Done does not imply comm
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
 - **Templates:** 3 of 8 tasks done; 0 in progress; 1 ready; 1 blocked; 3 provisional.
-- **UI refactor:** 0 of 6 tasks done; 0 in progress; 4 ready; 1 blocked; 1 provisional. Grid, Templates navigation, Start button and app-wide border/radius scope agreed on 2026-11-01.
+- **UI refactor:** 0 of 7 tasks done; 0 in progress; 4 ready; 2 blocked; 1 provisional. Grid, Templates navigation, Start button and app-wide border/radius scope agreed on 2026-11-01.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
 - **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are complete on `improve/templates-page`, committed as `42a6af5`; [PR #14](https://github.com/alexaniko88/sport_timer/pull/14) open. No statistics implementation completed yet.
@@ -69,6 +69,7 @@ Epic: [UI refactor](ui-refactor/index.md). Stories: [Timer setup refactor](ui-re
 | --- | --- | --- | --- |
 | [UI 1.1 Build the timer setup grid widget](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md) | 🟢 Ready | Centered design and behavior agreed; current checkout contains the Templates styling reference. Verify it in the implementation branch. | Reusable themed setting cards, adaptive grid of four options and current selector integration; shared Start preserved. |
 | [UI 1.2 Align picker wheel styling](ui-refactor/stories/01-timer-setup-refactor/02-align-picker-wheel-styling.md) | ⚪ Provisional | Intended after UI 1.1; confirm sheet tint and selected-value treatment. | Theme-aligned time/rounds wheels retaining phase colors with 1px value borders. |
+| [UI 1.3 Replace the Home tab icon and label](ui-refactor/stories/01-timer-setup-refactor/03-replace-home-tab-icon.md) | 🔴 Blocked | UI 3.1 must first change Timer Setup Start to play. Icon/naming agreed; no dependency on UI 1.1, wheel styling or drawer move. | Outlined/filled timer destination icon; Timer / Temporizador label, tooltip and accessible name; navigation preserved. |
 | [UI 2.1 Move Templates navigation into the drawer](ui-refactor/stories/02-templates-in-drawer/01-move-templates-navigation.md) | 🟢 Ready | Compact Templates page available; verify implementation checkout. Independent of pending UI, Statistics and selection tasks. | Two Home tabs, separate Templates drawer page, apply-and-stay, ordinary Back, Start only on Setup. |
 | [UI 3.1 Replace Timer Setup's floating Start button](ui-refactor/stories/03-start-button-refactor/01-refactor-timer-setup-start-button.md) | 🟢 Ready | Design agreed; verify available grid/navigation work. No pending implementation prerequisite. | Fixed wide primary Start on Setup, play icon, localized label, clear scrollable settings; launch behavior and Templates preserved. |
 | [UI 4.1 Audit and agree shared border and radius rules](ui-refactor/stories/04-unify-borders-and-corners/01-agree-border-and-radius-rules.md) | 🟢 Ready | No implementation prerequisite; values and exceptions require agreement. | Approved app-wide inventory and shared role/state rules. |
@@ -88,6 +89,8 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 | [IMP-02 Rethink the navigation drawer](improvements/02-rethink-navigation-drawer.md) | ⚪ Provisional | Direction to be agreed. | Agreed role for the drawer. |
 
 ## Active work and handoff
+
+Timer tab planning, 2026-11-01: [UI 1.3](ui-refactor/stories/01-timer-setup-refactor/03-replace-home-tab-icon.md) agreed after grilling. Replace the house with outlined/filled timer icons and rename the label, tooltip and accessible destination name to Timer / Temporizador. Blocked until UI 3.1 changes Timer Setup Start to play, keeping the two symbols distinct. Preserve tab order, destination, settings and launch behavior; no other pending UI work is required. No product decisions remain; no application code changes or implementation plan approved.
 
 Border/radius backlog, 2026-11-01: [UI Story 4](ui-refactor/stories/04-unify-borders-and-corners/index.md) records app-wide corner-radius and border-width consistency. UI 4.1 is Ready for planning to inventory current treatments and agree values, state rules and exceptions; UI 4.2 is Blocked by that decision. No numeric values or application code changes approved. IMP-01 excludes this scope; preserve other UI stories' layout and behavior ownership.
 
