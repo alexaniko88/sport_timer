@@ -1,6 +1,6 @@
 # Templates ViewModel approved plan
 
-Task: [Templates 2.1](templates/stories/02-selection-follows-settings/01-add-templates-view-model.md).
+Task: [Templates 2.1](templates/stories/02-selection-follows-settings/done/01-add-templates-view-model.md).
 Branch: `feat/templates-view-model`, from `master` at `8c751c7`.
 Approved: 2026-11-01.
 
@@ -22,3 +22,5 @@ Implementation steps 1–3 and completed implementation/tests approved by the us
 Completed on `feat/templates-view-model`. Fifteen focused unit tests pass in `test/features/templates/templates_view_model_test.dart`. `verify-branch.sh master` passed full analysis, changed-file formatting, tests and generated/marker checks; diff whitespace clean. Independent production review: no findings or suggestions. No added code TODO/FIXME, dependency or platform changes. Commit message and file list approved. The separate `.agents/skills/skill-orchestrator/SKILL.md` update is excluded from the task commit. Task 2.2 is ready where these outputs are available and has not been started.
 
 Runtime follow-up: user reports template taps leave Home unchanged. Read-only trace confirms a shared settings ViewModel. All six existing `test/presentation/home/templates_page_test.dart` integration tests pass on this code, including each template applying, saving and updating Home/Start. User confirmed it works; concern resolved without code changes. Implementation commit approved.
+
+PR handoff: implementation `511ce33`, skill update `eb3aad5`; user approved push and PR. Task 2.1 archived before the initial push; Story 2 and Templates epic remain active.

@@ -29,7 +29,7 @@ Out of scope: saving the Custom card as a template ([Story 3](../03-create-own-t
 
 ## Tasks
 
-1. [Add a templates view model](01-add-templates-view-model.md).
+1. [Add a templates view model](done/01-add-templates-view-model.md).
 2. [Show the selection and the Custom card](02-show-selection-and-custom-card.md).
 
 ## Dependencies and open decisions

@@ -1,10 +1,10 @@
 # TASK 2.1: Add a templates view model
 
-Story: [Story 2 overview](index.md)
+Story: [Story 2 overview](../index.md)
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../index.md)
 
-Status: Done — code/tests approved 2026-11-01; 15 tests and branch checks pass; independent review clean. On `feat/templates-view-model` from `8c751c7`. See [completed plan](../../../project_templates_view_model.md).
+Status: Done — code/tests approved 2026-11-01; 15 tests and branch checks pass; independent review clean. On `feat/templates-view-model` from `8c751c7`. See [completed plan](../../../../project_templates_view_model.md).
 
 ## Goal
 
@@ -20,7 +20,7 @@ The matching logic lives in a ViewModel that exposes which template is selected,
 
 ## Dependencies
 
-[Task 1.1](../done/01-template-set-and-tiles/done/01-move-templates-to-feature.md) and Story 1 completed.
+[Task 1.1](../../done/01-template-set-and-tiles/done/01-move-templates-to-feature.md) and Story 1 completed.
 
 ## Acceptance criteria
 
