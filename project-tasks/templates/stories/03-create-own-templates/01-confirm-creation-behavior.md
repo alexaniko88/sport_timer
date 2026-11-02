@@ -32,3 +32,7 @@ User approval of the written decision. For storage choices that depend on a libr
 ## Implementation context
 
 `lib/features/settings/settings_repository.dart` shows how settings are stored today in `SharedPreferences`. Read the parent indexes and follow `.agents/skills/skill-orchestrator/SKILL.md`.
+
+## UI snapshot reference
+
+Before planning, inspect the relevant current UI snapshots: [templates_selected](../../../../test/snapshots/goldens/templates_selected.png), [templates_custom](../../../../test/snapshots/goldens/templates_custom.png), [setup_template_selected](../../../../test/snapshots/goldens/setup_template_selected.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. Use the reference to inform the outstanding decisions without approving a layout or values in advance.

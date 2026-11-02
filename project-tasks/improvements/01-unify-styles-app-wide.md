@@ -44,3 +44,7 @@ Manual check of each screen in light and dark theme, plus the existing tests and
 ## Implementation context
 
 Shared pieces: `lib/presentation/widgets/` and the theme files. Reading and agreeing the plan comes first; this entry does not authorize code changes.
+
+## UI snapshot reference
+
+Before planning, inspect the relevant current UI snapshots: [setup_custom](../../test/snapshots/goldens/setup_custom.png), [templates_selected](../../test/snapshots/goldens/templates_selected.png), [statistics](../../test/snapshots/goldens/statistics.png), [timer_styles](../../test/snapshots/goldens/timer_styles.png), [login](../../test/snapshots/goldens/login.png), [home_drawer](../../test/snapshots/goldens/home_drawer.png), [account_sheet](../../test/snapshots/goldens/account_sheet.png), [account_sign_out_dialog](../../test/snapshots/goldens/account_sign_out_dialog.png), [timer_ring_round](../../test/snapshots/goldens/timer_ring_round.png), [timer_full_color_round](../../test/snapshots/goldens/timer_full_color_round.png), [timer_rounds_strip_round](../../test/snapshots/goldens/timer_rounds_strip_round.png). See the [snapshot index](../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.

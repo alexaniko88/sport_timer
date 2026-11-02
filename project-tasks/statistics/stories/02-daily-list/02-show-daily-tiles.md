@@ -28,3 +28,7 @@ Each item below is a completion requirement for this task:
 ## Orchestration
 
 Read the story and epic before starting. Inspect current code and propose small substeps for approval. Complete one approved file or concern per turn and wait for user validation before continuing. Include relevant tests and scoped checks with implementation; a later verification task does not defer required validation.
+
+## UI snapshot reference
+
+Before planning, inspect the relevant current UI snapshots: [statistics](../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. The Statistics snapshot shows placeholder content, not the intended daily list. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
