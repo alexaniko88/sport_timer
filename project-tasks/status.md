@@ -20,7 +20,7 @@ Ready does not mean implementation is already approved. Done does not imply comm
 - **Templates:** 6 of 10 tasks done; 0 in progress; 1 ready; 0 blocked; 3 provisional.
 - **UI refactor:** 0 of 7 tasks done; 0 in progress; 4 ready; 2 blocked; 1 provisional. Grid, Templates navigation, Start button and app-wide border/radius scope agreed on 2026-11-01.
 - **Bugs:** 0 tasks reported.
-- **Improvements:** 0 of 2 tasks done; both provisional.
+- **Improvements:** 0 of 3 tasks done; 1 ready; 2 provisional.
 - **Available to reuse:** Templates Stories 1, 2 and 4 are merged into `master`. No statistics implementation completed yet.
 - **Next tasks:** Templates 5.1 — update the 5 built-in template times and fresh-install default settings. Statistics 1.1 — verify Serverpod local integration and approve the data model. No next task started. The Statistics and Templates epics are independent.
 - **UI 1.1:** [Archived task](ui-refactor/stories/01-timer-setup-refactor/done/01-build-timer-setup-grid.md). Final decisions, validation evidence and branch context are in the [saved plan](project_timer_setup_grid.md).
@@ -88,6 +88,7 @@ Folder: [Improvements](improvements/index.md). Only improvement tasks belong her
 | --- | --- | --- | --- |
 | [IMP-01 Unify styles across the app](improvements/01-unify-styles-app-wide.md) | ⚪ Provisional | Remaining app-wide scope to be agreed; Timer Setup and border/radius work tracked in UI refactor. | Consistent look across the remaining agreed screens. |
 | [IMP-02 Rethink the navigation drawer](improvements/02-rethink-navigation-drawer.md) | ⚪ Provisional | Direction to be agreed. | Agreed role for the drawer. |
+| [IMP-03 Capture a UI snapshot reference](improvements/03-capture-ui-snapshot-reference.md) | 🟢 Ready | None. | Deterministic Alchemist PNG snapshots and Markdown app-flow reference. |
 
 ## Active work and handoff
 
