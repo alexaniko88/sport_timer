@@ -19,7 +19,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 
 ## Stories
 
-1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — grid task archived; wheel styling archived; timer tab icon and label blocked by UI 3.1.
+1. [Timer setup refactor](stories/done/01-timer-setup-refactor/index.md) — all tasks archived; Timer tab update pending PR and merge.
 
 2. [Access Templates from the drawer](stories/02-templates-in-drawer/index.md) — Ready for planning; one navigation task.
 3. [Refactor the Start button](stories/done/03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
@@ -35,4 +35,4 @@ Story 3 can be planned independently of the other pending stories. It changes on
 
 Story 4 can audit the current app independently. Agree shared values and exceptions in UI 4.1 before UI 4.2 migrates the app. Coordinate those rules with pending UI stories without taking on their layout or behavior changes.
 
-UI 1.3 replaces the Home house icon with outlined/filled timer icons and renames its label, tooltip and accessible name to Timer / Temporizador. Deliver after UI 3.1 changes Start to play. This does not change navigation behavior or require wheel styling or the Templates drawer move.
+UI 1.3 replaces the Home house icon with outlined/filled timer icons and renames its label, tooltip and accessible name to Timer / Temporizador. Implemented after UI 3.1 changed Start to play; pending PR and merge. This does not change navigation behavior or require wheel styling or the Templates drawer move.
