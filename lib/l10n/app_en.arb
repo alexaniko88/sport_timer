@@ -124,13 +124,13 @@
   "@homeStartButton": {
     "description": "Label of the button on the home page that starts the timer."
   },
-  "homeTabHome": "Home",
-  "@homeTabHome": {
-    "description": "Label of the home tab in the bottom navigation."
+  "homeTabTimer": "Timer",
+  "@homeTabTimer": {
+    "description": "Label of the timer setup tab in the bottom navigation."
   },
-  "homeTabHomeTooltip": "Home",
-  "@homeTabHomeTooltip": {
-    "description": "Tooltip of the home tab in the bottom navigation."
+  "homeTabTimerTooltip": "Timer",
+  "@homeTabTimerTooltip": {
+    "description": "Tooltip of the timer setup tab in the bottom navigation."
   },
   "homeTabStatistics": "Statistics",
   "@homeTabStatistics": {

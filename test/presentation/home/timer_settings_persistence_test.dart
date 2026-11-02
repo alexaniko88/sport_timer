@@ -69,8 +69,13 @@ class _UserRepository implements UserRepository {
   Future<Result<void>> signOut() async => const Success(null);
 }
 
-Widget _app() => MaterialApp(
-      theme: SportTheme.light,
+Widget _app({Locale locale = const Locale('en'), ThemeData? theme, double textScale = 1}) => MaterialApp(
+      locale: locale,
+      theme: theme ?? SportTheme.light,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
+        child: child!,
+      ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: const HomePage(),
@@ -99,6 +104,47 @@ void main() {
   });
 
   tearDown(() async => getIt.reset());
+
+  for (final language in [
+    (locale: const Locale('en'), timer: 'Timer', statistics: 'Statistics', rounds: 'Rounds'),
+    (locale: const Locale('es'), timer: 'Temporizador', statistics: 'Estadísticas', rounds: 'Rondas'),
+  ]) {
+    for (final theme in [SportTheme.light, SportTheme.dark]) {
+      testWidgets('timer destination works in ${language.locale} with ${theme.brightness} theme and large text',
+          (tester) async {
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final semantics = tester.ensureSemantics();
+        await tester.pumpWidget(_app(locale: language.locale, theme: theme, textScale: 1.5));
+        await tester.pumpAndSettle();
+
+        BottomNavigationBar bar() => tester.widget(find.byType(BottomNavigationBar));
+        expect(bar().items.first.label, language.timer);
+        expect(bar().items.first.tooltip, language.timer);
+        expect((bar().items.first.icon as Icon).icon, Icons.timer_outlined);
+        expect((bar().items.first.activeIcon as Icon).icon, Icons.timer);
+        expect(bar().currentIndex, 0);
+        expect(find.bySemanticsLabel(RegExp(language.timer)), findsWidgets);
+        expect(find.text(language.rounds), findsOneWidget);
+        expect(find.text('3'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(find.text(language.statistics));
+        await tester.pumpAndSettle();
+        expect(bar().currentIndex, 2);
+        expect(find.byIcon(Icons.timer_outlined), findsOneWidget);
+        await tester.tap(find.text(language.timer));
+        await tester.pumpAndSettle();
+        expect(bar().currentIndex, 0);
+        expect(find.byIcon(Icons.timer), findsOneWidget);
+        expect(find.text(language.rounds), findsOneWidget);
+        expect(find.text('3'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        semantics.dispose();
+      });
+    }
+  }
 
   final options = [
     (label: 'Preparation', duration: const Duration(seconds: 10), maxMinutes: 5, min: Duration.zero),

@@ -119,10 +119,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              label: l10n.homeTabHome,
-              activeIcon: const Icon(Icons.home),
-              tooltip: l10n.homeTabHomeTooltip,
+              icon: const Icon(Icons.timer_outlined),
+              label: l10n.homeTabTimer,
+              activeIcon: const Icon(Icons.timer),
+              tooltip: l10n.homeTabTimerTooltip,
             ),
             BottomNavigationBarItem(
               icon: const Icon(Icons.assignment_outlined),

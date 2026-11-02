@@ -305,7 +305,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Start'), findsNothing);
     expect(find.byType(FloatingActionButton), findsNothing);
-    await tester.tap(find.text('Home'));
+    await tester.tap(find.text('Timer'));
     await tester.pumpAndSettle();
     expect(find.text('Start'), findsOneWidget);
     expect(find.byType(FloatingActionButton), findsNothing);
@@ -398,7 +398,7 @@ void main() {
     }
   }
 
-  for (final tab in ['Home', 'Templates']) {
+  for (final tab in ['Timer', 'Templates']) {
     testWidgets('Start on $tab launches the latest wheel selection', (tester) async {
       tester.view.physicalSize = const Size(400, 1000);
       tester.view.devicePixelRatio = 1;
@@ -486,7 +486,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         final tab = locale == 'en' ? 'Templates' : 'Plantillas';
-        final home = locale == 'en' ? 'Home' : 'Inicio';
+        final home = locale == 'en' ? 'Timer' : 'Temporizador';
         final name = locale == 'en' ? 'Full Abs' : 'Abdominales completos';
         final label = locale == 'en' ? 'Template: Full Abs' : 'Plantilla: Abdominales completos';
         expect(find.textContaining(locale == 'en' ? 'Template:' : 'Plantilla:'), findsNothing);
@@ -588,7 +588,7 @@ void main() {
       expect(selected.map((tile) => tile.name), [item.name]);
       expect(find.text('Custom'), findsNothing);
 
-      await tester.tap(find.text('Home'));
+      await tester.tap(find.text('Timer'));
       await tester.pumpAndSettle();
       const labels = ['Preparation', 'Work', 'Rest', 'Rounds'];
       for (var index = 0; index < labels.length; index++) {
