@@ -82,8 +82,7 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
   static const double _diameterRatio = 2;
   static const double _nearOpacity = 0.6;
   static const double _farOpacity = 0.3;
-  static const double _selectedBorderWidth = 3;
-  static const double _unselectedBorderWidth = 1;
+  static const double _borderWidth = 1;
   static const double _separatorWidth = 40;
 
   late FixedExtentScrollController _minutesController;
@@ -154,7 +153,7 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
     );
     return Container(
       height: sheetHeight,
-      color: widget.buttonsColor.withValues(alpha: 0.2),
+      color: Theme.of(context).colorScheme.surfaceContainer,
       // Keeps the wheel above the system navigation bar; the color still fills under it.
       child: SafeArea(
         top: false,
@@ -177,7 +176,10 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.s16),
             child: Text(
               context.l10n.commonRounds,
-              style: theme.textTheme.titleLarge,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           Expanded(
@@ -208,13 +210,13 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                             borderRadius: BorderRadius.circular(AppRadius.r8),
                             border: Border.all(
                               color: widget.buttonsColor,
-                              width: isSelected ? _selectedBorderWidth : _unselectedBorderWidth,
+                              width: _borderWidth,
                             ),
                           ),
                           child: Text(
                             value.toString(),
-                            style:
-                                (isSelected ? AppTextStyles.pickerSelected : AppTextStyles.pickerUnselected).copyWith(
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
                               color: isSelected ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                             ),
                           ),
@@ -247,7 +249,10 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                   child: Text(
                     l10n.pickerMinutes,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.titleLarge,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 const SizedBox(width: _separatorWidth),
@@ -255,7 +260,10 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                   child: Text(
                     l10n.pickerSeconds,
                     textAlign: TextAlign.center,
-                    style: theme.textTheme.titleLarge,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -287,13 +295,13 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                               borderRadius: BorderRadius.circular(AppRadius.r8),
                               border: Border.all(
                                 color: widget.buttonsColor,
-                                width: isSelected ? _selectedBorderWidth : _unselectedBorderWidth,
+                                width: _borderWidth,
                               ),
                             ),
                             child: Text(
                               index.toString().padLeft(2, '0'),
-                              style:
-                                  (isSelected ? AppTextStyles.pickerSelected : AppTextStyles.pickerUnselected).copyWith(
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
                                 color: isSelected ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                               ),
                             ),
@@ -335,13 +343,13 @@ class _TimerSettingsPickerWheelState extends State<TimerSettingsPickerWheel> {
                               borderRadius: BorderRadius.circular(AppRadius.r8),
                               border: Border.all(
                                 color: widget.buttonsColor,
-                                width: isSelected ? _selectedBorderWidth : _unselectedBorderWidth,
+                                width: _borderWidth,
                               ),
                             ),
                             child: Text(
                               index.toString().padLeft(2, '0'),
-                              style:
-                                  (isSelected ? AppTextStyles.pickerSelected : AppTextStyles.pickerUnselected).copyWith(
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
                                 color: isSelected ? colorScheme.onSurface : colorScheme.onSurfaceVariant,
                               ),
                             ),
