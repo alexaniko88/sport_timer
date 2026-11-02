@@ -1,9 +1,9 @@
 # IMP-03: Capture a UI snapshot reference
 
-Improvements: [Improvements](index.md)
+Improvements: [Improvements](../index.md)
 
 
-Status: Ready for planning.
+Status: Done.
 
 ## Current behavior and limitation
 
