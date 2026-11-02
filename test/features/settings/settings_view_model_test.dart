@@ -86,6 +86,10 @@ void main() {
 
   tearDown(() => viewModel.dispose());
 
+  test('initial settings match the default template', () {
+    expect(viewModel.state.value.timerSettings, builtInTemplates.first.settings);
+  });
+
   group('explicit template selection', () {
     final template = builtInTemplates.first;
 

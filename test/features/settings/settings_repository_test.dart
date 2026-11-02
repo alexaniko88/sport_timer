@@ -67,7 +67,7 @@ void main() {
       preparationTime: Duration(seconds: 20),
       roundTime: Duration(seconds: 60),
       restTime: Duration(seconds: 30),
-      rounds: 5,
+      rounds: 12,
     );
 
     setUp(() {
@@ -196,6 +196,12 @@ void main() {
         Failure(:final error) => fail('Expected settings but got $error'),
       };
     }
+
+    test('defaults to 12 rounds and preserves an existing saved value', () async {
+      expect(await loadedRounds(), 12);
+      SharedPreferences.setMockInitialValues({'rounds': 5});
+      expect(await loadedRounds(), 5);
+    });
 
     test('limits a stored value above the maximum', () async {
       SharedPreferences.setMockInitialValues({'rounds': 100});

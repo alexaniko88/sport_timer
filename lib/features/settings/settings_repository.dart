@@ -147,7 +147,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
           preparationTime: Duration(seconds: prefs.getInt(_preparationTimeKey) ?? 20),
           roundTime: Duration(seconds: prefs.getInt(_roundTimeKey) ?? 60),
           restTime: Duration(seconds: prefs.getInt(_restTimeKey) ?? 30),
-          rounds: (prefs.getInt(_roundsKey) ?? 5).clamp(1, TimerSettings.maxRounds),
+          rounds: (prefs.getInt(_roundsKey) ?? 12).clamp(1, TimerSettings.maxRounds),
         ),
       );
     } catch (e) {
@@ -170,7 +170,7 @@ class SharedPreferencesSettingsRepository implements SettingsRepository {
         _preparationTimeKey: 20,
         _roundTimeKey: 60,
         _restTimeKey: 30,
-        _roundsKey: 5,
+        _roundsKey: 12,
       };
       for (final entry in values.entries) {
         if (!_failedWrites.contains(entry.key) && (prefs.getInt(entry.key) ?? defaults[entry.key]) == entry.value) {
