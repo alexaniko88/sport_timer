@@ -9,6 +9,15 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get setupPreparation => 'Preparation';
+
+  @override
+  String get setupWork => 'Work';
+
+  @override
+  String get setupRest => 'Rest';
+
+  @override
   String setupTemplateLabel(String name) {
     return 'Template: $name';
   }
@@ -53,15 +62,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonOpensSelectorHint => 'Opens a selector';
-
-  @override
-  String get commonPreparationTime => 'Preparation time';
-
-  @override
-  String get commonRestTime => 'Rest time';
-
-  @override
-  String get commonRoundTime => 'Round time';
 
   @override
   String get commonRounds => 'Rounds';
@@ -112,9 +112,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginGoogleButton => 'Continue with Google';
 
   @override
-  String get loginTitle => 'Login';
-
-  @override
   String get loginWelcome => 'Welcome to Sport Timer';
 
   @override
@@ -122,14 +119,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickerSeconds => 'Seconds';
-
-  @override
-  String get statisticsDefaultUserName => 'User';
-
-  @override
-  String statisticsGreeting(String name) {
-    return 'Hello, $name!';
-  }
 
   @override
   String get statisticsSectionTitle => 'Here are your training statistics';

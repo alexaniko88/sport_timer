@@ -65,56 +65,57 @@ class TimerSetupPage extends StatelessWidget {
                 ),
                 const Gap(AppSpacing.s8),
               ],
-              _buildOption(
-                context: context,
-                color: timerColors.preparation,
-                duration: settings.preparationTime,
-                label: l10n.commonPreparationTime,
-                icon: Icons.hourglass_top,
-                maxMinutes: 5,
-                picketType: PicketType.time,
-                onDurationChanged: (duration) {
-                  viewModel.updatePreparationTime(duration);
-                },
-              ),
-              const Gap(AppSpacing.s20),
-              _buildOption(
-                context: context,
-                color: timerColors.round,
-                duration: settings.roundTime,
-                label: l10n.commonRoundTime,
-                icon: Icons.fitness_center,
-                minDuration: const Duration(seconds: 1),
-                maxMinutes: 60,
-                picketType: PicketType.time,
-                onDurationChanged: (duration) {
-                  viewModel.updateRoundTime(duration);
-                },
-              ),
-              const Gap(AppSpacing.s20),
-              _buildOption(
-                context: context,
-                color: timerColors.rest,
-                duration: settings.restTime,
-                label: l10n.commonRestTime,
-                icon: Icons.pause,
-                maxMinutes: 60,
-                picketType: PicketType.time,
-                onDurationChanged: (duration) {
-                  viewModel.updateRestTime(duration);
-                },
-              ),
-              const Gap(AppSpacing.s20),
-              _buildOption(
-                context: context,
-                color: timerColors.roundsCount,
-                label: l10n.commonRounds,
-                icon: Icons.repeat,
-                rounds: settings.rounds,
-                picketType: PicketType.rounds,
-                onRoundsChanged: (rounds) {
-                  viewModel.updateRounds(rounds);
-                },
+              TimerSettingGrid(
+                children: [
+                  _buildOption(
+                    context: context,
+                    color: timerColors.preparation,
+                    duration: settings.preparationTime,
+                    label: l10n.setupPreparation,
+                    icon: Icons.hourglass_top,
+                    maxMinutes: 5,
+                    picketType: PicketType.time,
+                    onDurationChanged: (duration) {
+                      viewModel.updatePreparationTime(duration);
+                    },
+                  ),
+                  _buildOption(
+                    context: context,
+                    color: timerColors.round,
+                    duration: settings.roundTime,
+                    label: l10n.setupWork,
+                    icon: Icons.fitness_center,
+                    minDuration: const Duration(seconds: 1),
+                    maxMinutes: 60,
+                    picketType: PicketType.time,
+                    onDurationChanged: (duration) {
+                      viewModel.updateRoundTime(duration);
+                    },
+                  ),
+                  _buildOption(
+                    context: context,
+                    color: timerColors.rest,
+                    duration: settings.restTime,
+                    label: l10n.setupRest,
+                    icon: Icons.self_improvement,
+                    maxMinutes: 60,
+                    picketType: PicketType.time,
+                    onDurationChanged: (duration) {
+                      viewModel.updateRestTime(duration);
+                    },
+                  ),
+                  _buildOption(
+                    context: context,
+                    color: timerColors.roundsCount,
+                    label: l10n.commonRounds,
+                    icon: Icons.repeat,
+                    rounds: settings.rounds,
+                    picketType: PicketType.rounds,
+                    onRoundsChanged: (rounds) {
+                      viewModel.updateRounds(rounds);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -123,7 +124,7 @@ class TimerSetupPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOption({
+  TimerSettingCard _buildOption({
     required BuildContext context,
     required PicketType picketType,
     required Color color,
@@ -138,12 +139,12 @@ class TimerSetupPage extends StatelessWidget {
   }) {
     final l10n = context.l10n;
 
-    return AppButton.option(
+    return TimerSettingCard(
       label: label,
-      icon: Icon(icon),
+      icon: icon,
       semanticHint: l10n.commonOpensSelectorHint,
       value: duration?.asMinutesAndSeconds ?? rounds?.toString() ?? '',
-      color: color,
+      iconColor: color,
       onPressed: () async {
         await TimerSettingsPickerWheel.show(
           context: context,

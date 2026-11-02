@@ -92,6 +92,24 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('es')];
 
+  /// Preparation card label on timer setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation'**
+  String get setupPreparation;
+
+  /// Work card label on timer setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get setupWork;
+
+  /// Rest card label on timer setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get setupRest;
+
   /// Selected template shortcut on timer setup.
   ///
   /// In en, this message translates to:
@@ -175,24 +193,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Opens a selector'**
   String get commonOpensSelectorHint;
-
-  /// Label of the preparation time option.
-  ///
-  /// In en, this message translates to:
-  /// **'Preparation time'**
-  String get commonPreparationTime;
-
-  /// Label of the rest time option.
-  ///
-  /// In en, this message translates to:
-  /// **'Rest time'**
-  String get commonRestTime;
-
-  /// Label of the round time option.
-  ///
-  /// In en, this message translates to:
-  /// **'Round time'**
-  String get commonRoundTime;
 
   /// Label of the number of rounds option.
   ///
@@ -278,12 +278,6 @@ abstract class AppLocalizations {
   /// **'Continue with Google'**
   String get loginGoogleButton;
 
-  /// Title of the login page app bar.
-  ///
-  /// In en, this message translates to:
-  /// **'Login'**
-  String get loginTitle;
-
   /// Welcome headline on the login page.
   ///
   /// In en, this message translates to:
@@ -301,18 +295,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Seconds'**
   String get pickerSeconds;
-
-  /// Name used in the greeting when the user has no email.
-  ///
-  /// In en, this message translates to:
-  /// **'User'**
-  String get statisticsDefaultUserName;
-
-  /// Greeting in the statistics app bar.
-  ///
-  /// In en, this message translates to:
-  /// **'Hello, {name}!'**
-  String statisticsGreeting(String name);
 
   /// Title of the statistics section.
   ///

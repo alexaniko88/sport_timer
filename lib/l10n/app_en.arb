@@ -1,5 +1,11 @@
 {
   "@@locale": "en",
+  "setupPreparation": "Preparation",
+  "@setupPreparation": {"description": "Preparation card label on timer setup."},
+  "setupWork": "Work",
+  "@setupWork": {"description": "Work card label on timer setup."},
+  "setupRest": "Rest",
+  "@setupRest": {"description": "Rest card label on timer setup."},
   "setupTemplateLabel": "Template: {name}",
   "@setupTemplateLabel": {
     "description": "Selected template shortcut on timer setup.",
@@ -63,18 +69,6 @@
   "commonOpensSelectorHint": "Opens a selector",
   "@commonOpensSelectorHint": {
     "description": "Accessibility hint for the option tiles that open a value selector."
-  },
-  "commonPreparationTime": "Preparation time",
-  "@commonPreparationTime": {
-    "description": "Label of the preparation time option."
-  },
-  "commonRestTime": "Rest time",
-  "@commonRestTime": {
-    "description": "Label of the rest time option."
-  },
-  "commonRoundTime": "Round time",
-  "@commonRoundTime": {
-    "description": "Label of the round time option."
   },
   "commonRounds": "Rounds",
   "@commonRounds": {
@@ -156,10 +150,6 @@
   "@loginGoogleButton": {
     "description": "Label of the Google sign in button on the login page."
   },
-  "loginTitle": "Login",
-  "@loginTitle": {
-    "description": "Title of the login page app bar."
-  },
   "loginWelcome": "Welcome to Sport Timer",
   "@loginWelcome": {
     "description": "Welcome headline on the login page."
@@ -171,19 +161,6 @@
   "pickerSeconds": "Seconds",
   "@pickerSeconds": {
     "description": "Column title above the seconds wheel in the time picker."
-  },
-  "statisticsDefaultUserName": "User",
-  "@statisticsDefaultUserName": {
-    "description": "Name used in the greeting when the user has no email."
-  },
-  "statisticsGreeting": "Hello, {name}!",
-  "@statisticsGreeting": {
-    "description": "Greeting in the statistics app bar.",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
   },
   "statisticsSectionTitle": "Here are your training statistics",
   "@statisticsSectionTitle": {
