@@ -1,8 +1,8 @@
 # STORY 3: Refactor the Start button
 
-Epic: [UI refactor](../../index.md).
+Epic: [UI refactor](../../../index.md).
 
-Status: Ready for planning.
+Status: Done.
 
 ## User outcome
 
@@ -14,7 +14,7 @@ As a user, I want a clear Start action below my timer settings so I can launch t
 - Use the current theme's primary filled-button style, rounded corners matching the setting cards, a play icon and the existing localized Start label. Support both light and dark themes without hard-coded mockup colors.
 - Keep settings scrollable with space reserved for Start and bottom navigation. All settings and the button remain reachable on small screens and with large text.
 - Preserve current timer-launch behavior, current settings and timer-style parameters, and the existing save flow. This is a UI refactor only; new confirmation, loading, debounce or launch rules are outside scope.
-- This story changes Start only on Timer Setup. Removing Start from Templates belongs to [Story 2](../02-templates-in-drawer/index.md). If that story is still pending, preserve Templates' current floating button. If it has shipped, preserve the separate Templates page without Start.
+- This story changes Start only on Timer Setup. Removing Start from Templates belongs to [Story 2](../../02-templates-in-drawer/index.md). If that story is still pending, preserve Templates' current floating button. If it has shipped, preserve the separate Templates page without Start.
 - Exclude navigation changes, picker styling, setting-card redesign and active-timer controls.
 
 ## Acceptance criteria
@@ -28,8 +28,8 @@ As a user, I want a clear Start action below my timer settings so I can launch t
 
 ## Tasks
 
-1. [Replace Timer Setup's floating Start button](01-refactor-timer-setup-start-button.md) — Ready for planning.
+1. [Replace Timer Setup's floating Start button](done/01-refactor-timer-setup-start-button.md) — Done.
 
 ## Dependencies and open decisions
 
-No product decisions remain. This story can be planned independently of the grid, wheel and Templates navigation tasks. Verify the implementation checkout: [Story 1](../01-timer-setup-refactor/index.md) preserves Start during grid delivery, while Story 2 separately controls Templates navigation and Start visibility. Preserve whichever work is already available and ensure the fixed button fits the existing rows or delivered grid. Exact sizing, spacing and widget ownership belong to implementation planning. Backlog agreement does not approve application code changes.
+No product decisions remain. This story can be planned independently of the grid, wheel and Templates navigation tasks. Verify the implementation checkout: [Story 1](../../01-timer-setup-refactor/index.md) preserves Start during grid delivery, while Story 2 separately controls Templates navigation and Start visibility. Preserve whichever work is already available and ensure the fixed button fits the existing rows or delivered grid. Exact sizing, spacing and widget ownership belong to implementation planning. Backlog agreement does not approve application code changes.
