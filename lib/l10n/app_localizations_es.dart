@@ -9,6 +9,11 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String setupTemplateLabel(String name) {
+    return 'Plantilla: $name';
+  }
+
+  @override
   String accountAvatarTooltip(String name) {
     return 'Cuenta, $name';
   }

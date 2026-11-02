@@ -1,6 +1,6 @@
 # STORY 4: Show the selected template in Timer Setup
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../index.md)
 
 Status: Ready for planning where the completed Task 2.1 output is available. Application code changes are not approved by this backlog agreement.
 
@@ -37,14 +37,14 @@ Out of scope: custom-template creation, a permanent Setup shortcut when nothing 
 
 ## Tasks
 
-1. [Track explicit selection and show the Setup shortcut](01-track-selection-and-show-setup-shortcut.md).
+1. [Track explicit selection and show the Setup shortcut](done/01-track-selection-and-show-setup-shortcut.md).
 
 ## Dependencies and open decisions
 
-Depends on the shared matching and application flow delivered by [Task 2.1](../done/02-selection-follows-settings/done/01-add-templates-view-model.md), plus the existing built-in template data and page from [Story 1](../done/01-template-set-and-tiles/index.md). Does not depend on Task 2.2 or provisional Story 3; numbering preserves existing story paths rather than imposing delivery order.
+Depends on the shared matching and application flow delivered by [Task 2.1](../02-selection-follows-settings/done/01-add-templates-view-model.md), plus the existing built-in template data and page from [Story 1](../01-template-set-and-tiles/index.md). Does not depend on Task 2.2 or provisional Story 3; numbering preserves existing story paths rather than imposing delivery order.
 
 No product decisions remain open. During implementation planning, settle ownership and lifecycle of explicit selection, how it is saved consistently with timer settings, and navigation wiring through the existing Home navigation. The current computed match alone cannot establish explicit selection, and reopening Templates must not recreate cleared selection. Detailed styling and storage mechanics follow existing project patterns.
 
 ## Navigation integration
 
-At discussion time, Templates is a Home tab. The separately agreed [UI refactor Story 2](../../../ui-refactor/stories/02-templates-in-drawer/index.md) moves it to a drawer page. This shortcut must open the same Templates destination using the navigation available in the implementation checkout; after that refactor it opens the separate page and ordinary Back returns to Setup. Do not recreate a removed tab or add a second Templates page. The hidden-label state continues to rely on the existing entry point (tab today, drawer after the refactor). This is an integration constraint, not a prerequisite to implement the drawer move here.
+At discussion time, Templates is a Home tab. The separately agreed [UI refactor Story 2](../../../../ui-refactor/stories/02-templates-in-drawer/index.md) moves it to a drawer page. This shortcut must open the same Templates destination using the navigation available in the implementation checkout; after that refactor it opens the separate page and ordinary Back returns to Setup. Do not recreate a removed tab or add a second Templates page. The hidden-label state continues to rely on the existing entry point (tab today, drawer after the refactor). This is an integration constraint, not a prerequisite to implement the drawer move here.

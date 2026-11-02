@@ -82,6 +82,66 @@ void main() {
       SharedPreferences.resetStatic();
     });
 
+    test('snapshot stores fields and selection in one write and restores them', () async {
+      const configuration = TimerConfiguration(defaults, 'standard');
+      expect(await repository.saveTimerConfiguration(configuration), isA<Success<void>>());
+      expect(store.writtenKeys, ['flutter.timer_configuration']);
+      SharedPreferences.resetStatic();
+      final result = await SharedPreferencesSettingsRepository().getTimerConfiguration();
+      expect(result, isA<Success<TimerConfiguration>>());
+      if (result case Success(:final value)) expect(value, configuration);
+    });
+
+    for (final throws in [false, true]) {
+      test('failed snapshot write retries and persists a coherent snapshot (throws: $throws)', () async {
+        const previous = TimerConfiguration(defaults, 'standard');
+        expect(await repository.saveTimerConfiguration(previous), isA<Success<void>>());
+        store.writtenKeys.clear();
+        final configuration = TimerConfiguration(defaults.copyWith(rounds: 8), null);
+        store.failWrite = !throws;
+        store.throwWrite = throws;
+        expect(await repository.saveTimerConfiguration(configuration), isA<Failure<void>>());
+        final beforeRetry = await SharedPreferencesSettingsRepository().getTimerConfiguration();
+        if (beforeRetry case Success(:final value)) {
+          expect(value, previous);
+        } else {
+          fail('Expected the last successfully saved configuration');
+        }
+        expect(await repository.saveTimerConfiguration(configuration), isA<Failure<void>>());
+        final sameRepositoryRead = await repository.getTimerConfiguration();
+        if (sameRepositoryRead case Success(:final value)) {
+          expect(value, previous);
+        } else {
+          fail('Expected the last successfully saved configuration');
+        }
+        store.failWrite = false;
+        store.throwWrite = false;
+        expect(await repository.saveTimerConfiguration(configuration), isA<Success<void>>());
+        expect(
+          store.writtenKeys,
+          ['flutter.timer_configuration', 'flutter.timer_configuration', 'flutter.timer_configuration'],
+        );
+        SharedPreferences.resetStatic();
+        final result = await SharedPreferencesSettingsRepository().getTimerConfiguration();
+        if (result case Success(:final value)) {
+          expect(value, configuration);
+        } else {
+          fail('Expected a saved configuration');
+        }
+      });
+    }
+
+    test('legacy settings load without inferring a selection', () async {
+      await repository.saveTimerSettings(defaults.copyWith(rounds: 8));
+      final result = await repository.getTimerConfiguration();
+      if (result case Success(:final value)) {
+        expect(value.settings.rounds, 8);
+        expect(value.selectedTemplateId, isNull);
+      } else {
+        fail('Expected legacy settings');
+      }
+    });
+
     test('does not write defaults or an unchanged persisted selection', () async {
       await repository.saveTimerSettings(defaults);
       expect(store.writtenKeys, isEmpty);

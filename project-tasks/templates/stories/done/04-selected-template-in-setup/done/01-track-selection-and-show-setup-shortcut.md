@@ -1,8 +1,8 @@
 # TASK 4.1: Track explicit selection and show the Setup shortcut
 
-Story: [Show the selected template in Timer Setup](index.md)
+Story: [Show the selected template in Timer Setup](../index.md)
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../../index.md)
 
 Status: Ready for planning where Task 2.1 is available; implementation requires the applicable orchestration workflow and plan approval.
 
@@ -12,7 +12,7 @@ Confirm an explicitly selected template on Timer Setup with a tappable name that
 
 ## Scope
 
-- Deliver the [story's agreed behavior and acceptance criteria](index.md), including explicit selection tracking, persistence, invalidation, the localized Setup label and navigation to the existing Templates page.
+- Deliver the [story's agreed behavior and acceptance criteria](../index.md), including explicit selection tracking, persistence, invalidation, the localized Setup label and navigation to the existing Templates page.
 - Keep the computed settings match separate from the explicit choice. Reuse the shared settings/template flow without changing Templates-page matching semantics.
 - Include focused validation for the state, persistence, label and navigation behavior changed by this task.
 
@@ -20,8 +20,8 @@ Exclusions are listed in the parent story. This is one cohesive deliverable; fil
 
 ## Dependencies
 
-- [Task 2.1: Add a templates view model](../done/02-selection-follows-settings/done/01-add-templates-view-model.md), marked Done; verify its output exists in the implementation checkout.
-- Existing built-in templates and Templates page from [Story 1](../done/01-template-set-and-tiles/index.md).
+- [Task 2.1: Add a templates view model](../../02-selection-follows-settings/done/01-add-templates-view-model.md), marked Done; verify its output exists in the implementation checkout.
+- Existing built-in templates and Templates page from [Story 1](../../01-template-set-and-tiles/index.md).
 - No dependency on Task 2.2 or provisional custom-template creation.
 
 ## Acceptance criteria

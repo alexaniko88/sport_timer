@@ -1,5 +1,12 @@
 {
   "@@locale": "en",
+  "setupTemplateLabel": "Template: {name}",
+  "@setupTemplateLabel": {
+    "description": "Selected template shortcut on timer setup.",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
   "accountAvatarTooltip": "Account, {name}",
   "@accountAvatarTooltip": {
     "description": "Tooltip of the account avatar button in the app bar, with the user name.",

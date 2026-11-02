@@ -11,6 +11,23 @@ import 'package:sport_timer/presentation/home/home.dart';
 import 'package:sport_timer/theme/sport_theme.dart';
 
 class _SettingsRepository implements SettingsRepository {
+  String? selectedTemplateId;
+  @override
+  Future<Result<TimerConfiguration>> getTimerConfiguration() async {
+    final result = await getTimerSettings();
+    return switch (result) {
+      Success(:final value) => Success(TimerConfiguration(value, selectedTemplateId)),
+      Failure(:final error) => Failure(error),
+    };
+  }
+
+  @override
+  Future<Result<void>> saveTimerConfiguration(TimerConfiguration configuration) async {
+    final result = await saveTimerSettings(configuration.settings);
+    if (result is Success<void>) selectedTemplateId = configuration.selectedTemplateId;
+    return result;
+  }
+
   final List<TimerSettings> saves = [];
   TimerSettings stored = const TimerSettings(
     preparationTime: Duration(seconds: 10),

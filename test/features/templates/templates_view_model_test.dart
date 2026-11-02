@@ -12,6 +12,23 @@ import 'package:sport_timer/features/templates/templates_view_model.dart';
 import 'package:sport_timer/features/templates/workout_template.dart';
 
 class _FakeSettingsRepository implements SettingsRepository {
+  String? selectedTemplateId;
+  @override
+  Future<Result<TimerConfiguration>> getTimerConfiguration() async {
+    final result = await getTimerSettings();
+    return switch (result) {
+      Success(:final value) => Success(TimerConfiguration(value, selectedTemplateId)),
+      Failure(:final error) => Failure(error),
+    };
+  }
+
+  @override
+  Future<Result<void>> saveTimerConfiguration(TimerConfiguration configuration) async {
+    final result = await saveTimerSettings(configuration.settings);
+    if (result is Success<void>) selectedTemplateId = configuration.selectedTemplateId;
+    return result;
+  }
+
   TimerSettings storedSettings = builtInTemplates.first.settings;
   final List<TimerSettings> savedSettings = [];
   Completer<void>? readGate;

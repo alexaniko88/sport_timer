@@ -6,8 +6,27 @@ import 'package:sport_timer/features/settings/settings_repository.dart';
 import 'package:sport_timer/features/settings/settings_state.dart';
 import 'package:sport_timer/features/settings/settings_view_model.dart';
 import 'package:sport_timer/features/settings/timer_style.dart';
+import 'package:sport_timer/features/templates/built_in_templates.dart';
+import 'package:sport_timer/features/templates/workout_template.dart';
 
 class _FakeSettingsRepository implements SettingsRepository {
+  String? selectedTemplateId;
+  @override
+  Future<Result<TimerConfiguration>> getTimerConfiguration() async {
+    final result = await getTimerSettings();
+    return switch (result) {
+      Success(:final value) => Success(TimerConfiguration(value, selectedTemplateId)),
+      Failure(:final error) => Failure(error),
+    };
+  }
+
+  @override
+  Future<Result<void>> saveTimerConfiguration(TimerConfiguration configuration) async {
+    final result = await saveTimerSettings(configuration.settings);
+    if (result is Success<void>) selectedTemplateId = configuration.selectedTemplateId;
+    return result;
+  }
+
   final List<TimerStyle> savedStyles = [];
   final List<TimerSettings> savedSettings = [];
   TimerSettings storedSettings = const TimerSettings(
@@ -66,6 +85,105 @@ void main() {
   });
 
   tearDown(() => viewModel.dispose());
+
+  group('explicit template selection', () {
+    final template = builtInTemplates.first;
+
+    test('matching settings do not imply selection; same-value selection persists', () async {
+      repository.storedSettings = template.settings;
+      await viewModel.loadSettings();
+      expect(viewModel.state.value.selectedTemplateId, isNull);
+      await viewModel.selectTemplate(template);
+      expect(viewModel.state.value.selectedTemplateId, template.id);
+      expect(repository.selectedTemplateId, template.id.name);
+      final restarted = SettingsViewModel(repository);
+      await restarted.loadSettings();
+      expect(restarted.state.value.selectedTemplateId, template.id);
+      restarted.dispose();
+    });
+
+    test('each divergent field clears selection permanently, including after flush', () async {
+      await viewModel.loadSettings();
+      for (var field = 0; field < 4; field++) {
+        await viewModel.selectTemplate(template);
+        switch (field) {
+          case 0:
+            viewModel.updatePreparationTime(const Duration(seconds: 21));
+          case 1:
+            viewModel.updateRoundTime(const Duration(seconds: 61));
+          case 2:
+            viewModel.updateRestTime(const Duration(seconds: 31));
+          case 3:
+            viewModel.updateRounds(6);
+        }
+        expect(viewModel.state.value.selectedTemplateId, isNull);
+        switch (field) {
+          case 0:
+            viewModel.updatePreparationTime(template.settings.preparationTime);
+          case 1:
+            viewModel.updateRoundTime(template.settings.roundTime);
+          case 2:
+            viewModel.updateRestTime(template.settings.restTime);
+          case 3:
+            viewModel.updateRounds(template.settings.rounds);
+        }
+        expect(viewModel.state.value.selectedTemplateId, isNull);
+        await viewModel.flushSettings();
+        final restarted = SettingsViewModel(repository);
+        await restarted.loadSettings();
+        expect(restarted.state.value.selectedTemplateId, isNull);
+        restarted.dispose();
+      }
+    });
+
+    test('unchanged fields and style preserve selection', () async {
+      await viewModel.loadSettings();
+      await viewModel.selectTemplate(template);
+      viewModel.updatePreparationTime(template.settings.preparationTime);
+      viewModel.updateRoundTime(template.settings.roundTime);
+      viewModel.updateRestTime(template.settings.restTime);
+      viewModel.updateRounds(template.settings.rounds);
+      await viewModel.selectTimerStyle(TimerStyle.fullColor);
+      await viewModel.flushSettings();
+      expect(viewModel.state.value.selectedTemplateId, template.id);
+      expect(repository.selectedTemplateId, template.id.name);
+    });
+
+    for (final id in ['unknown', TemplateId.hyrox.name]) {
+      test('does not restore unknown or mismatched ID $id', () async {
+        repository.storedSettings = template.settings;
+        repository.selectedTemplateId = id;
+        await viewModel.loadSettings();
+        expect(viewModel.state.value.selectedTemplateId, isNull);
+      });
+    }
+
+    test('selection and subsequent field edit survive a delayed load', () async {
+      repository.settingsReadGate = Completer<void>();
+      final loading = viewModel.loadSettings();
+      final selecting = viewModel.selectTemplate(builtInTemplates[1]);
+      viewModel.updateRounds(19);
+      final flushing = viewModel.flushSettings();
+      repository.settingsReadGate!.complete();
+      await Future.wait([loading, selecting, flushing]);
+      expect(viewModel.state.value.timerSettings.rounds, 19);
+      expect(viewModel.state.value.selectedTemplateId, isNull);
+      expect(repository.storedSettings.rounds, 19);
+      expect(repository.selectedTemplateId, isNull);
+    });
+
+    test('pending save cannot restore an older selection over a newer one', () async {
+      await viewModel.loadSettings();
+      repository.settingsSaveGate = Completer<void>();
+      final first = viewModel.selectTemplate(builtInTemplates[1]);
+      final second = viewModel.selectTemplate(builtInTemplates[2]);
+      repository.settingsSaveGate!.complete();
+      await Future.wait([first, second]);
+      expect(viewModel.state.value.selectedTemplateId, TemplateId.hyrox);
+      expect(repository.selectedTemplateId, TemplateId.hyrox.name);
+      expect(repository.storedSettings, builtInTemplates[2].settings);
+    });
+  });
 
   group('SettingsViewModel.loadSettings', () {
     test('starts with the ring style', () {

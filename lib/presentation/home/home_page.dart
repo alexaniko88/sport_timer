@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 viewModel: _viewModel,
                 accountViewModel: _accountViewModel,
                 onMenuPressed: _openDrawer,
+                onTemplatesPressed: () => _onItemTapped(1),
               ),
           },
         ),

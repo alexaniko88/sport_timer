@@ -1,5 +1,16 @@
 part of 'home.dart';
 
+String _templateName(BuildContext context, TemplateId id) {
+  final l10n = context.l10n;
+  return switch (id) {
+    TemplateId.standard => l10n.templateDefaultName,
+    TemplateId.fullAbs => l10n.templateAbsName,
+    TemplateId.hyrox => l10n.templateHyroxName,
+    TemplateId.stretching => l10n.templateStretchingName,
+    TemplateId.strength => l10n.templateStrengthName,
+  };
+}
+
 class TemplatesPage extends StatefulWidget {
   final SettingsViewModel viewModel;
   final AccountViewModel accountViewModel;
@@ -117,16 +128,16 @@ class _TemplatesPageState extends State<TemplatesPage> {
                     Builder(
                       key: ValueKey(template.id),
                       builder: (context) {
-                        final (name, icon) = switch (template.id) {
-                          TemplateId.standard => (l10n.templateDefaultName, Icons.assignment),
-                          TemplateId.fullAbs => (l10n.templateAbsName, Icons.sports_gymnastics),
-                          TemplateId.hyrox => (l10n.templateHyroxName, Icons.directions_run),
-                          TemplateId.stretching => (l10n.templateStretchingName, Icons.self_improvement),
-                          TemplateId.strength => (l10n.templateStrengthName, Icons.fitness_center),
+                        final icon = switch (template.id) {
+                          TemplateId.standard => Icons.assignment,
+                          TemplateId.fullAbs => Icons.sports_gymnastics,
+                          TemplateId.hyrox => Icons.directions_run,
+                          TemplateId.stretching => Icons.self_improvement,
+                          TemplateId.strength => Icons.fitness_center,
                         };
 
                         return TemplateTile(
-                          name: name,
+                          name: _templateName(context, template.id),
                           icon: icon,
                           settings: template.settings,
                           totalTime: template.totalTime,
