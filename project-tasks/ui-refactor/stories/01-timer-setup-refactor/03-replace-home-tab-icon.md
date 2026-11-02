@@ -39,3 +39,7 @@ Verify both selected states, English/Spanish labels, tooltip and semantics, both
 - `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`: current `homeTabHome` and `homeTabHomeTooltip` strings are Home / Inicio. Review key naming and generated localization references during planning.
 
 Read the parent story and follow the applicable orchestration workflow. Backlog agreement does not approve application code changes.
+
+## UI snapshot reference
+
+Before planning, inspect the relevant current UI snapshots: [setup_custom](../../../../test/snapshots/goldens/setup_custom.png), [statistics](../../../../test/snapshots/goldens/statistics.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
