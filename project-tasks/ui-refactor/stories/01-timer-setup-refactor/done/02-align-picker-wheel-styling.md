@@ -4,7 +4,7 @@ Story: [Timer setup refactor](../index.md).
 
 Epic: [UI refactor](../../../index.md).
 
-Archived after implementation and PR approval. See the [saved plan](../../../../project_picker_wheel_styling.md) for decisions and validation.
+Archived after implementation and PR approval. See the saved plan for decisions and validation.
 
 ## Goal
 

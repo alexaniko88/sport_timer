@@ -4,7 +4,7 @@ Story: [Story 2 overview](../index.md)
 
 Epic: [Templates](../../../../index.md)
 
-Completed in `4195b20` on `feat/template-selection-card`; validation and user approval recorded in the [saved plan](../../../../../project_template_selection_card.md).
+Completed in `4195b20` on `feat/template-selection-card`; validation and user approval recorded in the saved plan.
 
 ## Goal
 

@@ -11,7 +11,6 @@ Path: `project-tasks/<epic-slug>/index.md`
 
 Status: <Agreed scope / Draft>.
 
-Progress and reusable outputs: [Project task status](../status.md).
 
 ## Goal
 
@@ -110,12 +109,6 @@ Status: <Ready for planning / Blocked by ... / Provisional>.
 <Verified repository-relative code entry points or constraints, if useful. Read parent indexes before starting and follow the applicable orchestration workflow.>
 ```
 
-## Root progress tracker
-
-Path: `project-tasks/status.md`. Maintain one tracker across all epics and standalone bug/improvement tasks, not one per story or category.
-
-Include a status legend (Ready, In progress, Blocked, Done, Provisional), an overview and next eligible task, a linked task table with prerequisites and intended outputs, an active-work handoff, and completed outputs with completion dates, validation evidence, limitations, and branch/commit or decision locations. Planned outputs are not available capabilities. Check the actual checkout before reusing completed work. Keep this file updated when the backlog changes; the implementation workflow updates it as work progresses.
-
 ## Standalone bug or improvement task
 
 Paths: `project-tasks/bugs/01-<bug-slug>.md` or `project-tasks/improvements/01-<improvement-slug>.md`.
@@ -123,7 +116,7 @@ Paths: `project-tasks/bugs/01-<bug-slug>.md` or `project-tasks/improvements/01-<
 Use the task template above with these changes:
 
 - Title: `# BUG-01: <Problem>` or `# IMP-01: <Improvement>`.
-- Replace required story/epic links with `[Bugs](index.md)` or `[Improvements](index.md)`, and `[Project task status](../status.md)`. Related epic/story links are optional.
+- Replace required story/epic links with `[Bugs](index.md)` or `[Improvements](index.md)`. Related epic/story links are optional.
 - For bugs, add expected/actual behavior, reproduction steps, environment, and impact when known; state unknowns and distinguish suspected causes from confirmed diagnosis.
 - For improvements, add current behavior/limitation, desired change, benefit, and open decisions.
 - Keep dependencies, scope/exclusions, observable acceptance criteria, and validation. A report can be ready for diagnosis while its eventual fix still requires approval.

@@ -1,5 +1,6 @@
 {
   "@@locale": "es",
+  "setupSessionLength": "Duración de la sesión",
   "setupPreparation": "Preparación",
   "setupWork": "Trabajo",
   "setupRest": "Descanso",

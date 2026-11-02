@@ -4,7 +4,7 @@ Story: [Timer setup refactor](index.md).
 
 Epic: [UI refactor](../../index.md).
 
-Status: Blocked by [UI 3.1](../03-start-button-refactor/01-refactor-timer-setup-start-button.md).
+Status: Blocked by [UI 3.1](../done/03-start-button-refactor/done/01-refactor-timer-setup-start-button.md).
 
 ## Goal
 
@@ -19,7 +19,7 @@ Make the bottom-bar destination describe Timer Setup with a timer icon and a mat
 
 ## Dependencies
 
-Deliver after [UI 3.1](../03-start-button-refactor/01-refactor-timer-setup-start-button.md) changes Timer Setup's Start icon to play, so the destination and its Start action use distinct symbols. UI 1.1, provisional wheel styling and the Templates drawer move are not prerequisites. Preserve the navigation available in the implementation checkout.
+Deliver after [UI 3.1](../done/03-start-button-refactor/done/01-refactor-timer-setup-start-button.md) changes Timer Setup's Start icon to play, so the destination and its Start action use distinct symbols. UI 1.1, provisional wheel styling and the Templates drawer move are not prerequisites. Preserve the navigation available in the implementation checkout.
 
 ## Acceptance criteria
 

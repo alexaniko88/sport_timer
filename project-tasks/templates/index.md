@@ -1,8 +1,7 @@
 # EPIC: Templates
 
-Status: Story 1 merged into `master` at `8c751c7`. Story 2 Task 2.1 Done, on `feat/templates-view-model`; Task 2.2 Ready where that output is available. Story 3 is provisional. Story 4 is agreed and Ready for planning where Task 2.1 is available.
+Status: Stories 1, 2 and 4 are complete. Story 3 is provisional. Story 5 (updated built-in template times) is agreed and Ready for planning.
 
-Progress and reusable outputs: [Project task status](../status.md).
 
 ## Goal
 
@@ -13,7 +12,7 @@ Give the user a few quick, pre-configured workouts. One tap fills in preparation
 - Tapping a template applies its values to the saved timer settings and stays on the page. The existing Start button (FAB) starts the timer. A template never starts the timer by itself.
 - A template overwrites the saved timer settings, so the Setup tab always shows what will run.
 - There are 5 fixed, built-in templates: Default, Full Abs, Hyrox, Stretching and Strength. CrossFit is removed. Values are listed below.
-- Each template is a compact row: icon, name, one summary line (for example `1:00 work · 0:30 rest · 5 rounds`), the total time on the right, and a thin phase bar at the bottom. The bar uses the app's own preparation, round and rest colors, sized by the real durations.
+- Each template is a compact row: icon, name, one summary line (for example `1:00 work · 0:30 rest · 12 rounds`), the total time on the right, and a thin phase bar at the bottom. The bar uses the app's own preparation, round and rest colors, sized by the real durations.
 - Rows use the shared app tokens (spacing, radius, timer colors, shared widgets). The per-template accent colors, gradients, descriptions, "Total Workout Time" box, "Use Template" button and the subtitle line are removed. The app bar title "Choose your template" stays.
 - Icons: Default `assignment`, Full Abs `sports_gymnastics`, Hyrox `directions_run`, Stretching `self_improvement`, Strength `fitness_center`.
 - The selected row is computed by comparing the saved settings with each template. It is not remembered from the last tap.
@@ -24,15 +23,17 @@ Give the user a few quick, pre-configured workouts. One tap fills in preparation
 
 ### Template values
 
+Updated in [Story 5](stories/05-update-template-times/index.md):
+
 | Template | Preparation | Round | Rest | Rounds | Total |
 | --- | --- | --- | --- | --- | --- |
-| Default | 0:20 | 1:00 | 0:30 | 5 | 7:20 |
-| Full Abs | 0:20 | 0:30 | 0:10 | 20 | 13:30 |
-| Hyrox | 0:20 | 4:00 | 0:30 | 8 | 35:50 |
-| Stretching | 0:10 | 0:45 | 0:15 | 10 | 9:55 |
-| Strength | 0:10 | 0:40 | 1:30 | 6 | 11:40 |
+| Default | 0:20 | 1:00 | 0:30 | 12 | 17:50 |
+| Full Abs | 0:20 | 0:40 | 0:10 | 12 | 10:10 |
+| Hyrox | 0:20 | 5:00 | 1:00 | 8 | 47:20 |
+| Stretching | 0:20 | 1:00 | 0:05 | 10 | 11:05 |
+| Strength | 0:20 | 1:30 | 0:30 | 8 | 15:50 |
 
-Default and Full Abs keep their current values. The other three are starting numbers and can be tuned later, because they are only data. The total is preparation plus (round + rest) × rounds, minus the last rest.
+All 5 templates use `0:20` preparation time. The total is preparation plus (round + rest) × rounds, minus the last rest.
 
 ## Decisions and current constraints
 
@@ -54,12 +55,15 @@ Decisions:
 2. [Selection follows real settings](stories/done/02-selection-follows-settings/index.md) — computed highlight and the Custom card. Depends on Story 1.
 3. [Create your own templates](stories/03-create-own-templates/index.md) — provisional; confirm before implementation.
 4. [Show the selected template in Timer Setup](stories/done/04-selected-template-in-setup/index.md) — persistent explicit selection, a named Setup label and shortcut to Templates.
+5. [Update built-in template times](stories/05-update-template-times/index.md) — update the 5 built-in presets to `0:20` preparation and the new work, rest and round values (`Default`, `Full Abs`, `Hyrox`, `Stretching`, `Strength`).
 
 ## Delivery order
 
 Story 1, then Story 2. Together they are the first usable release. Story 3 is not needed for it and depends on both.
 
 Story 4 depends on Task 2.1 and existing Story 1 output, independently of Task 2.2 and provisional Story 3. Its story number preserves existing paths and does not require waiting for Story 3. Its shortcut follows the navigation decision below rather than reintroducing a Templates tab after the drawer move.
+
+Story 5 updates the built-in template data and initial default settings on top of Stories 1 and 2, independently of provisional Story 3.
 
 ## Navigation decision update — 2026-11-01
 
