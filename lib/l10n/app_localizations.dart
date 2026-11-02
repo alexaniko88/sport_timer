@@ -92,6 +92,12 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('es')];
 
+  /// Selected template shortcut on timer setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Template: {name}'**
+  String setupTemplateLabel(String name);
+
   /// Tooltip of the account avatar button in the app bar, with the user name.
   ///
   /// In en, this message translates to:

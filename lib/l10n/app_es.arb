@@ -1,5 +1,6 @@
 {
   "@@locale": "es",
+  "setupTemplateLabel": "Plantilla: {name}",
   "accountAvatarTooltip": "Cuenta, {name}",
   "accountSignOut": "Cerrar sesión",
   "accountSignOutConfirmMessage": "¿Quieres cerrar sesión en tu cuenta?",

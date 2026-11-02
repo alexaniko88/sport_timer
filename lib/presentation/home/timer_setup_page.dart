@@ -1,15 +1,19 @@
 part of 'home.dart';
 
 class TimerSetupPage extends StatelessWidget {
+  static const double _contentBottomInset = 120;
+
   final SettingsViewModel viewModel;
   final AccountViewModel accountViewModel;
   final VoidCallback onMenuPressed;
+  final VoidCallback onTemplatesPressed;
 
   const TimerSetupPage({
     super.key,
     required this.viewModel,
     required this.accountViewModel,
     required this.onMenuPressed,
+    required this.onTemplatesPressed,
   });
 
   @override
@@ -35,69 +39,76 @@ class TimerSetupPage extends StatelessWidget {
               const SizedBox(width: AppSpacing.s8),
             ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(AppSpacing.s16),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildOption(
-                        context: context,
-                        color: timerColors.preparation,
-                        duration: settings.preparationTime,
-                        label: l10n.commonPreparationTime,
-                        icon: Icons.hourglass_top,
-                        maxMinutes: 5,
-                        picketType: PicketType.time,
-                        onDurationChanged: (duration) {
-                          viewModel.updatePreparationTime(duration);
-                        },
-                      ),
-                      const Gap(AppSpacing.s20),
-                      _buildOption(
-                        context: context,
-                        color: timerColors.round,
-                        duration: settings.roundTime,
-                        label: l10n.commonRoundTime,
-                        icon: Icons.fitness_center,
-                        minDuration: const Duration(seconds: 1),
-                        maxMinutes: 60,
-                        picketType: PicketType.time,
-                        onDurationChanged: (duration) {
-                          viewModel.updateRoundTime(duration);
-                        },
-                      ),
-                      const Gap(AppSpacing.s20),
-                      _buildOption(
-                        context: context,
-                        color: timerColors.rest,
-                        duration: settings.restTime,
-                        label: l10n.commonRestTime,
-                        icon: Icons.pause,
-                        maxMinutes: 60,
-                        picketType: PicketType.time,
-                        onDurationChanged: (duration) {
-                          viewModel.updateRestTime(duration);
-                        },
-                      ),
-                      const Gap(AppSpacing.s20),
-                      _buildOption(
-                        context: context,
-                        color: timerColors.roundsCount,
-                        label: l10n.commonRounds,
-                        icon: Icons.repeat,
-                        rounds: settings.rounds,
-                        picketType: PicketType.rounds,
-                        onRoundsChanged: (rounds) {
-                          viewModel.updateRounds(rounds);
-                        },
-                      ),
-                    ],
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s16,
+              AppSpacing.s16,
+              AppSpacing.s16,
+              _contentBottomInset,
+            ),
+            children: [
+              if (state.selectedTemplateId case final id?) ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: onTemplatesPressed,
+                    child: Text(l10n.setupTemplateLabel(_templateName(context, id))),
                   ),
                 ),
+                const Gap(AppSpacing.s8),
               ],
-            ),
+              _buildOption(
+                context: context,
+                color: timerColors.preparation,
+                duration: settings.preparationTime,
+                label: l10n.commonPreparationTime,
+                icon: Icons.hourglass_top,
+                maxMinutes: 5,
+                picketType: PicketType.time,
+                onDurationChanged: (duration) {
+                  viewModel.updatePreparationTime(duration);
+                },
+              ),
+              const Gap(AppSpacing.s20),
+              _buildOption(
+                context: context,
+                color: timerColors.round,
+                duration: settings.roundTime,
+                label: l10n.commonRoundTime,
+                icon: Icons.fitness_center,
+                minDuration: const Duration(seconds: 1),
+                maxMinutes: 60,
+                picketType: PicketType.time,
+                onDurationChanged: (duration) {
+                  viewModel.updateRoundTime(duration);
+                },
+              ),
+              const Gap(AppSpacing.s20),
+              _buildOption(
+                context: context,
+                color: timerColors.rest,
+                duration: settings.restTime,
+                label: l10n.commonRestTime,
+                icon: Icons.pause,
+                maxMinutes: 60,
+                picketType: PicketType.time,
+                onDurationChanged: (duration) {
+                  viewModel.updateRestTime(duration);
+                },
+              ),
+              const Gap(AppSpacing.s20),
+              _buildOption(
+                context: context,
+                color: timerColors.roundsCount,
+                label: l10n.commonRounds,
+                icon: Icons.repeat,
+                rounds: settings.rounds,
+                picketType: PicketType.rounds,
+                onRoundsChanged: (rounds) {
+                  viewModel.updateRounds(rounds);
+                },
+              ),
+            ],
           ),
         );
       },

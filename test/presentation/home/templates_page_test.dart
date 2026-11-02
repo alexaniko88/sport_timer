@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/core/result.dart';
@@ -21,6 +22,23 @@ import 'package:sport_timer/presentation/widgets/template_tile.dart';
 import 'package:sport_timer/theme/sport_theme.dart';
 
 class _SettingsRepository implements SettingsRepository {
+  String? selectedTemplateId;
+  @override
+  Future<Result<TimerConfiguration>> getTimerConfiguration() async {
+    final result = await getTimerSettings();
+    return switch (result) {
+      Success(:final value) => Success(TimerConfiguration(value, selectedTemplateId)),
+      Failure(:final error) => Failure(error),
+    };
+  }
+
+  @override
+  Future<Result<void>> saveTimerConfiguration(TimerConfiguration configuration) async {
+    final result = await saveTimerSettings(configuration.settings);
+    if (result is Success<void>) selectedTemplateId = configuration.selectedTemplateId;
+    return result;
+  }
+
   final List<TimerSettings> saves = [];
   Completer<void>? readGate;
   TimerSettings stored = const TimerSettings(
@@ -173,6 +191,98 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Templates'));
     await tester.pumpAndSettle();
+  }
+
+  for (final locale in ['en', 'es']) {
+    for (final dark in [false, true]) {
+      testWidgets('localized shortcut navigates in $locale, dark: $dark', (tester) async {
+        repository.stored = _cases.first.settings;
+        tester.view.physicalSize = const Size(800, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final semantics = tester.ensureSemantics();
+        await tester.pumpWidget(
+          MaterialApp.router(
+            routerConfig: router,
+            theme: dark ? SportTheme.dark : SportTheme.light,
+            locale: Locale(locale),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        );
+        await tester.pumpAndSettle();
+        final tab = locale == 'en' ? 'Templates' : 'Plantillas';
+        final home = locale == 'en' ? 'Home' : 'Inicio';
+        final name = locale == 'en' ? 'Full Abs' : 'Abdominales completos';
+        final label = locale == 'en' ? 'Template: Full Abs' : 'Plantilla: Abdominales completos';
+        expect(find.textContaining(locale == 'en' ? 'Template:' : 'Plantilla:'), findsNothing);
+        expect(find.text(tab), findsOneWidget);
+        await tester.tap(find.text(tab));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(name));
+        await tester.pumpAndSettle();
+        expect(find.byType(TemplatesPage), findsOneWidget);
+        await tester.tap(find.text(home));
+        await tester.pumpAndSettle();
+        final shortcut = find.text(label);
+        expect(shortcut, findsOneWidget);
+        final node = tester.getSemantics(shortcut);
+        expect(node.flagsCollection.isButton, isTrue);
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        await tester.tap(shortcut);
+        await tester.pumpAndSettle();
+        expect(find.byType(TemplatesPage), findsOneWidget);
+        expect(find.text(name), findsOneWidget);
+        await tester.tap(find.text('Hyrox'));
+        await tester.pumpAndSettle();
+        expect(find.byType(TemplatesPage), findsOneWidget);
+        await tester.tap(find.text(home));
+        await tester.pumpAndSettle();
+        expect(find.text(locale == 'en' ? 'Template: Hyrox' : 'Plantilla: Hyrox'), findsOneWidget);
+        semantics.dispose();
+      });
+    }
+  }
+
+  for (final scale in [1.0, 1.5]) {
+    testWidgets('selected setup scrolls at compact size with text scale $scale', (tester) async {
+      repository.stored = _cases.first.settings;
+      repository.selectedTemplateId = TemplateId.standard.name;
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          theme: SportTheme.light,
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+            child: child!,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Template: Default'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.scrollUntilVisible(
+        find.text('Rounds'),
+        120,
+        scrollable: find.descendant(
+          of: find.byType(TimerSetupPage),
+          matching: find.byType(Scrollable),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Rounds'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ListWheelScrollView), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('shows Custom first followed by the five templates in order', (tester) async {

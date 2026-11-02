@@ -19,7 +19,7 @@ class TemplatesViewModel {
 
   Future<void> applyTemplate(WorkoutTemplate template) async {
     if (_disposed) return;
-    await _settingsViewModel.saveSettings(template.settings);
+    await _settingsViewModel.selectTemplate(template);
   }
 
   void _onSettingsChanged() {
