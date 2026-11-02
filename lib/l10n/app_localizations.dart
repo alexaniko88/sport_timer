@@ -92,6 +92,12 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('es')];
 
+  /// Scheduled workout duration on timer setup, excluding pauses.
+  ///
+  /// In en, this message translates to:
+  /// **'Session length'**
+  String get setupSessionLength;
+
   /// Preparation card label on timer setup.
   ///
   /// In en, this message translates to:

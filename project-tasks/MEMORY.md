@@ -1,5 +1,7 @@
 # Task plan pointers
 
+- [Timer Setup Start button plan](project_setup_start_button.md): `improve/setup-start-button`, base `aab8441`; continue from the first unchecked step.
+
 - [Timer setup grid plan](project_timer_setup_grid.md): `improve/timer-setup-grid`, base `2d2ae67`; continue from the first unchecked step.
 
 - [Templates 4.1 plan](project_setup_template_shortcut.md): `feat/setup-template-shortcut`, base `fee67c3`; continue from the first unchecked step.

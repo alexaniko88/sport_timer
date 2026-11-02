@@ -48,6 +48,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     });
   }
 
+  void _startTimer() {
+    final state = _viewModel.state.value;
+    final settings = state.timerSettings;
+    unawaited(_viewModel.flushSettings());
+    context.pushNamed(
+      RoutePath.timer.value,
+      extra: TimerParams(
+        preparationTime: settings.preparationTime,
+        roundTime: settings.roundTime,
+        restTime: settings.restTime,
+        rounds: settings.rounds,
+        style: state.timerStyle,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -70,7 +86,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ),
         ],
       ),
-      extendBody: true,
+      extendBody: _selectedIndex != 0,
       extendBodyBehindAppBar: true,
       body: SafeArea(
         top: false,
@@ -90,6 +106,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                 accountViewModel: _accountViewModel,
                 onMenuPressed: _openDrawer,
                 onTemplatesPressed: () => _onItemTapped(1),
+                onStartPressed: _startTimer,
               ),
           },
         ),
@@ -123,29 +140,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: _selectedIndex != 2
-          ? ValueListenableBuilder<SettingsState>(
-              valueListenable: _viewModel.state,
-              builder: (context, state, _) {
-                final settings = state.timerSettings;
-                return AppButton.fab(
-                  icon: const Icon(Icons.timer),
-                  label: l10n.homeStartButton,
-                  onPressed: () {
-                    unawaited(_viewModel.flushSettings());
-                    context.pushNamed(
-                      RoutePath.timer.value,
-                      extra: TimerParams(
-                        preparationTime: settings.preparationTime,
-                        roundTime: settings.roundTime,
-                        restTime: settings.restTime,
-                        rounds: settings.rounds,
-                        style: state.timerStyle,
-                      ),
-                    );
-                  },
-                );
-              },
+      floatingActionButton: _selectedIndex == 1
+          ? AppButton.fab(
+              icon: const Icon(Icons.timer),
+              label: l10n.homeStartButton,
+              onPressed: _startTimer,
             )
           : null,
     );

@@ -19,6 +19,7 @@ import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/home/home.dart';
 import 'package:sport_timer/presentation/widgets/template_tile.dart';
 import 'package:sport_timer/presentation/widgets/timer_setting_card.dart';
+import 'package:sport_timer/theme/app_spacing.dart';
 import 'package:sport_timer/theme/sport_theme.dart';
 import 'package:sport_timer/theme/timer_colors.dart';
 
@@ -229,6 +230,134 @@ void main() {
 
   for (final locale in [const Locale('en'), const Locale('es')]) {
     for (final theme in [SportTheme.light, SportTheme.dark]) {
+      testWidgets('Setup Start is fixed and accessible in ${locale.languageCode} ${theme.brightness.name}',
+          (tester) async {
+        tester.view.physicalSize = const Size(320, 568);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        repository.selectedTemplateId = TemplateId.standard.name;
+        final semantics = tester.ensureSemantics();
+        await tester.pumpWidget(
+          MaterialApp.router(
+            routerConfig: router,
+            theme: theme,
+            locale: locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.5)),
+              child: child!,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final label = locale.languageCode == 'en' ? 'Start' : 'Iniciar';
+        final sessionLabel = find.text(locale.languageCode == 'en' ? 'Session length' : 'Duración de la sesión');
+        expect(sessionLabel, findsOneWidget);
+        expect(find.text('05:10'), findsOneWidget);
+        final button = find.ancestor(of: find.text(label), matching: find.byType(FilledButton));
+        expect(button, findsOneWidget);
+        expect(find.byType(FloatingActionButton), findsNothing);
+        expect(find.descendant(of: button, matching: find.byIcon(Icons.play_arrow)), findsOneWidget);
+        final buttonRect = tester.getRect(button);
+        final labelRect = tester.getRect(sessionLabel);
+        expect(buttonRect.width, 256);
+        final buttonContext = tester.element(button);
+        final shape = FilledButtonTheme.of(buttonContext).style!.shape!.resolve({}) as RoundedRectangleBorder;
+        expect(shape.borderRadius, BorderRadius.circular(AppRadius.r12));
+        final material = tester.widget<Material>(find.descendant(of: button, matching: find.byType(Material)).first);
+        expect(material.color, theme.colorScheme.primary);
+        final node = tester.getSemantics(find.text(label));
+        expect(node.label, label);
+        expect(find.semantics.byLabel(label), findsOne);
+        expect(node.value, contains('05:10'));
+        expect(node.flagsCollection.isButton, isTrue);
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        final scrollable = find.descendant(of: find.byType(TimerSetupPage), matching: find.byType(Scrollable)).first;
+        await tester.scrollUntilVisible(
+          find.text(locale.languageCode == 'en' ? 'Rounds' : 'Rondas'),
+          120,
+          scrollable: scrollable,
+        );
+        await tester.pumpAndSettle();
+        expect(tester.getRect(button), buttonRect);
+        expect(tester.getRect(sessionLabel), labelRect);
+        expect(tester.getRect(find.byType(TimerSettingCard).last).bottom, lessThanOrEqualTo(labelRect.top));
+        expect(buttonRect.bottom, lessThanOrEqualTo(tester.getTopLeft(find.byType(BottomNavigationBar)).dy));
+        expect(tester.takeException(), isNull);
+        tester.semantics.tap(find.semantics.byLabel(label));
+        await tester.pumpAndSettle();
+        expect(startedParams?.preparationTime, repository.stored.preparationTime);
+        expect(startedParams?.roundTime, repository.stored.roundTime);
+        expect(startedParams?.restTime, repository.stored.restTime);
+        expect(startedParams?.rounds, repository.stored.rounds);
+        expect(startedParams?.style, TimerStyle.ring);
+        semantics.dispose();
+      });
+    }
+  }
+
+  testWidgets('Start visibility follows the selected Home tab', (tester) async {
+    await openTemplates(tester);
+    expect(find.byType(FloatingActionButton), findsOneWidget);
+    expect(find.text('Start'), findsOneWidget);
+    await tester.tap(find.text('Statistics'));
+    await tester.pumpAndSettle();
+    expect(find.text('Start'), findsNothing);
+    expect(find.byType(FloatingActionButton), findsNothing);
+    await tester.tap(find.text('Home'));
+    await tester.pumpAndSettle();
+    expect(find.text('Start'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
+  });
+
+  testWidgets('session length updates with settings and formats hours', (tester) async {
+    repository.stored = const TimerSettings(
+      preparationTime: Duration(seconds: 1),
+      roundTime: Duration(hours: 1),
+      restTime: Duration(seconds: 30),
+      rounds: 2,
+    );
+    tester.view.physicalSize = const Size(400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('2:00:31'), findsOneWidget);
+    await tester.tap(find.text('Rounds'));
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(ListWheelScrollView), const Offset(0, -120));
+    await tester.pumpAndSettle();
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    expect(find.text('4:01:31'), findsOneWidget);
+  });
+
+  testWidgets('tapping the session summary starts the timer', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Session length'));
+    await tester.pumpAndSettle();
+    expect(find.text('Timer destination'), findsOneWidget);
+    expect(startedParams?.rounds, repository.stored.rounds);
+  });
+
+  for (final locale in [const Locale('en'), const Locale('es')]) {
+    for (final theme in [SportTheme.light, SportTheme.dark]) {
       testWidgets(
           'Setup cards expose localized actions and phase colors in ${locale.languageCode} ${theme.brightness.name}',
           (tester) async {
@@ -293,12 +422,14 @@ void main() {
         await tester.tap(find.text('Templates'));
         await tester.pumpAndSettle();
       }
-      await tester.tap(find.text('Start'));
+      await tester.tapAt(tester.getCenter(find.text('Start')));
       await tester.pumpAndSettle();
       expect(startedParams?.rounds, 5);
       expect(startedParams?.preparationTime, repository.stored.preparationTime);
       expect(startedParams?.roundTime, repository.stored.roundTime);
       expect(startedParams?.restTime, repository.stored.restTime);
+      expect(startedParams?.style, TimerStyle.ring);
+      expect(repository.saves.last.rounds, 5);
     });
   }
 
@@ -465,7 +596,7 @@ void main() {
         expect(find.descendant(of: option, matching: find.text(item.values[index])), findsOneWidget);
       }
 
-      await tester.tap(find.text('Start'));
+      await tester.tapAt(tester.getCenter(find.text('Start')));
       await tester.pumpAndSettle();
       expect(find.text('Timer destination'), findsOneWidget);
       expect(startedParams?.preparationTime, item.settings.preparationTime);

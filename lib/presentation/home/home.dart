@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sport_timer/features/account/account_view_model.dart';
 import 'package:sport_timer/features/settings/settings_repository.dart';
 import 'package:sport_timer/features/timer/timer_params.dart';
+import 'package:sport_timer/features/timer/timer_schedule.dart';
 import 'package:sport_timer/features/settings/settings_state.dart';
 import 'package:sport_timer/features/settings/settings_view_model.dart';
 import 'package:sport_timer/features/templates/built_in_templates.dart';

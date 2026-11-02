@@ -1,5 +1,7 @@
 {
   "@@locale": "en",
+  "setupSessionLength": "Session length",
+  "@setupSessionLength": {"description": "Scheduled workout duration on timer setup, excluding pauses."},
   "setupPreparation": "Preparation",
   "@setupPreparation": {"description": "Preparation card label on timer setup."},
   "setupWork": "Work",
