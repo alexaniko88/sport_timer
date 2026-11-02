@@ -1,6 +1,6 @@
 # EPIC: UI refactor
 
-Status: Timer setup grid, Templates navigation, Start button refactor and app-wide border/radius scope agreed; Timer tab icon and naming agreed after the Start refactor; wheel styling remains provisional.
+Status: Timer setup grid, Templates navigation, Start button refactor and app-wide border/radius scope agreed; Timer tab icon and naming agreed after the Start refactor; wheel styling is archived.
 
 
 ## Goal
@@ -19,7 +19,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 
 ## Stories
 
-1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — grid task archived; wheel styling provisional; timer tab icon and label blocked by UI 3.1.
+1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — grid task archived; wheel styling archived; timer tab icon and label blocked by UI 3.1.
 
 2. [Access Templates from the drawer](stories/02-templates-in-drawer/index.md) — Ready for planning; one navigation task.
 3. [Refactor the Start button](stories/done/03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
@@ -27,7 +27,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 
 ## Delivery order
 
-Deliver Story 1 Task 1.1 as a usable grid connected to existing selectors. Confirm the remaining wheel design before planning Task 1.2. Backlog agreement does not approve application code changes.
+Deliver Story 1 Task 1.1 as a usable grid connected to existing selectors. Task 1.2 has been completed and archived. Backlog agreement does not approve application code changes.
 
 Story 2 is independent of Story 1 and the provisional wheel task. Its Start visibility change applies when Story 2 is delivered; Story 1 alone preserves the current shared Start.
 
