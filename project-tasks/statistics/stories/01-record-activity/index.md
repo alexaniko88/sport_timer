@@ -2,7 +2,7 @@
 
 Epic: [Statistics](../../index.md)
 
-Status: Local storage and record model defined; database implementation remains pending.
+Status: Database foundation completed with iOS validation deferred; activity recording remains pending.
 
 ## User outcome
 
@@ -19,9 +19,9 @@ Use application-generated UUIDs as text primary keys. Store UTC instants as inte
 ### Timer run
 
 - Run UUID and immutable Firebase UID captured at run start. Starting without an account fails closed; no shared anonymous owner is invented.
-- Start timestamp in UTC and a snapshot of the original preparation, work and rest durations, configured round count, and timer style (`ring`, `fullColor`, or `roundsStrip`).
-- Nullable UTC end timestamp and reason (`completed` or `stopped`) when reliably known.
-- Pause count, accumulated paused milliseconds, and nullable UTC timestamp for an open pause. Paused time never contributes to activity totals.
+- Start timestamp in UTC and a snapshot of the original preparation, work and rest durations and configured round count.
+- Nullable UTC end timestamp when reliably known.
+- Paused time never contributes to activity totals. Pause metadata, end reason, timer style, and template identity are not stored in this version.
 - Unknown termination must remain unknown; do not invent a completion time after a forced close.
 
 ### Completed phase
@@ -40,7 +40,7 @@ The repository hides SQLite, keeps pending writes tied to the run's original acc
 ## Tasks
 
 1. [Choose local storage and define the data model](done/01-verify-serverpod-integration.md).
-2. [Add the database foundation](02-add-database-foundation.md).
+2. [Add the database foundation](done/02-add-database-foundation.md).
 3. [Add the activity persistence interface](03-add-activity-repository.md).
 4. [Connect recording to timer progress](04-connect-timer-recording.md).
 5. [Verify persistence and timer integration](05-verify-recording.md).

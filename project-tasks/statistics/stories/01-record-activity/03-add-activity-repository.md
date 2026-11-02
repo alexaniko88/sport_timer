@@ -8,7 +8,7 @@ Status: Not started.
 
 ## Dependencies
 
-[Previous task](02-add-database-foundation.md).
+[Previous task](done/02-add-database-foundation.md).
 
 ## Goal
 
