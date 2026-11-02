@@ -60,6 +60,7 @@ Use the original request and the plan presented in conversation as the scope bou
 ## Stage 1: Plan
 
 1. **Understand the request.** If something blocks you (missing repro steps, unclear behaviour), ask at most 3 short questions, each with a suggested answer, and wait. If it is clear enough, go on without asking.
+   For UI-related work, inspect the relevant images in `test/snapshots/goldens/` and `test/snapshots/README.md` before planning; give the relevant references to planning and implementation agents. Treat snapshots as a captured baseline, verify the current checkout, and follow the task’s agreed design rather than assuming a snapshot is the intended result. Include snapshot and flow-index updates in the plan when the visible UI or navigation changes. Pure logic work does not need this visual inspection.
 2. **Investigate or plan**, read-only, with the project overrides in the brief:
    - Bug, regression or crash: `agent-bug-investigator`.
    - Feature, improvement, refactor or build setup: `agent-ticket-planner`.

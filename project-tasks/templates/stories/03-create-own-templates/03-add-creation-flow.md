@@ -32,3 +32,7 @@ Widget and ViewModel tests, plus a manual check on a device, to be defined with 
 ## Implementation context
 
 `lib/presentation/home/templates_page.dart` and the templates view model from Story 2. Read the parent indexes and follow `.agents/skills/skill-orchestrator/SKILL.md`.
+
+## UI snapshot reference
+
+Before planning, inspect the relevant current UI snapshots: [templates_selected](../../../../test/snapshots/goldens/templates_selected.png), [templates_custom](../../../../test/snapshots/goldens/templates_custom.png), [setup_template_selected](../../../../test/snapshots/goldens/setup_template_selected.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.

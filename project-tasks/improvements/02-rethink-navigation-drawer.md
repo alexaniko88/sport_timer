@@ -42,3 +42,7 @@ Manual check of navigation on a device, plus the existing tests and `fvm flutter
 ## Implementation context
 
 `lib/presentation/home/home_page.dart` (the `NavigationDrawer`). This entry does not authorize code changes.
+
+## UI snapshot reference
+
+Before planning, inspect the relevant current UI snapshots: [home_drawer](../../test/snapshots/goldens/home_drawer.png), [timer_styles](../../test/snapshots/goldens/timer_styles.png), [setup_custom](../../test/snapshots/goldens/setup_custom.png). See the [snapshot index](../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
