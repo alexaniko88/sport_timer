@@ -20,6 +20,7 @@ class TimerSetupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final timerColors = context.timerColors;
     final l10n = context.l10n;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return ValueListenableBuilder<SettingsState>(
       valueListenable: viewModel.state,
@@ -52,6 +53,13 @@ class TimerSetupPage extends StatelessWidget {
                   alignment: Alignment.centerLeft,
                   child: TextButton(
                     onPressed: onTemplatesPressed,
+                    style: TextButton.styleFrom(
+                      backgroundColor: colorScheme.surfaceContainer,
+                      side: BorderSide(color: colorScheme.outlineVariant),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.r12),
+                      ),
+                    ),
                     child: Text(l10n.setupTemplateLabel(_templateName(context, id))),
                   ),
                 ),
