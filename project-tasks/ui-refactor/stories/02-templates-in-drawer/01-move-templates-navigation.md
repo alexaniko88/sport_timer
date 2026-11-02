@@ -31,7 +31,7 @@ Add or adapt focused navigation/widget checks for the changed flow: two Home tab
 
 ## Implementation context
 
-Verified entry points: `lib/presentation/home/home_page.dart`, `lib/presentation/home/templates_page.dart`, `lib/navigation.dart`, `lib/presentation/timer_styles/timer_styles_page.dart`, and `lib/features/settings/settings_view_model.dart`. Templates currently has no separate route and uses Home's shared Start button. Account for bottom-tab index changes and preserve the shared settings state. Read the parent story for the agreed behavior before orchestration.
+Verified entry points: `lib/features/home/presentation/home_page.dart`, `lib/features/templates/presentation/templates_page.dart`, `lib/navigation.dart`, `lib/features/settings/presentation/timer_styles/timer_styles_page.dart`, and `lib/features/settings/presentation/settings_view_model.dart`. Templates currently has no separate route and uses Home's shared Start button. Account for bottom-tab index changes and preserve the shared settings state. Read the parent story for the agreed behavior before orchestration.
 
 ## UI snapshot reference
 

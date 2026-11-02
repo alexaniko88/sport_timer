@@ -26,33 +26,70 @@ UI snapshot goldens (`test/snapshots/goldens/*.png`) and their flow index (`test
 
 ## Project layout
 
-Feature-first layout with MVVM (see the next two sections), `get_it` for DI (registered by hand) and `go_router` for navigation. There is no code generation: a fresh clone needs only `fvm flutter pub get`.
+Feature-first layout with MVVM (see the next sections), `get_it` for DI (registered by hand) and `go_router` for navigation. There is no code generation: a fresh clone needs only `fvm flutter pub get`.
 
-- `lib/main.dart` holds `main()` and `MyApp`. It initializes Firebase, then calls `configureDependencies()` before `runApp`.
-- `lib/features/<name>/` holds the ViewModel, state and repository (`*_view_model.dart`, `*_state.dart`, normal imports). The timer feature also has `timer_params.dart`.
-- `lib/features/statistics/` has a small `StatisticsViewModel` that gives the statistics page the user name, so the page never reads `UserRepository`.
-- `lib/presentation/` holds pages and widgets. `home` is a bottom-navigation shell over the setup, templates and statistics pages.
-- `lib/navigation.dart` defines the routes (`/` login, `/home`, `/timer`) and passes the `TimerParams` from `state.extra` to `TimerPage`. Each page creates and disposes its own ViewModel, and `HomePage` shares one `SettingsViewModel` with its tabs.
-- `lib/di/di.dart` registers the app-wide singletons by hand: `AudioPlayer`, `AudioManager`, `UserRepository` and `SettingsRepository`. ViewModels are not registered. `AudioManager` plays the round sounds through the `AudioPlayer`.
-- `lib/core/` holds the sealed `Result<T>` (`Success` and `Failure`, with `fold`) and the `Duration` extension (`asMinutesAndSeconds`). The user and settings repositories return `Result` from the methods that can fail, and the ViewModels turn it into state. Logging uses `debugPrint`.
-- Timer settings are stored in `SharedPreferences` (`SharedPreferencesSettingsRepository`). Sign-in goes through `FirebaseAuth` in `FirebaseUserRepository`.
+```
+lib/
+  main.dart, firebase_options.dart, navigation.dart
+  di/di.dart                    composition: registers the implementations
+  l10n/                         generated localizations (l10n.yaml points here)
+  core/                         pure Dart: Result, extensions/duration_extension.dart
+  shared/presentation/          shared UI: theme/, extensions/ (l10n_context, theme_context), widgets/app_button.dart
+  features/<name>/
+    domain/                     models and contracts (pure Dart)
+    data/                       implementations that use platform packages
+    presentation/               ViewModel, state, pages, widgets
+```
 
-## Architecture (MVVM)
+A feature has only the layers it needs. Features: `user` (domain, data), `login`, `account`, `home` (presentation only), `settings`, `templates`, `timer` and `statistics`.
 
-The layers, from the top:
+- `main.dart` holds `main()` and `MyApp`. It initializes Firebase, then calls `configureDependencies()` before `runApp`.
+- `user`: the `UserRepository` contract returns the app's own `AppUser`, not a Firebase type. `FirebaseUserRepository` (data) maps the Firebase user with the `toAppUser()` extension. `login` and `account` have a ViewModel, state and pages in their presentation layer.
+- `settings`: models (`TimerSettings`, `TimerConfiguration`, `TimerStyle`) and the `SettingsRepository` contract are in domain. `SharedPreferencesSettingsRepository` (data) stores them in `SharedPreferences`. The setup page and the timer styles page are in presentation. `HomePage` creates one `SettingsViewModel` and shares it with its tabs.
+- `templates`: `WorkoutTemplate` and the built-in templates are in domain. The templates page, its ViewModel and `TemplateTile` are in presentation.
+- `timer`: `TimerParams`, `TimerSchedule`, `TimerStatus` and the `AudioManager` and `BackgroundKeepAlive` contracts are in domain. `DefaultAudioManager` and `DefaultBackgroundKeepAlive` (data) play sounds and keep the app alive with the screen off. The timer ViewModel, state, page and style views are in presentation. `TimerPage` uses `wakelock_plus` directly (the one documented exception to the platform rule).
+- `statistics`: session models and the `ActivityAccountSource` contract are in domain. The `sqflite` database (`activity.db`), `ActivityAccess` and the Firebase account source are in data. The statistics page is in presentation. `StatisticsViewModel` exists there, but the page does not use it yet.
+- `navigation.dart` defines the routes (`/` login, `/home`, `/timer`, `/timer-styles`) and passes the `TimerParams` from `state.extra` to `TimerPage`. Each page creates and disposes its own ViewModel.
+- `lib/di/di.dart` is the composition point. It registers the app-wide singletons by hand: `AudioPlayer`, the repositories, `AudioManager`, `BackgroundKeepAlive` and the activity database. ViewModels are not registered. Keep the registration order, because `ActivityAccess` is closed before `ActivityDatabase`.
+- `lib/core/` holds the sealed `Result<T>` (`Success` and `Failure`, with `fold`) and the `Duration` extension (`asMinutesAndSeconds`). Repositories return `Result` from the methods that can fail, and the ViewModels turn it into state. Logging uses `debugPrint`.
 
-- **View**: pages and widgets in `lib/presentation/`. A View reads the ViewModel state and calls its methods. It does navigation (`go_router`) and shows snackbars. It never calls a repository or `getIt`.
-- **ViewModel**: one per screen or feature, in `lib/features/<name>/`. It holds the state, calls repositories and managers, and owns timers and side effects such as sounds. It never imports widgets or `BuildContext`, so it can be unit tested without a widget tree.
-- **Data layer**: repositories and managers (`lib/features/<name>/*_repository.dart`, `lib/managers/`). They wrap platform APIs (`FirebaseAuth`, `SharedPreferences`, `AudioPlayer`). Each layer only talks to the one below it.
+## Architecture (MVVM and layers)
+
+Dependencies point inward: presentation depends on domain, and data depends on domain. Domain depends on nothing else.
+
+- **Domain** (`features/<name>/domain/`): models and repository or manager contracts. Pure Dart: only `dart:*`, `core/` and the domain files of other features. No Flutter, no platform package, no data or presentation import. Contracts return app types (`AppUser`), never platform types. A contract that needs a callback declares its own `typedef` (`KeepAliveAction`) instead of using `VoidCallback`.
+- **Data** (`features/<name>/data/`): implements the contracts and wraps platform APIs (`FirebaseAuth`, `SharedPreferences`, `sqflite`, `AudioPlayer`). It never imports presentation. It maps platform types to domain types before returning them.
+- **Presentation** (`features/<name>/presentation/` and `shared/presentation/`): ViewModels, state, pages and widgets. It never imports data files or platform packages. It gets implementations from `getIt<T>()` where the page creates its ViewModel, and it types them by their domain contract.
+- **View**: a page or widget. It reads the ViewModel state, calls its methods, does navigation (`go_router`) and shows snackbars. It never calls a repository.
+- **ViewModel**: one per screen or feature. It holds the state, calls repositories and managers, and owns timers and side effects such as sounds. It never imports widgets or `BuildContext`, so it can be unit tested without a widget tree.
+- **Extensions**: a helper that works on one type (its first argument is the thing it works on, or it maps one type to another) must be an extension, never a top-level function. One extension per file, in an `extensions/` folder of the layer it belongs to: `core/extensions/` (pure Dart), `shared/presentation/extensions/`, or `features/<name>/<layer>/extensions/`. It follows the rules of that layer (a mapper from a platform type lives in `data/extensions/`). A top-level function is only for work no single type owns, like `main()`. The boundary test does not check this; review does.
+- **Shared code**: UI used by several features (theme, localization helper, `AppButton`) is in `shared/presentation/`. Pure helpers used by several features are in `core/`. Code used by one feature stays in that feature, even if another feature could use it later.
+- **Composition**: only `main.dart`, `di/di.dart` and `navigation.dart` may know both a contract and its implementation.
+- **Use cases**: do not add them by default. Add one only when there is real business logic, or logic that several ViewModels reuse. A class that only forwards a call to a repository is not allowed.
 
 Rules:
 
-- Feature-first layout: `lib/features/<name>/` holds the ViewModel, its state and the repository. No `part` barrels, no generated files. Use normal imports.
 - Repositories return a `Result` (a sealed class with a success and a failure case), so the caller must handle errors. The ViewModel turns the `Result` into state (data, error message, loading flag). A View never sees a `Result`.
 - A ViewModel method that the View must react to once (sign in, save) returns `Future<bool>`. The View awaits it and then navigates or shows the snackbar. Do not put one-time events in the state.
 - Navigation stays on `go_router`. `lib/navigation.dart` creates each page and passes route params (`state.extra`) to the ViewModel constructor.
-- `get_it` holds only app-wide singletons: repositories, `AudioManager` and `AudioPlayer`. They are registered by hand in `lib/di/di.dart`, with no `injectable`.
+- `get_it` holds only app-wide singletons: repositories, managers and `AudioPlayer`. They are registered by hand in `lib/di/di.dart`, with no `injectable`.
 - ViewModels are not registered in `get_it`. The page creates its ViewModel and takes its dependencies with `getIt<T>()` at that point. A ViewModel shared by several widgets is owned by their closest common parent and passed down through constructors.
+- Feature-first layout: no `part` files, no barrel libraries, no generated files. Use normal imports.
+
+### Boundary check
+
+`test/architecture/layer_boundaries_test.dart` reads the `import`, `export` and `part` lines of every file under `lib/` (both URIs of a conditional import) and the file paths, and fails when a rule above is broken:
+
+- domain imports anything but platform-free `dart:*` libraries (not `dart:ui`, `dart:io`, `dart:html`, `dart:js*`, `dart:ffi`, `dart:isolate`), `core/` and domain files;
+- presentation imports data files or platform packages (`firebase_*`, `google_sign_in`, `sqflite`, `shared_preferences`, `audioplayers`, `audio_service`, `permission_handler`, `wakelock_plus`);
+- data imports presentation;
+- `core/` imports Flutter, features, shared or a platform `dart:*` library;
+- any file uses `part` or `part of`;
+- a file under `lib/features/<name>/` is outside `domain/`, `data/` and `presentation/`, or a file under `lib/shared/` is outside `presentation/`. Top-level files (`main.dart`, `navigation.dart`, `firebase_options.dart`, `di/`, `l10n/`, `core/`) are exempt.
+
+The one import exception is `wakelock_plus` in `timer_page.dart`, listed with its reason in the test. A new exception must be added there with a reason. It runs with `fvm flutter test`, so CI covers it.
+
+The check cannot see `getIt` calls in a View, a View using a repository it received another way, imports between features, or a domain class using a type that reached it through an allowed import. Those stay a review job.
 
 ## State management
 

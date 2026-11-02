@@ -39,9 +39,9 @@ All 5 templates use `0:20` preparation time. The total is preparation plus (roun
 
 Observed in the current code:
 
-- The 3 templates live inside `lib/presentation/home/templates_page.dart`, with a heavy gradient card per template and its own accent colors.
+- The 3 templates live inside `lib/features/templates/presentation/templates_page.dart`, with a heavy gradient card per template and its own accent colors.
 - The "APPLIED" badge follows the last tap, so it goes stale after changing a wheel value or restarting the app.
-- The Start FAB in `lib/presentation/home/home_page.dart` is shared by the Setup and Templates tabs and starts the timer from the saved settings.
+- The Start FAB in `lib/features/home/presentation/home_page.dart` is shared by the Setup and Templates tabs and starts the timer from the saved settings.
 - The navigation drawer holds one item (Timer styles) and is not part of this epic.
 
 Decisions:

@@ -1,25 +1,29 @@
 import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
-import 'package:sport_timer/features/settings/settings_repository.dart';
-import 'package:sport_timer/features/settings/settings_view_model.dart';
-import 'package:sport_timer/features/settings/timer_style.dart';
-import 'package:sport_timer/features/templates/built_in_templates.dart';
-import 'package:sport_timer/features/templates/workout_template.dart';
-import 'package:sport_timer/features/timer/timer_state.dart';
-import 'package:sport_timer/features/user/user_repository.dart';
+import 'package:sport_timer/features/settings/domain/settings_repository.dart';
+import 'package:sport_timer/features/settings/domain/timer_configuration.dart';
+import 'package:sport_timer/features/settings/domain/timer_settings.dart';
+import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
+import 'package:sport_timer/features/settings/domain/timer_style.dart';
+import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/domain/workout_template.dart';
+import 'package:sport_timer/features/timer/presentation/timer_state.dart';
+import 'package:sport_timer/features/timer/domain/timer_status.dart';
+import 'package:sport_timer/features/user/domain/user_repository.dart';
+import 'package:sport_timer/features/user/domain/app_user.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
-import 'package:sport_timer/presentation/home/home.dart';
-import 'package:sport_timer/presentation/login/login_page.dart';
-import 'package:sport_timer/presentation/timer/timer.dart';
-import 'package:sport_timer/presentation/timer_styles/timer_styles.dart';
-import 'package:sport_timer/theme/sport_theme.dart';
+import 'package:sport_timer/features/home/presentation/home_page.dart';
+import 'package:sport_timer/features/login/presentation/login_page.dart';
+import 'package:sport_timer/features/timer/presentation/widgets/full_color_timer_view.dart';
+import 'package:sport_timer/features/timer/presentation/widgets/ring_timer_view.dart';
+import 'package:sport_timer/features/timer/presentation/widgets/rounds_strip_timer_view.dart';
+import 'package:sport_timer/features/settings/presentation/timer_styles/timer_styles_page.dart';
+import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 
 typedef _WidgetFactory = Widget Function();
 
@@ -41,15 +45,13 @@ final WorkoutTemplate _hyroxTemplate = builtInTemplates.firstWhere(
   (template) => template.id == TemplateId.hyrox,
 );
 
-class _MockUser extends Mock implements User {}
-
 class _FakeUserRepository implements UserRepository {
-  final User _user;
+  final AppUser _user;
 
   const _FakeUserRepository(this._user);
 
   @override
-  User? getCurrentUser() => _user;
+  AppUser? getCurrentUser() => _user;
 
   @override
   bool isUserLoggedIn() => false;
@@ -187,12 +189,11 @@ Interaction _tapInBothFrames(Finder finder) {
 void main() {
   late _FakeSettingsRepository settingsRepository;
 
-  User buildFixtureUser() {
-    final user = _MockUser();
-    when(() => user.displayName).thenReturn('Alex Runner');
-    when(() => user.email).thenReturn('alex@example.com');
-    when(() => user.photoURL).thenReturn(null);
-    return user;
+  AppUser buildFixtureUser() {
+    return const AppUser(
+      displayName: 'Alex Runner',
+      email: 'alex@example.com',
+    );
   }
 
   void configureFakeDependencies({

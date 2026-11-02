@@ -43,7 +43,7 @@ Manual check of each screen in light and dark theme, plus the existing tests and
 
 ## Implementation context
 
-Shared pieces: `lib/presentation/widgets/` and the theme files. Reading and agreeing the plan comes first; this entry does not authorize code changes.
+Shared pieces: `lib/shared/presentation/` (widgets and theme) and the feature widgets under `lib/features/*/presentation/widgets/`. Reading and agreeing the plan comes first; this entry does not authorize code changes.
 
 ## UI snapshot reference
 

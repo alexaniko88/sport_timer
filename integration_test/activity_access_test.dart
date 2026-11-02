@@ -5,12 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' as path;
-import 'package:sport_timer/features/statistics/activity_access.dart';
-import 'package:sport_timer/features/statistics/activity_account_source.dart';
-import 'package:sport_timer/features/statistics/activity_database.dart';
-import 'package:sport_timer/features/statistics/completed_phase.dart';
-import 'package:sport_timer/features/statistics/firebase_activity_account_source.dart';
-import 'package:sport_timer/features/statistics/timer_session.dart';
+import 'package:sport_timer/features/statistics/data/activity_access.dart';
+import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
+import 'package:sport_timer/features/statistics/data/activity_database.dart';
+import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
+import 'package:sport_timer/features/statistics/data/firebase_activity_account_source.dart';
+import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 import 'package:sqflite/sqflite.dart';
 
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}

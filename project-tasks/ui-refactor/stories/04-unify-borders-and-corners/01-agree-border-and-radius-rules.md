@@ -33,7 +33,7 @@ Cross-check the inventory against theme configuration and widget usage. Review t
 
 ## Planning entry points
 
-Inspect `lib/theme/` and `lib/presentation/`, including shared widgets and page-specific styling. These directories exist; exact values and APIs have not been audited for this story.
+Inspect `lib/shared/presentation/` and `lib/features/*/presentation/`, including shared widgets and page-specific styling. These directories exist; exact values and APIs have not been audited for this story.
 
 ## UI snapshot reference
 

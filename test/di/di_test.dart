@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/di/di.dart';
-import 'package:sport_timer/features/statistics/activity_access.dart';
-import 'package:sport_timer/features/statistics/activity_account_source.dart';
-import 'package:sport_timer/features/statistics/activity_database.dart';
+import 'package:sport_timer/features/statistics/data/activity_access.dart';
+import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
+import 'package:sport_timer/features/statistics/data/activity_database.dart';
 
 class FakeActivityAccountSource implements ActivityAccountSource {
   bool cancelled = false;

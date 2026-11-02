@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/di/di.dart';
-import 'package:sport_timer/features/settings/settings_view_model.dart';
-import 'package:sport_timer/features/timer/timer_params.dart';
-import 'package:sport_timer/features/user/user_repository.dart';
-import 'package:sport_timer/presentation/login/login_page.dart';
-
-import 'presentation/home/home.dart';
-import 'presentation/timer/timer.dart';
-import 'presentation/timer_styles/timer_styles.dart';
+import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
+import 'package:sport_timer/features/timer/domain/timer_params.dart';
+import 'package:sport_timer/features/user/domain/user_repository.dart';
+import 'package:sport_timer/features/home/presentation/home_page.dart';
+import 'package:sport_timer/features/login/presentation/login_page.dart';
+import 'package:sport_timer/features/settings/presentation/timer_styles/timer_styles_page.dart';
+import 'package:sport_timer/features/timer/presentation/timer_page.dart';
 
 enum RoutePath {
   login('/'),
