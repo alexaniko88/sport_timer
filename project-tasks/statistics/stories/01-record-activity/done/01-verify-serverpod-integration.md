@@ -12,7 +12,7 @@ Status: Done. Database integration remains Task 1.2.
 
 ## Goal
 
-Choose local storage and define the record model and repository boundary for completed activity. Database integration belongs to [Task 1.2](../02-add-database-foundation.md).
+Choose local storage and define the record model and repository boundary for completed activity. Database integration belongs to [Task 1.2](02-add-database-foundation.md).
 
 ## Decision and evidence
 
