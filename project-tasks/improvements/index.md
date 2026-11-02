@@ -2,7 +2,6 @@
 
 This folder is only for improvement tasks: changes that make existing, working behavior easier to use, clearer, faster, or easier to maintain. Broken behavior belongs in [Bugs](../bugs/index.md). Broader new capabilities can use the epic/story structure.
 
-Progress: [Project task status](../status.md).
 
 ## Proposing an improvement
 

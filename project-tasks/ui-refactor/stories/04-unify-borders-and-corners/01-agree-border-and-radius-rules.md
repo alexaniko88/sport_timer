@@ -29,7 +29,7 @@ None. Inspect the actual checkout rather than assuming pending UI work is availa
 
 ## Validation
 
-Cross-check the inventory against theme configuration and widget usage. Review the mapping for normal and interactive states in both themes. Record the approved decision location in this story and the shared tracker; an unapproved proposal does not unblock UI 4.2.
+Cross-check the inventory against theme configuration and widget usage. Review the mapping for normal and interactive states in both themes. Record the approved decision location in this story; an unapproved proposal does not unblock UI 4.2.
 
 ## Planning entry points
 

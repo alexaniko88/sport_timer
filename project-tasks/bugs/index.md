@@ -2,7 +2,6 @@
 
 This folder is only for bug tasks: reports of existing behavior that is broken or differs from the expected behavior. New features and improvements belong elsewhere.
 
-Progress: [Project task status](../status.md).
 
 ## Reporting a bug
 

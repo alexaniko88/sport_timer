@@ -2,7 +2,6 @@
 
 Improvements: [Improvements](index.md)
 
-Progress: [Project task status](../status.md)
 
 Status: Ready for planning.
 

@@ -2,7 +2,6 @@
 
 Status: Stories 1, 2 and 4 are complete. Story 3 is provisional. Story 5 (updated built-in template times) is agreed and Ready for planning.
 
-Progress and reusable outputs: [Project task status](../status.md).
 
 ## Goal
 

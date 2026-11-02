@@ -2,7 +2,6 @@
 
 Status: Agreed scope; implementation not started.
 
-Progress and reusable outputs: [Project task status](../status.md).
 
 ## Goal
 

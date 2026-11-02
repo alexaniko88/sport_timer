@@ -2,7 +2,6 @@
 
 Status: Timer setup grid, Templates navigation, Start button refactor and app-wide border/radius scope agreed; Timer tab icon and naming agreed after the Start refactor; wheel styling remains provisional.
 
-Progress: [Project task status](../status.md).
 
 ## Goal
 
