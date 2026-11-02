@@ -106,7 +106,7 @@ Status: <Ready for planning / Blocked by ... / Provisional>.
 
 ## Implementation context
 
-<Verified repository-relative code entry points or constraints, if useful. Read parent indexes before starting and follow the applicable orchestration workflow.>
+<Verified repository-relative code entry points or constraints, if useful. Name the feature and layer (`domain`, `data`, `presentation`, `shared`) that new code belongs in, following `CLAUDE.md`. A helper on one type is an extension in that layer's `extensions/` folder. Read parent indexes before starting and follow the applicable orchestration workflow.>
 ```
 
 ## Standalone bug or improvement task

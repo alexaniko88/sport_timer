@@ -41,7 +41,7 @@ Manual check of navigation on a device, plus the existing tests and `fvm flutter
 
 ## Implementation context
 
-`lib/presentation/home/home_page.dart` (the `NavigationDrawer`). This entry does not authorize code changes.
+`lib/features/home/presentation/home_page.dart` (the `NavigationDrawer`). This entry does not authorize code changes.
 
 ## UI snapshot reference
 

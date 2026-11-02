@@ -29,4 +29,4 @@ Unit tests with hand-written fakes, to be defined with the approved storage.
 
 ## Implementation context
 
-Existing repository patterns are in `lib/features/settings/` and `lib/features/user/`. Read the parent indexes and follow `.agents/skills/skill-orchestrator/SKILL.md`.
+Existing repository patterns are in `lib/features/settings/` (contract in `domain/`, implementation in `data/`) and `lib/features/user/`. Read the parent indexes and follow `.agents/skills/skill-orchestrator/SKILL.md`.

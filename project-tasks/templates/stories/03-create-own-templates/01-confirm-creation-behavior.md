@@ -31,7 +31,7 @@ User approval of the written decision. For storage choices that depend on a libr
 
 ## Implementation context
 
-`lib/features/settings/settings_repository.dart` shows how settings are stored today in `SharedPreferences`. Read the parent indexes and follow `.agents/skills/skill-orchestrator/SKILL.md`.
+`lib/features/settings/data/shared_preferences_settings_repository.dart` shows how settings are stored today in `SharedPreferences`. Read the parent indexes and follow `.agents/skills/skill-orchestrator/SKILL.md`.
 
 ## UI snapshot reference
 

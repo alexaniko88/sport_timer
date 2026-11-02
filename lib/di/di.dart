@@ -1,16 +1,18 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
-import 'package:sport_timer/features/settings/settings_repository.dart';
-import 'package:sport_timer/features/statistics/activity_access.dart';
-import 'package:sport_timer/features/statistics/activity_account_source.dart';
-import 'package:sport_timer/features/statistics/activity_database.dart';
-import 'package:sport_timer/features/statistics/firebase_activity_account_source.dart';
-import 'package:sport_timer/features/user/user_repository.dart';
-import 'package:sport_timer/managers/audio_manager.dart';
-import 'package:sport_timer/managers/background_keep_alive.dart';
-import 'package:sport_timer/managers/default_audio_manager.dart';
-import 'package:sport_timer/managers/default_background_keep_alive.dart';
+import 'package:sport_timer/features/settings/domain/settings_repository.dart';
+import 'package:sport_timer/features/settings/data/shared_preferences_settings_repository.dart';
+import 'package:sport_timer/features/statistics/data/activity_access.dart';
+import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
+import 'package:sport_timer/features/statistics/data/activity_database.dart';
+import 'package:sport_timer/features/statistics/data/firebase_activity_account_source.dart';
+import 'package:sport_timer/features/user/domain/user_repository.dart';
+import 'package:sport_timer/features/user/data/firebase_user_repository.dart';
+import 'package:sport_timer/features/timer/domain/audio_manager.dart';
+import 'package:sport_timer/features/timer/domain/background_keep_alive.dart';
+import 'package:sport_timer/features/timer/data/default_audio_manager.dart';
+import 'package:sport_timer/features/timer/data/default_background_keep_alive.dart';
 
 final getIt = GetIt.instance;
 

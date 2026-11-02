@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sport_timer/core/l10n_context.dart';
+import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
 
 Widget _app(Locale locale) {

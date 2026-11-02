@@ -1,0 +1,60 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:sport_timer/features/settings/domain/timer_settings.dart';
+import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/domain/workout_template.dart';
+
+void main() {
+  group('WorkoutTemplate.totalTime', () {
+    test('matches the total for each built-in template', () {
+      expect(builtInTemplates.map((template) => template.totalTime), [
+        const Duration(minutes: 17, seconds: 50),
+        const Duration(minutes: 10, seconds: 10),
+        const Duration(minutes: 47, seconds: 20),
+        const Duration(minutes: 11, seconds: 5),
+        const Duration(minutes: 15, seconds: 50),
+      ]);
+    });
+
+    test('does not add rest after a single round', () {
+      const template = WorkoutTemplate(
+        id: TemplateId.standard,
+        settings: TimerSettings(
+          preparationTime: Duration(seconds: 5),
+          roundTime: Duration(seconds: 10),
+          restTime: Duration(seconds: 4),
+          rounds: 1,
+        ),
+      );
+
+      expect(template.totalTime, const Duration(seconds: 15));
+    });
+
+    test('handles zero rest', () {
+      const template = WorkoutTemplate(
+        id: TemplateId.standard,
+        settings: TimerSettings(
+          preparationTime: Duration(seconds: 5),
+          roundTime: Duration(seconds: 10),
+          restTime: Duration.zero,
+          rounds: 3,
+        ),
+      );
+
+      expect(template.totalTime, const Duration(seconds: 35));
+    });
+
+    test('handles zero preparation', () {
+      const template = WorkoutTemplate(
+        id: TemplateId.standard,
+        settings: TimerSettings(
+          preparationTime: Duration.zero,
+          roundTime: Duration(seconds: 10),
+          restTime: Duration(seconds: 4),
+          rounds: 3,
+        ),
+      );
+
+      expect(template.totalTime, const Duration(seconds: 38));
+    });
+  });
+}

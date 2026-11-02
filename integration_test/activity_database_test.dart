@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as path;
-import 'package:sport_timer/features/statistics/activity_database.dart';
+import 'package:sport_timer/features/statistics/data/activity_database.dart';
 import 'package:sqflite/sqflite.dart';
 
 Map<String, Object?> session({String id = 'session-1'}) => {
