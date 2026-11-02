@@ -1,6 +1,6 @@
 # EPIC: Layered application architecture
 
-Status: Agreed scope; ready for planning.
+Status: Done — the story was delivered on `improve/layered-architecture` (commit `76a95f5`).
 
 ## Goal
 
@@ -23,7 +23,7 @@ Flutter recommends distinct UI and data responsibilities, MVVM, repositories, an
 
 ## Stories
 
-1. [Refactor the application into layers](stories/01-refactor-app/index.md) — one coordinated, behavior-preserving migration and its guardrails.
+1. [Refactor the application into layers](stories/done/01-refactor-app/index.md) — one coordinated, behavior-preserving migration and its guardrails.
 
 ## Delivery order
 

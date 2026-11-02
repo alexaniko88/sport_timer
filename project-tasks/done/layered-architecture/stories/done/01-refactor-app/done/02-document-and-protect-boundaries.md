@@ -1,10 +1,10 @@
 # TASK 1.2: Document and protect layer boundaries
 
-Story: [Refactor the application into layers](index.md)
+Story: [Refactor the application into layers](../index.md)
 
-Epic: [Layered application architecture](../../index.md)
+Epic: [Layered application architecture](../../../../index.md)
 
-Status: Ready for planning; coordinate with the migration.
+Status: Done — implemented and validated on `improve/layered-architecture` (commit `76a95f5`); user approved delivery on 2026-11-02; PR link is returned when the PR is created.
 
 ## Goal
 
@@ -31,3 +31,9 @@ Run the new checks against the migrated code and verify that representative forb
 ## Implementation context
 
 Review `CLAUDE.md`, applicable project rules, CI configuration, and existing lint setup before selecting the implementation. Follow the applicable orchestration workflow.
+
+## Completion evidence
+
+- `test/architecture/layer_boundaries_test.dart` reads the imports of every file under `lib/` and enforces the layer rules, with tests that feed it forbidden imports. It runs with `fvm flutter test`, so CI covers it. Its scope and limits are documented in the file and in `CLAUDE.md` ("Boundary check").
+- `CLAUDE.md` describes the real layout, dependency rules, extensions and when to add a use case; `AGENTS.md` and `GEMINI.md` link to it. The orchestrator skill, the style rule and the Codex agents carry the same rules.
+- `fvm flutter analyze` reports no issues and the full suite passes (275 tests).
