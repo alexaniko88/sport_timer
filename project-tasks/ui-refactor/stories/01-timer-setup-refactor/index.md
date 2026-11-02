@@ -2,7 +2,7 @@
 
 Epic: [UI refactor](../../index.md).
 
-Status: Grid ready for planning; wheel styling provisional; timer tab icon and label blocked by UI 3.1.
+Wheel styling remains provisional; timer tab icon and label depend on UI 3.1.
 
 ## User outcome
 
@@ -32,7 +32,7 @@ As a user, I want clearly readable, tappable settings in a grid that matches Tem
 
 ## Tasks
 
-1. [Build the timer setup grid widget](01-build-timer-setup-grid.md) — Ready for planning.
+1. [Build the timer setup grid widget](done/01-build-timer-setup-grid.md) — archived; final decisions and evidence are in the [saved plan](../../../project_timer_setup_grid.md).
 2. [Align picker wheel styling](02-align-picker-wheel-styling.md) — Provisional.
 3. [Replace the Home tab icon and label](03-replace-home-tab-icon.md) — Blocked by [UI 3.1](../03-start-button-refactor/01-refactor-timer-setup-start-button.md); independent of wheel styling.
 

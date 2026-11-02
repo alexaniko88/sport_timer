@@ -20,7 +20,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 
 ## Stories
 
-1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — grid ready for planning; wheel styling provisional; timer tab icon and label blocked by UI 3.1.
+1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — grid task archived; wheel styling provisional; timer tab icon and label blocked by UI 3.1.
 
 2. [Access Templates from the drawer](stories/02-templates-in-drawer/index.md) — Ready for planning; one navigation task.
 3. [Refactor the Start button](stories/03-start-button-refactor/index.md) — Ready for planning; one UI task for a fixed, wide primary action on Timer Setup.

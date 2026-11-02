@@ -1,7 +1,7 @@
 # Timer setup grid
 
 Branch: `improve/timer-setup-grid`. Base: `master` at `2d2ae67`.
-Task: [UI 1.1](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md).
+Task: [UI 1.1](ui-refactor/stories/01-timer-setup-refactor/done/01-build-timer-setup-grid.md).
 
 ## Request and approach
 
@@ -27,6 +27,8 @@ Cover all four actions and live values, picker limits and dismissal persistence,
 Main risk: large text and long Spanish labels overflowing or settings obscured by the floating Start button. Manual validation remains needed for visual fit in both themes/languages, selectors and Start on both tabs.
 
 ## Workflow
+
+Implementation committed as `f5e6830` after commit and PR approval. UI 1.1 archived under its story’s `done/`; unfinished tasks keep the story and epic active. Archive links validated before the approved initial push and PR creation. Full review/checks passed; no merge authorized.
 
 User approved the proposed commit and opening the PR with "ok, and opne pr". Commit all 13 approved files, then archive only UI 1.1 in a docs commit before pushing. Story 1 and the epic stay active because pending/provisional tasks remain. PR source `improve/timer-setup-grid`, target `master`; title `improve: show timer setup settings in equal grid cards`. Description covers equal adaptive cards, shorter EN/ES labels, unused localization cleanup, preserved picker/save/Start flow, 46 passing focused tests, full analysis/format and independent review. No merge authorized.
 

@@ -2,11 +2,11 @@
 
 Type: Feature implementation within the UI refactor improvement.
 
-Story: [Timer setup refactor](index.md).
+Story: [Timer setup refactor](../index.md).
 
-Epic: [UI refactor](../../index.md).
+Epic: [UI refactor](../../../index.md).
 
-Status: Ready for planning.
+Archived after implementation and PR approval. See the [saved plan](../../../../project_timer_setup_grid.md) for final decisions and validation evidence.
 
 ## Goal
 
@@ -14,7 +14,7 @@ Replace Timer Setup's four full-width option rows with a working adaptive grid o
 
 ## Scope
 
-- Build the reusable setting card and the grid containing the four current options, following the [story's agreed design](index.md#agreed-design-and-scope).
+- Build the reusable setting card and the grid containing the four current options, following the [story's agreed design](../index.md#agreed-design-and-scope).
 - Integrate the grid with the current settings state and selector callbacks.
 - Preserve localized labels, value formatting, phase icons/colors, picker limits, immediate updates, persistence and timer launch behavior.
 - Keep current light/dark theme support and Templates border/surface conventions. Reuse existing theme tokens; decide any necessary shared styling extraction during planning without redesigning Templates.
