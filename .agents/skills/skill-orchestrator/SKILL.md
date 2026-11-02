@@ -28,7 +28,7 @@ This skill runs on Claude and on Codex. The models match: Opus is `gpt-6.1-sol` 
 
 There are no tickets. The user's own message is the request. Never look for a ticket, a Linear link or a ticket ID.
 
-**Approval cadence:** present the plan (Stage 1), then proceed without asking for plan approval unless an important requirement or decision is unclear and cannot be resolved from the request or code. Ask for clarification only on that uncertainty. Ask for approval of all implementation and tests together after the code is applied and required tests pass (end of Stage 3, or end of Stage 2 when tests do not apply), then the commit proposal (Stage 5). Run review only after approval of the completed implementation and tests. If review leaves suggestions for the user, present them and wait for their choice; a clean review proceeds directly to the commit hand-off without a separate review approval. Then ask whether to open a PR (Stage 6). Complete each stage without asking between files, edits, tests or required review fixes. Reuse explicit approval already given in the session, including after a resume; never repeat approval for unchanged work or ask for commit approval twice. This is the user's chosen cadence, replacing the general one-step-per-turn validation workflow. Carry it in every agent brief.
+**Approval cadence:** present the plan (Stage 1), then proceed without asking for plan approval unless an important requirement or decision is unclear and cannot be resolved from the request or code. Ask for clarification only on that uncertainty. Ask for approval of all implementation and tests together after the code is applied and required tests pass (end of Stage 3), then the commit proposal (Stage 5). Run review only after approval of the completed implementation and tests. If review leaves suggestions for the user, present them and wait for their choice; a clean review proceeds directly to the commit hand-off without a separate review approval. Then ask whether to open a PR (Stage 6). Complete each stage without asking between files, edits, tests or required review fixes. Reuse explicit approval already given in the session, including after a resume; never repeat approval for unchanged work or ask for commit approval twice. This is the user's chosen cadence, replacing the general one-step-per-turn validation workflow. Carry it in every agent brief.
 
 ## Project context
 
@@ -91,18 +91,18 @@ Dispatch one agent: on Claude a general-purpose agent with `model: sonnet`, on C
 
 When the agent reports a surprise, decide it yourself if the answer is clear from the code and tell the user in one line afterwards. Ask the user only when the choice changes the plan in a way they would care about.
 
-After all implementation steps are applied and format/analyze checks pass, continue directly to Stage 3. Do not ask for implementation approval before tests. If tests do not apply, explain why and present the completed implementation and checks for approval once before review. Do not seek validation of individual steps.
+After all implementation steps are applied and format/analyze checks pass, continue directly to Stage 3. Do not ask for implementation approval before tests. If no new tests are needed, explain why and still run the full suite before the approval checkpoint. Do not seek validation of individual steps.
 
 ## Stage 3: Tests and implementation approval 🛑
 
-Skip this stage for pure UI or text changes with no logic. Otherwise dispatch the Stage 2 kind of agent (Claude: general-purpose with `model: sonnet`, Codex: `agent-implementer`), or continue the Stage 2 agent, to write tests for the changed logic only, never for untouched surrounding code. The project has almost no tests: only the old counter smoke test, which fails and is out of scope unless the user says so.
+For changed logic, dispatch the Stage 2 kind of agent (Claude: general-purpose with `model: sonnet`, Codex: `agent-implementer`), or continue the Stage 2 agent, to write tests for the changed logic only, never for untouched surrounding code. For pure UI or text changes, explain if no new tests are needed; still run the full suite below.
 
 - Use the test rules in the project overrides. Read one existing test of the same kind first if there is one, and copy its structure.
 - If a test needs infrastructure that does not exist yet (a first fake or test helper), build the smallest version the plan's tests need and say so in the report. Do not add anything else.
-- Run only the tests it wrote or touched, by file path: `fvm flutter test <path>`. Fix failures that come from the test. If a failure shows a real bug in the code, stop and report it instead of patching production code silently.
+- Run focused tests by file path while working, then run the entire suite with `fvm flutter test` after implementation and snapshot updates, before requesting approval. Fix stale test expectations caused by the change and rerun the suite. If a failure shows a real bug in the code, stop and report it instead of patching production code silently. Report unrelated or environment failures clearly; do not claim the suite passed.
 - When a change alters a captured UI screen, state, theme or route transition (or adds a new screen or meaningful state), update `test/snapshots/ui_snapshots_test.dart` if needed, run `fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart` on macOS to refresh `test/snapshots/goldens/*.png`, and update `test/snapshots/README.md`.
 
-After all planned tests are written and passing, present the completed implementation, changed files, test coverage and check results together. Ask once for approval of this completed code and tests, then wait before starting Stage 4. Do not ask separately for tests or before writing or running each test. When tests do not apply, use the combined completion checkpoint described at the end of Stage 2.
+After all planned tests are written and the full suite passes, present the completed implementation, changed files, test coverage and check results together. Ask once for approval of this completed code and tests, then wait before starting Stage 4. Do not ask separately for tests or before writing or running each test. When no new tests are needed, explain why at the same checkpoint.
 
 ## Stage 4: Review
 
@@ -117,7 +117,7 @@ Once review and checks pass, report the verdict, fixes applied and remaining sug
 
 Run the checks that apply and show the result:
 
-- `fvm flutter analyze` reports no issues, and the new or touched tests pass.
+- `fvm flutter analyze` reports no issues, and the full test suite passes. Report the latest full-suite result; rerun it if subsequent changes could affect the result.
 - If any captured UI screen, state, theme or route changed, `fvm flutter test test/snapshots/ui_snapshots_test.dart` passes and `test/snapshots/README.md` is up to date.
 - If `android/`, `ios/` or `pubspec.yaml` changed: `fvm flutter build apk --debug` (and `fvm flutter build ios --debug --no-codesign` when `ios/` changed) succeeds.
 - No local absolute path in the diff (`git diff | grep -n "/Users/"` returns nothing), and no company name or work email address when you read it.
