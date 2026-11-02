@@ -134,7 +134,7 @@ void main() {
 
         await tester.tap(find.text(language.statistics));
         await tester.pumpAndSettle();
-        expect(bar().currentIndex, 2);
+        expect(bar().currentIndex, 1);
         expect(find.byIcon(Icons.timer_outlined), findsOneWidget);
         await tester.tap(find.text(language.timer));
         await tester.pumpAndSettle();

@@ -14,7 +14,7 @@ As a user, I want a clear Start action below my timer settings so I can launch t
 - Use the current theme's primary filled-button style, rounded corners matching the setting cards, a play icon and the existing localized Start label. Support both light and dark themes without hard-coded mockup colors.
 - Keep settings scrollable with space reserved for Start and bottom navigation. All settings and the button remain reachable on small screens and with large text.
 - Preserve current timer-launch behavior, current settings and timer-style parameters, and the existing save flow. This is a UI refactor only; new confirmation, loading, debounce or launch rules are outside scope.
-- This story changes Start only on Timer Setup. Removing Start from Templates belongs to [Story 2](../../02-templates-in-drawer/index.md). If that story is still pending, preserve Templates' current floating button. If it has shipped, preserve the separate Templates page without Start.
+- This story changes Start only on Timer Setup. Removing Start from Templates belongs to [Story 2](../02-templates-in-drawer/index.md). If that story is still pending, preserve Templates' current floating button. If it has shipped, preserve the separate Templates page without Start.
 - Exclude navigation changes, picker styling, setting-card redesign and active-timer controls.
 
 ## Acceptance criteria

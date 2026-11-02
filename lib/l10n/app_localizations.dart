@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'{s}s'**
   String durationSeconds(int s);
 
+  /// Label of the side drawer item that opens the templates page.
+  ///
+  /// In en, this message translates to:
+  /// **'Templates'**
+  String get homeDrawerTemplates;
+
   /// Label of the side drawer item that opens the timer styles page.
   ///
   /// In en, this message translates to:
@@ -265,18 +271,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Statistics'**
   String get homeTabStatisticsTooltip;
-
-  /// Label of the templates tab in the bottom navigation.
-  ///
-  /// In en, this message translates to:
-  /// **'Templates'**
-  String get homeTabTemplates;
-
-  /// Tooltip of the templates tab in the bottom navigation.
-  ///
-  /// In en, this message translates to:
-  /// **'Workout Templates'**
-  String get homeTabTemplatesTooltip;
 
   /// Label of the Google sign in button on the login page.
   ///
