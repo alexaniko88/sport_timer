@@ -242,17 +242,17 @@ abstract class AppLocalizations {
   /// **'Start'**
   String get homeStartButton;
 
-  /// Label of the home tab in the bottom navigation.
+  /// Label of the timer setup tab in the bottom navigation.
   ///
   /// In en, this message translates to:
-  /// **'Home'**
-  String get homeTabHome;
+  /// **'Timer'**
+  String get homeTabTimer;
 
-  /// Tooltip of the home tab in the bottom navigation.
+  /// Tooltip of the timer setup tab in the bottom navigation.
   ///
   /// In en, this message translates to:
-  /// **'Home'**
-  String get homeTabHomeTooltip;
+  /// **'Timer'**
+  String get homeTabTimerTooltip;
 
   /// Label of the statistics tab in the bottom navigation.
   ///

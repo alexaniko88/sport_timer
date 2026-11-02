@@ -94,10 +94,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeStartButton => 'Iniciar';
 
   @override
-  String get homeTabHome => 'Inicio';
+  String get homeTabTimer => 'Temporizador';
 
   @override
-  String get homeTabHomeTooltip => 'Inicio';
+  String get homeTabTimerTooltip => 'Temporizador';
 
   @override
   String get homeTabStatistics => 'Estadísticas';

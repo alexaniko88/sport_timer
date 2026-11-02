@@ -1,10 +1,10 @@
 # TASK UI 1.3: Replace the Home tab icon and label
 
-Story: [Timer setup refactor](index.md).
+Story: [Timer setup refactor](../index.md).
 
-Epic: [UI refactor](../../index.md).
+Epic: [UI refactor](../../../../index.md).
 
-Status: Blocked by [UI 3.1](../done/03-start-button-refactor/done/01-refactor-timer-setup-start-button.md).
+Status: Done on branch `improve/timer-tab-label` (implementation commit `9e79cce`; pending PR and merge).
 
 ## Goal
 
@@ -19,7 +19,7 @@ Make the bottom-bar destination describe Timer Setup with a timer icon and a mat
 
 ## Dependencies
 
-Deliver after [UI 3.1](../done/03-start-button-refactor/done/01-refactor-timer-setup-start-button.md) changes Timer Setup's Start icon to play, so the destination and its Start action use distinct symbols. UI 1.1, provisional wheel styling and the Templates drawer move are not prerequisites. Preserve the navigation available in the implementation checkout.
+Deliver after [UI 3.1](../../03-start-button-refactor/done/01-refactor-timer-setup-start-button.md) changes Timer Setup's Start icon to play, so the destination and its Start action use distinct symbols. UI 1.1, provisional wheel styling and the Templates drawer move are not prerequisites. Preserve the navigation available in the implementation checkout.
 
 ## Acceptance criteria
 
@@ -42,4 +42,8 @@ Read the parent story and follow the applicable orchestration workflow. Backlog 
 
 ## UI snapshot reference
 
-Before planning, inspect the relevant current UI snapshots: [setup_custom](../../../../test/snapshots/goldens/setup_custom.png), [statistics](../../../../test/snapshots/goldens/statistics.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+Before planning, inspect the relevant current UI snapshots: [setup_custom](../../../../../../test/snapshots/goldens/setup_custom.png), [statistics](../../../../../../test/snapshots/goldens/statistics.png). See the [snapshot index](../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+
+## Completion evidence
+
+Implemented the Timer destination icons and English/Spanish names, preserving navigation and settings. Widget checks cover navigation, semantics, themes and large text; affected snapshots were refreshed. Full analysis passed, 251 tests passed, and 21 snapshot checks passed.

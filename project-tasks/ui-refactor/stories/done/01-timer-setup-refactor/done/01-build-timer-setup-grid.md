@@ -4,7 +4,7 @@ Type: Feature implementation within the UI refactor improvement.
 
 Story: [Timer setup refactor](../index.md).
 
-Epic: [UI refactor](../../../index.md).
+Epic: [UI refactor](../../../../index.md).
 
 Archived after implementation and PR approval. See the saved plan for final decisions and validation evidence.
 
