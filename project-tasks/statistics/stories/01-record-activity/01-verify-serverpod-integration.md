@@ -1,10 +1,10 @@
-# TASK 1.1: Verify Serverpod local integration and approve the data model
+# TASK 1.1: Choose local storage and define the data model
 
 Story: [Story 1 overview](index.md)
 
 Epic: [Statistics](../../index.md)
 
-Status: Not started.
+Status: Storage choice and model defined; awaiting review. Database integration remains Task 1.2.
 
 ## Dependencies
 
@@ -12,21 +12,24 @@ Status: Not started.
 
 ## Goal
 
-Verify Serverpod local integration and approve the data model. Read the parent story for the shared behavior, exclusions, and acceptance criteria.
+Choose local storage and define the record model and repository boundary for completed activity. Database integration belongs to [Task 1.2](02-add-database-foundation.md).
 
-## Work and acceptance criteria
+## Decision and evidence
 
-Each item below is a completion requirement for this task:
+- Use SQLite through `sqflite`, retaining Firebase authentication. Cross-device synchronization is future scope; a Serverpod backend remains an option, not a prerequisite.
+- The [sqflite package](https://pub.dev/packages/sqflite) documents Android, iOS, and macOS support, transactions, and database version management. The [Flutter SQLite guide](https://docs.flutter.dev/cookbook/persistence/sqlite) shows the Flutter setup. Pin compatible versions of `sqflite`, `path`, and a UUID package during integration.
+- The checkout uses Flutter 3.47.7 and Dart 3.13.5, with Android and iOS projects. The macOS scaffold is incomplete. Package resolution, native builds, and actual `sqflite` runtime behavior remain to be verified in Task 1.2.
+- The [story model](index.md#storage-model) records stable IDs, immutable ownership, millisecond durations and UTC instants, fixed local dates and offsets, pause and termination metadata, uniqueness, relationships, and indexes. It defines account-scoped aggregation and the repository boundary.
+- `TimerSchedule` omits zero-duration stages, includes preparation when nonzero, and identifies a rest with the round just completed. Its stage position is the zero-based index used for phase uniqueness. A delayed tick may cross multiple boundaries; future recording must reconcile those boundaries on ticks, pause, and exit and keep required writes alive beyond the page lifecycle.
+- Capture the Firebase UID when a run starts. An authentication change cannot reassign pending writes; signed-out starts cannot create account-owned records. A forced close preserves committed records, but cannot guarantee a pending write or invent a termination time.
 
-- Check the app's actual Flutter/Dart versions and target platforms against a supported Serverpod release.
-- Verify how to generate client-only tables and migrations in this existing app, including whether a companion generator/server package is needed for development.
-- Identify the minimal dependencies, generated files, migration assets, commands, and project layout. Distinguish build-time tooling from runtime backend requirements.
-- Keep runtime reads/writes available without a network connection or deployed backend.
-- Check transactions, unique constraints, relationships, daily aggregation, and available database-change notifications or explicit refresh hooks.
-- Agree stable identifiers suitable for possible backup, account ownership, duration units, indexes, pause metadata, and termination metadata.
-- Inspect background execution and account-change behavior. Bind ownership to the account at run start so later authentication changes cannot reassign records.
-- If the proposed integration requires a material scope or authentication change, bring that concrete decision back to the user before proceeding.
+## Acceptance criteria
 
-## Orchestration
+- The selected local storage and supported platforms are documented, along with remaining runtime and native validation.
+- The story defines the data model, relationship, unique constraint, indexes, daily aggregation, transaction behavior, migrations, and refresh strategy.
+- Ownership, background execution, pause handling, and known versus unknown termination are accounted for without requiring a deployed backend.
+- Future synchronization is explicitly separate scope; no database implementation or authentication replacement is included in this task.
 
-Read the story and epic before starting. Inspect current code and propose small substeps for approval. Complete one approved file or concern per turn and wait for user validation before continuing. Include relevant tests and scoped checks with implementation; a later verification task does not defer required validation.
+## Validation
+
+Check the chosen package documentation and current checkout. Review the model and affected task links for consistency. Task 1.2 must validate package resolution, actual local database behavior, migrations, and platform builds; documentation alone is not a runtime test.

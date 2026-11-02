@@ -18,11 +18,13 @@ Add the database foundation. Read the parent story for the shared behavior, excl
 
 Each item below is a completion requirement for this task:
 
-- Add only the approved Serverpod packages and generation configuration.
+- Add compatible, exactly pinned `sqflite`, `path`, and UUID dependencies as needed; no generated companion package or backend is required.
 - Define run and completed-phase models, their relationship, indexes, and uniqueness constraints.
-- Open one appropriate database session through the app's existing dependency setup and manage its lifecycle.
-- Provide a repeatable generation workflow and versioned migrations that preserve existing records.
+- Open one appropriate database through the app's existing dependency setup, enable foreign keys in `onConfigure`, and manage its lifecycle.
+- Provide numbered, non-destructive `onUpgrade` migrations that preserve existing records.
 - Ensure account ownership is enforced by the data access layer, including after sign-out/sign-in.
+- Verify package resolution and native compatibility for Android and iOS. The macOS scaffold is incomplete; do not claim a macOS app build without restoring it in separately agreed scope.
+- Test schema creation, foreign keys and uniqueness, transaction rollback, reopening persisted records, and an upgrade from an older database without data loss. Validate the actual `sqflite` integration rather than treating package documentation as a runtime test.
 
 ## Orchestration
 

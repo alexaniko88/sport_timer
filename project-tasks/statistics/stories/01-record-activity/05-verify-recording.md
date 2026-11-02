@@ -20,9 +20,10 @@ Each item below is a completion requirement for this task:
 
 - Add focused tests following existing test conventions; inspect changed methods before selecting cases.
 - Verify uniqueness, account isolation, aggregate accuracy, atomic writes, failure/retry behavior, and reopening stored data.
+- Verify an account switch while a query or subscription result is outstanding cannot expose the old account's result, and retrying an uncertain successful commit uses the same phase ID without duplicating or replacing the record.
 - Verify a normal run, early stop, pause/resume, several crossed boundaries, final-round completion, and leaving near a completion boundary.
 - Verify midnight attribution, including a callback delayed until the following day and paused time spanning midnight.
-- Verify database migrations with the chosen Serverpod tooling when schema changes are introduced.
+- Verify numbered SQLite migrations preserve existing records when schema changes are introduced.
 - Validate background/lock behavior on supported devices or simulators and record any platform limits.
 - Run format/analyze and only the relevant tests for changed files according to project rules.
 
