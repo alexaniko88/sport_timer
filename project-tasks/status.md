@@ -17,12 +17,12 @@ Ready does not mean implementation is already approved. Done does not imply comm
 ## Current overview
 
 - **Statistics:** 0 of 12 tasks done; 0 in progress; 1 ready; 7 blocked; 4 provisional.
-- **Templates:** 4 of 9 tasks done; 0 in progress; 2 ready; 0 blocked; 3 provisional.
+- **Templates:** 6 of 10 tasks done; 0 in progress; 1 ready; 0 blocked; 3 provisional.
 - **UI refactor:** 0 of 7 tasks done; 0 in progress; 4 ready; 2 blocked; 1 provisional. Grid, Templates navigation, Start button and app-wide border/radius scope agreed on 2026-11-01.
 - **Bugs:** 0 tasks reported.
 - **Improvements:** 0 of 2 tasks done; both provisional.
-- **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are merged into `master` at `8c751c7` ([PR #14](https://github.com/alexaniko88/sport_timer/pull/14)). No statistics implementation completed yet.
-- **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.2 and 4.1 — ready for planning where the completed Task 2.1 output is available; verify the intended checkout. Task 4.1 can proceed independently of Task 2.2 and provisional Story 3. No next task started. The Statistics and Templates epics are independent.
+- **Available to reuse:** Templates Stories 1, 2 and 4 are merged into `master`. No statistics implementation completed yet.
+- **Next tasks:** Templates 5.1 — update the 5 built-in template times and fresh-install default settings. Statistics 1.1 — verify Serverpod local integration and approve the data model. No next task started. The Statistics and Templates epics are independent.
 - **UI 1.1:** [Archived task](ui-refactor/stories/01-timer-setup-refactor/done/01-build-timer-setup-grid.md). Final decisions, validation evidence and branch context are in the [saved plan](project_timer_setup_grid.md).
 
 ## Statistics
@@ -60,7 +60,8 @@ Epic: [Templates](templates/index.md).
 | [3.1 Confirm the creation behavior](templates/stories/03-create-own-templates/01-confirm-creation-behavior.md) | ⚪ Provisional | Revisit Story 3 after Stories 1 and 2. | Agreed creation, edit, delete and storage decisions. |
 | [3.2 Store custom templates](templates/stories/03-create-own-templates/02-store-custom-templates.md) | ⚪ Provisional | Story 3 agreement and Task 3.1. | Repository for own templates. |
 | [3.3 Add the creation flow](templates/stories/03-create-own-templates/03-add-creation-flow.md) | ⚪ Provisional | Story 3 agreement and Task 3.2. | "+" action and creation flow. |
-| [4.1 Track explicit selection and show the Setup shortcut](templates/stories/done/04-selected-template-in-setup/done/01-track-selection-and-show-setup-shortcut.md) | See [implementation plan](project_setup_template_shortcut.md) | Task 2.1 and Story 1 output. Independent of Task 2.2 and provisional Story 3. | Persistent explicit selection and a tappable named Setup label that opens Templates. |
+| [4.1 Track explicit selection and show the Setup shortcut](templates/stories/done/04-selected-template-in-setup/done/01-track-selection-and-show-setup-shortcut.md) | ✅ Done | See [implementation plan](project_setup_template_shortcut.md). | Persistent explicit selection and a tappable named Setup label that opens Templates. |
+| [5.1 Update built-in template times](templates/stories/05-update-template-times/01-update-template-times.md) | 🟢 Ready | Stories 1 and 2 complete in `master`. | Updated preset durations and rounds (`0:20` prep across all 5) and matching fresh-install default settings. |
 
 ## UI refactor
 
