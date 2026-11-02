@@ -21,7 +21,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 
 1. [Timer setup refactor](stories/done/01-timer-setup-refactor/index.md) — all tasks archived; Timer tab update pending PR and merge.
 
-2. [Access Templates from the drawer](stories/02-templates-in-drawer/index.md) — Ready for planning; one navigation task.
+2. [Access Templates from the drawer](stories/done/02-templates-in-drawer/index.md) — all tasks archived; Templates drawer navigation pending PR and merge.
 3. [Refactor the Start button](stories/done/03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
 4. [Unify borders and corner radii across the app](stories/04-unify-borders-and-corners/index.md) — audit and rule decision ready for planning; app-wide migration blocked by that decision.
 
