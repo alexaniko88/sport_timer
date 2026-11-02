@@ -34,16 +34,15 @@ Implement Story 1 before Story 2. Story 3 depends on both, but is not required f
 
 ## Storage decision
 
-Use Serverpod's client-side SQLite database. This choice supports the user's intended direction toward a possible Serverpod backend and backup later.
+Use SQLite through `sqflite` for local storage. Keep database access behind an activity repository so timer and statistics logic can be reused if synchronization is added later.
 
 - First release: on-device storage only, separated by account.
-- Keep existing authentication; adopting Serverpod storage does not authorize replacing it.
+- Keep existing Firebase authentication and capture the account at the start of each run.
 - Preserve run identifiers, account ownership, original timer settings, completion timestamps, durations, and fixed local dates for later detail views and potential backup.
 - Compute daily totals from completed records rather than maintaining a second independent source of totals.
 - Use database transactions, uniqueness constraints, and non-destructive migrations.
-- Verify the exact Serverpod version, SDK compatibility, generation workflow, and local-only integration before choosing packages or changing project structure.
-- Automatic backup, backend deployment, cross-device synchronization, authentication integration for a backend, and conflict handling need separate future scope.
-- At planning time, Serverpod 4 documents automatic offline sync as experimental and not production-ready. Local database adoption does not imply that backup is already available.
+- Resolve and pin compatible versions when the database foundation is implemented; no Serverpod generator or runtime backend is required.
+- Automatic backup, backend deployment, cross-device synchronization, authentication integration for a backend, and conflict handling need separate future scope. Serverpod remains one possible future backend, not a commitment.
 
 ## Current app constraints
 
@@ -61,5 +60,5 @@ No application code is changed by these planning files. Story 3 remains a propos
 
 ## References
 
-- [Serverpod client-side database](https://docs.serverpod.dev/concepts/data-and-the-database/database/client-side-database)
-- [Serverpod offline sync status](https://docs.serverpod.dev/concepts/data-and-the-database/database/client-side-database#sync-tables-with-the-server)
+- [sqflite package](https://pub.dev/packages/sqflite)
+- [Flutter SQLite guide](https://docs.flutter.dev/cookbook/persistence/sqlite)
