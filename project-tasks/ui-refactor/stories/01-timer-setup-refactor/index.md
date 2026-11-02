@@ -2,7 +2,7 @@
 
 Epic: [UI refactor](../../index.md).
 
-Wheel styling remains provisional; timer tab icon and label depend on UI 3.1.
+Wheel styling is archived; timer tab icon and label depend on UI 3.1.
 
 ## User outcome
 
@@ -33,11 +33,11 @@ As a user, I want clearly readable, tappable settings in a grid that matches Tem
 ## Tasks
 
 1. [Build the timer setup grid widget](done/01-build-timer-setup-grid.md) — archived; final decisions and evidence are in the [saved plan](../../../project_timer_setup_grid.md).
-2. [Align picker wheel styling](02-align-picker-wheel-styling.md) — Provisional.
+2. [Align picker wheel styling](done/02-align-picker-wheel-styling.md) — archived.
 3. [Replace the Home tab icon and label](03-replace-home-tab-icon.md) — Blocked by [UI 3.1](../03-start-button-refactor/01-refactor-timer-setup-start-button.md); independent of wheel styling.
 
 ## Dependencies and open decisions
 
-The current checkout contains `TemplateTile` and the compact Templates page. Verify their availability in the implementation checkout. No product decisions remain for Task 1.1; exact adaptive breakpoints, component API and shared styling approach are implementation planning choices. Wheel surface tint and selection styling still need agreement before Task 1.2 can become Ready.
+The current checkout contains `TemplateTile` and the compact Templates page. Verify their availability in the implementation checkout. No product decisions remain for Task 1.1; exact adaptive breakpoints, component API and shared styling approach are implementation planning choices. Wheel styling decisions and validation are in the saved plan.
 
 UI 1.3 icon and naming agreed on 2026-11-01. No product decisions remain; UI 3.1 must be delivered first so Timer Setup uses a timer destination icon and a play Start action.

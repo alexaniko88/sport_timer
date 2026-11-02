@@ -1,10 +1,10 @@
 # TASK 1.2: Align picker wheel styling
 
-Story: [Timer setup refactor](index.md).
+Story: [Timer setup refactor](../index.md).
 
-Epic: [UI refactor](../../index.md).
+Epic: [UI refactor](../../../index.md).
 
-Status: Provisional.
+Archived after implementation and PR approval. See the [saved plan](../../../../project_picker_wheel_styling.md) for decisions and validation.
 
 ## Goal
 
@@ -23,7 +23,7 @@ Cover the time and rounds selectors. Exclude grid implementation, new confirmati
 
 ## Dependencies and open decisions
 
-Intended after [Task 1.1](done/01-build-timer-setup-grid.md), so the wheel can be assessed alongside the delivered grid. Confirm how much phase tint remains on the sheet and how selection is distinguished with a uniform 1px border. This is not ready for implementation planning until those details are agreed.
+Intended after [Task 1.1](01-build-timer-setup-grid.md), so the wheel can be assessed alongside the delivered grid. Confirm how much phase tint remains on the sheet and how selection is distinguished with a uniform 1px border. This is not ready for implementation planning until those details are agreed.
 
 ## Provisional acceptance criteria
 
