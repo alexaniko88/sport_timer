@@ -74,24 +74,24 @@ void main() {
         await tester.pumpWidget(_app(_tile(_template(TemplateId.standard), name: 'Default')));
 
         expect(find.text('Default'), findsOneWidget);
-        expect(find.text('1:00 work · 0:30 rest · 5 rounds'), findsOneWidget);
-        expect(find.text('7m 20s'), findsOneWidget);
+        expect(find.text('1:00 work · 0:30 rest · 12 rounds'), findsOneWidget);
+        expect(find.text('17m 50s'), findsOneWidget);
       });
 
       testWidgets('shows summary and total time for Full Abs', (tester) async {
         _setScreenSize(tester);
         await tester.pumpWidget(_app(_tile(_template(TemplateId.fullAbs), name: 'Full Abs')));
 
-        expect(find.text('0:30 work · 0:10 rest · 20 rounds'), findsOneWidget);
-        expect(find.text('13m 30s'), findsOneWidget);
+        expect(find.text('0:40 work · 0:10 rest · 12 rounds'), findsOneWidget);
+        expect(find.text('10m 10s'), findsOneWidget);
       });
 
       testWidgets('shows summary and total time for Hyrox', (tester) async {
         _setScreenSize(tester);
         await tester.pumpWidget(_app(_tile(_template(TemplateId.hyrox), name: 'Hyrox')));
 
-        expect(find.text('4:00 work · 0:30 rest · 8 rounds'), findsOneWidget);
-        expect(find.text('35m 50s'), findsOneWidget);
+        expect(find.text('5:00 work · 1:00 rest · 8 rounds'), findsOneWidget);
+        expect(find.text('47m 20s'), findsOneWidget);
       });
 
       testWidgets('uses the Spanish summary', (tester) async {
@@ -100,7 +100,7 @@ void main() {
           _app(_tile(_template(TemplateId.standard)), locale: const Locale('es')),
         );
 
-        expect(find.text('1:00 trabajo · 0:30 descanso · 5 rondas'), findsOneWidget);
+        expect(find.text('1:00 trabajo · 0:30 descanso · 12 rondas'), findsOneWidget);
       });
     });
 
@@ -116,7 +116,7 @@ void main() {
 
         expect(
           data.label,
-          'Hyrox. Round time 4m 0s, rest time 30s, 8 rounds, total time 35m 50s',
+          'Hyrox. Round time 5m 0s, rest time 1m 0s, 8 rounds, total time 47m 20s',
         );
         expect(data.flagsCollection.isButton, isTrue);
         expect(data.flagsCollection.isSelected, isNot(Tristate.isTrue));
@@ -178,7 +178,7 @@ void main() {
 
         expect(
           tester.getSemantics(find.byType(TemplateTile)).label,
-          'Hyrox. Tiempo de ronda 4m 0s, tiempo de descanso 30s, 8 rondas, tiempo total 35m 50s',
+          'Hyrox. Tiempo de ronda 5m 0s, tiempo de descanso 1m 0s, 8 rondas, tiempo total 47m 20s',
         );
         handle.dispose();
       });
@@ -225,8 +225,8 @@ void main() {
         _setScreenSize(tester);
         await tester.pumpWidget(_app(_tile(_template(TemplateId.standard))));
 
-        // 1 preparation + 5 rounds + 4 rests.
-        expect(_segments(tester), hasLength(10));
+        // 1 preparation + 12 rounds + 11 rests.
+        expect(_segments(tester), hasLength(24));
       });
 
       testWidgets('Hyrox rounds are much longer than Full Abs rounds', (tester) async {
@@ -237,8 +237,8 @@ void main() {
         await tester.pumpWidget(_app(_tile(_template(TemplateId.fullAbs))));
         final absRoundFlex = _segments(tester)[1].flex;
 
-        expect(hyroxRoundFlex, 240000);
-        expect(absRoundFlex, 30000);
+        expect(hyroxRoundFlex, 300000);
+        expect(absRoundFlex, 40000);
         expect(hyroxRoundFlex, greaterThan(absRoundFlex * 5));
       });
     });

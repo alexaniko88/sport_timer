@@ -1,8 +1,8 @@
 # STORY 5: Update built-in template times
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../index.md)
 
-Status: Ready for planning. Application code changes are not approved by this backlog agreement.
+Status: Done on `improve/template-times`; pending PR and merge.
 
 ## User outcome
 
@@ -34,8 +34,8 @@ Out of scope: any UI/UX changes to `TemplateTile` or `TemplatesPage` (such as sh
 
 ## Tasks
 
-1. [Update built-in template times](01-update-template-times.md).
+1. [Update built-in template times](done/01-update-template-times.md).
 
 ## Dependencies and open decisions
 
-Depends on completed [Story 1](../done/01-template-set-and-tiles/index.md) and [Story 2](../done/02-selection-follows-settings/index.md) outputs in `master`. No open decisions.
+Depends on completed [Story 1](../01-template-set-and-tiles/index.md) and [Story 2](../02-selection-follows-settings/index.md) outputs in `master`. No open decisions.

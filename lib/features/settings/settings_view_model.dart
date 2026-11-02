@@ -16,7 +16,7 @@ class SettingsViewModel {
     preparationTime: Duration(seconds: 20),
     roundTime: Duration(seconds: 60),
     restTime: Duration(seconds: 30),
-    rounds: 5,
+    rounds: 12,
   );
 
   final SettingsRepository _settingsRepository;

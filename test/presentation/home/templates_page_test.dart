@@ -92,53 +92,53 @@ const _cases = [
       preparationTime: Duration(seconds: 20),
       roundTime: Duration(minutes: 1),
       restTime: Duration(seconds: 30),
-      rounds: 5,
+      rounds: 12,
     ),
-    values: ['00:20', '01:00', '00:30', '5'],
+    values: ['00:20', '01:00', '00:30', '12'],
   ),
   (
     name: 'Full Abs',
     icon: Icons.sports_gymnastics,
     settings: TimerSettings(
       preparationTime: Duration(seconds: 20),
-      roundTime: Duration(seconds: 30),
+      roundTime: Duration(seconds: 40),
       restTime: Duration(seconds: 10),
-      rounds: 20,
+      rounds: 12,
     ),
-    values: ['00:20', '00:30', '00:10', '20'],
+    values: ['00:20', '00:40', '00:10', '12'],
   ),
   (
     name: 'Hyrox',
     icon: Icons.directions_run,
     settings: TimerSettings(
       preparationTime: Duration(seconds: 20),
-      roundTime: Duration(minutes: 4),
-      restTime: Duration(seconds: 30),
+      roundTime: Duration(minutes: 5),
+      restTime: Duration(minutes: 1),
       rounds: 8,
     ),
-    values: ['00:20', '04:00', '00:30', '8'],
+    values: ['00:20', '05:00', '01:00', '8'],
   ),
   (
     name: 'Stretching',
     icon: Icons.self_improvement,
     settings: TimerSettings(
-      preparationTime: Duration(seconds: 10),
-      roundTime: Duration(seconds: 45),
-      restTime: Duration(seconds: 15),
+      preparationTime: Duration(seconds: 20),
+      roundTime: Duration(minutes: 1),
+      restTime: Duration(seconds: 5),
       rounds: 10,
     ),
-    values: ['00:10', '00:45', '00:15', '10'],
+    values: ['00:20', '01:00', '00:05', '10'],
   ),
   (
     name: 'Strength',
     icon: Icons.fitness_center,
     settings: TimerSettings(
-      preparationTime: Duration(seconds: 10),
-      roundTime: Duration(seconds: 40),
-      restTime: Duration(minutes: 1, seconds: 30),
-      rounds: 6,
+      preparationTime: Duration(seconds: 20),
+      roundTime: Duration(minutes: 1, seconds: 30),
+      restTime: Duration(seconds: 30),
+      rounds: 8,
     ),
-    values: ['00:10', '00:40', '01:30', '6'],
+    values: ['00:20', '01:30', '00:30', '8'],
   ),
 ];
 
@@ -654,8 +654,8 @@ void main() {
       expect(
         find.text(
           locale.languageCode == 'en'
-              ? '0:25 prep · 1:00 work · 0:30 rest · 5 rounds'
-              : '0:25 preparación · 1:00 trabajo · 0:30 descanso · 5 rondas',
+              ? '0:25 prep · 1:00 work · 0:30 rest · 12 rounds'
+              : '0:25 preparación · 1:00 trabajo · 0:30 descanso · 12 rondas',
         ),
         findsOneWidget,
       );
@@ -663,7 +663,7 @@ void main() {
         tester.getSemantics(custom).label,
         contains(locale.languageCode == 'en' ? 'Preparation time 25s' : 'Tiempo de preparación 25s'),
       );
-      expect(tester.widget<TemplateTile>(custom).totalTime, const Duration(minutes: 7, seconds: 25));
+      expect(tester.widget<TemplateTile>(custom).totalTime, const Duration(minutes: 17, seconds: 55));
       handle.dispose();
     });
   }
@@ -754,7 +754,7 @@ void main() {
     expect(repository.saves, isEmpty);
     expect(settings.state.value.timerSettings.rounds, 6);
 
-    settings.updateRounds(5);
+    settings.updateRounds(12);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.text('Custom'), findsOneWidget);
@@ -774,7 +774,7 @@ void main() {
     settings.updateRounds(6);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    settings.updateRounds(5);
+    settings.updateRounds(12);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
     settings.updateRounds(7);

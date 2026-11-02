@@ -7,11 +7,11 @@ void main() {
   group('WorkoutTemplate.totalTime', () {
     test('matches the total for each built-in template', () {
       expect(builtInTemplates.map((template) => template.totalTime), [
-        const Duration(minutes: 7, seconds: 20),
-        const Duration(minutes: 13, seconds: 30),
-        const Duration(minutes: 35, seconds: 50),
-        const Duration(minutes: 9, seconds: 55),
-        const Duration(minutes: 11, seconds: 40),
+        const Duration(minutes: 17, seconds: 50),
+        const Duration(minutes: 10, seconds: 10),
+        const Duration(minutes: 47, seconds: 20),
+        const Duration(minutes: 11, seconds: 5),
+        const Duration(minutes: 15, seconds: 50),
       ]);
     });
 

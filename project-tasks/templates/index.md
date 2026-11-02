@@ -1,6 +1,6 @@
 # EPIC: Templates
 
-Status: Stories 1, 2 and 4 are complete. Story 3 is provisional. Story 5 (updated built-in template times) is agreed and Ready for planning.
+Status: Stories 1, 2 and 4 are complete. Story 3 is provisional. Story 5 (updated built-in template times) is complete on its feature branch, pending PR and merge.
 
 
 ## Goal
@@ -23,7 +23,7 @@ Give the user a few quick, pre-configured workouts. One tap fills in preparation
 
 ### Template values
 
-Updated in [Story 5](stories/05-update-template-times/index.md):
+Updated in [Story 5](stories/done/05-update-template-times/index.md):
 
 | Template | Preparation | Round | Rest | Rounds | Total |
 | --- | --- | --- | --- | --- | --- |
@@ -55,7 +55,7 @@ Decisions:
 2. [Selection follows real settings](stories/done/02-selection-follows-settings/index.md) — computed highlight and the Custom card. Depends on Story 1.
 3. [Create your own templates](stories/03-create-own-templates/index.md) — provisional; confirm before implementation.
 4. [Show the selected template in Timer Setup](stories/done/04-selected-template-in-setup/index.md) — persistent explicit selection, a named Setup label and shortcut to Templates.
-5. [Update built-in template times](stories/05-update-template-times/index.md) — update the 5 built-in presets to `0:20` preparation and the new work, rest and round values (`Default`, `Full Abs`, `Hyrox`, `Stretching`, `Strength`).
+5. [Update built-in template times](stories/done/05-update-template-times/index.md) — update the 5 built-in presets to `0:20` preparation and the new work, rest and round values (`Default`, `Full Abs`, `Hyrox`, `Stretching`, `Strength`).
 
 ## Delivery order
 
