@@ -12,4 +12,4 @@ A bug report does not authorize implementation. Diagnose and agree the fix throu
 
 ## Tasks
 
-No bugs reported yet. Add each new task here.
+- [BUG-01: iOS authentication dependency conflict](01-ios-auth-dependency-conflict.md) — ready for diagnosis and planning.
