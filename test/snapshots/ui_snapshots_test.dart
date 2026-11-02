@@ -23,6 +23,7 @@ import 'package:sport_timer/features/timer/presentation/widgets/full_color_timer
 import 'package:sport_timer/features/timer/presentation/widgets/ring_timer_view.dart';
 import 'package:sport_timer/features/timer/presentation/widgets/rounds_strip_timer_view.dart';
 import 'package:sport_timer/features/settings/presentation/timer_styles/timer_styles_page.dart';
+import 'package:sport_timer/features/templates/presentation/templates_page.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 
 typedef _WidgetFactory = Widget Function();
@@ -350,30 +351,36 @@ void main() {
           );
 
           goldenTest(
-            'home templates tab with Hyrox selected',
+            'templates page with Hyrox selected',
             fileName: 'templates_selected',
             constraints: _pairConstraints,
-            whilePerforming: _tapInBothFrames(find.text('Templates')),
             builder: () {
               configureFakeDependencies(
                 settings: _hyroxTemplate.settings,
                 selectedTemplateId: _hyroxTemplate.id.name,
               );
               return _lightAndDarkGroup(
-                builder: () => const HomePage(),
+                builder: () {
+                  final viewModel = SettingsViewModel(getIt())..loadSettings();
+                  addTearDown(viewModel.dispose);
+                  return TemplatesPage(viewModel: viewModel);
+                },
               );
             },
           );
 
           goldenTest(
-            'home templates tab with custom settings row',
+            'templates page with custom settings row',
             fileName: 'templates_custom',
             constraints: _pairConstraints,
-            whilePerforming: _tapInBothFrames(find.text('Templates')),
             builder: () {
               configureFakeDependencies();
               return _lightAndDarkGroup(
-                builder: () => const HomePage(),
+                builder: () {
+                  final viewModel = SettingsViewModel(getIt())..loadSettings();
+                  addTearDown(viewModel.dispose);
+                  return TemplatesPage(viewModel: viewModel);
+                },
               );
             },
           );

@@ -85,6 +85,9 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get homeDrawerTemplates => 'Plantillas';
+
+  @override
   String get homeDrawerTimerStyles => 'Estilos del temporizador';
 
   @override
@@ -104,12 +107,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get homeTabStatisticsTooltip => 'Estadísticas';
-
-  @override
-  String get homeTabTemplates => 'Plantillas';
-
-  @override
-  String get homeTabTemplatesTooltip => 'Plantillas de entrenamiento';
 
   @override
   String get loginGoogleButton => 'Continuar con Google';

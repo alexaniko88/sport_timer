@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:sport_timer/features/account/presentation/account_avatar_button.dart';
-import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
@@ -15,14 +13,10 @@ import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 
 class TemplatesPage extends StatefulWidget {
   final SettingsViewModel viewModel;
-  final AccountViewModel accountViewModel;
-  final VoidCallback onMenuPressed;
 
   const TemplatesPage({
     super.key,
     required this.viewModel,
-    required this.accountViewModel,
-    required this.onMenuPressed,
   });
 
   @override
@@ -30,8 +24,6 @@ class TemplatesPage extends StatefulWidget {
 }
 
 class _TemplatesPageState extends State<TemplatesPage> {
-  static const double _listBottomInset = 100;
-
   late TemplatesViewModel _templatesViewModel;
 
   @override
@@ -61,16 +53,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          tooltip: l10n.homeMenuTooltip,
-          onPressed: widget.onMenuPressed,
-          icon: const Icon(Icons.menu),
-        ),
         title: Text(l10n.templatesTitle),
-        actions: [
-          AccountAvatarButton(viewModel: widget.accountViewModel),
-          const Gap(AppSpacing.s8),
-        ],
       ),
       body: ValueListenableBuilder<SettingsState>(
         valueListenable: widget.viewModel.state,
@@ -87,12 +70,7 @@ class _TemplatesPageState extends State<TemplatesPage> {
                   settings.restTime * (settings.rounds - 1);
 
               return ListView(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s16,
-                  AppSpacing.s16,
-                  AppSpacing.s16,
-                  _listBottomInset,
-                ),
+                padding: const EdgeInsets.all(AppSpacing.s16),
                 children: [
                   AnimatedSwitcher(
                     duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : Durations.medium2,

@@ -6,12 +6,10 @@ import 'package:sport_timer/features/account/presentation/account_view_model.dar
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/settings/presentation/timer_setup_page.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_page.dart';
-import 'package:sport_timer/features/templates/presentation/templates_page.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
-import 'package:sport_timer/shared/presentation/widgets/app_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -50,9 +48,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   void _openDrawer() => _scaffoldKey.currentState?.openDrawer();
 
-  void _onDrawerDestinationSelected(int _) {
+  void _openTemplates() => context.pushNamed(RoutePath.templates.value, extra: _viewModel);
+
+  void _onDrawerDestinationSelected(int index) {
     _scaffoldKey.currentState?.closeDrawer();
-    context.pushNamed(RoutePath.timerStyles.value, extra: _viewModel);
+    final route = index == 0 ? RoutePath.templates : RoutePath.timerStyles;
+    context.pushNamed(route.value, extra: _viewModel);
   }
 
   void _onItemTapped(int index) {
@@ -94,8 +95,22 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
           ),
           NavigationDrawerDestination(
+            icon: const Icon(Icons.assignment_outlined),
+            label: Flexible(
+              child: Text(
+                l10n.homeDrawerTemplates,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          NavigationDrawerDestination(
             icon: const Icon(Icons.style_outlined),
-            label: Text(l10n.homeDrawerTimerStyles),
+            label: Flexible(
+              child: Text(
+                l10n.homeDrawerTimerStyles,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ),
         ],
       ),
@@ -104,24 +119,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       body: SafeArea(
         top: false,
         child: Center(
-          child: switch (_selectedIndex) {
-            1 => TemplatesPage(
-                viewModel: _viewModel,
-                accountViewModel: _accountViewModel,
-                onMenuPressed: _openDrawer,
-              ),
-            2 => StatisticPage(
-                accountViewModel: _accountViewModel,
-                onMenuPressed: _openDrawer,
-              ),
-            _ => TimerSetupPage(
-                viewModel: _viewModel,
-                accountViewModel: _accountViewModel,
-                onMenuPressed: _openDrawer,
-                onTemplatesPressed: () => _onItemTapped(1),
-                onStartPressed: _startTimer,
-              ),
-          },
+          child: _selectedIndex == 0
+              ? TimerSetupPage(
+                  viewModel: _viewModel,
+                  accountViewModel: _accountViewModel,
+                  onMenuPressed: _openDrawer,
+                  onTemplatesPressed: _openTemplates,
+                  onStartPressed: _startTimer,
+                )
+              : StatisticPage(
+                  accountViewModel: _accountViewModel,
+                  onMenuPressed: _openDrawer,
+                ),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -138,12 +147,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
               tooltip: l10n.homeTabTimerTooltip,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.assignment_outlined),
-              label: l10n.homeTabTemplates,
-              activeIcon: const Icon(Icons.assignment),
-              tooltip: l10n.homeTabTemplatesTooltip,
-            ),
-            BottomNavigationBarItem(
               icon: const Icon(Icons.show_chart_outlined),
               label: l10n.homeTabStatistics,
               activeIcon: const Icon(Icons.show_chart),
@@ -152,14 +155,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: _selectedIndex == 1
-          ? AppButton.fab(
-              icon: const Icon(Icons.timer),
-              label: l10n.homeStartButton,
-              onPressed: _startTimer,
-            )
-          : null,
     );
   }
 }

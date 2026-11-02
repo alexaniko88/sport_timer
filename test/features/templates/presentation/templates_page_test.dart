@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
-import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/settings/domain/settings_repository.dart';
 import 'package:sport_timer/features/settings/domain/timer_configuration.dart';
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
@@ -171,6 +170,16 @@ void main() {
             return const Scaffold(body: Text('Timer destination'));
           },
         ),
+        GoRoute(
+          path: RoutePath.templates.value,
+          name: RoutePath.templates.value,
+          builder: (context, state) => TemplatesPage(viewModel: state.extra as SettingsViewModel),
+        ),
+        GoRoute(
+          path: RoutePath.timerStyles.value,
+          name: RoutePath.timerStyles.value,
+          builder: (context, state) => const Scaffold(body: Text('Timer styles destination')),
+        ),
       ],
     );
   });
@@ -194,6 +203,8 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
       ),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Templates'));
     await tester.pumpAndSettle();
@@ -301,10 +312,14 @@ void main() {
     }
   }
 
-  testWidgets('Start visibility follows the selected Home tab', (tester) async {
+  testWidgets('Start visibility is limited to Timer Setup and hidden on Statistics and Templates', (tester) async {
     await openTemplates(tester);
-    expect(find.byType(FloatingActionButton), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
+    expect(find.text('Start'), findsNothing);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
     expect(find.text('Start'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsNothing);
     await tester.tap(find.text('Statistics'));
     await tester.pumpAndSettle();
     expect(find.text('Start'), findsNothing);
@@ -402,40 +417,34 @@ void main() {
     }
   }
 
-  for (final tab in ['Timer', 'Templates']) {
-    testWidgets('Start on $tab launches the latest wheel selection', (tester) async {
-      tester.view.physicalSize = const Size(400, 1000);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        MaterialApp.router(
-          routerConfig: router,
-          theme: SportTheme.light,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Rounds'));
-      await tester.pumpAndSettle();
-      await tester.drag(find.byType(ListWheelScrollView), const Offset(0, -120));
-      await tester.pumpAndSettle();
-      await tester.tapAt(const Offset(10, 10));
-      await tester.pumpAndSettle();
-      if (tab == 'Templates') {
-        await tester.tap(find.text('Templates'));
-        await tester.pumpAndSettle();
-      }
-      await tester.tapAt(tester.getCenter(find.text('Start')));
-      await tester.pumpAndSettle();
-      expect(startedParams?.rounds, 5);
-      expect(startedParams?.preparationTime, repository.stored.preparationTime);
-      expect(startedParams?.roundTime, repository.stored.roundTime);
-      expect(startedParams?.restTime, repository.stored.restTime);
-      expect(startedParams?.style, TimerStyle.ring);
-      expect(repository.saves.last.rounds, 5);
-    });
-  }
+  testWidgets('Start on Timer Setup launches the latest wheel selection', (tester) async {
+    tester.view.physicalSize = const Size(400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Rounds'));
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(ListWheelScrollView), const Offset(0, -120));
+    await tester.pumpAndSettle();
+    await tester.tapAt(const Offset(10, 10));
+    await tester.pumpAndSettle();
+    await tester.tapAt(tester.getCenter(find.text('Start')));
+    await tester.pumpAndSettle();
+    expect(startedParams?.rounds, 5);
+    expect(startedParams?.preparationTime, repository.stored.preparationTime);
+    expect(startedParams?.roundTime, repository.stored.roundTime);
+    expect(startedParams?.restTime, repository.stored.restTime);
+    expect(startedParams?.style, TimerStyle.ring);
+    expect(repository.saves.last.rounds, 5);
+  });
 
   testWidgets('Spanish large text keeps all settings reachable on a narrow screen', (tester) async {
     tester.view.physicalSize = const Size(320, 568);
@@ -490,17 +499,18 @@ void main() {
         );
         await tester.pumpAndSettle();
         final tab = locale == 'en' ? 'Templates' : 'Plantillas';
-        final home = locale == 'en' ? 'Timer' : 'Temporizador';
         final name = locale == 'en' ? 'Full Abs' : 'Abdominales completos';
         final label = locale == 'en' ? 'Template: Full Abs' : 'Plantilla: Abdominales completos';
         expect(find.textContaining(locale == 'en' ? 'Template:' : 'Plantilla:'), findsNothing);
+        await tester.tap(find.byIcon(Icons.menu));
+        await tester.pumpAndSettle();
         expect(find.text(tab), findsOneWidget);
         await tester.tap(find.text(tab));
         await tester.pumpAndSettle();
         await tester.tap(find.text(name));
         await tester.pumpAndSettle();
         expect(find.byType(TemplatesPage), findsOneWidget);
-        await tester.tap(find.text(home));
+        await tester.tap(find.byType(BackButton));
         await tester.pumpAndSettle();
         final shortcut = find.text(label);
         expect(shortcut, findsOneWidget);
@@ -514,7 +524,7 @@ void main() {
         await tester.tap(find.text('Hyrox'));
         await tester.pumpAndSettle();
         expect(find.byType(TemplatesPage), findsOneWidget);
-        await tester.tap(find.text(home));
+        await tester.tap(find.byType(BackButton));
         await tester.pumpAndSettle();
         expect(find.text(locale == 'en' ? 'Template: Hyrox' : 'Plantilla: Hyrox'), findsOneWidget);
         semantics.dispose();
@@ -592,7 +602,7 @@ void main() {
       expect(selected.map((tile) => tile.name), [item.name]);
       expect(find.text('Custom'), findsNothing);
 
-      await tester.tap(find.text('Timer'));
+      await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
       const labels = ['Preparation', 'Work', 'Rest', 'Rounds'];
       for (var index = 0; index < labels.length; index++) {
@@ -613,9 +623,7 @@ void main() {
 
   testWidgets('shows the Custom card label in Spanish', (tester) async {
     final settings = SettingsViewModel(repository);
-    final account = AccountViewModel(_UserRepository());
     addTearDown(settings.dispose);
-    addTearDown(account.dispose);
     await settings.loadSettings();
     await tester.pumpWidget(
       MaterialApp(
@@ -623,7 +631,7 @@ void main() {
         locale: const Locale('es'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+        home: TemplatesPage(viewModel: settings),
       ),
     );
     await tester.pumpAndSettle();
@@ -637,9 +645,7 @@ void main() {
       addTearDown(tester.view.reset);
       repository.stored = _cases.first.settings;
       final settings = SettingsViewModel(repository);
-      final account = AccountViewModel(_UserRepository());
       addTearDown(settings.dispose);
-      addTearDown(account.dispose);
       final handle = tester.ensureSemantics();
       await settings.loadSettings();
       await tester.pumpWidget(
@@ -648,7 +654,7 @@ void main() {
           locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+          home: TemplatesPage(viewModel: settings),
         ),
       );
       settings.updatePreparationTime(const Duration(seconds: 25));
@@ -677,9 +683,7 @@ void main() {
     final gate = Completer<void>();
     repository.readGate = gate;
     final settings = SettingsViewModel(repository);
-    final account = AccountViewModel(_UserRepository());
     addTearDown(settings.dispose);
-    addTearDown(account.dispose);
     final loading = settings.loadSettings();
 
     await tester.pumpWidget(
@@ -687,7 +691,7 @@ void main() {
         theme: SportTheme.light,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+        home: TemplatesPage(viewModel: settings),
       ),
     );
     expect(tester.widgetList<TemplateTile>(find.byType(TemplateTile)).any((tile) => tile.isSelected), isFalse);
@@ -707,16 +711,14 @@ void main() {
     addTearDown(tester.view.reset);
     repository.stored = _cases.first.settings;
     final settings = SettingsViewModel(repository);
-    final account = AccountViewModel(_UserRepository());
     addTearDown(settings.dispose);
-    addTearDown(account.dispose);
     await settings.loadSettings();
     await tester.pumpWidget(
       MaterialApp(
         theme: SportTheme.light,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: TemplatesPage(viewModel: settings, accountViewModel: account, onMenuPressed: () {}),
+        home: TemplatesPage(viewModel: settings),
       ),
     );
     await tester.pumpAndSettle();
@@ -786,5 +788,112 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(tester.widget<TemplateTile>(find.byKey(const ValueKey('custom-template'))).settings.rounds, 7);
     expect(tester.element(defaultRow), same(initialElement));
+  });
+
+  testWidgets('drawer lists Templates above Timer styles and opens Templates', (tester) async {
+    tester.view.physicalSize = const Size(800, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
+
+    final destinations = find.byType(NavigationDrawerDestination);
+    expect(destinations, findsNWidgets(2));
+    final templatesDest = find.widgetWithText(NavigationDrawerDestination, 'Templates');
+    final timerStylesDest = find.widgetWithText(NavigationDrawerDestination, 'Timer styles');
+    expect(templatesDest, findsOneWidget);
+    expect(timerStylesDest, findsOneWidget);
+    expect(tester.getTopLeft(templatesDest).dy, lessThan(tester.getTopLeft(timerStylesDest).dy));
+
+    await tester.tap(templatesDest);
+    await tester.pumpAndSettle();
+    expect(find.byType(TemplatesPage), findsOneWidget);
+    expect(find.byType(NavigationDrawer), findsNothing);
+    expect(find.text('Choose your template'), findsOneWidget);
+    expect(find.byType(BackButton), findsOneWidget);
+    expect(find.byIcon(Icons.menu), findsNothing);
+    expect(find.byType(BottomNavigationBar), findsNothing);
+    expect(find.text('Start'), findsNothing);
+  });
+
+  testWidgets('Templates opens from Statistics tab and Back returns to Statistics', (tester) async {
+    tester.view.physicalSize = const Size(800, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Statistics'));
+    await tester.pumpAndSettle();
+    expect(find.text('Your statistics'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(NavigationDrawerDestination, 'Templates'));
+    await tester.pumpAndSettle();
+    expect(find.byType(TemplatesPage), findsOneWidget);
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('Your statistics'), findsOneWidget);
+    final navBar = tester.widget<BottomNavigationBar>(find.byType(BottomNavigationBar));
+    expect(navBar.currentIndex, 1);
+  });
+
+  testWidgets('reopening Templates preserves selected template and settings', (tester) async {
+    tester.view.physicalSize = const Size(800, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(NavigationDrawerDestination, 'Templates'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Hyrox'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('Template: Hyrox'), findsOneWidget);
+
+    // Reopen without choosing
+    await tester.tap(find.byIcon(Icons.menu));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(NavigationDrawerDestination, 'Templates'));
+    await tester.pumpAndSettle();
+    final selected = tester.widgetList<TemplateTile>(find.byType(TemplateTile)).where((tile) => tile.isSelected);
+    expect(selected.map((tile) => tile.name), ['Hyrox']);
+
+    // Pop back without choosing
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('Template: Hyrox'), findsOneWidget);
+    expect(repository.stored, _cases.firstWhere((c) => c.name == 'Hyrox').settings);
   });
 }

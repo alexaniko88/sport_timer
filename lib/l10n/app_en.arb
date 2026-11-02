@@ -112,6 +112,10 @@
       }
     }
   },
+  "homeDrawerTemplates": "Templates",
+  "@homeDrawerTemplates": {
+    "description": "Label of the side drawer item that opens the templates page."
+  },
   "homeDrawerTimerStyles": "Timer styles",
   "@homeDrawerTimerStyles": {
     "description": "Label of the side drawer item that opens the timer styles page."
@@ -139,14 +143,6 @@
   "homeTabStatisticsTooltip": "Statistics",
   "@homeTabStatisticsTooltip": {
     "description": "Tooltip of the statistics tab in the bottom navigation."
-  },
-  "homeTabTemplates": "Templates",
-  "@homeTabTemplates": {
-    "description": "Label of the templates tab in the bottom navigation."
-  },
-  "homeTabTemplatesTooltip": "Workout Templates",
-  "@homeTabTemplatesTooltip": {
-    "description": "Tooltip of the templates tab in the bottom navigation."
   },
   "loginGoogleButton": "Continue with Google",
   "@loginGoogleButton": {

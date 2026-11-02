@@ -7,13 +7,15 @@ import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/home/presentation/home_page.dart';
 import 'package:sport_timer/features/login/presentation/login_page.dart';
 import 'package:sport_timer/features/settings/presentation/timer_styles/timer_styles_page.dart';
+import 'package:sport_timer/features/templates/presentation/templates_page.dart';
 import 'package:sport_timer/features/timer/presentation/timer_page.dart';
 
 enum RoutePath {
   login('/'),
   home('/home'),
   timer('/timer'),
-  timerStyles('/timer-styles');
+  timerStyles('/timer-styles'),
+  templates('/templates');
 
   final String value;
 
@@ -55,6 +57,14 @@ class Routes {
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: TimerStylesPage(viewModel: state.extra as SettingsViewModel),
+        ),
+      ),
+      GoRoute(
+        path: RoutePath.templates.value,
+        name: RoutePath.templates.value,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: TemplatesPage(viewModel: state.extra as SettingsViewModel),
         ),
       ),
     ],
