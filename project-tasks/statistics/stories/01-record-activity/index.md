@@ -39,7 +39,7 @@ The repository hides SQLite, keeps pending writes tied to the run's original acc
 
 ## Tasks
 
-1. [Choose local storage and define the data model](01-verify-serverpod-integration.md).
+1. [Choose local storage and define the data model](done/01-verify-serverpod-integration.md).
 2. [Add the database foundation](02-add-database-foundation.md).
 3. [Add the activity persistence interface](03-add-activity-repository.md).
 4. [Connect recording to timer progress](04-connect-timer-recording.md).

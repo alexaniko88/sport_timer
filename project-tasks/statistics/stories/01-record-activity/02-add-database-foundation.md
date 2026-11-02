@@ -8,7 +8,7 @@ Status: Not started.
 
 ## Dependencies
 
-[Previous task](01-verify-serverpod-integration.md).
+[Previous task](done/01-verify-serverpod-integration.md).
 
 ## Goal
 
