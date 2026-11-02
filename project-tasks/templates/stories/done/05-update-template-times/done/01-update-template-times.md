@@ -1,10 +1,10 @@
 # TASK 5.1: Update built-in template times
 
-Story: [Update built-in template times](index.md)
+Story: [Update built-in template times](../index.md)
 
-Epic: [Templates](../../index.md)
+Epic: [Templates](../../../../index.md)
 
-Status: Ready for planning.
+Status: Done on `improve/template-times` in commit `076c3b3`; pending PR and merge.
 
 ## Goal
 
@@ -24,11 +24,11 @@ Update the 5 built-in workout templates and fresh-install default fallback setti
 
 ## Dependencies
 
-Completed [Story 1](../done/01-template-set-and-tiles/index.md) and [Story 2](../done/02-selection-follows-settings/index.md) outputs in `master`.
+Completed [Story 1](../../01-template-set-and-tiles/index.md) and [Story 2](../../02-selection-follows-settings/index.md) outputs in `master`.
 
 ## Acceptance criteria
 
-- All 5 built-in templates match the agreed table in [Story 5](index.md).
+- All 5 built-in templates match the agreed table in [Story 5](../index.md).
 - Fresh-install default settings match the updated `Default` template (`0:20` prep, `1:00` work, `0:30` rest, `12` rounds).
 - Tapping each template on the Templates page saves its new values, updates Setup, and passes the new parameters to Start.
 - No visual layout changes are made to `TemplateTile`.
@@ -45,3 +45,7 @@ Run focused unit and widget tests for touched files (`built_in_templates_test.da
 - `test/features/templates/built_in_templates_test.dart`
 - `test/presentation/home/templates_page_test.dart`
 - Read parent indexes before starting and follow `.agents/skills/skill-orchestrator/SKILL.md`.
+
+## Completion evidence
+
+The five presets and fresh-install defaults were updated. Existing saved settings remain intact. The user approved the implementation; review found no issues. Full Flutter analysis passed, along with 126 focused and snapshot tests.
