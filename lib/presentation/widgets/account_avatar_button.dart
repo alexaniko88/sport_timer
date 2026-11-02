@@ -113,6 +113,7 @@ class AccountAvatarButton extends StatelessWidget {
     final l10n = sheetContext.l10n;
     final confirmed = await showDialog<bool>(
       context: sheetContext,
+      useRootNavigator: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.accountSignOutConfirmTitle),
         content: Text(l10n.accountSignOutConfirmMessage),

@@ -37,7 +37,7 @@ There are no tickets. The user's own message is the request. Never look for a ti
 - **State management:** MVVM with `ValueNotifier` state. Follow `CLAUDE.md` ("Architecture (MVVM)" and "State management"). No Bloc, no state management package, no `freezed`, no code generation. `go_router` stays.
 - **Strings:** the app has no localization. Hardcode user-facing English text in the widget. No `FIXME-ALEX` blocks, ARB files or `Localized` keys.
 - **No `docs/CodeStyleGuide.md`** exists. The Dart style rules in `~/.claude/rules/flutter/dart-core.md` still apply (switch and pattern matching, null safety, trailing commas, format and analyze on touched files only, by literal path).
-- **Tests:** unit tests use hand-written fakes (no mocking package unless the plan adds one). Not `mocktail`, `alchemist` or `patrol_finders`. Test paths mirror `lib/`: `test/features/<name>/<file>_test.dart`.
+- **Tests:** unit tests use hand-written fakes (no mocking package unless the plan adds one). Not `patrol_finders`. Test paths mirror `lib/`: `test/features/<name>/<file>_test.dart`. UI snapshot goldens live in `test/snapshots/ui_snapshots_test.dart` (`test/snapshots/goldens/*.png` and `test/snapshots/README.md`) and use `alchemist` platform goldens on macOS.
 - **Dependencies:** `pubspec.yaml` versions stay pinned exactly, with no `^`. Do not bump a package unasked. The `basic_flutter_helper` package is gone: put shared helpers in `lib/core/`.
 - **Commands:** always `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
 - **Personal repo (`alexaniko88`):** nothing from any employer in code, comments, commit messages or generated files. No `/Users/<name>/...` paths, no company names or emails.
@@ -101,6 +101,7 @@ Skip this stage for pure UI or text changes with no logic. Otherwise dispatch th
 - Use the test rules in the project overrides. Read one existing test of the same kind first if there is one, and copy its structure.
 - If a test needs infrastructure that does not exist yet (a first fake or test helper), build the smallest version the plan's tests need and say so in the report. Do not add anything else.
 - Run only the tests it wrote or touched, by file path: `fvm flutter test <path>`. Fix failures that come from the test. If a failure shows a real bug in the code, stop and report it instead of patching production code silently.
+- When a change alters a captured UI screen, state, theme or route transition (or adds a new screen or meaningful state), update `test/snapshots/ui_snapshots_test.dart` if needed, run `fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart` on macOS to refresh `test/snapshots/goldens/*.png`, and update `test/snapshots/README.md`.
 
 After all planned tests are written and passing, present the completed implementation, changed files, test coverage and check results together. Ask once for approval of this completed code and tests, then wait before starting Stage 4. Do not ask separately for tests or before writing or running each test. When tests do not apply, use the combined completion checkpoint described at the end of Stage 2.
 
@@ -118,6 +119,7 @@ Once review and checks pass, report the verdict, fixes applied and remaining sug
 Run the checks that apply and show the result:
 
 - `fvm flutter analyze` reports no issues, and the new or touched tests pass.
+- If any captured UI screen, state, theme or route changed, `fvm flutter test test/snapshots/ui_snapshots_test.dart` passes and `test/snapshots/README.md` is up to date.
 - If `android/`, `ios/` or `pubspec.yaml` changed: `fvm flutter build apk --debug` (and `fvm flutter build ios --debug --no-codesign` when `ios/` changed) succeeds.
 - No local absolute path in the diff (`git diff | grep -n "/Users/"` returns nothing), and no company name or work email address when you read it.
 - List every `TODO` or `FIXME` the diff adds, with `file:line`.
