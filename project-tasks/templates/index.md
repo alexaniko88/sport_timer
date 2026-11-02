@@ -17,7 +17,7 @@ Give the user a few quick, pre-configured workouts. One tap fills in preparation
 - Rows use the shared app tokens (spacing, radius, timer colors, shared widgets). The per-template accent colors, gradients, descriptions, "Total Workout Time" box, "Use Template" button and the subtitle line are removed. The app bar title "Choose your template" stays.
 - Icons: Default `assignment`, Full Abs `sports_gymnastics`, Hyrox `directions_run`, Stretching `self_improvement`, Strength `fitness_center`.
 - The selected row is computed by comparing the saved settings with each template. It is not remembered from the last tap.
-- Separately, Timer Setup shows a tappable template name only after explicit selection and while all four settings still match. A divergent edit clears that selection until another explicit selection; valid selection survives restart. No label is inferred from existing settings. Tapping it opens Templates; choosing a template stays there. Full behavior: [Story 4](stories/04-selected-template-in-setup/index.md).
+- Separately, Timer Setup shows a tappable template name only after explicit selection and while all four settings still match. A divergent edit clears that selection until another explicit selection; valid selection survives restart. No label is inferred from existing settings. Tapping it opens Templates; choosing a template stays there. Full behavior: [Story 4](stories/done/04-selected-template-in-setup/index.md).
 - If the settings match no template, no row is selected and a highlighted "Custom" card appears first in the list. It has its own icon and a slightly different "provisional" color. It shows the current values and the phase bar. It cannot be tapped or saved.
 - Creating your own templates is provisional (Story 3). A "+" icon in the Templates app bar will be its entry point, and it stays hidden until that story is built.
 - Names, summaries and texts are localized in English and Spanish, with the existing `gen-l10n` setup.
@@ -53,7 +53,7 @@ Decisions:
 1. [New template set and tile redesign](stories/done/01-template-set-and-tiles/index.md) — complete on `improve/templates-page`: 5 templates, compact tiles and rebuilt page.
 2. [Selection follows real settings](stories/done/02-selection-follows-settings/index.md) — computed highlight and the Custom card. Depends on Story 1.
 3. [Create your own templates](stories/03-create-own-templates/index.md) — provisional; confirm before implementation.
-4. [Show the selected template in Timer Setup](stories/04-selected-template-in-setup/index.md) — agreed; persistent explicit selection, a named Setup label and shortcut to Templates. Ready for planning where Task 2.1 is available.
+4. [Show the selected template in Timer Setup](stories/done/04-selected-template-in-setup/index.md) — persistent explicit selection, a named Setup label and shortcut to Templates.
 
 ## Delivery order
 

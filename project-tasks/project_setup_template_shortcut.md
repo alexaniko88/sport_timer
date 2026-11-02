@@ -1,7 +1,7 @@
 # Templates 4.1: Explicit selection and Setup shortcut
 
 Branch: `feat/setup-template-shortcut`. Base: `master` at `fee67c3e5b20bcbbc2cb155f299eac227387e5a3`.
-Task: [Templates 4.1](templates/stories/04-selected-template-in-setup/01-track-selection-and-show-setup-shortcut.md).
+Task: [Templates 4.1](templates/stories/done/04-selected-template-in-setup/done/01-track-selection-and-show-setup-shortcut.md).
 
 ## Request and approach
 
@@ -41,3 +41,5 @@ Round 2 independent review: PASS, no Critical, General or Minor findings. Parent
 ## Workflow
 
 Plan proceeds without approval. Ask once for completed implementation/tests approval before review, once for commit approval after review, then offer PR. No stage/commit/push by subagents. No task archival until PR approval.
+
+Implementation committed as `c094417` after user approval. User approved push and PR; archive Task 4.1 and its completed Story 4 before the initial push. Templates epic remains active because provisional Story 3 remains. Commit archival as documentation on the same branch, then open PR against `master`; no merge authorized. Completion evidence is recorded above; full suite and manual device checks remain unrun.
