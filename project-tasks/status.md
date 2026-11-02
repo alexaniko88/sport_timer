@@ -23,7 +23,7 @@ Ready does not mean implementation is already approved. Done does not imply comm
 - **Improvements:** 0 of 2 tasks done; both provisional.
 - **Available to reuse:** Templates 1.1 data and 1.2 `TemplateTile` are merged into `master`. Templates 1.3 compact page and integration tests are merged into `master` at `8c751c7` ([PR #14](https://github.com/alexaniko88/sport_timer/pull/14)). No statistics implementation completed yet.
 - **Next tasks:** Statistics 1.1 — verify Serverpod local integration and approve the data model. Templates 2.2 and 4.1 — ready for planning where the completed Task 2.1 output is available; verify the intended checkout. Task 4.1 can proceed independently of Task 2.2 and provisional Story 3. No next task started. The Statistics and Templates epics are independent.
-- **Next UI task:** [UI refactor 1.1](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md) — plan the reusable centered setting cards, adaptive four-option grid and existing selector integration. No implementation started.
+- **UI 1.1:** [Archived task](ui-refactor/stories/01-timer-setup-refactor/done/01-build-timer-setup-grid.md). Final decisions, validation evidence and branch context are in the [saved plan](project_timer_setup_grid.md).
 
 ## Statistics
 
@@ -68,7 +68,6 @@ Epic: [UI refactor](ui-refactor/index.md). Stories: [Timer setup refactor](ui-re
 
 | Task | Status | Prerequisite or reason | Output when done |
 | --- | --- | --- | --- |
-| [UI 1.1 Build the timer setup grid widget](ui-refactor/stories/01-timer-setup-refactor/01-build-timer-setup-grid.md) | 🟢 Ready | Centered design and behavior agreed; current checkout contains the Templates styling reference. Verify it in the implementation branch. | Reusable themed setting cards, adaptive grid of four options and current selector integration; shared Start preserved. |
 | [UI 1.2 Align picker wheel styling](ui-refactor/stories/01-timer-setup-refactor/02-align-picker-wheel-styling.md) | ⚪ Provisional | Intended after UI 1.1; confirm sheet tint and selected-value treatment. | Theme-aligned time/rounds wheels retaining phase colors with 1px value borders. |
 | [UI 1.3 Replace the Home tab icon and label](ui-refactor/stories/01-timer-setup-refactor/03-replace-home-tab-icon.md) | 🔴 Blocked | UI 3.1 must first change Timer Setup Start to play. Icon/naming agreed; no dependency on UI 1.1, wheel styling or drawer move. | Outlined/filled timer destination icon; Timer / Temporizador label, tooltip and accessible name; navigation preserved. |
 | [UI 2.1 Move Templates navigation into the drawer](ui-refactor/stories/02-templates-in-drawer/01-move-templates-navigation.md) | 🟢 Ready | Compact Templates page available; verify implementation checkout. Independent of pending UI, Statistics and selection tasks. | Two Home tabs, separate Templates drawer page, apply-and-stay, ordinary Back, Start only on Setup. |

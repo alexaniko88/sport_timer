@@ -20,7 +20,7 @@ Deliver the parent story's fixed, wide Start action on Timer Setup without chang
 
 ## Dependencies
 
-No pending implementation prerequisite. Verify the available Home/Setup layout and theme treatment before planning. Coordinate with [UI 1.1](../01-timer-setup-refactor/01-build-timer-setup-grid.md) and [UI 2.1](../02-templates-in-drawer/01-move-templates-navigation.md) wherever already delivered, following the parent story's boundaries. Do not require provisional wheel styling.
+No pending implementation prerequisite. Verify the available Home/Setup layout and theme treatment before planning. Coordinate with [UI 1.1](../01-timer-setup-refactor/done/01-build-timer-setup-grid.md) and [UI 2.1](../02-templates-in-drawer/01-move-templates-navigation.md) wherever already delivered, following the parent story's boundaries. Do not require provisional wheel styling.
 
 ## Acceptance criteria
 

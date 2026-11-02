@@ -9,6 +9,15 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get setupPreparation => 'Preparación';
+
+  @override
+  String get setupWork => 'Trabajo';
+
+  @override
+  String get setupRest => 'Descanso';
+
+  @override
   String setupTemplateLabel(String name) {
     return 'Plantilla: $name';
   }
@@ -53,15 +62,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get commonOpensSelectorHint => 'Abre un selector';
-
-  @override
-  String get commonPreparationTime => 'Tiempo de preparación';
-
-  @override
-  String get commonRestTime => 'Tiempo de descanso';
-
-  @override
-  String get commonRoundTime => 'Tiempo de ronda';
 
   @override
   String get commonRounds => 'Rondas';
@@ -112,9 +112,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loginGoogleButton => 'Continuar con Google';
 
   @override
-  String get loginTitle => 'Iniciar sesión';
-
-  @override
   String get loginWelcome => 'Bienvenido a Sport Timer';
 
   @override
@@ -122,14 +119,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pickerSeconds => 'Segundos';
-
-  @override
-  String get statisticsDefaultUserName => 'Usuario';
-
-  @override
-  String statisticsGreeting(String name) {
-    return '¡Hola, $name!';
-  }
 
   @override
   String get statisticsSectionTitle => 'Aquí están tus estadísticas de entrenamiento';

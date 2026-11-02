@@ -23,7 +23,7 @@ Cover the time and rounds selectors. Exclude grid implementation, new confirmati
 
 ## Dependencies and open decisions
 
-Intended after [Task 1.1](01-build-timer-setup-grid.md), so the wheel can be assessed alongside the delivered grid. Confirm how much phase tint remains on the sheet and how selection is distinguished with a uniform 1px border. This is not ready for implementation planning until those details are agreed.
+Intended after [Task 1.1](done/01-build-timer-setup-grid.md), so the wheel can be assessed alongside the delivered grid. Confirm how much phase tint remains on the sheet and how selection is distinguished with a uniform 1px border. This is not ready for implementation planning until those details are agreed.
 
 ## Provisional acceptance criteria
 

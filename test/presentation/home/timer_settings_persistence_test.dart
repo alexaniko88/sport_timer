@@ -8,6 +8,8 @@ import 'package:sport_timer/features/settings/timer_style.dart';
 import 'package:sport_timer/features/user/user_repository.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
 import 'package:sport_timer/presentation/home/home.dart';
+import 'package:sport_timer/presentation/widgets/timer_setting_card.dart';
+import 'package:sport_timer/presentation/widgets/timer_settings_picker_wheel.dart';
 import 'package:sport_timer/theme/sport_theme.dart';
 
 class _SettingsRepository implements SettingsRepository {
@@ -75,6 +77,8 @@ Widget _app() => MaterialApp(
     );
 
 Future<void> _openRoundsPicker(WidgetTester tester) async {
+  await tester.ensureVisible(find.text('Rounds'));
+  await tester.pumpAndSettle();
   await tester.tap(find.text('Rounds'));
   await tester.pumpAndSettle();
 }
@@ -95,6 +99,57 @@ void main() {
   });
 
   tearDown(() async => getIt.reset());
+
+  final options = [
+    (label: 'Preparation', duration: const Duration(seconds: 10), maxMinutes: 5, min: Duration.zero),
+    (label: 'Work', duration: const Duration(seconds: 90), maxMinutes: 60, min: const Duration(seconds: 1)),
+    (label: 'Rest', duration: const Duration(seconds: 15), maxMinutes: 60, min: Duration.zero),
+    (label: 'Rounds', duration: Duration.zero, maxMinutes: 60, min: Duration.zero),
+  ];
+
+  for (final option in options) {
+    testWidgets('${option.label} opens its picker and updates and saves its value', (tester) async {
+      tester.view.physicalSize = const Size(400, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(_app());
+      await tester.pumpAndSettle();
+      final card = find.byWidgetPredicate((widget) => widget is TimerSettingCard && widget.label == option.label);
+      final oldValue = tester.widget<TimerSettingCard>(card).value;
+      await tester.ensureVisible(card);
+      await tester.tap(card);
+      await tester.pumpAndSettle();
+
+      final picker = tester.widget<TimerSettingsPickerWheel>(find.byType(TimerSettingsPickerWheel));
+      final isRounds = option.label == 'Rounds';
+      expect(picker.picketType, isRounds ? PicketType.rounds : PicketType.time);
+      expect(picker.initialDuration, option.duration);
+      expect(picker.minDuration, option.min);
+      expect(picker.maxMinutes, option.maxMinutes);
+      expect(picker.rounds, isRounds ? 3 : 2);
+      expect(picker.maxRounds, TimerSettings.maxRounds);
+      await tester.drag(find.byType(ListWheelScrollView).last, const Offset(0, -120));
+      await tester.pumpAndSettle();
+      final updatedValue = tester.widget<TimerSettingCard>(card).value;
+      expect(updatedValue, isNot(oldValue));
+      expect(repository.saves, isEmpty);
+
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+      expect(repository.saves, hasLength(1));
+      final saved = repository.stored;
+      if (isRounds) {
+        expect(saved.rounds.toString(), updatedValue);
+      } else {
+        final seconds = switch (option.label) {
+          'Preparation' => saved.preparationTime.inSeconds,
+          'Work' => saved.roundTime.inSeconds,
+          _ => saved.restTime.inSeconds,
+        };
+        expect(seconds, option.duration.inSeconds + 2);
+      }
+    });
+  }
 
   for (final dismissal in ['outside tap', 'Back', 'swipe']) {
     testWidgets('saves the final wheel selection on $dismissal without Start', (tester) async {
@@ -159,7 +214,7 @@ void main() {
   testWidgets('duration wheel saves its final duration only after closing', (tester) async {
     await tester.pumpWidget(_app());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Round time'));
+    await tester.tap(find.text('Work'));
     await tester.pumpAndSettle();
     await tester.drag(find.byType(ListWheelScrollView).last, const Offset(0, -120));
     await tester.pumpAndSettle();

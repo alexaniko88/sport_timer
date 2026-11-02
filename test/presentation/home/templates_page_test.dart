@@ -17,9 +17,10 @@ import 'package:sport_timer/features/user/user_repository.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/presentation/home/home.dart';
-import 'package:sport_timer/presentation/widgets/app_button.dart';
 import 'package:sport_timer/presentation/widgets/template_tile.dart';
+import 'package:sport_timer/presentation/widgets/timer_setting_card.dart';
 import 'package:sport_timer/theme/sport_theme.dart';
+import 'package:sport_timer/theme/timer_colors.dart';
 
 class _SettingsRepository implements SettingsRepository {
   String? selectedTemplateId;
@@ -193,6 +194,147 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('Setup uses equal square cards in reading order', (tester) async {
+    tester.view.physicalSize = const Size(400, 1000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(GridView), findsOneWidget);
+    final cards = find.byType(TimerSettingCard);
+    expect(tester.widgetList<TimerSettingCard>(cards).map((card) => card.label), [
+      'Preparation',
+      'Work',
+      'Rest',
+      'Rounds',
+    ]);
+    final rects = List.generate(4, (index) => tester.getRect(cards.at(index)));
+    for (final rect in rects) {
+      expect(rect.width, rect.height);
+      expect(rect.size, rects.first.size);
+    }
+    expect(rects[0].top, rects[1].top);
+    expect(rects[2].top, rects[3].top);
+    expect(rects[0].left, rects[2].left);
+    expect(rects[1].left, rects[3].left);
+    expect(rects[2].top, greaterThan(rects[0].bottom));
+  });
+
+  for (final locale in [const Locale('en'), const Locale('es')]) {
+    for (final theme in [SportTheme.light, SportTheme.dark]) {
+      testWidgets(
+          'Setup cards expose localized actions and phase colors in ${locale.languageCode} ${theme.brightness.name}',
+          (tester) async {
+        tester.view.physicalSize = const Size(400, 1000);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final handle = tester.ensureSemantics();
+        await tester.pumpWidget(
+          MaterialApp.router(
+            routerConfig: router,
+            theme: theme,
+            locale: locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
+        );
+        await tester.pumpAndSettle();
+        final colors = theme.extension<TimerColors>()!;
+        final phaseColors = [colors.preparation, colors.round, colors.rest, colors.roundsCount];
+        final cards = find.byType(TimerSettingCard);
+        final labels = locale.languageCode == 'en'
+            ? ['Preparation', 'Work', 'Rest', 'Rounds']
+            : ['Preparación', 'Trabajo', 'Descanso', 'Rondas'];
+        for (var index = 0; index < 4; index++) {
+          final card = tester.widget<TimerSettingCard>(cards.at(index));
+          final node = tester.getSemantics(cards.at(index));
+          expect(card.label, labels[index]);
+          expect(card.iconColor, phaseColors[index]);
+          expect(node.label, labels[index]);
+          expect(node.value, card.value);
+          expect(node.hint, isNotEmpty);
+          expect(node.flagsCollection.isButton, isTrue);
+          expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+          expect(node.childrenCount, 0);
+        }
+        handle.dispose();
+      });
+    }
+  }
+
+  for (final tab in ['Home', 'Templates']) {
+    testWidgets('Start on $tab launches the latest wheel selection', (tester) async {
+      tester.view.physicalSize = const Size(400, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          theme: SportTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Rounds'));
+      await tester.pumpAndSettle();
+      await tester.drag(find.byType(ListWheelScrollView), const Offset(0, -120));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+      if (tab == 'Templates') {
+        await tester.tap(find.text('Templates'));
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.text('Start'));
+      await tester.pumpAndSettle();
+      expect(startedParams?.rounds, 5);
+      expect(startedParams?.preparationTime, repository.stored.preparationTime);
+      expect(startedParams?.roundTime, repository.stored.roundTime);
+      expect(startedParams?.restTime, repository.stored.restTime);
+    });
+  }
+
+  testWidgets('Spanish large text keeps all settings reachable on a narrow screen', (tester) async {
+    tester.view.physicalSize = const Size(320, 568);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.dark,
+        locale: const Locale('es'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.5)),
+          child: child!,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final cards = find.byType(TimerSettingCard);
+    expect(cards, findsNWidgets(4));
+    for (var index = 0; index < 4; index++) {
+      await tester.ensureVisible(cards.at(index));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.tap(cards.at(index));
+      await tester.pumpAndSettle();
+      expect(find.byType(ListWheelScrollView), findsWidgets);
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+    }
+    expect(tester.takeException(), isNull);
+  });
+
   for (final locale in ['en', 'es']) {
     for (final dark in [false, true]) {
       testWidgets('localized shortcut navigates in $locale, dark: $dark', (tester) async {
@@ -272,10 +414,12 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Rounds'),
         120,
-        scrollable: find.descendant(
-          of: find.byType(TimerSetupPage),
-          matching: find.byType(Scrollable),
-        ),
+        scrollable: find
+            .descendant(
+              of: find.byType(TimerSetupPage),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Rounds'));
@@ -315,9 +459,9 @@ void main() {
 
       await tester.tap(find.text('Home'));
       await tester.pumpAndSettle();
-      const labels = ['Preparation time', 'Round time', 'Rest time', 'Rounds'];
+      const labels = ['Preparation', 'Work', 'Rest', 'Rounds'];
       for (var index = 0; index < labels.length; index++) {
-        final option = find.byWidgetPredicate((widget) => widget is AppButton && widget.label == labels[index]);
+        final option = find.byWidgetPredicate((widget) => widget is TimerSettingCard && widget.label == labels[index]);
         expect(find.descendant(of: option, matching: find.text(item.values[index])), findsOneWidget);
       }
 
