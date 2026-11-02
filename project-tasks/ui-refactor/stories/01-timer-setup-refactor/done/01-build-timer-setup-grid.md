@@ -6,7 +6,7 @@ Story: [Timer setup refactor](../index.md).
 
 Epic: [UI refactor](../../../index.md).
 
-Archived after implementation and PR approval. See the [saved plan](../../../../project_timer_setup_grid.md) for final decisions and validation evidence.
+Archived after implementation and PR approval. See the saved plan for final decisions and validation evidence.
 
 ## Goal
 
