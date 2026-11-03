@@ -16,7 +16,7 @@ As a user, I want Templates in the drawer so Home focuses on Timer Setup and Sta
 - Start exists only on Timer Setup; preserve its current appearance and launch behavior.
 - Tapping a template immediately applies and persists its settings and stays on Templates. It never starts the timer.
 - Back simply pops the page to the previously selected Home tab, including Statistics. It neither resets nor rolls back the applied settings.
-- Opening, closing and reopening Templates preserves the saved workout. If a template was already selected, navigation alone must not clear that selection. Visible matching-template highlighting and the Custom card remain owned by [Templates Story 2](../../../../templates/stories/done/02-selection-follows-settings/index.md); this move must preserve them wherever already available.
+- Opening, closing and reopening Templates preserves the saved workout. If a template was already selected, navigation alone must not clear that selection. Visible matching-template highlighting and the Custom card remain owned by [Templates Story 2](../../../../../templates/stories/done/02-selection-follows-settings/index.md); this move must preserve them wherever already available.
 - Keep the drawer appearance and Timer styles behavior unchanged. Broader drawer redesign, Statistics implementation, template creation and tile redesign are excluded.
 
 ## Acceptance criteria
@@ -35,4 +35,4 @@ As a user, I want Templates in the drawer so Home focuses on Timer Setup and Sta
 
 ## Dependencies and open decisions
 
-Use the completed compact Templates page from [Templates Story 1](../../../../templates/stories/done/01-template-set-and-tiles/index.md); verify it exists in the implementation checkout. No dependency on UI Story 1, picker restyling, Statistics data implementation or Templates selection highlighting. No product decisions remain. Route/state wiring belongs to implementation planning. Backlog agreement does not approve application code changes.
+Use the completed compact Templates page from [Templates Story 1](../../../../../templates/stories/done/01-template-set-and-tiles/index.md); verify it exists in the implementation checkout. No dependency on UI Story 1, picker restyling, Statistics data implementation or Templates selection highlighting. No product decisions remain. Route/state wiring belongs to implementation planning. Backlog agreement does not approve application code changes.

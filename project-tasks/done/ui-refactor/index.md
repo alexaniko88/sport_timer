@@ -1,6 +1,6 @@
 # EPIC: UI refactor
 
-Status: Timer setup grid, Templates navigation, Start button refactor and app-wide border/radius scope agreed; Timer tab icon and naming agreed after the Start refactor; wheel styling is archived.
+Status: All stories completed; Story 4 is on `improve/unify-borders-corners`, pending PR.
 
 
 ## Goal
@@ -13,7 +13,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 - Timer Setup retains its four existing settings, selectors, persistence and timer launch behavior.
 - Story 1 preserves the current Start presentation. Story 2 owns its removal from Templates; Story 3 owns its redesign on Timer Setup.
 - The first delivery is the centered timer setup grid. Wheel styling is separate provisional work.
-- Other screens, active timer layouts, navigation changes and new features are outside the timer setup grid delivery. Templates navigation is separately agreed in Story 2. App-wide border widths and corner radii belong to Story 4. Remaining app consistency stays in [IMP-01](../improvements/done/01-unify-styles-app-wide.md); do not duplicate work between these entries.
+- Other screens, active timer layouts, navigation changes and new features are outside the timer setup grid delivery. Templates navigation is separately agreed in Story 2. App-wide border widths and corner radii belong to Story 4. Remaining app consistency stays in [IMP-01](../../improvements/done/01-unify-styles-app-wide.md); do not duplicate work between these entries.
 
 - Home will retain Timer Setup and Statistics; Templates moves to a separate drawer destination under Story 2. Start then exists only on Timer Setup, superseding the shared-Start requirement for that delivery.
 
@@ -23,7 +23,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 
 2. [Access Templates from the drawer](stories/done/02-templates-in-drawer/index.md) — all tasks archived; Templates drawer navigation pending PR and merge.
 3. [Refactor the Start button](stories/done/03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
-4. [Unify borders and corner radii across the app](stories/04-unify-borders-and-corners/index.md) — audit and rule decision ready for planning; app-wide migration blocked by that decision.
+4. [Unify borders and corner radii across the app](stories/done/04-unify-borders-and-corners/index.md) — Done; shared rules and drawer treatment completed.
 
 ## Delivery order
 
@@ -33,6 +33,6 @@ Story 2 is independent of Story 1 and the provisional wheel task. Its Start visi
 
 Story 3 can be planned independently of the other pending stories. It changes only Timer Setup's Start presentation and preserves the navigation and Templates Start visibility available in its implementation checkout. Settings scroll above the fixed button; timer-launch behavior stays unchanged.
 
-Story 4 can audit the current app independently. Agree shared values and exceptions in UI 4.1 before UI 4.2 migrates the app. Coordinate those rules with pending UI stories without taking on their layout or behavior changes.
+Story 4 documented the shared values and exceptions delivered in IMP-01 and completed the drawer treatment.
 
 UI 1.3 replaces the Home house icon with outlined/filled timer icons and renames its label, tooltip and accessible name to Timer / Temporizador. Implemented after UI 3.1 changed Start to play; pending PR and merge. This does not change navigation behavior or require wheel styling or the Templates drawer move.

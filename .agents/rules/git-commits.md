@@ -5,9 +5,8 @@ Rules for this project only.
 - The first line is `<type>: <description>`. The type says what the commit does, in lowercase: `feat` (new behavior), `fix` (bug fix), `refactor` (code change with no behavior change), `chore` (dependencies, tooling, config, rules), `docs` (documentation only), `style` (formatting only), `perf`, `test`, `build`.
 - The description is short, in the imperative, starts in lowercase and has no final period. Example: `refactor: migrate login to a LoginViewModel`.
 - Add a body after a blank line only when the reason is not obvious from the first line.
-- Always end every commit message with a `Co-Authored-By` trailer, whichever AI model writes the commit (Claude, Codex, Gemini or any other). Use the trailer from that tool's own session instructions, with its real name and model. If the tool gives no trailer line, ask the user for the exact line before committing; never leave the trailer out and never invent an email address.
-- Always show the full commit message, with the trailer, when you show it to the user.
-- This is a project exception: it overrides the global rule "never add a `Co-Authored-By` trailer", for this repo only. Only commit messages get it; a PR description keeps following the global rule.
+- Do not add AI co-author trailers or email addresses to commit messages.
+- Always show the full commit message when you show it to the user.
 - Existing commits keep their old messages. The format applies to new commits.
 
 ## Branch names
