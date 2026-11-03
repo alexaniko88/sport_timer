@@ -1,6 +1,6 @@
 # EPIC: Statistics
 
-Status: Agreed scope; implementation not started.
+Status: Recording and daily list completed; visual activity story ready for planning; day details provisional.
 
 
 ## Goal
@@ -12,8 +12,9 @@ Automatically preserve completed training activity and show daily totals in the 
 1. [Record completed activity](stories/done/01-record-activity/index.md): integrate the local database and reliably record completed work rounds and rests.
 2. [Show daily statistics](stories/done/02-daily-list/index.md): replace the Statistics placeholder with daily totals.
 3. [Explore a day's activity](stories/03-day-details/index.md): provisional future scope; revisit before implementation.
+4. [Visualize activity](stories/04-visualize-activity/index.md): agreed chart and calendar experience; ready for planning.
 
-Implement Story 1 before Story 2. Story 3 depends on both, but is not required for the first version.
+Stories 1 and 2 provide the foundation for Stories 3 and 4. Story 4 does not depend on the provisional day-details story.
 
 ## Agreed behavior
 
@@ -46,15 +47,15 @@ Use SQLite through `sqflite` for local storage. Keep database access behind an a
 
 ## Current app constraints
 
-- Statistics currently contains placeholder content; no historical activity exists to import.
+- Statistics shows account-scoped daily activity stored on this device; it has no chart or period selector yet.
 - The timer schedule defines preparation, work, and rest boundaries. There is no rest after the final round, and zero-duration phases are omitted.
 - A late timer tick can cross multiple boundaries. Recording must reconcile every completed phase rather than only observing the displayed phase.
 - Pauses exclude paused time. Leaving the timer disposes it; no active-run restoration exists.
-- Existing persistent settings use SharedPreferences; there is no existing history database.
+- Activity history is stored in the local SQLite database; existing settings use SharedPreferences.
 
 ## Delivery rules
 
-Each story has its own folder under `stories/`, with an `index.md` overview and numbered task files for orchestration. Before implementation, inspect current code, validate the proposed approach, and present small substeps for approval. Complete one approved file or concern per turn and wait for user validation before continuing.
+Each story has its own folder under `stories/`, with an `index.md` overview and numbered task files for orchestration. Before implementation, inspect the current checkout and follow the repository’s current orchestration workflow.
 
 No application code is changed by these planning files. Story 3 remains a proposal until its behavior and screen design are discussed.
 
