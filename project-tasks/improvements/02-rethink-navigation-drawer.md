@@ -19,7 +19,7 @@ A clearer, more discoverable place for secondary options.
 
 ## Scope and exclusions
 
-- Moving Templates into the drawer is agreed separately in [UI refactor Story 2](../ui-refactor/stories/done/02-templates-in-drawer/index.md). This improvement covers only the remaining provisional drawer rethink and must not duplicate that work.
+- Moving Templates into the drawer is agreed separately in [UI refactor Story 2](../done/ui-refactor/stories/done/02-templates-in-drawer/index.md). This improvement covers only the remaining provisional drawer rethink and must not duplicate that work.
 - No change to how timer styles work.
 
 ## Dependencies

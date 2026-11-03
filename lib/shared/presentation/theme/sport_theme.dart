@@ -42,6 +42,11 @@ abstract final class SportTheme {
       filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(shape: buttonShape)),
       outlinedButtonTheme: OutlinedButtonThemeData(style: OutlinedButton.styleFrom(shape: buttonShape)),
       textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(shape: buttonShape)),
+      drawerTheme: const DrawerThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusDirectional.horizontal(end: Radius.circular(AppRadius.r20)),
+        ),
+      ),
       dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.r20),
