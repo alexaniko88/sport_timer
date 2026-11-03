@@ -18,7 +18,7 @@ fvm flutter test test/features/timer # one folder or file
 fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart # refresh UI snapshots
 ```
 
-`.zed/tasks.json` (local, git-excluded) wraps run, pub get, rebuild and test as Zed tasks.
+`.zed/tasks.json` (tracked in git; the other `.zed/` files are local symlinks and stay excluded) wraps run, pub get, rebuild and test as Zed tasks.
 
 Tests live under `test/` and mirror `lib/`. The CI workflow (`.github/workflows/ci.yml`) runs `flutter analyze` and `flutter test` on every pull request.
 
