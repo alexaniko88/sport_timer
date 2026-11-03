@@ -46,6 +46,6 @@ These records enable this story without committing to a particular screen design
 
 ## Dependencies and exclusions
 
-Depends on [Story 1](../../stories/01-record-activity/index.md) and [Story 2](../../stories/02-daily-list/index.md).
+Depends on [Story 1](../done/01-record-activity/index.md) and [Story 2](../../stories/02-daily-list/index.md).
 
 Backup, cross-device sync, editing, deletion, and charts require separate scope unless explicitly agreed later.

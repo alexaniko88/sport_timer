@@ -2,7 +2,7 @@
 
 Story: [Story 1 overview](../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 Status: Done. Database integration remains Task 1.2.
 

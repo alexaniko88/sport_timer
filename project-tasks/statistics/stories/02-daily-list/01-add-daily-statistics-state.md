@@ -8,7 +8,7 @@ Status: Not started.
 
 ## Dependencies
 
-[Story 1: Record completed activity](../01-record-activity/index.md).
+[Story 1: Record completed activity](../done/01-record-activity/index.md).
 
 ## Goal
 
