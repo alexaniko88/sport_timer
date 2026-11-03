@@ -111,7 +111,16 @@ void main() {
   testWidgets('daily totals use fixed dates and isolate accounts including pending writes', (tester) async {
     accounts.change('a');
     final a = (await repository.createSession(session('a', 'a')) as Success<ActivitySessionHandle>).value;
-    final a2 = (await repository.createSession(session('a2', 'a')) as Success<ActivitySessionHandle>).value;
+    const differentSettings = TimerSession(
+      id: 'a2',
+      accountId: 'a',
+      startedAtUtcMs: 1000,
+      preparationDurationMs: 5000,
+      workDurationMs: 45000,
+      restDurationMs: 15000,
+      roundCount: 3,
+    );
+    final a2 = (await repository.createSession(differentSettings) as Success<ActivitySessionHandle>).value;
     await repository.createSession(session('empty', 'a'));
     await repository.recordPhases(
       session: a,
@@ -119,22 +128,32 @@ void main() {
         phase(id: 'work', runId: 'a', position: 0),
         phase(id: 'rest', runId: 'a', position: 1, type: CompletedPhaseType.rest, duration: 10000),
         phase(id: 'old', runId: 'a', position: 2, date: '2026-11-01'),
+        phase(
+          id: 'rest-only',
+          runId: 'a',
+          position: 3,
+          type: CompletedPhaseType.rest,
+          duration: 15000,
+          date: '2026-11-03',
+        ),
       ],
     );
     accounts.change('b');
     final b = (await repository.createSession(session('b', 'b')) as Success<ActivitySessionHandle>).value;
     await repository.recordPhases(session: b, phases: [phase(id: 'b-work', runId: 'b', position: 0, duration: 5000)]);
-    await repository.recordPhases(session: a2, phases: [phase(id: 'a2-work', runId: 'a2', position: 0)]);
+    await repository
+        .recordPhases(session: a2, phases: [phase(id: 'a2-work', runId: 'a2', position: 0, duration: 45000)]);
     final bDays = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
     expect(bDays.single.workDurationMs, 5000);
     expect((await repository.readPhases('a') as Success<List<CompletedPhase>>).value, isEmpty);
     accounts.change('a');
     final days = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
-    expect(days.map((day) => day.localDate), ['2026-11-02', '2026-11-01']);
-    expect(days.first.roundCount, 2);
-    expect(days.first.workDurationMs, 60000);
-    expect(days.first.restDurationMs, 10000);
-    expect(days.first.totalDurationMs, 70000);
+    expect(days, [
+      const DailyActivity(localDate: '2026-11-03', roundCount: 0, workDurationMs: 0, restDurationMs: 15000),
+      const DailyActivity(localDate: '2026-11-02', roundCount: 2, workDurationMs: 75000, restDurationMs: 10000),
+      const DailyActivity(localDate: '2026-11-01', roundCount: 1, workDurationMs: 30000, restDurationMs: 0),
+    ]);
+    expect(days[1].totalDurationMs, 85000);
   });
 
   testWidgets('account changes invalidate reads and notify listeners', (tester) async {

@@ -86,6 +86,12 @@ void main() {
     repository.reads[1].complete(const Success([]));
     await tester.pump();
     expect(find.text('No completed activity yet.'), findsOneWidget);
+    repository.changesController.add(null);
+    await tester.pump();
+    repository.reads[2].complete(const Success([second]));
+    await tester.pump();
+    expect(find.text('No completed activity yet.'), findsNothing);
+    expect(find.text('30 October 2026'), findsOneWidget);
   });
 
   testWidgets('shows an error and retries successfully', (tester) async {
@@ -116,20 +122,32 @@ void main() {
 
   testWidgets('tile exposes all fields and fits large text', (tester) async {
     final semantics = tester.ensureSemantics();
+    await tester.binding.setSurfaceSize(const Size(320, 800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    const longActivity = DailyActivity(
+      localDate: '2026-09-30',
+      roundCount: 123,
+      workDurationMs: 123456000,
+      restDurationMs: 9876000,
+    );
     await tester.pumpWidget(
       const MaterialApp(
         home: MediaQuery(
           data: MediaQueryData(size: Size(320, 800), textScaler: TextScaler.linear(2)),
-          child: Scaffold(body: SingleChildScrollView(child: DailyActivityTile(activity: first))),
+          child: Scaffold(body: SingleChildScrollView(child: DailyActivityTile(activity: longActivity))),
         ),
       ),
     );
     expect(
       find.bySemanticsLabel(
-        '31 October 2026, 2 rounds, work 2 minutes 5 seconds, rest 30 seconds, total 2 minutes 35 seconds',
+        '30 September 2026, 123 rounds, work 34 hours 17 minutes 36 seconds, '
+        'rest 2 hours 44 minutes 36 seconds, total 37 hours 2 minutes 12 seconds',
       ),
       findsOneWidget,
     );
+    expect(find.text('30 September 2026'), findsOneWidget);
+    expect(find.text('Work: 34 hours 17 minutes 36 seconds'), findsOneWidget);
+    expect(find.text('Total: 37 hours 2 minutes 12 seconds'), findsOneWidget);
     expect(tester.takeException(), isNull);
     semantics.dispose();
   });

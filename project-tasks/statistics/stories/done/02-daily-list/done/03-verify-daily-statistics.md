@@ -1,14 +1,14 @@
 # TASK 2.3: Verify summaries and screen states
 
-Story: [Story 2 overview](index.md)
+Story: [Story 2 overview](../index.md)
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../../index.md)
 
-Status: Not started.
+Status: Done on `improve/verify-daily-statistics` (commit `8f07a89`); pending PR merge.
 
 ## Dependencies
 
-[Previous task](done/02-show-daily-tiles.md).
+[Previous task](02-show-daily-tiles.md).
 
 ## Goal
 
@@ -32,4 +32,8 @@ Read the story and epic before starting. Inspect current code and propose small 
 
 ## UI snapshot reference
 
-Before planning, inspect the relevant current UI snapshots: [statistics](../../../../test/snapshots/goldens/statistics.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. The Statistics snapshot shows placeholder content, not the intended daily list. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+Before planning, inspect the relevant current UI snapshots: [statistics](../../../../../../test/snapshots/goldens/statistics.png). See the [snapshot index](../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. The Statistics snapshot shows placeholder content, not the intended daily list. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+
+## Completion evidence
+
+Verified mixed settings and daily totals, date ordering, rest-only activity, live updates, account switching, and narrow layouts with larger text. Scoped analysis, the full Flutter suite (319 tests), and both activity integration test files on Android passed.
