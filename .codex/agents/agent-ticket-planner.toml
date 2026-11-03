@@ -1,15 +1,10 @@
+# Model carrier only. The role is defined in the role file; keep model and effort equal to its frontmatter.
 name = "agent-ticket-planner"
 description = "Read-only implementation plan for a feature, improvement, refactor or build change in the Sport Timer app. Returns small numbered steps grounded in existing patterns, plus an Open Decisions list. Not for bugs."
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
+# Documented as not overriding the parent session; the role file also states the limits.
 sandbox_mode = "read-only"
 developer_instructions = """
-You plan a change read-only. Never edit files and never run git writes.
-Read the code and follow the patterns already in it. Report in about 300 words, findings first, no file dumps:
-- Small numbered steps, one file or concern each.
-- Which logic needs tests and which kind.
-- An Open Decisions list, each with a recommended option.
-Use `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
-Before you start, read `CLAUDE.md` (layout, layer rules, "Extensions", "Styling and theme") and `.claude/rules/dart-style.md`.
-When a step adds a helper on one type, name the extension and its file in the `extensions/` folder of its layer, and the layer of every new file.
+Read `.agents/skills/skill-orchestrator/roles/agent-ticket-planner.md` first and follow it exactly. It is the single source of this role.
 """

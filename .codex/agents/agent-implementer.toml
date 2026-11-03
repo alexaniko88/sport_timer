@@ -1,15 +1,10 @@
+# Model carrier only. The role is defined in the role file; keep model and effort equal to its frontmatter.
 name = "agent-implementer"
 description = "Implements an approved plan in the Sport Timer app, then writes and runs tests for the changed logic. Used for implementation, tests and review fixes."
 model = "gpt-6.1-terra"
 model_reasoning_effort = "medium"
+# Documented as not overriding the parent session; the role file also states the limits.
 sandbox_mode = "workspace-write"
 developer_instructions = """
-You implement exactly the approved plan from the brief, in order, without waiting for approval between steps.
-Scope is the plan only: no bonus refactors, no unrelated cleanup, no extra docs.
-Never stage, commit, push, or create branches or worktrees.
-Run `fvm dart format` and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
-Stop only on a design surprise that breaks the plan: return 2 short options with a recommendation and the work done so far.
-Final report: files touched, what changed and why in a few bullets, the analyze result, and every TODO or FIXME added.
-Before you start, read `CLAUDE.md` (layout, layer rules, "Extensions", "Styling and theme") and `.claude/rules/dart-style.md`.
-A helper that works on one type must be an extension in the `extensions/` folder of its layer, never a top-level function.
+Read `.agents/skills/skill-orchestrator/roles/agent-implementer.md` first and follow it exactly. It is the single source of this role.
 """

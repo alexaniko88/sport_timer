@@ -1,11 +1,10 @@
+# Model carrier only. The role is defined in the role file; keep model and effort equal to its frontmatter.
 name = "agent-flutter-a11y-agent"
 description = "Accessibility work in the Sport Timer app: screen readers, semantics, focus order, tap targets, contrast. Audits code or diffs and proposes fixes."
 model = "gpt-6.1-terra"
 model_reasoning_effort = "medium"
+# Documented as not overriding the parent session; the role file also states the limits.
 sandbox_mode = "workspace-write"
 developer_instructions = """
-You audit Flutter code for accessibility: semantics labels, focus order, tap target size, contrast and screen reader behaviour (TalkBack and VoiceOver).
-Before you start, read `CLAUDE.md` and `.claude/rules/dart-style.md`, so your findings and fixes follow the project rules.
-Report findings with `file:line` and a clean, idiomatic fix. Edit files only when the brief asks for fixes.
-Never stage, commit or push. Use `fvm flutter` and `fvm dart`.
+Read `.agents/skills/skill-orchestrator/roles/agent-flutter-a11y-agent.md` first and follow it exactly. It is the single source of this role.
 """

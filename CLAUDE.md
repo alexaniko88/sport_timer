@@ -123,15 +123,26 @@ State is held with `ValueNotifier`. There is no state management package.
 
 ## Workflow
 
-For an end-to-end change (bug, feature, improvement, refactor), read and follow `.agents/skills/skill-orchestrator/SKILL.md`. This is the single repo-local skill folder shared by Claude, Codex and Gemini. Never use `skill-ticket-orchestrator` here: this project has no tickets and no Linear. Follow the skill's approval cadence for implementation, review, commit and PR.
+For an end-to-end change (bug, feature, improvement, refactor), read and follow `.agents/skills/skill-orchestrator/SKILL.md`. This is the single repo-local skill folder shared by Claude, Codex and Antigravity. Never use `skill-ticket-orchestrator` here: this project has no tickets and no Linear. Follow the skill's approval cadence for implementation, review, commit and PR.
+
+## AI tools setup (Claude, Codex, Antigravity)
+
+All three tools must behave the same. Every rule and role is defined once; each tool only gets a thin file that points to it.
+
+| What | Single source | Tool files |
+| --- | --- | --- |
+| Instructions | `CLAUDE.md` (real file) | `AGENTS.md` (Codex) and `GEMINI.md` (Antigravity) are symlinks to it |
+| Rules | `.agents/rules/` | `.claude/rules` is a symlink to it; Antigravity reads it directly |
+| Skills | `.agents/skills/` | `.claude/skills/*` are symlinks; Codex and Antigravity read the folder directly |
+| Agent roles | `.agents/skills/skill-orchestrator/roles/<name>.md` (model, effort and access in its frontmatter) | none |
+| Codex model carrier | `.codex/agents/*.toml` | only name, description, model, effort and one line that points to the role file |
+
+Claude and Antigravity need no agent files: Claude passes the role file's model and effort to a general-purpose agent, and Antigravity runs the role in the main thread by reading the role file. Edit the single source, never copy a rule into a shim or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), and `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title.
+
+What stays tool-specific: Claude hooks and auto memory, and how a skill is started (Claude `/skill-orchestrator`, Codex `$skill-orchestrator`, Antigravity by naming the skill). `test/architecture/ai_setup_test.dart` guards this setup.
 
 ## Shared dev environment (my-dev-env)
 
-Shared agents, global skills, rules and task profiles live outside this repo. The project-specific `skill-orchestrator` is stored only in `.agents/skills/skill-orchestrator/`. `~/.claude/{agents,skills,rules,profiles}` and `~/.claude/CLAUDE.md` are symlinks into `~/Projects/my-dev-env`, so every project picks them up with no per-repo setup. To change one, edit it in `~/Projects/my-dev-env`, never copy it here. `~/Projects/my-dev-env/profiles/index.md` says which task profile to read for which task (tests, review, hand-off, merge).
-
-Rules that apply to this project only live in `.claude/rules/` in this repo, not in my-dev-env. Claude Code loads them by itself, but every tool (Claude, Codex and Gemini) must read them as follows:
-
-- `.claude/rules/dart-style.md`: read it before you read, write or review any Dart code. It wins over the shared Dart rules where they differ.
-- `.claude/rules/git-commits.md`: read it before you create a branch, write a commit message or write a PR title.
+Shared agents, global skills, rules and task profiles live outside this repo, in `~/Projects/my-dev-env`. The `~/.claude/{agents,skills,rules,profiles}` and `~/.claude/CLAUDE.md` symlinks are Claude's personal global layer. Codex and Antigravity get generated copies of the global rules, which can lag behind. The files in this repo (see the section above) are the authority for this project and must work without any global file. `~/Projects/my-dev-env/profiles/index.md` says which task profile to read for which task (tests, review, hand-off, merge). To change a global file, edit it in `~/Projects/my-dev-env`, never copy it here.
 
 This is a personal repo (`alexaniko88`). Commit with the repo-local noreply email (`git config user.email`), never a company address.
