@@ -15,6 +15,8 @@ import 'package:sport_timer/features/statistics/domain/activity_session_handle.d
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/features/timer/data/default_timer_activity_recorder.dart';
 import 'package:sport_timer/features/timer/domain/audio_manager.dart';
 import 'package:sport_timer/features/timer/domain/background_keep_alive.dart';
@@ -115,6 +117,22 @@ void main() {
     var db = ActivityDatabase(databasePath: dbPath);
     var access = ActivityAccess(db, accounts);
     var repository = SqfliteActivityRepository(access);
+    final statistics = StatisticsViewModel(repository);
+    var statisticsDisposed = false;
+    final firstTotal = Completer<void>();
+    final switchedAccount = Completer<void>();
+    final combinedTotal = Completer<void>();
+    statistics.state.addListener(() {
+      final state = statistics.state.value;
+      if (accounts.account == 'owner' && state.dailyActivity.length == 1) {
+        final total = state.dailyActivity.single.totalDurationMs;
+        if (total == 25000 && !firstTotal.isCompleted) firstTotal.complete();
+        if (total == 35000 && !combinedTotal.isCompleted) combinedTotal.complete();
+      }
+      if (accounts.account == 'other' && state.status == StatisticsStatus.empty && !switchedAccount.isCompleted) {
+        switchedAccount.complete();
+      }
+    });
     final uncertain = _UncertainRepository(repository);
     var now = DateTime(2026, 11, 1, 23, 59, 40);
     var elapsed = Duration.zero;
@@ -154,7 +172,10 @@ void main() {
 
       await uncertain.firstCommit.future.timeout(const Duration(seconds: 10));
       await failure.timeout(const Duration(seconds: 10));
+      await firstTotal.future.timeout(const Duration(seconds: 10));
       accounts.change('other');
+      expect(statistics.state.value.dailyActivity, isEmpty);
+      await switchedAccount.future.timeout(const Duration(seconds: 10));
       recorder.retryPendingWrites();
       await uncertain.ended.future.timeout(const Duration(seconds: 10));
       expect(uncertain.attempts, hasLength(2));
@@ -196,6 +217,7 @@ void main() {
       now = now.add(const Duration(seconds: 4));
       early.dispose();
       await earlyWrites.ended.future.timeout(const Duration(seconds: 10));
+      await combinedTotal.future.timeout(const Duration(seconds: 10));
       final earlySessions = (await repository.readSessions() as Success<List<TimerSession>>).value;
       expect(earlySessions, hasLength(2));
       final earlySession = earlySessions.singleWhere((session) => session.id != sessions.single.id);
@@ -204,6 +226,8 @@ void main() {
       expect(earlyPhases.single.durationMs, 10000);
       earlyRecorder.dispose();
 
+      statistics.dispose();
+      statisticsDisposed = true;
       await access.close();
       await db.close();
       db = ActivityDatabase(databasePath: dbPath);
@@ -215,6 +239,7 @@ void main() {
         35000,
       );
     } finally {
+      if (!statisticsDisposed) statistics.dispose();
       viewModel.dispose();
       recorder.dispose();
       await access.close();
