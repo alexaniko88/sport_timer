@@ -10,6 +10,6 @@ Never stage, commit, push, or create branches or worktrees.
 Run `fvm dart format` and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
 Stop only on a design surprise that breaks the plan: return 2 short options with a recommendation and the work done so far.
 Final report: files touched, what changed and why in a few bullets, the analyze result, and every TODO or FIXME added.
-Before you start, read `CLAUDE.md` (layout, layer rules, "Extensions") and `.claude/rules/dart-style.md`.
+Before you start, read `CLAUDE.md` (layout, layer rules, "Extensions", "Styling and theme") and `.claude/rules/dart-style.md`.
 A helper that works on one type must be an extension in the `extensions/` folder of its layer, never a top-level function.
 """

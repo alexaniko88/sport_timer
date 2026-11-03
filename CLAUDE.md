@@ -34,7 +34,7 @@ lib/
   di/di.dart                    composition: registers the implementations
   l10n/                         generated localizations (l10n.yaml points here)
   core/                         pure Dart: Result, extensions/duration_extension.dart
-  shared/presentation/          shared UI: theme/, extensions/ (l10n_context, theme_context), widgets/app_button.dart
+  shared/presentation/          shared UI: theme/ (style tokens, SportTheme), extensions/ (l10n_context, theme_context, text_theme_extension), widgets/ (app_button, app_surface)
   features/<name>/
     domain/                     models and contracts (pure Dart)
     data/                       implementations that use platform packages
@@ -63,7 +63,7 @@ Dependencies point inward: presentation depends on domain, and data depends on d
 - **View**: a page or widget. It reads the ViewModel state, calls its methods, does navigation (`go_router`) and shows snackbars. It never calls a repository.
 - **ViewModel**: one per screen or feature. It holds the state, calls repositories and managers, and owns timers and side effects such as sounds. It never imports widgets or `BuildContext`, so it can be unit tested without a widget tree.
 - **Extensions**: a helper that works on one type (its first argument is the thing it works on, or it maps one type to another) must be an extension, never a top-level function. One extension per file, in an `extensions/` folder of the layer it belongs to: `core/extensions/` (pure Dart), `shared/presentation/extensions/`, or `features/<name>/<layer>/extensions/`. It follows the rules of that layer (a mapper from a platform type lives in `data/extensions/`). A top-level function is only for work no single type owns, like `main()`. The boundary test does not check this; review does.
-- **Shared code**: UI used by several features (theme, localization helper, `AppButton`) is in `shared/presentation/`. Pure helpers used by several features are in `core/`. Code used by one feature stays in that feature, even if another feature could use it later.
+- **Shared code**: UI used by several features (theme, localization helper, `AppButton`, `AppSurface`) is in `shared/presentation/`. Pure helpers used by several features are in `core/`. Code used by one feature stays in that feature, even if another feature could use it later.
 - **Composition**: only `main.dart`, `di/di.dart` and `navigation.dart` may know both a contract and its implementation.
 - **Use cases**: do not add them by default. Add one only when there is real business logic, or logic that several ViewModels reuse. A class that only forwards a call to a repository is not allowed.
 
@@ -91,6 +91,18 @@ The one import exception is `wakelock_plus` in `timer_page.dart`, listed with it
 
 The check cannot see `getIt` calls in a View, a View using a repository it received another way, imports between features, or a domain class using a type that reached it through an allowed import. Those stay a review job.
 
+## Styling and theme
+
+All screens share one look. Use the shared pieces in `lib/shared/presentation/`; do not draw your own copy. The goldens in `test/snapshots/goldens/` are the visual reference, so no emulator is needed to check a style change.
+
+- **Tiles and cards**: use `AppSurface` (`widgets/app_surface.dart`) for any bordered tile, tappable or not. It owns the fill, the 12 radius, the 1px `outlineVariant` border and the selected state (2px primary border, with the padding shrunk so the size does not change). Never hand-build a `Material`, `Ink` or `Container` with a border for a tile.
+- **Radius and border width**: only `AppRadius` (r8 small inner items, r12 tiles and buttons, r20 sheets and dialogs) and `AppBorderWidth` (thin 1, thick 2). No raw `BorderRadius.circular(12)` or border-width numbers. The exceptions are circles, pills (phase chip, phase bar, rounds strip), the timer style preview frame, the picker items' phase-colored border, and the theme definitions in `SportTheme`.
+- **Buttons**: use `AppButton` (`primary`, `secondary`). The 12 radius shape comes from the button themes in `SportTheme`, so never set a shape on one button. A local `FilledButtonTheme` replaces the app one instead of merging, so build it from `Theme.of(context).filledButtonTheme.style` when you only change one property. Dialogs and bottom sheets take their radius from `SportTheme` too.
+- **Text**: for the shared roles use `AppTextThemeExtension` on `TextTheme` (`tileTitle`, `tileSecondary`, `tileValue`, `emphasizedLabel`) and set the color at the call site. Timer and picker digits use `AppTextStyles`. A style that is used in 2 or more places gets a getter there, instead of repeating `titleMedium.copyWith(fontWeight: ...)`.
+- **Colors and alpha**: colors come from the theme (`colorScheme`, `context.timerColors`, `AppPalette`). Shared alpha values are `AppAlpha` and `TimerAlpha`. No `Color(0x...)`, `Colors.*` or raw `withValues(alpha: 0.x)` in a widget.
+- **Before adding a style**: check these pieces first. A new shared token or widget needs 2 or more users. Remove a token or widget when nothing uses it anymore.
+- Any change that alters a captured screen refreshes the goldens, as described under Commands.
+
 ## State management
 
 State is held with `ValueNotifier`. There is no state management package.
@@ -117,6 +129,9 @@ For an end-to-end change (bug, feature, improvement, refactor), read and follow 
 
 Shared agents, global skills, rules and task profiles live outside this repo. The project-specific `skill-orchestrator` is stored only in `.agents/skills/skill-orchestrator/`. `~/.claude/{agents,skills,rules,profiles}` and `~/.claude/CLAUDE.md` are symlinks into `~/Projects/my-dev-env`, so every project picks them up with no per-repo setup. To change one, edit it in `~/Projects/my-dev-env`, never copy it here. `~/Projects/my-dev-env/profiles/index.md` says which task profile to read for which task (tests, review, hand-off, merge).
 
-Rules that apply to this project only live in `.claude/rules/` in this repo (for example `.claude/rules/dart-style.md`), not in my-dev-env.
+Rules that apply to this project only live in `.claude/rules/` in this repo, not in my-dev-env. Claude Code loads them by itself, but every tool (Claude, Codex and Gemini) must read them as follows:
+
+- `.claude/rules/dart-style.md`: read it before you read, write or review any Dart code. It wins over the shared Dart rules where they differ.
+- `.claude/rules/git-commits.md`: read it before you create a branch, write a commit message or write a PR title.
 
 This is a personal repo (`alexaniko88`). Commit with the repo-local noreply email (`git config user.email`), never a company address.

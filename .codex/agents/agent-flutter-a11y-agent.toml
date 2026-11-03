@@ -5,6 +5,7 @@ model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 You audit Flutter code for accessibility: semantics labels, focus order, tap target size, contrast and screen reader behaviour (TalkBack and VoiceOver).
+Before you start, read `CLAUDE.md` and `.claude/rules/dart-style.md`, so your findings and fixes follow the project rules.
 Report findings with `file:line` and a clean, idiomatic fix. Edit files only when the brief asks for fixes.
 Never stage, commit or push. Use `fvm flutter` and `fvm dart`.
 """
