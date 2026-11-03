@@ -1,7 +1,9 @@
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
+import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/timer/domain/timer_status.dart';
 import 'package:sport_timer/features/timer/presentation/timer_view_model.dart';
@@ -28,13 +30,16 @@ class _FakeAudioManager extends AudioManager {
 }
 
 class _FakeBackgroundKeepAlive extends BackgroundKeepAlive {
+  int starts = 0;
   @override
   Future<void> start({
     required String notificationTitle,
     required String notificationText,
     required VoidCallback onPause,
     required VoidCallback onResume,
-  }) async {}
+  }) async {
+    starts++;
+  }
 
   @override
   Future<void> setPaused({required bool isPaused}) async {}
@@ -44,6 +49,44 @@ class _FakeBackgroundKeepAlive extends BackgroundKeepAlive {
 
   @override
   Future<void> stop() async {}
+}
+
+class _FakeActivityRecorder implements TimerActivityRecorder {
+  final run = _FakeActivityRun();
+  int starts = 0;
+  bool fail = false;
+
+  @override
+  Result<TimerActivityRun> start(TimerParams params) {
+    starts++;
+    if (fail) return Failure(Exception('No signed-in account'));
+    return Success(run);
+  }
+
+  @override
+  Stream<Exception> get failures => const Stream.empty();
+
+  @override
+  void retryPendingWrites() {}
+}
+
+class _FakeActivityRun implements TimerActivityRun {
+  final reconciled = <Duration>[];
+  final pauses = <Duration>[];
+  final ends = <Duration>[];
+  int resumes = 0;
+
+  @override
+  void reconcile(Duration elapsed) => reconciled.add(elapsed);
+
+  @override
+  void pause(Duration elapsed) => pauses.add(elapsed);
+
+  @override
+  void resume() => resumes++;
+
+  @override
+  void end(Duration elapsed) => ends.add(elapsed);
 }
 
 TimerParams _params({
@@ -87,6 +130,101 @@ void main() {
   }
 
   group('TimerViewModel', () {
+    test('does not start without a captured owner and can retry', () {
+      fakeAsync((fake) {
+        final recorder = _FakeActivityRecorder()..fail = true;
+        final viewModel = TimerViewModel(
+          _params(),
+          audio,
+          keepAlive,
+          timeSource: () => fake.elapsed,
+          activityRecorder: recorder,
+        );
+        expect(
+          viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text'),
+          isFalse,
+        );
+        viewModel.togglePauseResume();
+        fake.elapse(const Duration(seconds: 3));
+        expect(fake.nonPeriodicTimerCount, 0);
+        expect(keepAlive.starts, 0);
+        expect(recorder.run.reconciled, isEmpty);
+        expect(recorder.run.resumes, 0);
+        recorder.fail = false;
+        expect(
+          viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text'),
+          isTrue,
+        );
+        expect(keepAlive.starts, 1);
+        expect(recorder.starts, 2);
+        expect(fake.nonPeriodicTimerCount, 1);
+        viewModel.dispose();
+      });
+    });
+    test('reconciles elapsed time on pause, resume and disposal without a new run', () {
+      fakeAsync((fake) {
+        final recorder = _FakeActivityRecorder();
+        var skew = Duration.zero;
+        final viewModel = TimerViewModel(
+          _params(),
+          audio,
+          keepAlive,
+          timeSource: () => fake.elapsed + skew,
+          activityRecorder: recorder,
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
+        skew = const Duration(seconds: 16);
+        viewModel.togglePauseResume();
+        expect(recorder.run.pauses, [const Duration(seconds: 16)]);
+        expect(recorder.run.reconciled.last, const Duration(seconds: 16));
+        fake.elapse(const Duration(seconds: 30));
+        viewModel.togglePauseResume();
+        expect(recorder.starts, 1);
+        expect(recorder.run.resumes, 1);
+        skew += const Duration(seconds: 2);
+        viewModel.dispose();
+        expect(recorder.run.ends, [const Duration(seconds: 18)]);
+      });
+    });
+
+    test('reconciles a delayed lifecycle update and finishes a run only once', () {
+      fakeAsync((fake) {
+        final recorder = _FakeActivityRecorder();
+        var skew = Duration.zero;
+        final viewModel = TimerViewModel(
+          _params(),
+          audio,
+          keepAlive,
+          timeSource: () => fake.elapsed + skew,
+          activityRecorder: recorder,
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
+        skew = const Duration(seconds: 40);
+        viewModel.reconcileProgress();
+        expect(recorder.run.reconciled.last, const Duration(seconds: 40));
+        expect(recorder.run.ends, [const Duration(seconds: 40)]);
+        expect(viewModel.state.value.timerStatus, TimerStatus.finished);
+        expect(fake.nonPeriodicTimerCount, 0);
+        viewModel.dispose();
+        expect(recorder.run.ends, hasLength(1));
+      });
+    });
+
+    test('reconciling a running timer replaces its pending tick', () {
+      fakeAsync((fake) {
+        final recorder = _FakeActivityRecorder();
+        final viewModel = TimerViewModel(
+          _params(),
+          audio,
+          keepAlive,
+          timeSource: () => fake.elapsed,
+          activityRecorder: recorder,
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
+        viewModel.reconcileProgress();
+        viewModel.reconcileProgress();
+        expect(fake.nonPeriodicTimerCount, 1);
+        viewModel.dispose();
+      });
+    });
+
     test('runs each stage for exactly its time and ends at 0', () {
       run(_params(), (fake, viewModel) {
         final timeline = <(TimerStatus, int, int, int)>[];

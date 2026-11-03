@@ -1,6 +1,7 @@
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/statistics/data/activity_access.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/activity_session_creation.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
@@ -30,6 +31,21 @@ class SqfliteActivityRepository implements ActivityRepository {
       return Failure(Exception(error.message));
     }
   }
+
+  @override
+  Result<ActivitySessionCreation> prepareSession(TimerSession session) {
+    try {
+      return Success(_access.prepareSession(session));
+    } on Exception catch (error) {
+      return Failure(error);
+    } on StateError catch (error) {
+      return Failure(Exception(error.message));
+    }
+  }
+
+  @override
+  Future<Result<ActivitySessionHandle>> createPreparedSession(ActivitySessionCreation creation) =>
+      _run(() => _access.createPreparedSession(creation));
 
   @override
   Future<Result<ActivitySessionHandle>> createSession(TimerSession session) =>

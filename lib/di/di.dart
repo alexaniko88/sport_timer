@@ -15,6 +15,8 @@ import 'package:sport_timer/features/timer/domain/audio_manager.dart';
 import 'package:sport_timer/features/timer/domain/background_keep_alive.dart';
 import 'package:sport_timer/features/timer/data/default_audio_manager.dart';
 import 'package:sport_timer/features/timer/data/default_background_keep_alive.dart';
+import 'package:sport_timer/features/timer/data/default_timer_activity_recorder.dart';
+import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 
 final getIt = GetIt.instance;
 
@@ -32,6 +34,7 @@ void configureDependencies() {
       dispose: (access) => access.close(),
     )
     ..registerLazySingleton<ActivityRepository>(() => SqfliteActivityRepository(getIt()))
+    ..registerLazySingleton<TimerActivityRecorder>(() => DefaultTimerActivityRecorder(getIt(), getIt()))
     ..registerLazySingleton<AudioManager>(() => DefaultAudioManager(getIt()))
     ..registerLazySingleton<BackgroundKeepAlive>(DefaultBackgroundKeepAlive.new);
 }

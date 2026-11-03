@@ -8,6 +8,7 @@ import 'package:sport_timer/features/statistics/data/activity_access.dart';
 import 'package:sport_timer/features/statistics/data/activity_database.dart';
 import 'package:sport_timer/features/statistics/data/sqflite_activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
+import 'package:sport_timer/features/statistics/domain/activity_session_creation.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
@@ -164,5 +165,28 @@ void main() {
     expect((await repository.readSessions() as Success<List<TimerSession>>).value, isEmpty);
     accounts.change('a');
     expect((await repository.readSessions() as Success<List<TimerSession>>).value.single.endedAtUtcMs, 40000);
+  });
+
+  testWidgets('prepared session retries keep their original account after a switch', (tester) async {
+    accounts.change('a');
+    final creation = (repository.prepareSession(session('run', 'a')) as Success<ActivitySessionCreation>).value;
+    accounts.change('b');
+    expect(await repository.createPreparedSession(creation), isA<Success<ActivitySessionHandle>>());
+    expect(await repository.createPreparedSession(creation), isA<Success<ActivitySessionHandle>>());
+    expect((await repository.readSessions() as Success<List<TimerSession>>).value, isEmpty);
+    accounts.change('a');
+    expect((await repository.readSessions() as Success<List<TimerSession>>).value, [session('run', 'a')]);
+
+    const conflictingSession = TimerSession(
+      id: 'run',
+      accountId: 'a',
+      startedAtUtcMs: 2000,
+      preparationDurationMs: 0,
+      workDurationMs: 30000,
+      restDurationMs: 10000,
+      roundCount: 2,
+    );
+    final conflict = (repository.prepareSession(conflictingSession) as Success<ActivitySessionCreation>).value;
+    expect(await repository.createPreparedSession(conflict), isA<Failure<ActivitySessionHandle>>());
   });
 }

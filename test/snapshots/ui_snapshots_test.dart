@@ -13,6 +13,11 @@ import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
+import 'package:sport_timer/features/timer/domain/audio_manager.dart';
+import 'package:sport_timer/features/timer/domain/background_keep_alive.dart';
+import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
+import 'package:sport_timer/features/timer/domain/timer_params.dart';
+import 'package:sport_timer/features/timer/presentation/timer_page.dart';
 import 'package:sport_timer/features/timer/domain/timer_status.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/user/domain/app_user.dart';
@@ -104,6 +109,27 @@ class _FakeSettingsRepository implements SettingsRepository {
     storedStyle = style;
     return const Success(null);
   }
+}
+
+class _UnusedAudioManager implements AudioManager {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _UnusedKeepAlive implements BackgroundKeepAlive {
+  @override
+  Future<void> stop() async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FailedActivityRecorder implements TimerActivityRecorder {
+  @override
+  Result<TimerActivityRun> start(TimerParams params) => Failure(Exception('No signed-in account'));
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 Widget _phoneFrame({
@@ -215,6 +241,9 @@ void main() {
       _FakeUserRepository(buildFixtureUser()),
     );
     getIt.registerSingleton<SettingsRepository>(settingsRepository);
+    getIt.registerSingleton<AudioManager>(_UnusedAudioManager());
+    getIt.registerSingleton<BackgroundKeepAlive>(_UnusedKeepAlive());
+    getIt.registerSingleton<TimerActivityRecorder>(_FailedActivityRecorder());
   });
 
   tearDown(() async {
@@ -412,6 +441,23 @@ void main() {
                 },
               );
             },
+          );
+
+          goldenTest(
+            'timer could not start',
+            fileName: 'timer_start_error',
+            constraints: _pairConstraints,
+            builder: () => _lightAndDarkGroup(
+              builder: () => const TimerPage(
+                params: TimerParams(
+                  preparationTime: Duration(seconds: 10),
+                  roundTime: Duration(minutes: 1),
+                  restTime: Duration(seconds: 15),
+                  rounds: 3,
+                  style: TimerStyle.ring,
+                ),
+              ),
+            ),
           );
 
           goldenTest(
