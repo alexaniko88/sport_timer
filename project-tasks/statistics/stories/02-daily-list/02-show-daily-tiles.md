@@ -8,7 +8,7 @@ Status: Not started.
 
 ## Dependencies
 
-[Previous task](01-add-daily-statistics-state.md).
+[Previous task](done/01-add-daily-statistics-state.md).
 
 ## Goal
 
