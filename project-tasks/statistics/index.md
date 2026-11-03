@@ -1,6 +1,6 @@
 # EPIC: Statistics
 
-Status: Recording, daily list and day details completed; visual activity story ready for planning.
+Status: Recording, daily list and day details completed; visual activity and deletion stories ready for planning.
 
 
 ## Goal
@@ -13,6 +13,7 @@ Automatically preserve completed training activity and show daily totals in the 
 2. [Show daily statistics](stories/done/02-daily-list/index.md): replace the Statistics placeholder with daily totals.
 3. [Explore a day's activity](stories/done/03-day-details/index.md): completed on the day-details branch; merge pending.
 4. [Visualize activity](stories/04-visualize-activity/index.md): agreed chart and calendar experience; ready for planning.
+5. [Delete statistics](stories/05-delete-statistics/index.md): clear the signed-in account's local history; ready for planning.
 
 Stories 1 and 2 provide the foundation for Stories 3 and 4. Story 4 does not depend on the day-details story.
 
@@ -30,7 +31,7 @@ Stories 1 and 2 provide the foundation for Stories 3 and 4. Story 4 does not dep
 - Store that date and completion offset explicitly. Later timezone changes must not regroup historical activity.
 - Each day combines activity from all runs for the signed-in account on this device.
 - Runs without completed activity do not appear in statistics.
-- Keep recorded history. Editing and deletion controls are outside the first version.
+- Keep recorded history by default. Deletion is covered by Story 5; editing remains outside the agreed scope.
 - Show newest dates first. Do not show empty days or individual timestamps in the daily list.
 
 ## Storage decision
