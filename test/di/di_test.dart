@@ -5,6 +5,7 @@ import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/statistics/data/activity_access.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
 import 'package:sport_timer/features/statistics/data/activity_database.dart';
+import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 
 class FakeActivityAccountSource implements ActivityAccountSource {
   bool cancelled = false;
@@ -30,8 +31,10 @@ void main() {
 
     final database = getIt<ActivityDatabase>();
     final access = getIt<ActivityAccess>();
+    final recorder = getIt<TimerActivityRecorder>();
     expect(getIt<ActivityDatabase>(), same(database));
     expect(getIt<ActivityAccess>(), same(access));
+    expect(getIt<TimerActivityRecorder>(), same(recorder));
 
     await getIt.reset();
     expect(accounts.cancelled, isTrue);

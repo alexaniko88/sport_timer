@@ -6,6 +6,7 @@ import 'package:sport_timer/features/statistics/data/activity_access.dart';
 import 'package:sport_timer/features/statistics/data/activity_database.dart';
 import 'package:sport_timer/features/statistics/data/sqflite_activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
+import 'package:sport_timer/features/statistics/domain/activity_session_creation.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
@@ -32,6 +33,8 @@ class FakeHandle implements ActivitySessionHandle {
   String get sessionId => 'run';
 }
 
+class FakeCreation implements ActivitySessionCreation {}
+
 class DelayedAccess extends ActivityAccess {
   final sessions = Completer<List<TimerSession>>();
   final phases = Completer<List<CompletedPhase>>();
@@ -54,6 +57,15 @@ class DelayedAccess extends ActivityAccess {
 }
 
 void main() {
+  const session = TimerSession(
+    id: 'run',
+    accountId: 'a',
+    startedAtUtcMs: 1000,
+    preparationDurationMs: 0,
+    workDurationMs: 30000,
+    restDurationMs: 10000,
+    roundCount: 2,
+  );
   late FakeAccounts accounts;
   late DelayedAccess access;
   late SqfliteActivityRepository repository;
@@ -96,5 +108,24 @@ void main() {
     access.session.complete(FakeHandle());
     accounts.change('b');
     expect(await pending, isA<Failure<ActivitySessionHandle>>());
+  });
+
+  test('preparing a session requires its signed-in owner', () {
+    expect(repository.prepareSession(session), isA<Success<ActivitySessionCreation>>());
+    accounts.change('b');
+    expect(repository.prepareSession(session), isA<Failure<ActivitySessionCreation>>());
+    accounts.change(null);
+    expect(repository.prepareSession(session), isA<Failure<ActivitySessionCreation>>());
+  });
+
+  test('rejects forged and foreign session creation capabilities', () async {
+    final creation = (repository.prepareSession(session) as Success<ActivitySessionCreation>).value;
+    final other = DelayedAccess(accounts);
+    addTearDown(other.close);
+    expect(await repository.createPreparedSession(FakeCreation()), isA<Failure<ActivitySessionHandle>>());
+    expect(
+      await SqfliteActivityRepository(other).createPreparedSession(creation),
+      isA<Failure<ActivitySessionHandle>>(),
+    );
   });
 }

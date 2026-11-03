@@ -1,12 +1,14 @@
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/statistics/data/activity_access.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/activity_session_creation.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 typedef _ActivityOperation<T> = Future<T> Function();
+typedef _SyncActivityOperation<T> = T Function();
 
 class SqfliteActivityRepository implements ActivityRepository {
   final ActivityAccess _access;
@@ -30,6 +32,24 @@ class SqfliteActivityRepository implements ActivityRepository {
       return Failure(Exception(error.message));
     }
   }
+
+  Result<T> _runSync<T>(_SyncActivityOperation<T> operation) {
+    try {
+      return Success(operation());
+    } on Exception catch (error) {
+      return Failure(error);
+    } on StateError catch (error) {
+      return Failure(Exception(error.message));
+    }
+  }
+
+  @override
+  Result<ActivitySessionCreation> prepareSession(TimerSession session) =>
+      _runSync(() => _access.prepareSession(session));
+
+  @override
+  Future<Result<ActivitySessionHandle>> createPreparedSession(ActivitySessionCreation creation) =>
+      _run(() => _access.createPreparedSession(creation));
 
   @override
   Future<Result<ActivitySessionHandle>> createSession(TimerSession session) =>

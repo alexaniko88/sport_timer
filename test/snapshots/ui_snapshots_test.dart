@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
@@ -13,6 +14,11 @@ import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
+import 'package:sport_timer/features/timer/domain/audio_manager.dart';
+import 'package:sport_timer/features/timer/domain/background_keep_alive.dart';
+import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
+import 'package:sport_timer/features/timer/domain/timer_params.dart';
+import 'package:sport_timer/features/timer/presentation/timer_page.dart';
 import 'package:sport_timer/features/timer/domain/timer_status.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/user/domain/app_user.dart';
@@ -28,6 +34,7 @@ import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 
 typedef _WidgetFactory = Widget Function();
 
+const String _wakelockChannel = 'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle';
 const Size _phoneSize = Size(390, 844);
 const BoxConstraints _pairConstraints = BoxConstraints(
   minWidth: 840,
@@ -104,6 +111,50 @@ class _FakeSettingsRepository implements SettingsRepository {
     storedStyle = style;
     return const Success(null);
   }
+}
+
+class _SilentAudioManager implements AudioManager {
+  @override
+  void playRoundFinishSound() {}
+
+  @override
+  void playWorkoutDoneSound() {}
+
+  @override
+  void playRoundStartSound() {}
+
+  @override
+  void playPreparationSound() {}
+
+  @override
+  Future<void> dispose() async {}
+}
+
+class _SilentKeepAlive implements BackgroundKeepAlive {
+  @override
+  Future<void> start({
+    required String notificationTitle,
+    required String notificationText,
+    required KeepAliveAction onPause,
+    required KeepAliveAction onResume,
+  }) async {}
+
+  @override
+  Future<void> setPaused({required bool isPaused}) async {}
+
+  @override
+  Future<void> updateText({required String text}) async {}
+
+  @override
+  Future<void> stop() async {}
+}
+
+class _FailedActivityRecorder implements TimerActivityRecorder {
+  @override
+  Result<TimerActivityRun> start(TimerParams params) => Failure(Exception('No signed-in account'));
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 Widget _phoneFrame({
@@ -215,9 +266,18 @@ void main() {
       _FakeUserRepository(buildFixtureUser()),
     );
     getIt.registerSingleton<SettingsRepository>(settingsRepository);
+    getIt.registerSingleton<AudioManager>(_SilentAudioManager());
+    getIt.registerSingleton<BackgroundKeepAlive>(_SilentKeepAlive());
+    getIt.registerSingleton<TimerActivityRecorder>(_FailedActivityRecorder());
+    // TimerPage keeps the screen on, and the platform channel does not exist in tests.
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+      _wakelockChannel,
+      (_) async => const StandardMessageCodec().encodeMessage([null]),
+    );
   });
 
   tearDown(() async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(_wakelockChannel, null);
     await getIt.reset();
   });
 
@@ -412,6 +472,29 @@ void main() {
                 },
               );
             },
+          );
+
+          goldenTest(
+            'timer recording notice',
+            fileName: 'timer_recording_notice',
+            constraints: _pairConstraints,
+            // The notice is shown after the first frame and finishes its entrance animation.
+            pumpBeforeTest: (tester) async {
+              await tester.pump();
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 500));
+            },
+            builder: () => _lightAndDarkGroup(
+              builder: () => const TimerPage(
+                params: TimerParams(
+                  preparationTime: Duration(seconds: 10),
+                  roundTime: Duration(minutes: 1),
+                  restTime: Duration(seconds: 15),
+                  rounds: 3,
+                  style: TimerStyle.ring,
+                ),
+              ),
+            ),
           );
 
           goldenTest(

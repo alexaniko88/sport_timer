@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/timer/domain/timer_schedule.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
@@ -22,11 +23,14 @@ class TimerViewModel {
   static const Duration _staleGap = Duration(seconds: 2);
 
   final TimerSchedule _schedule;
+  final TimerParams _params;
   final AudioManager _audioManager;
   final BackgroundKeepAlive _keepAlive;
+  final TimerActivityRecorder? _activityRecorder;
   final TimeSource _timeSource;
   final ValueNotifier<TimerState> _state;
   Timer? _timer;
+  TimerActivityRun? _activityRun;
   Duration? _runningSince;
   Duration _elapsedBeforeRun = Duration.zero;
   Duration _lastTickElapsed = Duration.zero;
@@ -36,23 +40,36 @@ class TimerViewModel {
   int? _notifiedRound;
   bool _hasStarted = false;
   bool _disposed = false;
+  bool _recordingUnavailable = false;
 
   TimerViewModel(
     TimerParams params,
     AudioManager audioManager,
     BackgroundKeepAlive keepAlive, {
     TimeSource? timeSource,
+    TimerActivityRecorder? activityRecorder,
   }) : this._(
           TimerSchedule.fromParams(params),
+          params,
           audioManager,
           keepAlive,
           timeSource ?? _stopwatchTimeSource(),
+          activityRecorder,
         );
 
-  TimerViewModel._(this._schedule, this._audioManager, this._keepAlive, this._timeSource)
-      : _state = ValueNotifier(_stateFrom(_schedule, _schedule.positionAt(0)));
+  TimerViewModel._(
+    this._schedule,
+    this._params,
+    this._audioManager,
+    this._keepAlive,
+    this._timeSource,
+    this._activityRecorder,
+  ) : _state = ValueNotifier(_stateFrom(_schedule, _schedule.positionAt(0)));
 
   ValueListenable<TimerState> get state => _state;
+
+  // True when this workout runs without saving its activity. The timer itself is not affected.
+  bool get recordingUnavailable => _recordingUnavailable;
 
   // A Stopwatch is monotonic, so changing the device clock cannot move the timer.
   static TimeSource _stopwatchTimeSource() {
@@ -82,6 +99,13 @@ class TimerViewModel {
     required NotificationTextBuilder notificationTextBuilder,
   }) {
     if (_disposed || _hasStarted) return;
+    _activityRecorder?.start(_params).fold(
+          onSuccess: (run) => _activityRun = run,
+          onFailure: (error) {
+            _recordingUnavailable = true;
+            debugPrint('$runtimeType:: activity recording could not start: $error');
+          },
+        );
     _hasStarted = true;
     _notificationTextBuilder = notificationTextBuilder;
     _notifiedStatus = _state.value.timerStatus;
@@ -100,10 +124,14 @@ class TimerViewModel {
     if (_runningSince == null) {
       debugPrint("$runtimeType:: resumed");
       _keepAlive.setPaused(isPaused: false);
+      _activityRun?.resume();
       _run();
     } else {
+      _tick();
+      if (_runningSince == null) return;
       debugPrint("$runtimeType:: paused");
       _elapsedBeforeRun = _elapsed;
+      _activityRun?.pause(_elapsedBeforeRun);
       _runningSince = null;
       _timer?.cancel();
       _state.value = _state.value.copyWith(isPaused: true);
@@ -121,6 +149,9 @@ class TimerViewModel {
   }
 
   void dispose() {
+    if (_disposed) return;
+    _activityRun?.end(_elapsed);
+    _activityRun = null;
     _disposed = true;
     _timer?.cancel();
     _keepAlive.stop();
@@ -132,11 +163,18 @@ class TimerViewModel {
     _tick();
   }
 
+  void reconcileProgress() {
+    if (_disposed || !_hasStarted || _runningSince == null) return;
+    _tick();
+  }
+
   // Each tick reads the time source instead of counting ticks, so a late tick
   // still shows the right time.
   void _tick() {
     if (_disposed) return;
+    _timer?.cancel();
     final elapsed = _elapsed;
+    _activityRun?.reconcile(elapsed);
     final position = _schedule.positionAt(elapsed.inSeconds);
     final next = _stateFrom(_schedule, position);
     _state.value = next;
@@ -152,6 +190,8 @@ class TimerViewModel {
     _updateNotificationText(next);
 
     if (next.timerStatus == TimerStatus.finished) {
+      _activityRun?.end(elapsed);
+      _activityRun = null;
       _runningSince = null;
       _elapsedBeforeRun = elapsed;
       _keepAlive.stop();

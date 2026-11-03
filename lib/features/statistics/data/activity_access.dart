@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:sport_timer/features/statistics/data/activity_database.dart';
 import 'package:sport_timer/features/statistics/data/extensions/activity_row_extension.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
+import 'package:sport_timer/features/statistics/domain/activity_session_creation.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
@@ -15,6 +16,13 @@ class _ActivitySessionHandle implements ActivitySessionHandle {
   final String sessionId;
 
   _ActivitySessionHandle(this.issuer, this.accountId, this.sessionId);
+}
+
+class _ActivitySessionCreation implements ActivitySessionCreation {
+  final Object issuer;
+  final TimerSession session;
+
+  _ActivitySessionCreation(this.issuer, this.session);
 }
 
 class ActivityAccess {
@@ -64,9 +72,21 @@ class ActivityAccess {
     if (!_closed) _changes.add(null);
   }
 
-  Future<ActivitySessionHandle> createSession(TimerSession session) async {
+  ActivitySessionCreation prepareSession(TimerSession session) {
     final account = _requireAccount();
     if (session.accountId != account) throw StateError('Session belongs to another account');
+    return _ActivitySessionCreation(this, session);
+  }
+
+  Future<ActivitySessionHandle> createSession(TimerSession session) async =>
+      createPreparedSession(prepareSession(session));
+
+  Future<ActivitySessionHandle> createPreparedSession(ActivitySessionCreation creation) async {
+    if (_closed || creation is! _ActivitySessionCreation || !identical(creation.issuer, this)) {
+      throw StateError('Invalid activity session creation');
+    }
+    final session = creation.session;
+    final account = session.accountId;
     final db = await _database.connection;
     await db.transaction((txn) async {
       final existing = await txn.query('timer_sessions', where: 'id = ?', whereArgs: [session.id]);

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
+import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 import 'package:sport_timer/features/timer/domain/timer_status.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
 import 'package:sport_timer/features/timer/presentation/timer_view_model.dart';
@@ -23,15 +24,28 @@ class TimerPage extends StatefulWidget {
   State<TimerPage> createState() => _TimerPageState();
 }
 
-class _TimerPageState extends State<TimerPage> {
+class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
+  static const _noticeDuration = Duration(seconds: 3);
+
   late final TimerViewModel _viewModel;
+  bool _recordingNoticeShown = false;
+  bool _screenKeptOn = false;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = TimerViewModel(widget.params, getIt(), getIt());
-    // Keeps the screen on during a workout.
-    WakelockPlus.enable();
+    _viewModel = TimerViewModel(
+      widget.params,
+      getIt(),
+      getIt(),
+      activityRecorder: getIt<TimerActivityRecorder>(),
+    );
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _viewModel.reconcileProgress();
   }
 
   // The localized title needs the context, which is not ready in initState.
@@ -52,11 +66,37 @@ class _TimerPageState extends State<TimerPage> {
         };
       },
     );
+    if (!_screenKeptOn) {
+      _screenKeptOn = true;
+      WakelockPlus.enable();
+    }
+    if (_viewModel.recordingUnavailable && !_recordingNoticeShown) {
+      _recordingNoticeShown = true;
+      // A snackbar cannot be shown while the dependencies change, so wait for the first frame.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showRecordingNotice();
+      });
+    }
+  }
+
+  void _showRecordingNotice() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        // FIXME-ALEX: hardcoded English, add to translations.
+        // key: timerRecordingUnavailable
+        // description: Short notice shown when the workout runs but its activity cannot be saved to the statistics.
+        // en: Could not save this workout to your statistics.
+        content: Text('Could not save this workout to your statistics.'),
+        duration: _noticeDuration,
+        showCloseIcon: true,
+      ),
+    );
   }
 
   @override
   void dispose() {
-    WakelockPlus.disable();
+    WidgetsBinding.instance.removeObserver(this);
+    if (_screenKeptOn) WakelockPlus.disable();
     _viewModel.dispose();
     super.dispose();
   }
