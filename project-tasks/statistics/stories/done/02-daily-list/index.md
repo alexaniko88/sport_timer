@@ -1,6 +1,6 @@
 # STORY 2: Show daily statistics
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
 Status: Agreed scope; depends on Story 1.
 
@@ -28,7 +28,7 @@ The example illustrates content, not a fixed layout. Choose readable formatting 
 
 1. [Add daily statistics loading/state](done/01-add-daily-statistics-state.md).
 2. [Replace placeholder content with daily tiles](done/02-show-daily-tiles.md).
-3. [Verify summaries and screen states](03-verify-daily-statistics.md).
+3. [Verify summaries and screen states](done/03-verify-daily-statistics.md).
 
 ## Acceptance criteria
 
@@ -44,5 +44,5 @@ The example illustrates content, not a fixed layout. Choose readable formatting 
 
 ## Dependencies
 
-- [Story 1: Record completed activity](../done/01-record-activity/index.md).
-- [Story 3: Day details](../../stories/03-day-details/index.md) may later make the tiles navigable; it must not block this daily-list release.
+- [Story 1: Record completed activity](../01-record-activity/index.md).
+- [Story 3: Day details](../../03-day-details/index.md) may later make the tiles navigable; it must not block this daily-list release.
