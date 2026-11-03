@@ -13,7 +13,7 @@ Make the app feel consistent with the current Templates page while allowing Time
 - Timer Setup retains its four existing settings, selectors, persistence and timer launch behavior.
 - Story 1 preserves the current Start presentation. Story 2 owns its removal from Templates; Story 3 owns its redesign on Timer Setup.
 - The first delivery is the centered timer setup grid. Wheel styling is separate provisional work.
-- Other screens, active timer layouts, navigation changes and new features are outside the timer setup grid delivery. Templates navigation is separately agreed in Story 2. App-wide border widths and corner radii belong to Story 4. Remaining app consistency stays in [IMP-01](../improvements/01-unify-styles-app-wide.md); do not duplicate work between these entries.
+- Other screens, active timer layouts, navigation changes and new features are outside the timer setup grid delivery. Templates navigation is separately agreed in Story 2. App-wide border widths and corner radii belong to Story 4. Remaining app consistency stays in [IMP-01](../improvements/done/01-unify-styles-app-wide.md); do not duplicate work between these entries.
 
 - Home will retain Timer Setup and Statistics; Templates moves to a separate drawer destination under Story 2. Start then exists only on Timer Setup, superseding the shared-Start requirement for that delivery.
 

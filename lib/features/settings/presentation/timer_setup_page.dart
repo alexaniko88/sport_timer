@@ -15,6 +15,7 @@ import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/extensions/theme_context.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_button.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 
 class TimerSetupPage extends StatelessWidget {
   final SettingsViewModel viewModel;
@@ -36,7 +37,8 @@ class TimerSetupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final timerColors = context.timerColors;
     final l10n = context.l10n;
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return ValueListenableBuilder<SettingsState>(
       valueListenable: viewModel.state,
@@ -79,16 +81,19 @@ class TimerSetupPage extends StatelessWidget {
                     if (state.selectedTemplateId case final id?) ...[
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: TextButton(
-                          onPressed: onTemplatesPressed,
-                          style: TextButton.styleFrom(
-                            backgroundColor: colorScheme.surfaceContainer,
-                            side: BorderSide(color: colorScheme.outlineVariant),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppRadius.r12),
+                        child: Semantics(
+                          button: true,
+                          child: AppSurface(
+                            onTap: onTemplatesPressed,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.s16,
+                              vertical: AppSpacing.s16,
+                            ),
+                            child: Text(
+                              l10n.setupTemplateLabel(l10n.templateName(id)),
+                              style: theme.textTheme.labelLarge?.copyWith(color: colorScheme.primary),
                             ),
                           ),
-                          child: Text(l10n.setupTemplateLabel(l10n.templateName(id))),
                         ),
                       ),
                       const Gap(AppSpacing.s8),
@@ -208,8 +213,6 @@ class _SessionOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colorScheme = Theme.of(context).colorScheme;
-    final radius = BorderRadius.circular(AppRadius.r12);
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
@@ -222,50 +225,41 @@ class _SessionOverview extends StatelessWidget {
         label: l10n.homeStartButton,
         value: '${l10n.setupSessionLength}: $formattedDuration',
         onTap: onStartPressed,
-        child: Material(
-          color: colorScheme.surfaceContainer,
-          shape: RoundedRectangleBorder(
-            borderRadius: radius,
-            side: BorderSide(color: colorScheme.outlineVariant),
-          ),
-          child: InkWell(
-            onTap: onStartPressed,
-            excludeFromSemantics: true,
-            borderRadius: radius,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.s16),
-              child: ExcludeSemantics(
-                child: Column(
+        child: AppSurface(
+          onTap: onStartPressed,
+          excludeFromSemantics: true,
+          padding: const EdgeInsets.all(AppSpacing.s16),
+          child: ExcludeSemantics(
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(child: Text(l10n.setupSessionLength)),
-                        const SizedBox(width: AppSpacing.s8),
-                        Text(formattedDuration),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.s8),
-                    ExcludeFocus(
-                      child: IgnorePointer(
-                        child: FilledButtonTheme(
-                          data: FilledButtonThemeData(
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size(0, 48),
-                              shape: RoundedRectangleBorder(borderRadius: radius),
-                            ),
-                          ),
-                          child: AppButton.primary(
-                            label: l10n.homeStartButton,
-                            icon: const Icon(Icons.play_arrow),
-                            onPressed: onStartPressed,
-                            isExpanded: true,
-                          ),
-                        ),
-                      ),
-                    ),
+                    Expanded(child: Text(l10n.setupSessionLength)),
+                    const SizedBox(width: AppSpacing.s8),
+                    Text(formattedDuration),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.s8),
+                ExcludeFocus(
+                  child: IgnorePointer(
+                    child: FilledButtonTheme(
+                      // A local button theme replaces the app one, so keep its shape and only change the height.
+                      data: FilledButtonThemeData(
+                        style: Theme.of(context).filledButtonTheme.style?.copyWith(
+                                  minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
+                                ) ??
+                            FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+                      ),
+                      child: AppButton.primary(
+                        label: l10n.homeStartButton,
+                        icon: const Icon(Icons.play_arrow),
+                        onPressed: onStartPressed,
+                        isExpanded: true,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

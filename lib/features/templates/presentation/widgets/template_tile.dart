@@ -3,13 +3,14 @@ import 'package:gap/gap.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
+import 'package:sport_timer/shared/presentation/extensions/text_theme_extension.dart';
+import 'package:sport_timer/shared/presentation/theme/app_alpha.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 import 'package:sport_timer/shared/presentation/extensions/theme_context.dart';
 
 class TemplateTile extends StatelessWidget {
   static const double _phaseBarHeight = 6;
-  static const double _selectedBorderWidth = 2;
-  static const double _borderWidth = 1;
 
   final String name;
   final IconData icon;
@@ -36,26 +37,13 @@ class TemplateTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final borderRadius = BorderRadius.circular(AppRadius.r12);
     final total = _formatDuration(l10n: l10n, duration: totalTime);
     final customColor = context.timerColors.roundCounterBorder;
 
-    final Color background;
-    final Color borderColor;
-    final double borderWidth;
-    if (isSelected) {
-      background = colorScheme.surfaceContainerHigh;
-      borderColor = colorScheme.primary;
-      borderWidth = _selectedBorderWidth;
-    } else if (isCustom) {
-      background = Color.alphaBlend(customColor.withValues(alpha: 0.08), colorScheme.surfaceContainer);
-      borderColor = customColor;
-      borderWidth = _borderWidth;
-    } else {
-      background = colorScheme.surfaceContainer;
-      borderColor = colorScheme.outlineVariant;
-      borderWidth = _borderWidth;
-    }
+    final Color? background = isCustom && !isSelected
+        ? Color.alphaBlend(customColor.withValues(alpha: AppAlpha.tint), colorScheme.surfaceContainer)
+        : null;
+    final Color? borderColor = isCustom ? customColor : null;
 
     return Semantics(
       container: true,
@@ -78,82 +66,70 @@ class TemplateTile extends StatelessWidget {
               settings.rounds,
               total,
             ),
-      child: Material(
-        color: Colors.transparent,
-        child: Ink(
-          key: const Key('template-tile-surface'),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: borderRadius,
-            border: Border.all(color: borderColor, width: borderWidth),
-          ),
-          child: InkWell(
-            borderRadius: borderRadius,
-            onTap: onTap,
-            child: Padding(
-              // Selected has a thicker border, so the padding shrinks by the same amount to keep the tile size.
-              padding: EdgeInsets.all(AppSpacing.s12 - (borderWidth - _borderWidth)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
+      child: AppSurface(
+        surfaceKey: const Key('template-tile-surface'),
+        isSelected: isSelected,
+        color: background,
+        borderColor: borderColor,
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: colorScheme.primary),
+                const Gap(AppSpacing.s12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(icon, color: colorScheme.primary),
-                      const Gap(AppSpacing.s12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              isCustom
-                                  ? l10n.templateCustomTileSummary(
-                                      _formatClock(settings.preparationTime),
-                                      _formatClock(settings.roundTime),
-                                      _formatClock(settings.restTime),
-                                      settings.rounds,
-                                    )
-                                  : l10n.templateTileSummary(
-                                      _formatClock(settings.roundTime),
-                                      _formatClock(settings.restTime),
-                                      settings.rounds,
-                                    ),
-                              maxLines: isCustom ? null : 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Gap(AppSpacing.s8),
-                      Visibility(
-                        visible: isSelected,
-                        maintainSize: true,
-                        maintainAnimation: true,
-                        maintainState: true,
-                        child: Icon(Icons.check_circle, color: colorScheme.primary),
-                      ),
-                      const Gap(AppSpacing.s8),
                       Text(
-                        total,
+                        name,
                         maxLines: 1,
-                        softWrap: false,
-                        style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.tileTitle,
+                      ),
+                      Text(
+                        isCustom
+                            ? l10n.templateCustomTileSummary(
+                                _formatClock(settings.preparationTime),
+                                _formatClock(settings.roundTime),
+                                _formatClock(settings.restTime),
+                                settings.rounds,
+                              )
+                            : l10n.templateTileSummary(
+                                _formatClock(settings.roundTime),
+                                _formatClock(settings.restTime),
+                                settings.rounds,
+                              ),
+                        maxLines: isCustom ? null : 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.tileSecondary.copyWith(color: colorScheme.onSurfaceVariant),
                       ),
                     ],
                   ),
-                  const Gap(AppSpacing.s12),
-                  _PhaseBar(settings: settings),
-                ],
-              ),
+                ),
+                const Gap(AppSpacing.s8),
+                Visibility(
+                  visible: isSelected,
+                  maintainSize: true,
+                  maintainAnimation: true,
+                  maintainState: true,
+                  child: Icon(Icons.check_circle, color: colorScheme.primary),
+                ),
+                const Gap(AppSpacing.s8),
+                Text(
+                  total,
+                  maxLines: 1,
+                  softWrap: false,
+                  style: textTheme.tileTitle,
+                ),
+              ],
             ),
-          ),
+            const Gap(AppSpacing.s12),
+            _PhaseBar(settings: settings),
+          ],
         ),
       ),
     );

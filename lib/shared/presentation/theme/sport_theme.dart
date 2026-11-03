@@ -4,10 +4,6 @@ import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/theme/timer_colors.dart';
 
 abstract final class SportTheme {
-  static const double _cardElevation = 4;
-  // Larger than the Material 3 default of 56 on purpose, because the start button is the main action.
-  static const double _extendedFabHeight = 80;
-
   static ThemeData get light => _build(
         brightness: Brightness.light,
         timerColors: TimerColors.light,
@@ -31,8 +27,9 @@ abstract final class SportTheme {
       useMaterial3: true,
     );
     final barColor = brightness == Brightness.light ? colorScheme.inversePrimary : colorScheme.surfaceContainer;
-    final inputBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppRadius.r10),
+
+    final buttonShape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.r12),
     );
 
     return base.copyWith(
@@ -42,20 +39,12 @@ abstract final class SportTheme {
         backgroundColor: barColor,
         unselectedItemColor: colorScheme.onSurfaceVariant,
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        border: inputBorder,
-        enabledBorder: inputBorder,
-        focusedBorder: inputBorder,
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        extendedSizeConstraints: const BoxConstraints.tightFor(height: _extendedFabHeight),
-        extendedTextStyle: base.textTheme.titleMedium,
-      ),
-      cardTheme: CardThemeData(
-        elevation: _cardElevation,
+      filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(shape: buttonShape)),
+      outlinedButtonTheme: OutlinedButtonThemeData(style: OutlinedButton.styleFrom(shape: buttonShape)),
+      textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(shape: buttonShape)),
+      dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.r12),
+          borderRadius: BorderRadius.circular(AppRadius.r20),
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(

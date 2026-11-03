@@ -30,6 +30,8 @@ As a user, I want consistent corner shapes and border thickness across the app s
 
 ## Dependencies and open decisions
 
-No pending UI story is a prerequisite for the audit. Verify the implementation checkout and coordinate with Stories 1–3 and provisional picker styling; do not implement their unrelated layout work. Record how any existing explicit border requirements map to the shared rules, and resolve conflicts before migration. The broader [styling improvement](../../../improvements/01-unify-styles-app-wide.md) excludes this story's scope.
+No pending UI story is a prerequisite for the audit. Verify the implementation checkout and coordinate with Stories 1–3 and provisional picker styling; do not implement their unrelated layout work. Record how any existing explicit border requirements map to the shared rules, and resolve conflicts before migration. The broader [styling improvement](../../../improvements/done/01-unify-styles-app-wide.md) excludes this story's scope.
 
 Task UI 4.1 must settle the radius scale, border widths by role/state, circular or pill-shaped exceptions, and where shared definitions belong. No numeric values or new shared API are approved by this backlog. Backlog agreement does not approve application code changes.
+
+Update: [IMP-01](../../../improvements/done/01-unify-styles-app-wide.md) delivered the shared radius scale, border widths, button and dialog shapes and exceptions for the whole app on `improve/unify-app-styles` (pending PR and merge). Before planning Task UI 4.1 or UI 4.2, check what that task already settled and archive these tasks only if its result covers them.

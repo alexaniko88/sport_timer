@@ -160,6 +160,10 @@
   "@pickerSeconds": {
     "description": "Column title above the seconds wheel in the time picker."
   },
+  "statisticsRetryButton": "Retry",
+  "@statisticsRetryButton": {
+    "description": "Button on the statistics page that loads the statistics again after an error."
+  },
   "statisticsSectionTitle": "Here are your training statistics",
   "@statisticsSectionTitle": {
     "description": "Title of the statistics section."

@@ -47,7 +47,7 @@ Observed in the current code:
 Decisions:
 
 - The "Custom" card is a visual indicator only. Saving it as a template belongs to Story 3.
-- Style unification is limited to the Templates page; Story 4 adds only the agreed Setup label and shortcut. The app-wide pass and the drawer rethink are separate provisional improvements: [IMP-01](../improvements/01-unify-styles-app-wide.md) and [IMP-02](../improvements/02-rethink-navigation-drawer.md).
+- Style unification is limited to the Templates page; Story 4 adds only the agreed Setup label and shortcut. The app-wide pass and the drawer rethink are separate provisional improvements: [IMP-01](../improvements/done/01-unify-styles-app-wide.md) and [IMP-02](../improvements/02-rethink-navigation-drawer.md).
 
 ## Stories
 

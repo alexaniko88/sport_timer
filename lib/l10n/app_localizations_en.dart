@@ -121,6 +121,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickerSeconds => 'Seconds';
 
   @override
+  String get statisticsRetryButton => 'Retry';
+
+  @override
   String get statisticsSectionTitle => 'Here are your training statistics';
 
   @override

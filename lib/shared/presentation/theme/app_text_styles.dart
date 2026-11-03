@@ -28,7 +28,5 @@ abstract final class AppTextStyles {
   );
   static const TextStyle timerInfo = TextStyle(fontSize: 24);
 
-  static const TextStyle pickerSelected = TextStyle(fontSize: 32, fontWeight: FontWeight.bold);
-  static const TextStyle pickerUnselected = TextStyle(fontSize: 24);
   static const TextStyle pickerSeparator = TextStyle(fontSize: 32, fontWeight: FontWeight.bold);
 }

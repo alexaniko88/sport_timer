@@ -27,7 +27,7 @@ void main() {
       expect(result.preparation, TimerColors.light.preparation);
       expect(result.onAccent, TimerColors.light.onAccent);
       expect(result.onFinished, TimerColors.light.onFinished);
-      expect(result.progressEnd, TimerColors.light.progressEnd);
+      expect(result.round, TimerColors.light.round);
     });
 
     test('returns the second colors at 1', () {
@@ -36,7 +36,7 @@ void main() {
       expect(result.preparation, TimerColors.dark.preparation);
       expect(result.onAccent, TimerColors.dark.onAccent);
       expect(result.onFinished, TimerColors.dark.onFinished);
-      expect(result.progressEnd, TimerColors.dark.progressEnd);
+      expect(result.round, TimerColors.dark.round);
     });
 
     test('returns itself when the other is not TimerColors', () {

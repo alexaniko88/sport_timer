@@ -10,6 +10,6 @@ Read the code and follow the patterns already in it. Report in about 300 words, 
 - Which logic needs tests and which kind.
 - An Open Decisions list, each with a recommended option.
 Use `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
-Before you start, read `CLAUDE.md` (layout, layer rules, "Extensions") and `.claude/rules/dart-style.md`.
+Before you start, read `CLAUDE.md` (layout, layer rules, "Extensions", "Styling and theme") and `.claude/rules/dart-style.md`.
 When a step adds a helper on one type, name the extension and its file in the `extensions/` folder of its layer, and the layer of every new file.
 """
