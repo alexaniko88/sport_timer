@@ -28,7 +28,7 @@ These records enable this story without collecting partial phases as completed a
 ## Tasks
 
 1. [Confirm day-detail behavior and layout](done/01-confirm-day-details.md).
-2. [Query activity for a selected day](02-query-day-activity.md).
+2. [Query activity for a selected day](done/02-query-day-activity.md).
 3. [Add navigation and the agreed detail view](03-show-day-details.md).
 4. [Verify navigation and grouping](04-verify-day-details.md).
 

@@ -1,12 +1,12 @@
 # TASK 3.2: Query activity for a selected day
 
-Story: [Story 3 overview](index.md)
+Story: [Story 3 overview](../index.md)
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
 ## Dependencies
 
-[Previous task](done/01-confirm-day-details.md).
+[Previous task](01-confirm-day-details.md).
 
 ## Goal
 
@@ -23,3 +23,9 @@ Each item below is a completion requirement for this task:
 ## Orchestration
 
 Read the story and epic before starting. Inspect current code and propose small substeps for approval. Complete one approved file or concern per turn and wait for user validation before continuing. Include relevant tests and scoped checks with implementation; a later verification task does not defer required validation.
+
+## Completion evidence
+
+- Implemented an account-scoped selected-day query grouped by run, preserving original settings and separating phases by their stored completion date.
+- Focused repository tests passed (8); the full Flutter test suite passed (396); formatting and scoped analysis passed. SQLite integration coverage was added but could not run because no Android device was available.
+- Review passed without findings. Completed on `feat/query-day-activity`; merge is pending.

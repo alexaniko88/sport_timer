@@ -10,6 +10,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
+import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 class FakeAccounts implements ActivityAccountSource {
@@ -39,6 +40,7 @@ class DelayedAccess extends ActivityAccess {
   final sessions = Completer<List<TimerSession>>();
   final phases = Completer<List<CompletedPhase>>();
   final days = Completer<List<DailyActivity>>();
+  final dayRuns = Completer<List<DayRunActivity>>();
   final session = Completer<ActivitySessionHandle>();
 
   DelayedAccess(ActivityAccountSource accounts) : super(ActivityDatabase(), accounts);
@@ -51,6 +53,9 @@ class DelayedAccess extends ActivityAccess {
 
   @override
   Future<List<DailyActivity>> readDailyActivity() => days.future;
+
+  @override
+  Future<List<DayRunActivity>> readDayActivity(String localDate) => dayRuns.future;
 
   @override
   Future<ActivitySessionHandle> openSession(String sessionId) => session.future;
@@ -101,6 +106,20 @@ void main() {
     access.days.complete([]);
     accounts.change(null);
     expect(await pending, isA<Failure<List<DailyActivity>>>());
+  });
+
+  test('discards day runs if the account changes after access completes', () async {
+    final pending = repository.readDayActivity('2026-11-02');
+    access.dayRuns.complete([]);
+    accounts.change('b');
+    accounts.change('a');
+    expect(await pending, isA<Failure<List<DayRunActivity>>>());
+  });
+
+  test('returns a failure when the day query fails', () async {
+    final pending = repository.readDayActivity('2026-11-02');
+    access.dayRuns.completeError(StateError('query failed'));
+    expect(await pending, isA<Failure<List<DayRunActivity>>>());
   });
 
   test('discards a session handle if the account changes after access completes', () async {

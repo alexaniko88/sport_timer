@@ -1,5 +1,6 @@
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
+import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 extension ActivityRowExtension on Map<String, Object?> {
@@ -31,5 +32,15 @@ extension ActivityRowExtension on Map<String, Object?> {
         roundCount: this['round_count'] as int,
         workDurationMs: this['work_duration_ms'] as int,
         restDurationMs: this['rest_duration_ms'] as int,
+      );
+
+  DayRunActivity toDayRunActivity() => DayRunActivity(
+        session: toTimerSession(),
+        activity: DailyActivity(
+          localDate: this['local_completion_date'] as String,
+          roundCount: this['day_round_count'] as int,
+          workDurationMs: this['day_work_duration_ms'] as int,
+          restDurationMs: this['day_rest_duration_ms'] as int,
+        ),
       );
 }

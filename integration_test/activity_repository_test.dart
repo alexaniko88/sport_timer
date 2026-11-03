@@ -12,6 +12,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
+import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -154,6 +155,75 @@ void main() {
       const DailyActivity(localDate: '2026-11-01', roundCount: 1, workDurationMs: 30000, restDurationMs: 0),
     ]);
     expect(days[1].totalDurationMs, 85000);
+  });
+
+  testWidgets('day activity groups runs by fixed date and account', (tester) async {
+    accounts.change('a');
+    final older = session('older', 'a');
+    const newer = TimerSession(
+      id: 'newer',
+      accountId: 'a',
+      startedAtUtcMs: 2000,
+      preparationDurationMs: 5000,
+      workDurationMs: 45000,
+      restDurationMs: 15000,
+      roundCount: 3,
+    );
+    final oldHandle = (await repository.createSession(older) as Success<ActivitySessionHandle>).value;
+    final newHandle = (await repository.createSession(newer) as Success<ActivitySessionHandle>).value;
+    await repository.createSession(session('empty', 'a'));
+    await repository.recordPhases(
+      session: oldHandle,
+      phases: [
+        phase(id: 'old-work', runId: 'older', position: 0),
+        phase(id: 'old-rest', runId: 'older', position: 1, type: CompletedPhaseType.rest, duration: 10000),
+        phase(
+          id: 'next-day',
+          runId: 'older',
+          position: 2,
+          type: CompletedPhaseType.rest,
+          duration: 15000,
+          date: '2026-11-03',
+        ),
+      ],
+    );
+    await repository.recordPhases(
+      session: newHandle,
+      phases: [
+        phase(id: 'new-work', runId: 'newer', position: 0, duration: 45000),
+      ],
+    );
+    accounts.change('b');
+    final other = (await repository.createSession(session('other', 'b')) as Success<ActivitySessionHandle>).value;
+    await repository.recordPhases(session: other, phases: [phase(id: 'other-work', runId: 'other', position: 0)]);
+    final otherDay = (await repository.readDayActivity('2026-11-02') as Success<List<DayRunActivity>>).value;
+    expect(otherDay.map((entry) => entry.session.id), ['other']);
+    accounts.change('a');
+    final day = (await repository.readDayActivity('2026-11-02') as Success<List<DayRunActivity>>).value;
+    expect(day, [
+      const DayRunActivity(
+        session: newer,
+        activity: DailyActivity(localDate: '2026-11-02', roundCount: 1, workDurationMs: 45000, restDurationMs: 0),
+      ),
+      DayRunActivity(
+        session: older,
+        activity: const DailyActivity(
+          localDate: '2026-11-02',
+          roundCount: 1,
+          workDurationMs: 30000,
+          restDurationMs: 10000,
+        ),
+      ),
+    ]);
+    expect(day.last.activity.totalDurationMs, 40000);
+    final nextDay = (await repository.readDayActivity('2026-11-03') as Success<List<DayRunActivity>>).value;
+    expect(nextDay, [
+      DayRunActivity(
+        session: older,
+        activity: const DailyActivity(localDate: '2026-11-03', roundCount: 0, workDurationMs: 0, restDurationMs: 15000),
+      ),
+    ]);
+    expect((await repository.readDayActivity('2026-11-04') as Success<List<DayRunActivity>>).value, isEmpty);
   });
 
   testWidgets('account changes invalidate reads and notify listeners', (tester) async {
