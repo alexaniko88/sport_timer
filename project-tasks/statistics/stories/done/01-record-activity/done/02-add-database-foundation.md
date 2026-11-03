@@ -2,7 +2,7 @@
 
 Story: [Story 1 overview](../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 Status: Done with iOS validation deferred by user agreement.
 

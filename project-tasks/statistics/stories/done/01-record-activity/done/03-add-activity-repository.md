@@ -2,7 +2,7 @@
 
 Story: [Story 1 overview](../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 Status: Done on feature branch; pending PR and merge.
 

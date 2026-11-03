@@ -1,8 +1,8 @@
 # STORY 1: Automatically record completed activity
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
-Status: Database foundation completed with iOS validation deferred; activity recording remains pending.
+Status: Recording verification completed on feature branch; pending PR and merge. iOS background validation remains deferred.
 
 ## User outcome
 
@@ -43,7 +43,7 @@ The repository hides SQLite, keeps pending writes tied to the run's original acc
 2. [Add the database foundation](done/02-add-database-foundation.md).
 3. [Add the activity persistence interface](done/03-add-activity-repository.md).
 4. [Connect recording to timer progress](done/04-connect-timer-recording.md).
-5. [Verify persistence and timer integration](05-verify-recording.md).
+5. [Verify persistence and timer integration](done/05-verify-recording.md).
 
 ## Acceptance criteria
 

@@ -273,4 +273,46 @@ void main() {
     ]);
     expect(phases.map((phase) => phase.localCompletionDate), ['2026-11-02', '2026-11-02', '2026-11-01']);
   });
+
+  test('attributes a delayed callback to the day the phase finished', () async {
+    now = DateTime(2026, 11, 1, 23, 59, 40).toUtc();
+    final start = now;
+    final run = (recorder.start(params) as Success<TimerActivityRun>).value;
+    now = DateTime(2026, 11, 2, 0, 0, 10).toUtc();
+    run.end(const Duration(seconds: 30));
+    await Future<void>.delayed(Duration.zero);
+
+    final phases = repository.batches.single;
+    expect(phases.map((phase) => phase.localCompletionDate), ['2026-11-01', '2026-11-01', '2026-11-02']);
+    expect(phases.first.completedAtUtcMs, start.add(const Duration(seconds: 12)).millisecondsSinceEpoch);
+  });
+
+  test('attributes a phase after a pause spanning midnight to its completion day', () async {
+    now = DateTime(2026, 11, 1, 23, 59, 50).toUtc();
+    final run = (recorder.start(params) as Success<TimerActivityRun>).value;
+    now = now.add(const Duration(seconds: 7));
+    run.pause(const Duration(seconds: 7));
+    now = now.add(const Duration(seconds: 20));
+    run.resume();
+    now = now.add(const Duration(seconds: 5));
+    run.end(const Duration(seconds: 12));
+    await Future<void>.delayed(Duration.zero);
+
+    final phase = repository.batches.single.single;
+    expect(phase.localCompletionDate, '2026-11-02');
+    expect(phase.completedAtUtcMs, now.millisecondsSinceEpoch);
+    expect(phase.durationMs, 10000);
+  });
+
+  for (final elapsed in [11999, 12000, 12001]) {
+    test('ending at ${elapsed}ms records only completed phases', () async {
+      final run = (recorder.start(params) as Success<TimerActivityRun>).value;
+      now = now.add(Duration(milliseconds: elapsed));
+      run.end(Duration(milliseconds: elapsed));
+      await Future<void>.delayed(Duration.zero);
+
+      expect(repository.batches.expand((batch) => batch).length, elapsed < 12000 ? 0 : 1);
+      expect(repository.ends, hasLength(1));
+    });
+  }
 }

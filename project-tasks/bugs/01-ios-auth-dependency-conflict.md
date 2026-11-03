@@ -6,7 +6,7 @@ Status: Ready for diagnosis and planning.
 
 ## Problem and impact
 
-An unsigned iOS debug build fails during Swift Package Manager dependency resolution, before compilation. This blocks iOS builds and native validation, including the iOS checks for the [statistics database foundation](../statistics/stories/01-record-activity/done/02-add-database-foundation.md).
+An unsigned iOS debug build fails during Swift Package Manager dependency resolution, before compilation. This blocks iOS builds and native validation, including the iOS checks for the [statistics database foundation](../statistics/stories/done/01-record-activity/done/02-add-database-foundation.md).
 
 **Expected:** The iOS dependencies resolve and the app builds; Google sign-in and sign-out remain functional.
 

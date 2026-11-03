@@ -9,7 +9,7 @@ Automatically preserve completed training activity and show daily totals in the 
 
 ## Stories
 
-1. [Record completed activity](stories/01-record-activity/index.md): integrate the local database and reliably record completed work rounds and rests.
+1. [Record completed activity](stories/done/01-record-activity/index.md): integrate the local database and reliably record completed work rounds and rests.
 2. [Show daily statistics](stories/02-daily-list/index.md): replace the Statistics placeholder with daily totals.
 3. [Explore a day's activity](stories/03-day-details/index.md): provisional future scope; revisit before implementation.
 

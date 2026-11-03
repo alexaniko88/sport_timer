@@ -1,14 +1,18 @@
 # TASK 1.5: Verify persistence and timer integration
 
-Story: [Story 1 overview](index.md)
+Story: [Story 1 overview](../index.md)
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../../index.md)
 
-Status: Not started.
+Status: Done on feature branch; pending PR and merge.
+
+## Completion evidence
+
+Branch `improve/verify-activity-recording`, commit `aec2211`, adds recorder and SQLite integration tests. Analysis and 304 tests passed; 14 existing SQLite integration tests and the new recording integration test passed on Android. A short real-service background and lock check passed on an Android 12 phone. iOS, long-term background survival, and process-death recovery were not validated.
 
 ## Dependencies
 
-[Previous task](done/04-connect-timer-recording.md).
+[Previous task](04-connect-timer-recording.md).
 
 ## Goal
 

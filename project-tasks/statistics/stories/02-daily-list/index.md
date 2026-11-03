@@ -44,5 +44,5 @@ The example illustrates content, not a fixed layout. Choose readable formatting 
 
 ## Dependencies
 
-- [Story 1: Record completed activity](../../stories/01-record-activity/index.md).
+- [Story 1: Record completed activity](../done/01-record-activity/index.md).
 - [Story 3: Day details](../../stories/03-day-details/index.md) may later make the tiles navigable; it must not block this daily-list release.
