@@ -42,7 +42,7 @@ Read the parent story and follow the applicable orchestration workflow. Backlog 
 
 ## UI snapshot reference
 
-Before planning, inspect the relevant current UI snapshots: [setup_custom](../../../../../../../test/snapshots/goldens/setup_custom.png), [statistics](../../../../../../../test/snapshots/goldens/statistics.png). See the [snapshot index](../../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+Before planning, inspect the relevant current UI snapshots: [setup_custom](../../../../../../test/snapshots/goldens/setup_custom.png), [statistics](../../../../../../test/snapshots/goldens/statistics.png). See the [snapshot index](../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
 
 ## Completion evidence
 

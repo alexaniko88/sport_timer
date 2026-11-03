@@ -10,7 +10,7 @@ The app had shared building blocks for its look (spacing, radius, timer colors, 
 
 ## Final scope and decisions
 
-The audit found no gradients or hardcoded `Color(0x...)` values left in feature code, so the work was about shared surfaces, shapes and text roles. The user chose to include the corner radius and border width rules of [UI refactor Story 4](../../done/ui-refactor/stories/done/04-unify-borders-and-corners/index.md) in this task.
+The audit found no gradients or hardcoded `Color(0x...)` values left in feature code, so the work was about shared surfaces, shapes and text roles. The user chose to include the corner radius and border width rules of [UI refactor Story 4](../../ui-refactor/stories/done/04-unify-borders-and-corners/index.md) in this task.
 
 - One shared tile, `AppSurface`: `surfaceContainer` fill, 12 radius, 1 px `outlineVariant` border, and a 2 px primary border when selected, with the padding shrunk so the size does not change.
 - Radius scale 8, 12 and 20 (`AppRadius`) and border widths thin 1 and thick 2 (`AppBorderWidth`). Focus, disabled and error states change no border.
@@ -37,4 +37,4 @@ The visual check used the goldens only, as the user requested; no emulator or de
 
 ## Dependencies
 
-None remaining. [UI refactor Story 4](../../done/ui-refactor/stories/done/04-unify-borders-and-corners/index.md) overlaps with this work; see its note.
+None remaining. [UI refactor Story 4](../../ui-refactor/stories/done/04-unify-borders-and-corners/index.md) overlaps with this work; see its note.
