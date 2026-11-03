@@ -8,7 +8,7 @@ Status: Not started.
 
 ## Dependencies
 
-[Previous task](04-connect-timer-recording.md).
+[Previous task](done/04-connect-timer-recording.md).
 
 ## Goal
 

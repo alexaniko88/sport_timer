@@ -1,14 +1,18 @@
 # TASK 1.4: Connect recording to timer progress
 
-Story: [Story 1 overview](index.md)
+Story: [Story 1 overview](../index.md)
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
-Status: Not started.
+Status: Done on feature branch; pending PR and merge.
 
 ## Dependencies
 
-[Previous task](done/03-add-activity-repository.md).
+[Previous task](03-add-activity-repository.md).
+
+## Completion evidence
+
+Branch `feat/connect-timer-recording`, commit `f370ad5`, connects timer progress to account-bound recording and retry. Analysis and 299 tests passed, including the updated snapshots; independent review passed. The new SQLite account-switch integration test was not run because no Android device was detected. An unobserved clock or timezone change between progress updates cannot be timed precisely.
 
 ## Goal
 
