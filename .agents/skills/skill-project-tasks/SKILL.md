@@ -62,6 +62,10 @@ Use lowercase kebab-case for these documentation paths, including in Flutter pro
 
 Read only the repository instructions, existing backlog, and code needed to establish facts. Investigate technical facts yourself; ask the user about product choices. Verify current dependency capabilities in official documentation when a storage or library recommendation depends on them.
 
+Before creating any task, search all of `project-tasks/`, including standalone categories and archived `done/` folders, for the same or overlapping work. Search for related terms as well as the proposed title, then read possible matches and their parent context to compare scope and status. If the work already exists, point the user to it and update or extend it when appropriate instead of creating a duplicate. For a completed match, check its completion evidence and current behavior to distinguish a duplicate from a regression or further work; link a new follow-up to the completed task when appropriate. If the distinction remains unclear or completed work may need to be reopened, discuss it with the user before creating another task. Repeat this check for each task in a proposed split.
+
+Also look for a suitable existing epic and story for each new task, including archived epics and stories, without waiting for the user to name them. Match their outcomes and acceptance criteria, not just their titles or technical area. Prefer the most relevant existing hierarchy when the task belongs to its outcome (for example, a UI refactor belonging to a UI refactor epic and story); use a standalone category when no existing hierarchy fits and the request is a standalone bug or improvement. If multiple parents fit equally well, ask the user which to use. If new work belongs in an archived story or epic, restore the necessary parent folders to their active paths before adding it. Update their statuses and summaries to reflect the pending work, and update affected links and indexes. Preserve completed tasks, their statuses and evidence. Never overwrite an existing destination; resolve any collision before moving.
+
 Read the relevant task, its linked dependencies and parent context, and check the current checkout before treating an output as available.
 
 For a new idea with unresolved behavior, discuss before writing the backlog:
@@ -77,6 +81,8 @@ Once the behavior is clear, present the epic/story split and remaining decisions
 ## 2. Split the agreed scope
 
 Choose stories around useful outcomes, and tasks around cohesive deliverables that can be planned, implemented, and checked independently. A task can span several files; its orchestrator will split implementation into smaller steps. Do not create an arbitrary number of tickets or one ticket per file.
+
+When assigning a new story or task number, check both active and archived siblings and use the next unused number, keeping existing identifiers stable.
 
 Record dependencies explicitly. Keep necessary setup inside the relevant story unless it is large enough to warrant a separate outcome and the user agrees. If a technical choice is unresolved, make investigation/decision a prerequisite task rather than inventing the answer.
 
@@ -117,4 +123,10 @@ Do not start another task just to archive finished work, and do not create a sep
 
 Verify the requested layout, numbering, parent/child links, and every relative Markdown file target affected by the changes. Check that task scopes cover the story's acceptance criteria and that dependencies have no accidental cycles. Search for stale paths after moves.
 
-Report the epic index, story/task counts, provisional items, and any unresolved decisions concisely. Stop at the planning deliverable. Feature code changes, orchestration, external ticket creation, commits, and pushes need their own user request or existing authorization.
+Report the epic index, story/task counts, provisional items, and any unresolved decisions concisely. When the backlog is ready and nothing else is needed, show the full proposed commit message and exact files to commit, then put this single approval question in its own bold paragraph:
+
+**Are you done with this task? If yes, I’ll commit these files, push the branch, and open a PR.**
+
+An affirmative answer with no further changes authorizes all three actions; do not ask again for each one. If the user requests changes, make and validate them, update the proposed message and file list as needed, and ask again. Silence is not approval.
+
+Before committing, verify the intended files and repo-local email, and scan the staged diff for private information as required by repository instructions. Follow the commit and PR naming rules in `.agents/rules/git-commits.md`. Stage only the approved files, then commit, push, and open the PR; report the PR link. If any step fails, report the failure and preserve the work for resumption. Feature code changes, orchestration, and external ticket creation remain outside this planning workflow.
