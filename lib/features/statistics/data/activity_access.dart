@@ -7,6 +7,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
+import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 class _ActivitySessionHandle implements ActivitySessionHandle {
@@ -242,6 +243,27 @@ class ActivityAccess {
     );
     _verifyRead(account, generation);
     return rows.map((row) => row.toDailyActivity()).toList();
+  }
+
+  Future<List<DayRunActivity>> readDayActivity(String localDate) async {
+    final account = _requireAccount();
+    final generation = _generation;
+    final db = await _database.connection;
+    final rows = await db.rawQuery(
+      '''
+      SELECT s.*, p.local_completion_date,
+        SUM(CASE WHEN p.type = 'work' THEN 1 ELSE 0 END) AS day_round_count,
+        SUM(CASE WHEN p.type = 'work' THEN p.duration_ms ELSE 0 END) AS day_work_duration_ms,
+        SUM(CASE WHEN p.type = 'rest' THEN p.duration_ms ELSE 0 END) AS day_rest_duration_ms
+      FROM completed_phases p JOIN timer_sessions s ON s.id = p.session_id
+      WHERE s.account_id = ? AND p.local_completion_date = ?
+      GROUP BY s.id
+      ORDER BY s.started_at_utc_ms DESC, s.id DESC
+    ''',
+      [account, localDate],
+    );
+    _verifyRead(account, generation);
+    return rows.map((row) => row.toDayRunActivity()).toList();
   }
 
   Future<void> close() async {

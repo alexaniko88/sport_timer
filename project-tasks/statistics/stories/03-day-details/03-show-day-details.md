@@ -6,7 +6,7 @@ Epic: [Statistics](../../index.md)
 
 ## Dependencies
 
-[Previous task](02-query-day-activity.md).
+[Previous task](done/02-query-day-activity.md).
 
 ## Goal
 

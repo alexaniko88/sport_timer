@@ -3,6 +3,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
+import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 abstract interface class ActivityRepository {
@@ -31,4 +32,5 @@ abstract interface class ActivityRepository {
   Future<Result<List<TimerSession>>> readSessions();
   Future<Result<List<CompletedPhase>>> readPhases(String sessionId);
   Future<Result<List<DailyActivity>>> readDailyActivity();
+  Future<Result<List<DayRunActivity>>> readDayActivity(String localDate);
 }
