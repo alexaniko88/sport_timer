@@ -7,7 +7,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
-import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
+import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 class _ActivitySessionHandle implements ActivitySessionHandle {
@@ -245,7 +245,7 @@ class ActivityAccess {
     return rows.map((row) => row.toDailyActivity()).toList();
   }
 
-  Future<List<DayRunActivity>> readDayActivity(String localDate) async {
+  Future<List<RunActivitySummary>> readDayActivity(String localDate) async {
     final account = _requireAccount();
     final generation = _generation;
     final db = await _database.connection;
@@ -263,7 +263,7 @@ class ActivityAccess {
       [account, localDate],
     );
     _verifyRead(account, generation);
-    return rows.map((row) => row.toDayRunActivity()).toList();
+    return rows.map((row) => row.toRunActivitySummary()).toList();
   }
 
   Future<void> close() async {

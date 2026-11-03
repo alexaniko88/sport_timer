@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/account/presentation/account_avatar_button.dart';
 import 'package:sport_timer/features/account/presentation/account_view_model.dart';
@@ -7,6 +8,7 @@ import 'package:sport_timer/features/statistics/presentation/statistics_state.da
 import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/features/statistics/presentation/widgets/daily_activity_tile.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
+import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_button.dart';
 
@@ -49,12 +51,12 @@ class _StatisticPageState extends State<StatisticPage> {
         valueListenable: _viewModel.state,
         builder: (context, state, _) => switch (state.status) {
           StatisticsStatus.initial || StatisticsStatus.loading => const Center(child: CircularProgressIndicator()),
-          StatisticsStatus.empty => const Center(child: Text('No completed activity yet.')),
+          StatisticsStatus.empty => Center(child: Text(l10n.statisticsEmpty)),
           StatisticsStatus.error => Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Could not load your statistics.'),
+                  Text(l10n.statisticsError),
                   const Gap(AppSpacing.s8),
                   AppButton.primary(label: l10n.statisticsRetryButton, onPressed: _viewModel.refresh),
                 ],
@@ -68,7 +70,10 @@ class _StatisticPageState extends State<StatisticPage> {
                 AppSpacing.s16 + MediaQuery.paddingOf(context).bottom,
               ),
               itemCount: state.dailyActivity.length,
-              itemBuilder: (context, index) => DailyActivityTile(activity: state.dailyActivity[index]),
+              itemBuilder: (context, index) => DailyActivityTile(
+                activity: state.dailyActivity[index],
+                onTap: () => context.push(RoutePath.dayDetails.value, extra: state.dailyActivity[index].localDate),
+              ),
               separatorBuilder: (context, index) => const Gap(AppSpacing.s8),
             ),
         },

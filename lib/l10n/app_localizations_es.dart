@@ -258,4 +258,92 @@ class AppLocalizationsEs extends AppLocalizations {
   String timerTotal(String time) {
     return 'Total $time';
   }
+
+  @override
+  String get statisticsEmpty => 'Aún no hay actividad completada.';
+
+  @override
+  String get statisticsError => 'No se pudieron cargar tus estadísticas.';
+
+  @override
+  String get dayDetailsTitle => 'Detalles del día';
+
+  @override
+  String get dayDetailsEmpty => 'No hay actividad completada para este día.';
+
+  @override
+  String get dayDetailsError => 'No se pudo cargar este día.';
+
+  @override
+  String get dayDetailsSummary => 'Total del día';
+
+  @override
+  String get dayDetailsActivity => 'Actividad de este día';
+
+  @override
+  String get dayDetailsConfiguration => 'Configuración original';
+
+  @override
+  String statisticsRounds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rondas',
+      one: '1 ronda',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count horas',
+      one: '1 hora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutos',
+      one: '1 minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count segundos',
+      one: '1 segundo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsWorkValue(String value) {
+    return 'Trabajo: $value';
+  }
+
+  @override
+  String statisticsRestValue(String value) {
+    return 'Descanso: $value';
+  }
+
+  @override
+  String statisticsTotalValue(String value) {
+    return 'Total: $value';
+  }
+
+  @override
+  String statisticsTileSemantics(String date, String rounds, String work, String rest, String total) {
+    return '$date, $rounds, trabajo $work, descanso $rest, total $total';
+  }
 }

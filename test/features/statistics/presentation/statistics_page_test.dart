@@ -72,8 +72,8 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     repository.reads[0].complete(const Success([first, second]));
     await tester.pump();
-    expect(find.text('31 October 2026'), findsOneWidget);
-    expect(find.text('30 October 2026'), findsOneWidget);
+    expect(find.text('October 31, 2026'), findsOneWidget);
+    expect(find.text('October 30, 2026'), findsOneWidget);
     expect(find.text('2 rounds'), findsOneWidget);
     expect(find.text('Work: 2 minutes 5 seconds'), findsOneWidget);
     expect(find.text('Rest: 30 seconds'), findsOneWidget);
@@ -81,7 +81,7 @@ void main() {
 
     repository.changesController.add(null);
     await tester.pump();
-    expect(find.text('31 October 2026'), findsNothing);
+    expect(find.text('October 31, 2026'), findsNothing);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
     repository.reads[1].complete(const Success([]));
     await tester.pump();
@@ -91,7 +91,7 @@ void main() {
     repository.reads[2].complete(const Success([second]));
     await tester.pump();
     expect(find.text('No completed activity yet.'), findsNothing);
-    expect(find.text('30 October 2026'), findsOneWidget);
+    expect(find.text('October 30, 2026'), findsOneWidget);
   });
 
   testWidgets('shows an error and retries successfully', (tester) async {
@@ -104,7 +104,7 @@ void main() {
     await tester.pump();
     repository.reads[1].complete(const Success([first]));
     await tester.pump();
-    expect(find.text('31 October 2026'), findsOneWidget);
+    expect(find.text('October 31, 2026'), findsOneWidget);
   });
 
   testWidgets('builds long histories lazily and reloads when reopened', (tester) async {
@@ -117,7 +117,7 @@ void main() {
     expect(repository.reads.length, 2);
     repository.reads[1].complete(const Success([second]));
     await tester.pump();
-    expect(find.text('30 October 2026'), findsOneWidget);
+    expect(find.text('October 30, 2026'), findsOneWidget);
   });
 
   testWidgets('tile exposes all fields and fits large text', (tester) async {
@@ -132,6 +132,8 @@ void main() {
     );
     await tester.pumpWidget(
       const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: MediaQuery(
           data: MediaQueryData(size: Size(320, 800), textScaler: TextScaler.linear(2)),
           child: Scaffold(body: SingleChildScrollView(child: DailyActivityTile(activity: longActivity))),
@@ -140,12 +142,12 @@ void main() {
     );
     expect(
       find.bySemanticsLabel(
-        '30 September 2026, 123 rounds, work 34 hours 17 minutes 36 seconds, '
+        'September 30, 2026, 123 rounds, work 34 hours 17 minutes 36 seconds, '
         'rest 2 hours 44 minutes 36 seconds, total 37 hours 2 minutes 12 seconds',
       ),
       findsOneWidget,
     );
-    expect(find.text('30 September 2026'), findsOneWidget);
+    expect(find.text('September 30, 2026'), findsOneWidget);
     expect(find.text('Work: 34 hours 17 minutes 36 seconds'), findsOneWidget);
     expect(find.text('Total: 37 hours 2 minutes 12 seconds'), findsOneWidget);
     expect(tester.takeException(), isNull);

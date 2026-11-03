@@ -2,7 +2,7 @@
 
 Story: [Story 3 overview](../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 Status: Done on `feat/confirm-day-details`; not yet merged.
 
@@ -34,4 +34,4 @@ Read the story and epic before starting. Inspect current code and propose small 
 
 ## UI snapshot reference
 
-Before planning, inspect the relevant current UI snapshots: [statistics](../../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task.
+Before planning, inspect the relevant current UI snapshots: [statistics](../../../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task.

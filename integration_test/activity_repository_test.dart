@@ -12,7 +12,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
-import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
+import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -193,21 +193,31 @@ void main() {
         phase(id: 'new-work', runId: 'newer', position: 0, duration: 45000),
       ],
     );
+    expect(await repository.endSession(session: oldHandle, endedAtUtcMs: 50000), isA<Success<void>>());
     accounts.change('b');
     final other = (await repository.createSession(session('other', 'b')) as Success<ActivitySessionHandle>).value;
     await repository.recordPhases(session: other, phases: [phase(id: 'other-work', runId: 'other', position: 0)]);
-    final otherDay = (await repository.readDayActivity('2026-11-02') as Success<List<DayRunActivity>>).value;
+    final otherDay = (await repository.readDayActivity('2026-11-02') as Success<List<RunActivitySummary>>).value;
     expect(otherDay.map((entry) => entry.session.id), ['other']);
     accounts.change('a');
-    final day = (await repository.readDayActivity('2026-11-02') as Success<List<DayRunActivity>>).value;
+    final day = (await repository.readDayActivity('2026-11-02') as Success<List<RunActivitySummary>>).value;
     expect(day, [
-      const DayRunActivity(
+      const RunActivitySummary(
         session: newer,
         activity: DailyActivity(localDate: '2026-11-02', roundCount: 1, workDurationMs: 45000, restDurationMs: 0),
       ),
-      DayRunActivity(
-        session: older,
-        activity: const DailyActivity(
+      const RunActivitySummary(
+        session: TimerSession(
+          id: 'older',
+          accountId: 'a',
+          startedAtUtcMs: 1000,
+          preparationDurationMs: 0,
+          workDurationMs: 30000,
+          restDurationMs: 10000,
+          roundCount: 2,
+          endedAtUtcMs: 50000,
+        ),
+        activity: DailyActivity(
           localDate: '2026-11-02',
           roundCount: 1,
           workDurationMs: 30000,
@@ -216,14 +226,28 @@ void main() {
       ),
     ]);
     expect(day.last.activity.totalDurationMs, 40000);
-    final nextDay = (await repository.readDayActivity('2026-11-03') as Success<List<DayRunActivity>>).value;
+    final daily = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
+    final selectedDay = daily.singleWhere((entry) => entry.localDate == '2026-11-02');
+    expect(day.fold<int>(0, (sum, run) => sum + run.activity.roundCount), selectedDay.roundCount);
+    expect(day.fold<int>(0, (sum, run) => sum + run.activity.workDurationMs), selectedDay.workDurationMs);
+    expect(day.fold<int>(0, (sum, run) => sum + run.activity.restDurationMs), selectedDay.restDurationMs);
+    final nextDay = (await repository.readDayActivity('2026-11-03') as Success<List<RunActivitySummary>>).value;
     expect(nextDay, [
-      DayRunActivity(
-        session: older,
-        activity: const DailyActivity(localDate: '2026-11-03', roundCount: 0, workDurationMs: 0, restDurationMs: 15000),
+      const RunActivitySummary(
+        session: TimerSession(
+          id: 'older',
+          accountId: 'a',
+          startedAtUtcMs: 1000,
+          preparationDurationMs: 0,
+          workDurationMs: 30000,
+          restDurationMs: 10000,
+          roundCount: 2,
+          endedAtUtcMs: 50000,
+        ),
+        activity: DailyActivity(localDate: '2026-11-03', roundCount: 0, workDurationMs: 0, restDurationMs: 15000),
       ),
     ]);
-    expect((await repository.readDayActivity('2026-11-04') as Success<List<DayRunActivity>>).value, isEmpty);
+    expect((await repository.readDayActivity('2026-11-04') as Success<List<RunActivitySummary>>).value, isEmpty);
   });
 
   testWidgets('account changes invalidate reads and notify listeners', (tester) async {

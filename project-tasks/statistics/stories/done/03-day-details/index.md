@@ -1,6 +1,6 @@
 # STORY 3: Explore a day's activity
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
 ## User outcome
 
@@ -29,8 +29,8 @@ These records enable this story without collecting partial phases as completed a
 
 1. [Confirm day-detail behavior and layout](done/01-confirm-day-details.md).
 2. [Query activity for a selected day](done/02-query-day-activity.md).
-3. [Add navigation and the agreed detail view](03-show-day-details.md).
-4. [Verify navigation and grouping](04-verify-day-details.md).
+3. [Add navigation and the agreed detail view](done/03-show-day-details.md).
+4. [Verify navigation and grouping](done/04-verify-day-details.md).
 
 ## Acceptance criteria
 
@@ -44,6 +44,6 @@ These records enable this story without collecting partial phases as completed a
 
 ## Dependencies and exclusions
 
-Depends on [Story 1](../done/01-record-activity/index.md) and [Story 2](../done/02-daily-list/index.md).
+Depends on [Story 1](../01-record-activity/index.md) and [Story 2](../02-daily-list/index.md).
 
 Backup, cross-device sync, editing, deletion, and charts require separate scope unless explicitly agreed later.
