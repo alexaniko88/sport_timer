@@ -121,4 +121,4 @@ Use the task template above with these changes:
 - For improvements, add current behavior/limitation, desired change, benefit, and open decisions.
 - Keep dependencies, scope/exclusions, observable acceptance criteria, and validation. A report can be ready for diagnosis while its eventual fix still requires approval.
 
-Each category `index.md` explains what belongs in that folder, links to `../status.md`, and lists its tasks. Keep it explicitly empty until real reports or proposals exist; example filenames are not tasks to create.
+Each category `index.md` explains what belongs in that folder, links to `../status.md` if it exists, and lists its tasks. Keep it explicitly empty until real reports or proposals exist; example filenames are not tasks to create.
