@@ -7,6 +7,8 @@ import 'package:sport_timer/features/statistics/data/activity_access.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
 import 'package:sport_timer/features/statistics/data/activity_database.dart';
 import 'package:sport_timer/features/statistics/data/firebase_activity_account_source.dart';
+import 'package:sport_timer/features/statistics/data/sqflite_activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/user/data/firebase_user_repository.dart';
 import 'package:sport_timer/features/timer/domain/audio_manager.dart';
@@ -29,6 +31,7 @@ void configureDependencies() {
       () => ActivityAccess(getIt(), getIt()),
       dispose: (access) => access.close(),
     )
+    ..registerLazySingleton<ActivityRepository>(() => SqfliteActivityRepository(getIt()))
     ..registerLazySingleton<AudioManager>(() => DefaultAudioManager(getIt()))
     ..registerLazySingleton<BackgroundKeepAlive>(DefaultBackgroundKeepAlive.new);
 }
