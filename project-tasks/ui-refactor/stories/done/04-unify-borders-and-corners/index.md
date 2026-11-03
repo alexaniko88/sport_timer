@@ -25,7 +25,7 @@ As a user, I want consistent corner shapes and border thickness across the app s
 
 ## Component inventory and shared rules
 
-The shared values and exceptions below were delivered by [IMP-01](../../../../../improvements/done/01-unify-styles-app-wide.md), merged in PR #42. Definitions live in `lib/shared/presentation/theme/app_spacing.dart`, `sport_theme.dart`, and `widgets/app_surface.dart`. The drawer treatment was completed on this story's branch.
+The shared values and exceptions below were delivered by [IMP-01](../../../../improvements/done/01-unify-styles-app-wide.md), merged in PR #42. Definitions live in `lib/shared/presentation/theme/app_spacing.dart`, `sport_theme.dart`, and `widgets/app_surface.dart`. The drawer treatment was completed on this story's branch.
 
 | Component and locations | Radius and border treatment |
 | --- | --- |
@@ -49,4 +49,4 @@ Colors, typography and layouts remain outside this story. There are no pending U
 
 ## Dependencies and open decisions
 
-The [styling improvement](../../../../../improvements/done/01-unify-styles-app-wide.md) delivered the shared radius and border rules in PR #42. This story records the inventory and completes the drawer treatment. Its implementation, test results and review evidence are recorded in the archived tasks. The branch's PR is pending.
+The [styling improvement](../../../../improvements/done/01-unify-styles-app-wide.md) delivered the shared radius and border rules in PR #42. This story records the inventory and completes the drawer treatment. Its implementation, test results and review evidence are recorded in the archived tasks. The branch's PR is pending.

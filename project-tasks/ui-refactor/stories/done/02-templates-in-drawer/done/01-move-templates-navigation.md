@@ -16,7 +16,7 @@ Replace the Templates bottom tab with a drawer destination above Timer styles. G
 
 ## Dependencies
 
-Completed [Templates Story 1](../../../../../../templates/stories/done/01-template-set-and-tiles/index.md), verified in the implementation checkout. Independent of other pending UI and Templates stories.
+Completed [Templates Story 1](../../../../../templates/stories/done/01-template-set-and-tiles/index.md), verified in the implementation checkout. Independent of other pending UI and Templates stories.
 
 ## Acceptance criteria
 
@@ -35,7 +35,7 @@ Verified entry points: `lib/features/home/presentation/home_page.dart`, `lib/fea
 
 ## UI snapshot reference
 
-Before planning, inspect the relevant current UI snapshots: [home_drawer](../../../../../../../test/snapshots/goldens/home_drawer.png), [templates_selected](../../../../../../../test/snapshots/goldens/templates_selected.png), [templates_custom](../../../../../../../test/snapshots/goldens/templates_custom.png), [setup_template_selected](../../../../../../../test/snapshots/goldens/setup_template_selected.png), [statistics](../../../../../../../test/snapshots/goldens/statistics.png), [timer_styles](../../../../../../../test/snapshots/goldens/timer_styles.png). See the [snapshot index](../../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+Before planning, inspect the relevant current UI snapshots: [home_drawer](../../../../../../test/snapshots/goldens/home_drawer.png), [templates_selected](../../../../../../test/snapshots/goldens/templates_selected.png), [templates_custom](../../../../../../test/snapshots/goldens/templates_custom.png), [setup_template_selected](../../../../../../test/snapshots/goldens/setup_template_selected.png), [statistics](../../../../../../test/snapshots/goldens/statistics.png), [timer_styles](../../../../../../test/snapshots/goldens/timer_styles.png). See the [snapshot index](../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
 
 ## Completion evidence
 
