@@ -16,7 +16,10 @@ fvm flutter run                      # entry point is lib/main.dart
 fvm flutter test                     # all tests
 fvm flutter test test/features/timer # one folder or file
 fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart # refresh UI snapshots
+fvm dart tool/agent_check.dart       # only the checks the changed files need (see below)
 ```
+
+`tool/agent_check.dart` compares the working tree with `master` (`--base=<branch>` changes it, `--skip-build` skips the debug builds, or pass file paths to check only those). From the changed paths it picks: `dart format` (check only), `flutter analyze` on those files, the mirrored tests plus the layer boundary test, the golden snapshots when a presentation file, `navigation.dart` or an ARB file changed, `gen-l10n` when an ARB file changed, `test/architecture/ai_setup_test.dart` when `CLAUDE.md`, `.agents/`, `.claude/` or `.codex/` changed, the debug builds when `android/`, `ios/` or `pubspec.yaml` changed, and a scan of the added lines for local absolute paths (a failure) and open notes (only listed). With file paths, every line of each file counts as added. The rules are in `ChangeSet` and are tested in `test/tool/agent_check_test.dart`. It adds to the full `fvm flutter test` run, it does not replace it. A change to domain, data or built-in template code can still alter a screen, so run the snapshot test by hand then.
 
 `.zed/tasks.json` (tracked in git; the other `.zed/` files are local symlinks and stay excluded) wraps run, pub get, rebuild and test as Zed tasks.
 

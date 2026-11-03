@@ -171,6 +171,28 @@ void main() {
     }
   });
 
+  group('project layout', () {
+    test('every folder under lib/features is named in the "Project layout" section of CLAUDE.md', () {
+      final claude = File('CLAUDE.md').readAsStringSync();
+      final section = RegExp(
+        r'^## Project layout\r?\n(.*?)(?=^## )',
+        multiLine: true,
+        dotAll: true,
+      ).firstMatch(claude)?.group(1);
+      expect(section, isNotNull, reason: 'CLAUDE.md has no "## Project layout" section');
+
+      final features = _entries('lib/features').whereType<Directory>().map(_lastSegment).toList()..sort();
+      expect(features, isNotEmpty, reason: 'lib/features has no feature folders');
+      for (final feature in features) {
+        expect(
+          section,
+          contains('`$feature`'),
+          reason: 'lib/features/$feature is not named as `$feature` in the "Project layout" section of CLAUDE.md',
+        );
+      }
+    });
+  });
+
   group('documented paths', () {
     const skillFiles = [
       '.agents/skills/skill-orchestrator/SKILL.md',

@@ -136,10 +136,9 @@ Once review and checks pass, report the verdict, fixes applied and remaining sug
 Run the checks that apply and show the result:
 
 - `fvm flutter analyze` reports no issues, and the full test suite passes (this includes `test/architecture/layer_boundaries_test.dart`). If the change adds or moves files, check that `CLAUDE.md` still describes the real layout. Report the latest full-suite result; rerun it if subsequent changes could affect the result.
-- If any captured UI screen, state, theme or route changed, `fvm flutter test test/snapshots/ui_snapshots_test.dart` passes and `test/snapshots/README.md` is up to date.
-- If `android/`, `ios/` or `pubspec.yaml` changed: `fvm flutter build apk --debug` (and `fvm flutter build ios --debug --no-codesign` when `ios/` changed) succeeds.
-- No local absolute path in the diff (`git diff | grep -n "/Users/"` returns nothing), and no company name or work email address when you read it.
-- List every `TODO` or `FIXME` the diff adds, with `file:line`.
+- `fvm dart tool/agent_check.dart` passes. It picks the checks from the changed files: format, analyze on the touched files, the mirrored tests, the golden snapshots when a presentation file, `navigation.dart` or an ARB file changed (for a domain, data or built-in template change that could alter a screen, run `fvm flutter test test/snapshots/ui_snapshots_test.dart` yourself), `gen-l10n` for ARB changes, the debug builds for `android/`, `ios/` or `pubspec.yaml` changes, a scan for local absolute paths in the diff, and the list of every open note the diff adds with `file:line`. Add `--skip-build` only when the user asks to skip the builds. Report its output.
+- If any captured UI screen, state, theme or route changed, `test/snapshots/README.md` is up to date (the tool runs the snapshot test but does not read the README).
+- No company name or work email address in the diff, when you read it.
 
 Then summarize the completed change, checks, review and archived task. Prepare the commit and PR details for review. Do not ask separately for commit approval: proceed to the single PR question in Stage 6 unless the user explicitly requested only a commit. An explicit commit-only request authorizes committing without separate message approval, but does not authorize a push.
 
