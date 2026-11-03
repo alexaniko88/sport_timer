@@ -4,8 +4,6 @@ Story: [Story 3 overview](index.md)
 
 Epic: [Statistics](../../index.md)
 
-Status: Provisional; refine before implementation.
-
 ## Dependencies
 
 [Previous task](02-query-day-activity.md).
@@ -18,10 +16,10 @@ Add navigation and the agreed detail view. Read the parent story for the shared 
 
 Each item below is a completion requirement for this task:
 
-- Open details from a daily tile and show the agreed run information.
+- Open a dedicated page from a daily tile with the selected date and daily totals.
+- Show run cards newest first with the selected-day activity and original configuration described in the story.
 - Handle loading, empty/missing data, errors, and account changes according to app patterns.
 - Keep the parent day's summary consistent with the activity displayed.
-- Scope and screen behavior are confirmed through the first task before implementation proceeds.
 
 ## Orchestration
 
@@ -29,4 +27,4 @@ Read the story and epic before starting. Inspect current code and propose small 
 
 ## UI snapshot reference
 
-Before planning, inspect the relevant current UI snapshots: [statistics](../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. The Statistics snapshot is a placeholder, not a day-detail design; inspect the completed daily list when available. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+Before planning, inspect the relevant current UI snapshots: [statistics](../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved day-detail design; check the implementation checkout and agreed story behavior. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.

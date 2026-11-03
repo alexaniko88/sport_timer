@@ -4,11 +4,9 @@ Story: [Story 3 overview](index.md)
 
 Epic: [Statistics](../../index.md)
 
-Status: Provisional; refine before implementation.
-
 ## Dependencies
 
-[Previous task](01-confirm-day-details.md).
+[Previous task](done/01-confirm-day-details.md).
 
 ## Goal
 
@@ -19,9 +17,8 @@ Query activity for a selected day. Read the parent story for the shared behavior
 Each item below is a completion requirement for this task:
 
 - Use the account-scoped repository to obtain the selected date's completed phases grouped by run.
-- Include original configuration and reliably known lifecycle metadata where needed.
+- Include the original work and rest durations and configured round count.
 - Keep selected-day values separate from whole-run values when a run crosses midnight.
-- Scope and screen behavior are confirmed through the first task before implementation proceeds.
 
 ## Orchestration
 

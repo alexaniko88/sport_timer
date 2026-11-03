@@ -1,6 +1,6 @@
 # EPIC: Statistics
 
-Status: Recording and daily list completed; visual activity story ready for planning; day details provisional.
+Status: Recording and daily list completed; day-detail scope agreed; visual activity story ready for planning.
 
 
 ## Goal
@@ -11,10 +11,10 @@ Automatically preserve completed training activity and show daily totals in the 
 
 1. [Record completed activity](stories/done/01-record-activity/index.md): integrate the local database and reliably record completed work rounds and rests.
 2. [Show daily statistics](stories/done/02-daily-list/index.md): replace the Statistics placeholder with daily totals.
-3. [Explore a day's activity](stories/03-day-details/index.md): provisional future scope; revisit before implementation.
+3. [Explore a day's activity](stories/03-day-details/index.md): agreed initial scope; implementation tasks remain.
 4. [Visualize activity](stories/04-visualize-activity/index.md): agreed chart and calendar experience; ready for planning.
 
-Stories 1 and 2 provide the foundation for Stories 3 and 4. Story 4 does not depend on the provisional day-details story.
+Stories 1 and 2 provide the foundation for Stories 3 and 4. Story 4 does not depend on the day-details story.
 
 ## Agreed behavior
 
@@ -57,7 +57,7 @@ Use SQLite through `sqflite` for local storage. Keep database access behind an a
 
 Each story has its own folder under `stories/`, with an `index.md` overview and numbered task files for orchestration. Before implementation, inspect the current checkout and follow the repository’s current orchestration workflow.
 
-No application code is changed by these planning files. Story 3 remains a proposal until its behavior and screen design are discussed.
+No application code is changed by these planning files.
 
 ## References
 
