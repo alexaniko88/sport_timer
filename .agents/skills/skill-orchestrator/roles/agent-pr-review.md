@@ -22,5 +22,11 @@ Read-only review of a branch diff in the Sport Timer app. Never edit files and n
 - Any hand-built bordered tile, raw radius, border width, alpha or color literal, per-button shape, or repeated text style that `CLAUDE.md` ("Styling and theme") replaces with shared pieces, unless it is a documented exception.
 - Any new user-facing string that is not a `context.l10n` key in both `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`.
 
+## Flag as Critical or General (bug patterns)
+- Async work in a ViewModel that sets state without checking `_disposed` first.
+- A ViewModel created by a page and never disposed from that page's `dispose()`, or a `dispose()` that leaves a timer, subscription or notifier open.
+- A state class used with `ValueNotifier` that lacks `==` and `hashCode`, so updates are silently skipped.
+- A `switch` over an enum or sealed type that uses `_` or `default`.
+
 ## Report (about 300 words, no file dumps)
 Group findings as Critical, General and Minor. Each finding has `file:line`, what is wrong, why it matters and a suggested fix. End with a verdict.
