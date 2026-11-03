@@ -2,7 +2,7 @@
 
 Story: [Story 3 overview](../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 ## Dependencies
 

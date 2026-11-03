@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
+import 'package:sport_timer/features/statistics/presentation/day_details_page.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/home/presentation/home_page.dart';
@@ -15,7 +16,8 @@ enum RoutePath {
   home('/home'),
   timer('/timer'),
   timerStyles('/timer-styles'),
-  templates('/templates');
+  templates('/templates'),
+  dayDetails('/day-details');
 
   final String value;
 
@@ -41,6 +43,14 @@ class Routes {
         pageBuilder: (context, state) => MaterialPage(
           key: state.pageKey,
           child: const HomePage(),
+        ),
+      ),
+      GoRoute(
+        path: RoutePath.dayDetails.value,
+        name: RoutePath.dayDetails.value,
+        pageBuilder: (context, state) => MaterialPage(
+          key: state.pageKey,
+          child: DayDetailsPage(localDate: state.extra as String),
         ),
       ),
       GoRoute(

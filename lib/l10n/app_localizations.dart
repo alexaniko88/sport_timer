@@ -481,6 +481,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total {time}'**
   String timerTotal(String time);
+
+  /// Statistics: statisticsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed activity yet.'**
+  String get statisticsEmpty;
+
+  /// Statistics: statisticsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your statistics.'**
+  String get statisticsError;
+
+  /// Statistics: dayDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Day details'**
+  String get dayDetailsTitle;
+
+  /// Statistics: dayDetailsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed activity for this day.'**
+  String get dayDetailsEmpty;
+
+  /// Statistics: dayDetailsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this day.'**
+  String get dayDetailsError;
+
+  /// Statistics: dayDetailsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily total'**
+  String get dayDetailsSummary;
+
+  /// Statistics: dayDetailsActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity on this day'**
+  String get dayDetailsActivity;
+
+  /// Statistics: dayDetailsConfiguration.
+  ///
+  /// In en, this message translates to:
+  /// **'Original configuration'**
+  String get dayDetailsConfiguration;
+
+  /// Statistics: statisticsRounds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 round} other{{count} rounds}}'**
+  String statisticsRounds(int count);
+
+  /// Statistics: statisticsHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour} other{{count} hours}}'**
+  String statisticsHours(int count);
+
+  /// Statistics: statisticsMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute} other{{count} minutes}}'**
+  String statisticsMinutes(int count);
+
+  /// Statistics: statisticsSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 second} other{{count} seconds}}'**
+  String statisticsSeconds(int count);
+
+  /// Statistics: statisticsWorkValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Work: {value}'**
+  String statisticsWorkValue(String value);
+
+  /// Statistics: statisticsRestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest: {value}'**
+  String statisticsRestValue(String value);
+
+  /// Statistics: statisticsTotalValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {value}'**
+  String statisticsTotalValue(String value);
+
+  /// Statistics: statisticsTileSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, {rounds}, work {work}, rest {rest}, total {total}'**
+  String statisticsTileSemantics(String date, String rounds, String work, String rest, String total);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

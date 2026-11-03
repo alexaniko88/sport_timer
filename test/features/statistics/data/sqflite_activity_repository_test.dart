@@ -10,7 +10,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
-import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
+import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 class FakeAccounts implements ActivityAccountSource {
@@ -40,7 +40,7 @@ class DelayedAccess extends ActivityAccess {
   final sessions = Completer<List<TimerSession>>();
   final phases = Completer<List<CompletedPhase>>();
   final days = Completer<List<DailyActivity>>();
-  final dayRuns = Completer<List<DayRunActivity>>();
+  final dayRuns = Completer<List<RunActivitySummary>>();
   final session = Completer<ActivitySessionHandle>();
 
   DelayedAccess(ActivityAccountSource accounts) : super(ActivityDatabase(), accounts);
@@ -55,7 +55,7 @@ class DelayedAccess extends ActivityAccess {
   Future<List<DailyActivity>> readDailyActivity() => days.future;
 
   @override
-  Future<List<DayRunActivity>> readDayActivity(String localDate) => dayRuns.future;
+  Future<List<RunActivitySummary>> readDayActivity(String localDate) => dayRuns.future;
 
   @override
   Future<ActivitySessionHandle> openSession(String sessionId) => session.future;
@@ -113,13 +113,13 @@ void main() {
     access.dayRuns.complete([]);
     accounts.change('b');
     accounts.change('a');
-    expect(await pending, isA<Failure<List<DayRunActivity>>>());
+    expect(await pending, isA<Failure<List<RunActivitySummary>>>());
   });
 
   test('returns a failure when the day query fails', () async {
     final pending = repository.readDayActivity('2026-11-02');
     access.dayRuns.completeError(StateError('query failed'));
-    expect(await pending, isA<Failure<List<DayRunActivity>>>());
+    expect(await pending, isA<Failure<List<RunActivitySummary>>>());
   });
 
   test('discards a session handle if the account changes after access completes', () async {

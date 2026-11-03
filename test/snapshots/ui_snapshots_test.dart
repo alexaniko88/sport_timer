@@ -13,6 +13,9 @@ import 'package:sport_timer/features/settings/presentation/settings_view_model.d
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
+import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
+import 'package:sport_timer/features/statistics/domain/timer_session.dart';
+import 'package:sport_timer/features/statistics/presentation/day_details_page.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
@@ -161,8 +164,35 @@ class _FailedActivityRecorder implements TimerActivityRecorder {
 
 class _FakeActivityRepository implements ActivityRepository {
   Result<List<DailyActivity>> result = const Success([
-    DailyActivity(localDate: '2026-10-31', roundCount: 12, workDurationMs: 1440000, restDurationMs: 360000),
+    DailyActivity(localDate: '2026-10-31', roundCount: 12, workDurationMs: 1200000, restDurationMs: 360000),
     DailyActivity(localDate: '2026-10-30', roundCount: 3, workDurationMs: 185000, restDurationMs: 30000),
+  ]);
+
+  Result<List<RunActivitySummary>> dayResult = const Success([
+    RunActivitySummary(
+      session: TimerSession(
+        id: 'run-2',
+        accountId: 'user',
+        startedAtUtcMs: 2,
+        preparationDurationMs: 10000,
+        workDurationMs: 120000,
+        restDurationMs: 30000,
+        roundCount: 8,
+      ),
+      activity: DailyActivity(localDate: '2026-10-31', roundCount: 8, workDurationMs: 960000, restDurationMs: 210000),
+    ),
+    RunActivitySummary(
+      session: TimerSession(
+        id: 'run-1',
+        accountId: 'user',
+        startedAtUtcMs: 1,
+        preparationDurationMs: 10000,
+        workDurationMs: 60000,
+        restDurationMs: 30000,
+        roundCount: 6,
+      ),
+      activity: DailyActivity(localDate: '2026-10-31', roundCount: 4, workDurationMs: 240000, restDurationMs: 150000),
+    ),
   ]);
 
   @override
@@ -170,6 +200,9 @@ class _FakeActivityRepository implements ActivityRepository {
 
   @override
   Future<Result<List<DailyActivity>>> readDailyActivity() async => result;
+
+  @override
+  Future<Result<List<RunActivitySummary>>> readDayActivity(String localDate) async => dayResult;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -498,6 +531,33 @@ void main() {
             builder: () {
               activityRepository.result = Failure(Exception('Unable to load'));
               return _lightAndDarkGroup(builder: () => const HomePage());
+            },
+          );
+
+          goldenTest(
+            'day details',
+            fileName: 'day_details',
+            constraints: _pairConstraints,
+            builder: () => _lightAndDarkGroup(builder: () => const DayDetailsPage(localDate: '2026-10-31')),
+          );
+
+          goldenTest(
+            'day details empty',
+            fileName: 'day_details_empty',
+            constraints: _pairConstraints,
+            builder: () {
+              activityRepository.dayResult = const Success([]);
+              return _lightAndDarkGroup(builder: () => const DayDetailsPage(localDate: '2026-10-31'));
+            },
+          );
+
+          goldenTest(
+            'day details error',
+            fileName: 'day_details_error',
+            constraints: _pairConstraints,
+            builder: () {
+              activityRepository.dayResult = Failure(Exception('Unable to load'));
+              return _lightAndDarkGroup(builder: () => const DayDetailsPage(localDate: '2026-10-31'));
             },
           );
 

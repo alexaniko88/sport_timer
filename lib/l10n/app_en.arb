@@ -347,5 +347,121 @@
         "type": "String"
       }
     }
+  },
+  "statisticsEmpty": "No completed activity yet.",
+  "@statisticsEmpty": {
+    "description": "Statistics: statisticsEmpty."
+  },
+  "statisticsError": "Could not load your statistics.",
+  "@statisticsError": {
+    "description": "Statistics: statisticsError."
+  },
+  "dayDetailsTitle": "Day details",
+  "@dayDetailsTitle": {
+    "description": "Statistics: dayDetailsTitle."
+  },
+  "dayDetailsEmpty": "No completed activity for this day.",
+  "@dayDetailsEmpty": {
+    "description": "Statistics: dayDetailsEmpty."
+  },
+  "dayDetailsError": "Could not load this day.",
+  "@dayDetailsError": {
+    "description": "Statistics: dayDetailsError."
+  },
+  "dayDetailsSummary": "Daily total",
+  "@dayDetailsSummary": {
+    "description": "Statistics: dayDetailsSummary."
+  },
+  "dayDetailsActivity": "Activity on this day",
+  "@dayDetailsActivity": {
+    "description": "Statistics: dayDetailsActivity."
+  },
+  "dayDetailsConfiguration": "Original configuration",
+  "@dayDetailsConfiguration": {
+    "description": "Statistics: dayDetailsConfiguration."
+  },
+  "statisticsRounds": "{count, plural, =1{1 round} other{{count} rounds}}",
+  "@statisticsRounds": {
+    "description": "Statistics: statisticsRounds.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statisticsHours": "{count, plural, =1{1 hour} other{{count} hours}}",
+  "@statisticsHours": {
+    "description": "Statistics: statisticsHours.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statisticsMinutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
+  "@statisticsMinutes": {
+    "description": "Statistics: statisticsMinutes.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statisticsSeconds": "{count, plural, =1{1 second} other{{count} seconds}}",
+  "@statisticsSeconds": {
+    "description": "Statistics: statisticsSeconds.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statisticsWorkValue": "Work: {value}",
+  "@statisticsWorkValue": {
+    "description": "Statistics: statisticsWorkValue.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "statisticsRestValue": "Rest: {value}",
+  "@statisticsRestValue": {
+    "description": "Statistics: statisticsRestValue.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "statisticsTotalValue": "Total: {value}",
+  "@statisticsTotalValue": {
+    "description": "Statistics: statisticsTotalValue.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "statisticsTileSemantics": "{date}, {rounds}, work {work}, rest {rest}, total {total}",
+  "@statisticsTileSemantics": {
+    "description": "Statistics: statisticsTileSemantics.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "rounds": {
+        "type": "String"
+      },
+      "work": {
+        "type": "String"
+      },
+      "rest": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -258,4 +258,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String timerTotal(String time) {
     return 'Total $time';
   }
+
+  @override
+  String get statisticsEmpty => 'No completed activity yet.';
+
+  @override
+  String get statisticsError => 'Could not load your statistics.';
+
+  @override
+  String get dayDetailsTitle => 'Day details';
+
+  @override
+  String get dayDetailsEmpty => 'No completed activity for this day.';
+
+  @override
+  String get dayDetailsError => 'Could not load this day.';
+
+  @override
+  String get dayDetailsSummary => 'Daily total';
+
+  @override
+  String get dayDetailsActivity => 'Activity on this day';
+
+  @override
+  String get dayDetailsConfiguration => 'Original configuration';
+
+  @override
+  String statisticsRounds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rounds',
+      one: '1 round',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsHours(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes',
+      one: '1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seconds',
+      one: '1 second',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statisticsWorkValue(String value) {
+    return 'Work: $value';
+  }
+
+  @override
+  String statisticsRestValue(String value) {
+    return 'Rest: $value';
+  }
+
+  @override
+  String statisticsTotalValue(String value) {
+    return 'Total: $value';
+  }
+
+  @override
+  String statisticsTileSemantics(String date, String rounds, String work, String rest, String total) {
+    return '$date, $rounds, work $work, rest $rest, total $total';
+  }
 }

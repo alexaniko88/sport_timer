@@ -5,7 +5,7 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
-import 'package:sport_timer/features/statistics/domain/day_run_activity.dart';
+import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 
 typedef _ActivityOperation<T> = Future<T> Function();
@@ -85,6 +85,6 @@ class SqfliteActivityRepository implements ActivityRepository {
   Future<Result<List<DailyActivity>>> readDailyActivity() => _run(_access.readDailyActivity, checkAccount: true);
 
   @override
-  Future<Result<List<DayRunActivity>>> readDayActivity(String localDate) =>
+  Future<Result<List<RunActivitySummary>>> readDayActivity(String localDate) =>
       _run(() => _access.readDayActivity(localDate), checkAccount: true);
 }

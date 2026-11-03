@@ -93,9 +93,12 @@ fvm flutter test test/snapshots/ui_snapshots_test.dart
 
 | Snapshot | Screen & State | Themes | Next Screens / Transitions |
 | --- | --- | --- | --- |
-| [`goldens/statistics.png`](goldens/statistics.png) | **Statistics (`StatisticPage`, `/home` Tab 1)** — Daily activity cards showing the date, rounds, work, rest and total. Cards do not navigate. | Light & Dark | • Bottom nav switches to [`Setup`](goldens/setup_custom.png)<br>• App bar menu opens [`Navigation Drawer`](goldens/home_drawer.png)<br>• App bar avatar opens [`Account Sheet`](goldens/account_sheet.png). |
+| [`goldens/statistics.png`](goldens/statistics.png) | **Statistics (`StatisticPage`, `/home` Tab 1)** — Daily activity cards showing the date, rounds, work, rest and total. Cards open the selected day’s details. | Light & Dark | • Tap a daily card → [`Day details`](goldens/day_details.png)<br>• Bottom nav switches to [`Setup`](goldens/setup_custom.png)<br>• App bar menu opens [`Navigation Drawer`](goldens/home_drawer.png)<br>• App bar avatar opens [`Account Sheet`](goldens/account_sheet.png). |
 | [`goldens/statistics_empty.png`](goldens/statistics_empty.png) | **Statistics — Empty** — No completed activity message. | Light & Dark | Switching tabs returns to Setup. |
 | [`goldens/statistics_error.png`](goldens/statistics_error.png) | **Statistics — Error** — Load failure message and Retry button. | Light & Dark | Retry requests the daily totals again. |
+| [`goldens/day_details.png`](goldens/day_details.png) | **Day details** — Daily totals and separate run cards with completed activity and original settings. | Light & Dark | Back navigation returns to Statistics. |
+| [`goldens/day_details_empty.png`](goldens/day_details_empty.png) | **Day details — Empty** — No completed activity for the selected day. | Light & Dark | Back navigation returns to Statistics. |
+| [`goldens/day_details_error.png`](goldens/day_details_error.png) | **Day details — Error** — Load failure and Retry button. | Light & Dark | Retry requests the selected day again. |
 | [`goldens/timer_styles.png`](goldens/timer_styles.png) | **Timer Styles (`TimerStylesPage`, `/timer-styles`)** — Lists the three timer style preview cards (`Ring`, `Full color`, `Rounds strip`) with `Ring` selected. | Light & Dark | • Tap a style card → persists that `TimerStyle` for the next workout (`Ring` → [`goldens/timer_ring_round.png`](goldens/timer_ring_round.png), `Full color` → [`goldens/timer_full_color_round.png`](goldens/timer_full_color_round.png), `Rounds strip` → [`goldens/timer_rounds_strip_round.png`](goldens/timer_rounds_strip_round.png))<br>• Back navigation returns to [`Home`](goldens/setup_custom.png). |
 
 ---

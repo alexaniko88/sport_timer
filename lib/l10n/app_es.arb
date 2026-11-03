@@ -64,5 +64,21 @@
   "timerStyleRoundsStrip": "Barra de rondas",
   "timerStylesTitle": "Estilos del temporizador",
   "timerTimeLeft": "quedan {time}",
-  "timerTotal": "Total {time}"
+  "timerTotal": "Total {time}",
+  "statisticsEmpty": "Aún no hay actividad completada.",
+  "statisticsError": "No se pudieron cargar tus estadísticas.",
+  "dayDetailsTitle": "Detalles del día",
+  "dayDetailsEmpty": "No hay actividad completada para este día.",
+  "dayDetailsError": "No se pudo cargar este día.",
+  "dayDetailsSummary": "Total del día",
+  "dayDetailsActivity": "Actividad de este día",
+  "dayDetailsConfiguration": "Configuración original",
+  "statisticsRounds": "{count, plural, =1{1 ronda} other{{count} rondas}}",
+  "statisticsHours": "{count, plural, =1{1 hora} other{{count} horas}}",
+  "statisticsMinutes": "{count, plural, =1{1 minuto} other{{count} minutos}}",
+  "statisticsSeconds": "{count, plural, =1{1 segundo} other{{count} segundos}}",
+  "statisticsWorkValue": "Trabajo: {value}",
+  "statisticsRestValue": "Descanso: {value}",
+  "statisticsTotalValue": "Total: {value}",
+  "statisticsTileSemantics": "{date}, {rounds}, trabajo {work}, descanso {rest}, total {total}"
 }

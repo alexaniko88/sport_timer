@@ -39,6 +39,6 @@ No goals, streaks, inferred fitness, additional measurements, editing, sync, or 
 
 ## Dependencies and visual context
 
-[Recording](../done/01-record-activity/index.md) and the [daily list](../done/02-daily-list/index.md) are completed; verify their availability in the implementation checkout. [Day details](../03-day-details/index.md) is independent and provisional.
+[Recording](../done/01-record-activity/index.md) and the [daily list](../done/02-daily-list/index.md) are completed; verify their availability in the implementation checkout. [Day details](../done/03-day-details/index.md) is independent and completed on its feature branch, pending merge.
 
 Current references: [daily list](../../../../test/snapshots/goldens/statistics.png), [empty](../../../../test/snapshots/goldens/statistics_empty.png), [error](../../../../test/snapshots/goldens/statistics_error.png), and [snapshot flow index](../../../../test/snapshots/README.md). These capture the existing list in both themes, not charts, calendar, selection, or period navigation; add appropriate coverage as the UI is built.
