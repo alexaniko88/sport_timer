@@ -2,9 +2,7 @@
 
 Epic: [Statistics](../../index.md)
 
-Status: Provisional future story. Discuss again before approving implementation.
-
-## Proposed user outcome
+## User outcome
 
 As a person reviewing a training day, I want to tap its daily tile and see the separate timer runs so that runs with different round/rest settings are understandable.
 
@@ -17,32 +15,32 @@ Example: one day contains three runs with 5, 10, and 20 completed rounds, each u
 - Completed records preserve actual completed activity, timestamps, and assigned dates.
 - Stopped runs retain completed phases; empty runs do not appear.
 
-These records enable this story without committing to a particular screen design or collecting partial phases as completed activity.
+These records enable this story without collecting partial phases as completed activity.
 
-## Decisions to revisit
+## Agreed behavior
 
-- Dedicated screen, bottom sheet, or another presentation.
-- Which run fields to display: completed versus configured rounds, work/rest durations, totals, termination information, and optional times.
-- Whether users can expand a run into its individual completed phases.
-- Ordering and labels for runs; session counts are not a primary statistic.
-- How a run spanning midnight appears on both days. Day totals must remain based only on phases assigned to the selected date.
-- Whether pause metadata is useful to display or remains internal.
+- Tapping a daily tile opens a dedicated page showing the selected date and its daily totals.
+- Show one card per run, newest first. Each card shows completed rounds, work, rest and total for the selected day, alongside the original configured work duration, rest duration and round count. Distinguish selected-day activity from the whole-run configuration.
+- A run spanning midnight appears on each day with completed activity, but each day's values include only phases assigned to that date.
+- Do not expand individual phases or display pause details for now. Do not label a run stopped or completed unless the stored data supports that conclusion reliably.
+- This is the agreed initial scope; the layout can be revisited later.
 
-## Proposed tasks
+## Tasks
 
-1. [Confirm day-detail behavior and layout](01-confirm-day-details.md).
+1. [Confirm day-detail behavior and layout](done/01-confirm-day-details.md).
 2. [Query activity for a selected day](02-query-day-activity.md).
 3. [Add navigation and the agreed detail view](03-show-day-details.md).
 4. [Verify navigation and grouping](04-verify-day-details.md).
 
-## Provisional acceptance criteria
+## Acceptance criteria
 
-- A day can be opened from its daily tile.
+- A day can be opened from its daily tile on a dedicated page showing the selected date and its daily totals.
 - Its completed activity is grouped by the original timer runs.
-- Different work/rest configurations remain distinguishable.
+- Run cards appear newest first and show selected-day completed rounds, work, rest and total alongside the original work/rest durations and configured rounds.
+- Selected-day activity is distinguishable from the original run configuration, so different configurations remain understandable.
 - An unfinished final phase never appears as completed activity.
-- A run spanning midnight cannot inflate either day's totals.
-- The final layout and displayed fields require a new discussion before implementation.
+- A run spanning midnight appears on each day with completed activity, and neither day's totals include phases assigned to the other day.
+- Individual phase expansion and pause details are excluded for now; termination labels are shown only if reliably supported.
 
 ## Dependencies and exclusions
 
