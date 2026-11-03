@@ -1,14 +1,14 @@
 # TASK 1.3: Add the activity persistence interface
 
-Story: [Story 1 overview](index.md)
+Story: [Story 1 overview](../index.md)
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
-Status: Not started.
+Status: Done on feature branch; pending PR and merge.
 
 ## Dependencies
 
-[Previous task](done/02-add-database-foundation.md).
+[Previous task](02-add-database-foundation.md).
 
 ## Goal
 
@@ -28,3 +28,7 @@ Each item below is a completion requirement for this task:
 ## Orchestration
 
 Read the story and epic before starting. Inspect current code and propose small substeps for approval. Complete one approved file or concern per turn and wait for user validation before continuing. Include relevant tests and scoped checks with implementation; a later verification task does not defer required validation.
+
+## Completion evidence
+
+On branch `feat/activity-repository`, commit `07094e8` added the account-scoped repository, transactional and idempotent phase writes, daily totals, lifecycle updates, and change notifications. Full Flutter analysis and 281 tests passed; four real-SQLite integration tests passed on Android. iOS validation remains deferred because of the existing authentication dependency conflict. Timer recording and its retry queue remain in the next task.

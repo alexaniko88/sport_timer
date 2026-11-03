@@ -8,7 +8,7 @@ Status: Not started.
 
 ## Dependencies
 
-[Previous task](03-add-activity-repository.md).
+[Previous task](done/03-add-activity-repository.md).
 
 ## Goal
 
