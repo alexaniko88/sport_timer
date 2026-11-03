@@ -13,6 +13,12 @@ description: >-
 
 Turn the user's idea into an agreed, readable backlog that another session can use without the original conversation. Work with the current repository and preserve decisions already made in the session.
 
+## Starting a new invocation
+
+Before creating or changing backlog files, check `git status -sb` and read `.agents/rules/git-commits.md` for branch naming. For each new invocation, switch to `master`, update it with `git pull --ff-only`, then create a new, uniquely named branch from the updated `master`. Use `improve/` for improvements, `fix/` for bugs, and `feat/` for new capabilities or their planning. Continue an existing invocation on its branch rather than creating another branch for follow-up messages.
+
+Preserve uncommitted work: do not carry unrelated changes onto the new branch or overwrite, discard, or stash them without authorization. If the checkout cannot be switched safely, or the pull fails, stop and explain the blocker; do not silently use a stale or different base. Respect an explicit user instruction to use another base.
+
 ## Hierarchy and layout
 
 - **Epic:** the broader capability or goal.
