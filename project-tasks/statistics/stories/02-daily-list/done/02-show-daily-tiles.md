@@ -1,14 +1,16 @@
 # TASK 2.2: Replace placeholder content with daily tiles
 
-Story: [Story 2 overview](index.md)
+Story: [Story 2 overview](../index.md)
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
-Status: Not started.
+Status: Done on branch `feat/daily-statistics-tiles`; pending PR and merge.
+
+Completion: implementation commit `d6cfce9`; full analysis, 319 tests, snapshot verification and review passed. Daily tiles show account-scoped completed activity with loading, empty and retry states.
 
 ## Dependencies
 
-[Previous task](done/01-add-daily-statistics-state.md).
+[Previous task](01-add-daily-statistics-state.md).
 
 ## Goal
 
@@ -31,4 +33,4 @@ Read the story and epic before starting. Inspect current code and propose small 
 
 ## UI snapshot reference
 
-Before planning, inspect the relevant current UI snapshots: [statistics](../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. The Statistics snapshot shows placeholder content, not the intended daily list. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
+Before planning, inspect the relevant current UI snapshots: [statistics](../../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. The Statistics snapshot shows placeholder content, not the intended daily list. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.
