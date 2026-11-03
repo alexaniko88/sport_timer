@@ -93,7 +93,9 @@ fvm flutter test test/snapshots/ui_snapshots_test.dart
 
 | Snapshot | Screen & State | Themes | Next Screens / Transitions |
 | --- | --- | --- | --- |
-| [`goldens/statistics.png`](goldens/statistics.png) | **Statistics (`StatisticPage`, `/home` Tab 1)** — Current placeholder screen with `"Your statistics"` app bar, pinned `"Here are your training statistics"` header, and list items `A`–`F` (no FAB). | Light & Dark | • Bottom nav switches to [`Setup`](goldens/setup_custom.png)<br>• App bar menu opens [`Navigation Drawer`](goldens/home_drawer.png)<br>• App bar avatar opens [`Account Sheet`](goldens/account_sheet.png). |
+| [`goldens/statistics.png`](goldens/statistics.png) | **Statistics (`StatisticPage`, `/home` Tab 1)** — Daily activity cards showing the date, rounds, work, rest and total. Cards do not navigate. | Light & Dark | • Bottom nav switches to [`Setup`](goldens/setup_custom.png)<br>• App bar menu opens [`Navigation Drawer`](goldens/home_drawer.png)<br>• App bar avatar opens [`Account Sheet`](goldens/account_sheet.png). |
+| [`goldens/statistics_empty.png`](goldens/statistics_empty.png) | **Statistics — Empty** — No completed activity message. | Light & Dark | Switching tabs returns to Setup. |
+| [`goldens/statistics_error.png`](goldens/statistics_error.png) | **Statistics — Error** — Load failure message and Retry button. | Light & Dark | Retry requests the daily totals again. |
 | [`goldens/timer_styles.png`](goldens/timer_styles.png) | **Timer Styles (`TimerStylesPage`, `/timer-styles`)** — Lists the three timer style preview cards (`Ring`, `Full color`, `Rounds strip`) with `Ring` selected. | Light & Dark | • Tap a style card → persists that `TimerStyle` for the next workout (`Ring` → [`goldens/timer_ring_round.png`](goldens/timer_ring_round.png), `Full color` → [`goldens/timer_full_color_round.png`](goldens/timer_full_color_round.png), `Rounds strip` → [`goldens/timer_rounds_strip_round.png`](goldens/timer_rounds_strip_round.png))<br>• Back navigation returns to [`Home`](goldens/setup_custom.png). |
 
 ---
