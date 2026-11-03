@@ -2,11 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:sport_timer/shared/presentation/extensions/text_theme_extension.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 
 class TimerSettingCard extends StatelessWidget {
-  static const double _borderWidth = 1;
-
   final String label;
   final String value;
   final String semanticHint;
@@ -24,19 +24,15 @@ class TimerSettingCard extends StatelessWidget {
     required this.onPressed,
   });
 
-  static TextStyle? _labelStyle(ThemeData theme) => theme.textTheme.titleMedium?.copyWith(
+  static TextStyle? _labelStyle(ThemeData theme) => theme.textTheme.emphasizedLabel.copyWith(
         color: theme.colorScheme.onSurfaceVariant,
-        fontWeight: FontWeight.w500,
       );
 
-  static TextStyle? _valueStyle(ThemeData theme) =>
-      theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700);
+  static TextStyle? _valueStyle(ThemeData theme) => theme.textTheme.tileValue;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final radius = BorderRadius.circular(AppRadius.r12);
 
     return Semantics(
       container: true,
@@ -46,44 +42,30 @@ class TimerSettingCard extends StatelessWidget {
       hint: semanticHint,
       onTap: onPressed,
       excludeSemantics: true,
-      child: Material(
-        color: Colors.transparent,
-        child: Ink(
-          decoration: BoxDecoration(
-            color: colors.surfaceContainer,
-            borderRadius: radius,
-            border: Border.all(color: colors.outlineVariant, width: _borderWidth),
-          ),
-          child: InkWell(
-            borderRadius: radius,
-            onTap: onPressed,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.s12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, color: iconColor, size: AppSpacing.s40),
-                  const Gap(AppSpacing.s8),
-                  Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: _labelStyle(theme),
-                  ),
-                  const Gap(AppSpacing.s8),
-                  Text(
-                    value,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: _valueStyle(theme),
-                  ),
-                ],
-              ),
+      child: AppSurface(
+        onTap: onPressed,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: iconColor, size: AppSpacing.s40),
+            const Gap(AppSpacing.s8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: _labelStyle(theme),
             ),
-          ),
+            const Gap(AppSpacing.s8),
+            Text(
+              value,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: _valueStyle(theme),
+            ),
+          ],
         ),
       ),
     );
@@ -110,7 +92,7 @@ class TimerSettingGrid extends StatelessWidget {
         final twoColumnWidth = (constraints.maxWidth - AppSpacing.s16) / 2;
         final columns = twoColumnWidth < _minimumColumnWidth * textScaler.scale(1) ? 1 : 2;
         final columnWidth = (constraints.maxWidth - (columns - 1) * AppSpacing.s16) / columns;
-        final textWidth = math.max(0.0, columnWidth - 2 * (AppSpacing.s12 + TimerSettingCard._borderWidth));
+        final textWidth = math.max(0.0, columnWidth - 2 * (AppSurface.defaultPadding + AppBorderWidth.thin));
 
         double textHeight({required String text, required TextStyle? style}) {
           final painter = TextPainter(
@@ -130,7 +112,7 @@ class TimerSettingGrid extends StatelessWidget {
         for (final card in children) {
           final contentHeight = AppSpacing.s40 +
               2 * AppSpacing.s8 +
-              2 * (AppSpacing.s12 + TimerSettingCard._borderWidth) +
+              2 * (AppSurface.defaultPadding + AppBorderWidth.thin) +
               textHeight(text: card.label, style: TimerSettingCard._labelStyle(theme)) +
               textHeight(text: card.value, style: TimerSettingCard._valueStyle(theme));
           cardHeight = math.max(cardHeight, contentHeight);

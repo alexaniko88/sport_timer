@@ -8,6 +8,7 @@ import 'package:sport_timer/features/statistics/presentation/statistics_view_mod
 import 'package:sport_timer/features/statistics/presentation/widgets/daily_activity_tile.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_button.dart';
 
 class StatisticPage extends StatefulWidget {
   final AccountViewModel accountViewModel;
@@ -55,7 +56,7 @@ class _StatisticPageState extends State<StatisticPage> {
                 children: [
                   const Text('Could not load your statistics.'),
                   const Gap(AppSpacing.s8),
-                  FilledButton(onPressed: _viewModel.refresh, child: const Text('Retry')),
+                  AppButton.primary(label: l10n.statisticsRetryButton, onPressed: _viewModel.refresh),
                 ],
               ),
             ),

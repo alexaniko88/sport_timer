@@ -279,7 +279,8 @@ void main() {
         expect(find.descendant(of: button, matching: find.byIcon(Icons.play_arrow)), findsOneWidget);
         final buttonRect = tester.getRect(button);
         final labelRect = tester.getRect(sessionLabel);
-        expect(buttonRect.width, 256);
+        // The session tile's 1px border now takes layout space, so the button is 2px narrower.
+        expect(buttonRect.width, 254);
         final buttonContext = tester.element(button);
         final shape = FilledButtonTheme.of(buttonContext).style!.shape!.resolve({}) as RoundedRectangleBorder;
         expect(shape.borderRadius, BorderRadius.circular(AppRadius.r12));

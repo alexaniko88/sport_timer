@@ -3,7 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/presentation/extensions/daily_activity_extension.dart';
 import 'package:sport_timer/features/statistics/presentation/extensions/duration_extension.dart';
+import 'package:sport_timer/shared/presentation/extensions/text_theme_extension.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 
 class DailyActivityTile extends StatelessWidget {
   final DailyActivity activity;
@@ -13,6 +15,9 @@ class DailyActivityTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final secondaryStyle = theme.textTheme.tileSecondary.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
     final date = activity.formattedDate;
     final rounds = '${activity.roundCount} ${activity.roundCount == 1 ? 'round' : 'rounds'}';
     final work = Duration(milliseconds: activity.workDurationMs).formattedStatisticsDuration;
@@ -23,22 +28,16 @@ class DailyActivityTile extends StatelessWidget {
       container: true,
       excludeSemantics: true,
       label: '$date, $rounds, work $work, rest $rest, total $total',
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.s12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(AppRadius.r12),
-          border: Border.all(color: theme.colorScheme.outlineVariant),
-        ),
+      child: AppSurface(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(date, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(date, style: theme.textTheme.tileTitle),
             const Gap(AppSpacing.s8),
-            Text(rounds),
-            Text('Work: $work'),
-            Text('Rest: $rest'),
-            Text('Total: $total'),
+            Text(rounds, style: secondaryStyle),
+            Text('Work: $work', style: secondaryStyle),
+            Text('Rest: $rest', style: secondaryStyle),
+            Text('Total: $total', style: secondaryStyle),
           ],
         ),
       ),

@@ -296,6 +296,12 @@ abstract class AppLocalizations {
   /// **'Seconds'**
   String get pickerSeconds;
 
+  /// Button on the statistics page that loads the statistics again after an error.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get statisticsRetryButton;
+
   /// Title of the statistics section.
   ///
   /// In en, this message translates to:

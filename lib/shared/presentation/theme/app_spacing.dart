@@ -1,6 +1,4 @@
 abstract final class AppSpacing {
-  static const double s2 = 2;
-  static const double s4 = 4;
   static const double s8 = 8;
   static const double s12 = 12;
   static const double s16 = 16;
@@ -12,7 +10,11 @@ abstract final class AppSpacing {
 
 abstract final class AppRadius {
   static const double r8 = 8;
-  static const double r10 = 10;
   static const double r12 = 12;
   static const double r20 = 20;
+}
+
+abstract final class AppBorderWidth {
+  static const double thin = 1;
+  static const double thick = 2;
 }
