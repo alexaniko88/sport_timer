@@ -26,7 +26,7 @@ The example illustrates content, not a fixed layout. Choose readable formatting 
 
 ## Tasks
 
-1. [Add daily statistics loading/state](01-add-daily-statistics-state.md).
+1. [Add daily statistics loading/state](done/01-add-daily-statistics-state.md).
 2. [Replace placeholder content with daily tiles](02-show-daily-tiles.md).
 3. [Verify summaries and screen states](03-verify-daily-statistics.md).
 

@@ -1,14 +1,16 @@
 # TASK 2.1: Add daily statistics loading/state
 
-Story: [Story 2 overview](index.md)
+Story: [Story 2 overview](../index.md)
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
-Status: Not started.
+Status: Done on feature branch `feat/daily-statistics-state`; pending PR and merge.
+
+Completion: implementation commit `2e1f53f`; focused tests and the full suite (310 tests) passed, analysis passed, and code review found no issues. Page integration remains in Task 2.2.
 
 ## Dependencies
 
-[Story 1: Record completed activity](../done/01-record-activity/index.md).
+[Story 1: Record completed activity](../../done/01-record-activity/index.md).
 
 ## Goal
 
