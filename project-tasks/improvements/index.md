@@ -13,7 +13,7 @@ An improvement task does not authorize implementation. Plan and agree the change
 
 ## Tasks
 
-1. [IMP-01: Unify styles across the app](01-unify-styles-app-wide.md) — Provisional.
+1. [IMP-01: Unify styles across the app](done/01-unify-styles-app-wide.md) — archived; done on `improve/unify-app-styles`, pending PR and merge.
 2. [IMP-02: Rethink the navigation drawer](02-rethink-navigation-drawer.md) — Provisional.
 3. [IMP-03: Capture a UI snapshot reference](done/03-capture-ui-snapshot-reference.md) — archived; final decisions and evidence are in the saved plan.
 
