@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
@@ -11,7 +10,6 @@ import 'package:sport_timer/features/timer/presentation/widgets/full_color_timer
 import 'package:sport_timer/features/timer/presentation/widgets/ring_timer_view.dart';
 import 'package:sport_timer/features/timer/presentation/widgets/rounds_strip_timer_view.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
-import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class TimerPage extends StatefulWidget {
@@ -27,14 +25,21 @@ class TimerPage extends StatefulWidget {
 }
 
 class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
+  static const _noticeDuration = Duration(seconds: 3);
+
   late final TimerViewModel _viewModel;
-  bool _startFailed = false;
+  bool _recordingNoticeShown = false;
   bool _screenKeptOn = false;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = TimerViewModel(widget.params, getIt(), getIt(), activityRecorder: getIt<TimerActivityRecorder>());
+    _viewModel = TimerViewModel(
+      widget.params,
+      getIt(),
+      getIt(),
+      activityRecorder: getIt<TimerActivityRecorder>(),
+    );
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -49,7 +54,7 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final l10n = context.l10n;
-    final started = _viewModel.start(
+    _viewModel.start(
       notificationTitle: l10n.timerNotificationTitle,
       notificationTextBuilder: (state) {
         final round = '${l10n.timerPhaseRound} ${l10n.timerRoundNumberOf(state.currentRound, state.totalRounds)}';
@@ -61,11 +66,31 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
         };
       },
     );
-    _startFailed = !started;
-    if (started && !_screenKeptOn) {
+    if (!_screenKeptOn) {
       _screenKeptOn = true;
       WakelockPlus.enable();
     }
+    if (_viewModel.recordingUnavailable && !_recordingNoticeShown) {
+      _recordingNoticeShown = true;
+      // A snackbar cannot be shown while the dependencies change, so wait for the first frame.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showRecordingNotice();
+      });
+    }
+  }
+
+  void _showRecordingNotice() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        // FIXME-ALEX: hardcoded English, add to translations.
+        // key: timerRecordingUnavailable
+        // description: Short notice shown when the workout runs but its activity cannot be saved to the statistics.
+        // en: Could not save this workout to your statistics.
+        content: Text('Could not save this workout to your statistics.'),
+        duration: _noticeDuration,
+        showCloseIcon: true,
+      ),
+    );
   }
 
   @override
@@ -78,26 +103,6 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (_startFailed) {
-      return Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.s16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'Could not start the workout. Check your account and try again.',
-                  textAlign: TextAlign.center,
-                ),
-                TextButton(onPressed: () => context.pop(), child: const Text('Back')),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
     return Scaffold(
       // Opaque so a tap anywhere on the screen pauses or resumes, even on empty areas.
       body: GestureDetector(

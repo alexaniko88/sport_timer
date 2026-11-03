@@ -130,7 +130,7 @@ void main() {
   }
 
   group('TimerViewModel', () {
-    test('does not start without a captured owner and can retry', () {
+    test('runs the timer without recording when the recorder cannot start', () {
       fakeAsync((fake) {
         final recorder = _FakeActivityRecorder()..fail = true;
         final viewModel = TimerViewModel(
@@ -140,24 +140,14 @@ void main() {
           timeSource: () => fake.elapsed,
           activityRecorder: recorder,
         );
-        expect(
-          viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text'),
-          isFalse,
-        );
-        viewModel.togglePauseResume();
-        fake.elapse(const Duration(seconds: 3));
-        expect(fake.nonPeriodicTimerCount, 0);
-        expect(keepAlive.starts, 0);
-        expect(recorder.run.reconciled, isEmpty);
-        expect(recorder.run.resumes, 0);
-        recorder.fail = false;
-        expect(
-          viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text'),
-          isTrue,
-        );
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
+        expect(viewModel.recordingUnavailable, isTrue);
         expect(keepAlive.starts, 1);
-        expect(recorder.starts, 2);
         expect(fake.nonPeriodicTimerCount, 1);
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
+        expect(recorder.starts, 1);
+        expect(keepAlive.starts, 1);
+        expect(recorder.run.reconciled, isEmpty);
         viewModel.dispose();
       });
     });

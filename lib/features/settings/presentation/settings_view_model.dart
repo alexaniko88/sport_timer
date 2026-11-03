@@ -57,20 +57,21 @@ class SettingsViewModel {
     if (styleResult case Success(:final value) when !_disposed && !_styleSelected) {
       _state.value = _state.value.copyWith(timerStyle: value);
     }
-    if (result case Success(:final value)) {
-      _lastSavedSettings = value;
-      var configuration = _validated(value);
-      // Replay only edited fields so a slow load preserves the other saved values.
-      for (final update in _editsBeforeLoad) {
-        configuration = update(configuration);
-      }
-      _editsBeforeLoad.clear();
-      _setConfiguration(configuration);
-      _hasSettingsEdits = configuration != value;
-      _setStatus(SettingsStatus.loaded);
-    } else if (result case Failure(:final error)) {
-      _setStatus(SettingsStatus.error, error: error);
-    }
+    result.fold(
+      onSuccess: (settings) {
+        _lastSavedSettings = settings;
+        var configuration = _validated(settings);
+        // Replay only edited fields so a slow load preserves the other saved values.
+        for (final update in _editsBeforeLoad) {
+          configuration = update(configuration);
+        }
+        _editsBeforeLoad.clear();
+        _setConfiguration(configuration);
+        _hasSettingsEdits = configuration != settings;
+        _setStatus(SettingsStatus.loaded);
+      },
+      onFailure: (error) => _setStatus(SettingsStatus.error, error: error),
+    );
   }
 
   Future<void> saveSettings(TimerSettings settings) {

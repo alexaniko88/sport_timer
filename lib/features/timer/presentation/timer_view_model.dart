@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/timer/domain/timer_schedule.dart';
@@ -41,6 +40,7 @@ class TimerViewModel {
   int? _notifiedRound;
   bool _hasStarted = false;
   bool _disposed = false;
+  bool _recordingUnavailable = false;
 
   TimerViewModel(
     TimerParams params,
@@ -68,6 +68,9 @@ class TimerViewModel {
 
   ValueListenable<TimerState> get state => _state;
 
+  // True when this workout runs without saving its activity. The timer itself is not affected.
+  bool get recordingUnavailable => _recordingUnavailable;
+
   // A Stopwatch is monotonic, so changing the device clock cannot move the timer.
   static TimeSource _stopwatchTimeSource() {
     final stopwatch = Stopwatch()..start();
@@ -91,19 +94,18 @@ class TimerViewModel {
     return runningSince == null ? _elapsedBeforeRun : _elapsedBeforeRun + _timeSource() - runningSince;
   }
 
-  bool start({
+  void start({
     required String notificationTitle,
     required NotificationTextBuilder notificationTextBuilder,
   }) {
-    if (_disposed) return false;
-    if (_hasStarted) return true;
-    final recording = _activityRecorder?.start(_params);
-    if (recording case Success<TimerActivityRun>(:final value)) {
-      _activityRun = value;
-    } else if (recording case Failure<TimerActivityRun>(:final error)) {
-      debugPrint('$runtimeType:: activity recording could not start: $error');
-      return false;
-    }
+    if (_disposed || _hasStarted) return;
+    _activityRecorder?.start(_params).fold(
+          onSuccess: (run) => _activityRun = run,
+          onFailure: (error) {
+            _recordingUnavailable = true;
+            debugPrint('$runtimeType:: activity recording could not start: $error');
+          },
+        );
     _hasStarted = true;
     _notificationTextBuilder = notificationTextBuilder;
     _notifiedStatus = _state.value.timerStatus;
@@ -115,7 +117,6 @@ class TimerViewModel {
       onResume: _resumeIfPaused,
     );
     _run();
-    return true;
   }
 
   void togglePauseResume() {

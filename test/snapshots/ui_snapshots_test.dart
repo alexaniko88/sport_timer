@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
@@ -33,6 +34,7 @@ import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 
 typedef _WidgetFactory = Widget Function();
 
+const String _wakelockChannel = 'dev.flutter.pigeon.wakelock_plus_platform_interface.WakelockPlusApi.toggle';
 const Size _phoneSize = Size(390, 844);
 const BoxConstraints _pairConstraints = BoxConstraints(
   minWidth: 840,
@@ -111,17 +113,40 @@ class _FakeSettingsRepository implements SettingsRepository {
   }
 }
 
-class _UnusedAudioManager implements AudioManager {
+class _SilentAudioManager implements AudioManager {
   @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  void playRoundFinishSound() {}
+
+  @override
+  void playWorkoutDoneSound() {}
+
+  @override
+  void playRoundStartSound() {}
+
+  @override
+  void playPreparationSound() {}
+
+  @override
+  Future<void> dispose() async {}
 }
 
-class _UnusedKeepAlive implements BackgroundKeepAlive {
+class _SilentKeepAlive implements BackgroundKeepAlive {
   @override
-  Future<void> stop() async {}
+  Future<void> start({
+    required String notificationTitle,
+    required String notificationText,
+    required KeepAliveAction onPause,
+    required KeepAliveAction onResume,
+  }) async {}
 
   @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  Future<void> setPaused({required bool isPaused}) async {}
+
+  @override
+  Future<void> updateText({required String text}) async {}
+
+  @override
+  Future<void> stop() async {}
 }
 
 class _FailedActivityRecorder implements TimerActivityRecorder {
@@ -241,12 +266,18 @@ void main() {
       _FakeUserRepository(buildFixtureUser()),
     );
     getIt.registerSingleton<SettingsRepository>(settingsRepository);
-    getIt.registerSingleton<AudioManager>(_UnusedAudioManager());
-    getIt.registerSingleton<BackgroundKeepAlive>(_UnusedKeepAlive());
+    getIt.registerSingleton<AudioManager>(_SilentAudioManager());
+    getIt.registerSingleton<BackgroundKeepAlive>(_SilentKeepAlive());
     getIt.registerSingleton<TimerActivityRecorder>(_FailedActivityRecorder());
+    // TimerPage keeps the screen on, and the platform channel does not exist in tests.
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+      _wakelockChannel,
+      (_) async => const StandardMessageCodec().encodeMessage([null]),
+    );
   });
 
   tearDown(() async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(_wakelockChannel, null);
     await getIt.reset();
   });
 
@@ -444,9 +475,15 @@ void main() {
           );
 
           goldenTest(
-            'timer could not start',
-            fileName: 'timer_start_error',
+            'timer recording notice',
+            fileName: 'timer_recording_notice',
             constraints: _pairConstraints,
+            // The notice is shown after the first frame and finishes its entrance animation.
+            pumpBeforeTest: (tester) async {
+              await tester.pump();
+              await tester.pump();
+              await tester.pump(const Duration(milliseconds: 500));
+            },
             builder: () => _lightAndDarkGroup(
               builder: () => const TimerPage(
                 params: TimerParams(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:sport_timer/core/extensions/date_time_extension.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
@@ -18,6 +19,8 @@ import 'package:uuid/uuid.dart';
 typedef ActivityWallClock = DateTime Function();
 typedef ActivityIdGenerator = String Function();
 typedef _PendingWrite = Future<Result<void>> Function();
+typedef _FailureCallback = void Function(Exception error);
+typedef _DrainedCallback = void Function(_RecordingRun run);
 
 class DefaultTimerActivityRecorder implements TimerActivityRecorder {
   final ActivityRepository _repository;
@@ -53,14 +56,29 @@ class DefaultTimerActivityRecorder implements TimerActivityRecorder {
       roundCount: params.rounds,
     );
     final prepared = _repository.prepareSession(session);
-    if (prepared case Failure<ActivitySessionCreation>(:final error)) return Failure(error);
-    final creation = (prepared as Success<ActivitySessionCreation>).value;
+    return prepared.fold(
+      onSuccess: (creation) => _beginRun(
+        params: params,
+        session: session,
+        startedAt: now,
+        creation: creation,
+      ),
+      onFailure: (error) => Failure(error),
+    );
+  }
+
+  Result<TimerActivityRun> _beginRun({
+    required TimerParams params,
+    required TimerSession session,
+    required DateTime startedAt,
+    required ActivitySessionCreation creation,
+  }) {
     final run = _RecordingRun(
       repository: _repository,
       creation: creation,
       sessionId: session.id,
       schedule: TimerSchedule.fromParams(params),
-      startedAt: now,
+      startedAt: startedAt,
       clock: _clock,
       newId: _newId,
       onFailure: _reportFailure,
@@ -73,7 +91,7 @@ class DefaultTimerActivityRecorder implements TimerActivityRecorder {
 
   void _reportFailure(Exception error) {
     debugPrint('$runtimeType:: activity write failed: $error');
-    _failures.add(error);
+    if (!_failures.isClosed) _failures.add(error);
   }
 
   @override
@@ -82,13 +100,20 @@ class DefaultTimerActivityRecorder implements TimerActivityRecorder {
       run.retry();
     }
   }
-}
 
-typedef _FailureCallback = void Function(Exception error);
-typedef _DrainedCallback = void Function(_RecordingRun run);
+  // Stops every retry timer and closes the failure stream. Queued writes are dropped.
+  void dispose() {
+    for (final run in _runs) {
+      run.dispose();
+    }
+    _runs.clear();
+    _failures.close();
+  }
+}
 
 class _RecordingRun implements TimerActivityRun {
   static const _retryDelay = Duration(seconds: 5);
+  static const _maxAutoRetries = 5;
   static const _clockTolerance = Duration(seconds: 1);
 
   final ActivityRepository _repository;
@@ -111,6 +136,8 @@ class _RecordingRun implements TimerActivityRun {
   bool _ended = false;
   bool _draining = false;
   bool _blocked = false;
+  bool _disposed = false;
+  int _failedAttempts = 0;
   Timer? _retryTimer;
 
   _RecordingRun({
@@ -137,9 +164,13 @@ class _RecordingRun implements TimerActivityRun {
   void begin() {
     _enqueue(() async {
       final result = await _repository.createPreparedSession(_creation);
-      if (result case Failure<ActivitySessionHandle>(:final error)) return Failure(error);
-      _session = (result as Success<ActivitySessionHandle>).value;
-      return const Success(null);
+      return result.fold(
+        onSuccess: (session) {
+          _session = session;
+          return const Success(null);
+        },
+        onFailure: (error) => Failure(error),
+      );
     });
   }
 
@@ -157,9 +188,6 @@ class _RecordingRun implements TimerActivityRun {
       if (stage.type == TimerStatus.round || stage.type == TimerStatus.rest) {
         // The device's timezone at reconciliation determines the local date.
         final local = instant.toLocal();
-        final date = '${local.year.toString().padLeft(4, '0')}-'
-            '${local.month.toString().padLeft(2, '0')}-'
-            '${local.day.toString().padLeft(2, '0')}';
         completed.add(
           CompletedPhase(
             id: _newId(),
@@ -169,7 +197,7 @@ class _RecordingRun implements TimerActivityRun {
             roundNumber: stage.round,
             durationMs: Duration(seconds: stage.lengthSeconds).inMilliseconds,
             completedAtUtcMs: instant.millisecondsSinceEpoch,
-            localCompletionDate: date,
+            localCompletionDate: local.asIsoDate,
             utcOffsetMinutes: local.timeZoneOffset.inMinutes,
           ),
         );
@@ -231,7 +259,20 @@ class _RecordingRun implements TimerActivityRun {
     if (!_blocked) unawaited(_drain());
   }
 
+  // A manual retry starts a fresh set of automatic attempts.
   void retry() {
+    _failedAttempts = 0;
+    _resumeDrain();
+  }
+
+  void dispose() {
+    _disposed = true;
+    _retryTimer?.cancel();
+    _retryTimer = null;
+  }
+
+  void _resumeDrain() {
+    if (_disposed) return;
     _retryTimer?.cancel();
     _retryTimer = null;
     _blocked = false;
@@ -239,16 +280,20 @@ class _RecordingRun implements TimerActivityRun {
   }
 
   Future<void> _drain() async {
-    if (_draining || _blocked) return;
+    if (_draining || _blocked || _disposed) return;
     _draining = true;
-    while (_pending.isNotEmpty) {
+    while (_pending.isNotEmpty && !_disposed) {
       final result = await _pending.first();
+      if (_disposed) break;
       if (result case Failure<void>(:final error)) {
         _blocked = true;
+        _failedAttempts++;
         _onFailure(error);
-        _retryTimer = Timer(_retryDelay, retry);
+        // After the limit the run waits for a manual retry, so a permanent error does not loop forever.
+        if (_failedAttempts < _maxAutoRetries) _retryTimer = Timer(_retryDelay, _resumeDrain);
         break;
       }
+      _failedAttempts = 0;
       _pending.removeFirst();
     }
     _draining = false;

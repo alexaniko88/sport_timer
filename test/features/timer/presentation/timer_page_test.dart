@@ -9,6 +9,7 @@ import 'package:sport_timer/features/timer/domain/background_keep_alive.dart';
 import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/timer/presentation/timer_page.dart';
+import 'package:sport_timer/features/timer/presentation/widgets/ring_timer_view.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
 
 class _Audio implements AudioManager {
@@ -114,7 +115,10 @@ void main() {
     expect(recorder.run.reconciliations, afterDispose);
   });
 
-  testWidgets('shows an error instead of the timer when the owner is unavailable', (tester) async {
+  testWidgets('runs the timer and shows a dismissible notice when recording cannot start', (tester) async {
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMessageHandler(channel, (_) async => const StandardMessageCodec().encodeMessage([null]));
+    addTearDown(() => messenger.setMockMessageHandler(channel, null));
     final recorder = _Recorder()..fail = true;
     getIt.registerSingleton<AudioManager>(_Audio());
     getIt.registerSingleton<BackgroundKeepAlive>(_KeepAlive());
@@ -128,9 +132,20 @@ void main() {
         home: TimerPage(params: params),
       ),
     );
-    expect(find.text('Could not start the workout. Check your account and try again.'), findsOneWidget);
-    expect(find.text('Back'), findsOneWidget);
-    expect(recorder.run.reconciliations, 0);
+    await tester.pump();
+    await tester.pump();
+    const notice = 'Could not save this workout to your statistics.';
+    expect(find.text(notice), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsOneWidget);
+    expect(find.byType(RingTimerView), findsOneWidget);
+    expect(recorder.starts, 1);
+
+    // The 3 seconds start once the entrance animation is done.
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text(notice), findsNothing);
+
     await tester.pumpWidget(const SizedBox());
     expect(recorder.run.ends, 0);
   });

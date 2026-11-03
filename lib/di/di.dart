@@ -34,7 +34,11 @@ void configureDependencies() {
       dispose: (access) => access.close(),
     )
     ..registerLazySingleton<ActivityRepository>(() => SqfliteActivityRepository(getIt()))
-    ..registerLazySingleton<TimerActivityRecorder>(() => DefaultTimerActivityRecorder(getIt(), getIt()))
+    ..registerLazySingleton<DefaultTimerActivityRecorder>(
+      () => DefaultTimerActivityRecorder(getIt(), getIt()),
+      dispose: (recorder) => recorder.dispose(),
+    )
+    ..registerLazySingleton<TimerActivityRecorder>(() => getIt<DefaultTimerActivityRecorder>())
     ..registerLazySingleton<AudioManager>(() => DefaultAudioManager(getIt()))
     ..registerLazySingleton<BackgroundKeepAlive>(DefaultBackgroundKeepAlive.new);
 }
