@@ -12,6 +12,7 @@ import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
+import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/user/domain/app_user.dart';
@@ -25,6 +26,7 @@ import 'package:sport_timer/features/settings/presentation/widgets/timer_setting
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 import 'package:sport_timer/shared/presentation/theme/timer_colors.dart';
+import '../../statistics/fake_activity_repository.dart';
 
 class _SettingsRepository implements SettingsRepository {
   String? selectedTemplateId;
@@ -155,6 +157,7 @@ void main() {
     repository = _SettingsRepository();
     getIt.registerSingleton<SettingsRepository>(repository);
     getIt.registerSingleton<UserRepository>(_UserRepository());
+    getIt.registerSingleton<ActivityRepository>(FakeEmptyActivityRepository());
     startedParams = null;
     router = GoRouter(
       routes: [

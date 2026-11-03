@@ -6,6 +6,7 @@ import 'package:sport_timer/features/settings/domain/settings_repository.dart';
 import 'package:sport_timer/features/settings/domain/timer_configuration.dart';
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
+import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/user/domain/app_user.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
@@ -13,6 +14,7 @@ import 'package:sport_timer/features/home/presentation/home_page.dart';
 import 'package:sport_timer/features/settings/presentation/widgets/timer_setting_card.dart';
 import 'package:sport_timer/features/settings/presentation/widgets/timer_settings_picker_wheel.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
+import '../../statistics/fake_activity_repository.dart';
 
 class _SettingsRepository implements SettingsRepository {
   String? selectedTemplateId;
@@ -103,6 +105,7 @@ void main() {
     repository = _SettingsRepository();
     getIt.registerSingleton<SettingsRepository>(repository);
     getIt.registerSingleton<UserRepository>(_UserRepository());
+    getIt.registerSingleton<ActivityRepository>(FakeEmptyActivityRepository());
   });
 
   tearDown(() async => getIt.reset());

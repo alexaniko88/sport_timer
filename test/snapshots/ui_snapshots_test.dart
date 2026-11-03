@@ -11,6 +11,8 @@ import 'package:sport_timer/features/settings/domain/timer_configuration.dart';
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
+import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
@@ -157,6 +159,22 @@ class _FailedActivityRecorder implements TimerActivityRecorder {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _FakeActivityRepository implements ActivityRepository {
+  Result<List<DailyActivity>> result = const Success([
+    DailyActivity(localDate: '2026-10-31', roundCount: 12, workDurationMs: 1440000, restDurationMs: 360000),
+    DailyActivity(localDate: '2026-10-30', roundCount: 3, workDurationMs: 185000, restDurationMs: 30000),
+  ]);
+
+  @override
+  Stream<void> get changes => const Stream.empty();
+
+  @override
+  Future<Result<List<DailyActivity>>> readDailyActivity() async => result;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 Widget _phoneFrame({
   required ThemeData theme,
   required Widget child,
@@ -240,6 +258,7 @@ Interaction _tapInBothFrames(Finder finder) {
 
 void main() {
   late _FakeSettingsRepository settingsRepository;
+  late _FakeActivityRepository activityRepository;
 
   AppUser buildFixtureUser() {
     return const AppUser(
@@ -262,10 +281,12 @@ void main() {
   setUp(() async {
     await getIt.reset();
     settingsRepository = _FakeSettingsRepository();
+    activityRepository = _FakeActivityRepository();
     getIt.registerSingleton<UserRepository>(
       _FakeUserRepository(buildFixtureUser()),
     );
     getIt.registerSingleton<SettingsRepository>(settingsRepository);
+    getIt.registerSingleton<ActivityRepository>(activityRepository);
     getIt.registerSingleton<AudioManager>(_SilentAudioManager());
     getIt.registerSingleton<BackgroundKeepAlive>(_SilentKeepAlive());
     getIt.registerSingleton<TimerActivityRecorder>(_FailedActivityRecorder());
@@ -455,6 +476,28 @@ void main() {
               return _lightAndDarkGroup(
                 builder: () => const HomePage(),
               );
+            },
+          );
+
+          goldenTest(
+            'home statistics empty',
+            fileName: 'statistics_empty',
+            constraints: _pairConstraints,
+            whilePerforming: _tapInBothFrames(find.text('Statistics')),
+            builder: () {
+              activityRepository.result = const Success([]);
+              return _lightAndDarkGroup(builder: () => const HomePage());
+            },
+          );
+
+          goldenTest(
+            'home statistics error',
+            fileName: 'statistics_error',
+            constraints: _pairConstraints,
+            whilePerforming: _tapInBothFrames(find.text('Statistics')),
+            builder: () {
+              activityRepository.result = Failure(Exception('Unable to load'));
+              return _lightAndDarkGroup(builder: () => const HomePage());
             },
           );
 

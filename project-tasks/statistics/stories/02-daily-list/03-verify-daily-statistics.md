@@ -8,7 +8,7 @@ Status: Not started.
 
 ## Dependencies
 
-[Previous task](02-show-daily-tiles.md).
+[Previous task](done/02-show-daily-tiles.md).
 
 ## Goal
 
