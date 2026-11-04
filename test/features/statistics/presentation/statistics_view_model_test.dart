@@ -186,4 +186,27 @@ void main() {
     expect(vm.state.value.status, StatisticsStatus.error);
     expect(vm.state.value.view, StatisticsView.charts);
   });
+  test('perspective changes clear selection and persist across view and period changes', () async {
+    final repo = FakeActivityRepository();
+    final vm = StatisticsViewModel(repo, clock: () => DateTime(2026, 10, 31));
+    addTearDown(() async {
+      vm.dispose();
+      await repo.controller.close();
+    });
+    repo.reads.single.complete(const Success([first]));
+    await Future<void>.delayed(Duration.zero);
+    expect(vm.state.value.perspective, StatisticsPerspective.workTime);
+    vm.selectBucket(vm.currentChartData.buckets[5]);
+    vm.setPerspective(StatisticsPerspective.workTime);
+    expect(vm.state.value.selectedBucket, isNotNull);
+    vm.setPerspective(StatisticsPerspective.rounds);
+    expect(vm.state.value.selectedBucket, isNull);
+    expect(vm.chartMaxY, 3);
+    vm.setView(StatisticsView.charts);
+    vm.setView(StatisticsView.list);
+    vm.setPeriodUnit(ActivityPeriodUnit.year);
+    expect(vm.state.value.perspective, StatisticsPerspective.rounds);
+    vm.setPerspective(StatisticsPerspective.totalTime);
+    expect(vm.chartMaxY, 1);
+  });
 }

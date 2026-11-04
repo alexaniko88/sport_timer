@@ -596,6 +596,36 @@ abstract class AppLocalizations {
   /// **'Perspective'**
   String get statisticsPerspective;
 
+  /// Exact milliseconds in a statistics duration.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 millisecond} other{{count} milliseconds}}'**
+  String statisticsMilliseconds(int count);
+
+  /// Chart perspective showing completed rounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Rounds'**
+  String get statisticsPerspectiveRounds;
+
+  /// Chart perspective comparing work and rest time.
+  ///
+  /// In en, this message translates to:
+  /// **'Work vs rest'**
+  String get statisticsWorkVsRest;
+
+  /// Chart perspective showing combined work and rest time.
+  ///
+  /// In en, this message translates to:
+  /// **'Total time'**
+  String get statisticsTotalTime;
+
+  /// Legend describing the two segments of stacked work and rest bars.
+  ///
+  /// In en, this message translates to:
+  /// **'Work: solid, bottom · Rest: outlined, top'**
+  String get statisticsStackLegend;
+
   /// Statistics chart: statisticsWorkTime.
   ///
   /// In en, this message translates to:

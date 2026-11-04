@@ -14,6 +14,10 @@ void main() {
     );
     expect(const Duration(minutes: 1, seconds: 2).formattedStatisticsDuration(es), '1 minuto 2 segundos');
   });
+  test('preserves fractional seconds in both languages', () {
+    expect(const Duration(milliseconds: 1251).formattedStatisticsDuration(en), '1 second 251 milliseconds');
+    expect(const Duration(milliseconds: 1).formattedStatisticsDuration(es), '1 milisegundo');
+  });
   test('preserves seconds and hours beyond a day', () {
     expect(const Duration(minutes: 2, seconds: 5).formattedStatisticsDuration(en), '2 minutes 5 seconds');
     expect(const Duration(hours: 25, seconds: 2).formattedStatisticsDuration(en), '25 hours 2 seconds');
