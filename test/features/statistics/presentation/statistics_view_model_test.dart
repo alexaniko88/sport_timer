@@ -209,4 +209,35 @@ void main() {
     vm.setPerspective(StatisticsPerspective.totalTime);
     expect(vm.chartMaxY, 1);
   });
+  test('consistency selects past days and opens only available months', () async {
+    final repo = FakeActivityRepository();
+    final vm = StatisticsViewModel(repo, clock: () => DateTime(2024, 3, 1));
+    addTearDown(() async {
+      vm.dispose();
+      await repo.controller.close();
+    });
+    repo.reads.single.complete(const Success([]));
+    await Future<void>.delayed(Duration.zero);
+    vm.setPerspective(StatisticsPerspective.consistency);
+    vm.setPeriodUnit(ActivityPeriodUnit.year);
+    final leapDay = vm.currentChartData.days.firstWhere((day) => day.date == DateTime.utc(2024, 2, 29));
+    final future = vm.currentChartData.days.firstWhere((day) => day.date == DateTime.utc(2024, 3, 2));
+    vm.selectDay(leapDay);
+    expect(vm.state.value.selectedBucket, leapDay.date);
+    vm.selectDay(future);
+    expect(vm.state.value.selectedBucket, leapDay.date);
+    vm.selectDay(leapDay);
+    expect(vm.state.value.selectedBucket, isNull);
+    vm.selectDay(leapDay);
+    vm.openMonth(DateTime.utc(2024, 4));
+    expect(vm.period.unit, ActivityPeriodUnit.year);
+    expect(vm.state.value.selectedBucket, leapDay.date);
+    vm.openMonth(DateTime.utc(2024, 2));
+    expect(vm.period.unit, ActivityPeriodUnit.month);
+    expect(vm.period.start, DateTime.utc(2024, 2));
+    expect(vm.currentChartData.days.last.date, DateTime.utc(2024, 2, 29));
+    expect(vm.state.value.selectedBucket, isNull);
+    vm.previousPeriod();
+    expect(vm.period.start, DateTime.utc(2024, 1));
+  });
 }

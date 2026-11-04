@@ -545,5 +545,58 @@
         "type": "String"
       }
     }
+  },
+  "statisticsConsistency": "Consistency",
+  "@statisticsConsistency": {
+    "description": "Statistics consistency calendar: statisticsConsistency."
+  },
+  "statisticsActiveDays": "{count, plural, =1{1 active day} other{{count} active days}}",
+  "@statisticsActiveDays": {
+    "description": "Statistics consistency calendar: statisticsActiveDays.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statisticsNoActivityDay": "No activity recorded",
+  "@statisticsNoActivityDay": {
+    "description": "Statistics consistency calendar: statisticsNoActivityDay."
+  },
+  "statisticsCalendarFuture": "Future day",
+  "@statisticsCalendarFuture": {
+    "description": "Statistics consistency calendar: statisticsCalendarFuture."
+  },
+  "statisticsCalendarActive": "Active day",
+  "@statisticsCalendarActive": {
+    "description": "Statistics consistency calendar: statisticsCalendarActive."
+  },
+  "statisticsCalendarInactive": "No activity recorded",
+  "@statisticsCalendarInactive": {
+    "description": "Statistics consistency calendar: statisticsCalendarInactive."
+  },
+  "statisticsOpenMonth": "Open {month}",
+  "@statisticsOpenMonth": {
+    "description": "Statistics consistency calendar: statisticsOpenMonth.",
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "statisticsCalendarDayValue": "{date}: {status}. {value}",
+  "@statisticsCalendarDayValue": {
+    "description": "Statistics consistency calendar: statisticsCalendarDayValue.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
   }
 }

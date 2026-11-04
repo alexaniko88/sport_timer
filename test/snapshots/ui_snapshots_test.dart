@@ -12,6 +12,7 @@ import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
@@ -602,6 +603,47 @@ void main() {
                   return StatisticPage(accountViewModel: account, viewModel: vm, onMenuPressed: () {});
                 },
               ),
+            );
+          }
+
+          for (final calendarState in ['week', 'month', 'year', 'year_selected', 'selected', 'empty']) {
+            goldenTest(
+              'statistics consistency $calendarState',
+              fileName: 'statistics_consistency_$calendarState',
+              constraints: _pairConstraints,
+              whilePerforming: (tester) async {
+                await _tapInBothFrames(find.text('Charts'))(tester);
+                for (final page in tester.widgetList<StatisticPage>(find.byType(StatisticPage))) {
+                  final vm = page.viewModel;
+                  if (vm != null) {
+                    vm.setPerspective(StatisticsPerspective.consistency);
+                    if (calendarState == 'month') vm.setPeriodUnit(ActivityPeriodUnit.month);
+                    if (calendarState == 'year' || calendarState == 'year_selected') {
+                      vm.setPeriodUnit(ActivityPeriodUnit.year);
+                    }
+                    if (calendarState == 'year_selected') {
+                      vm.selectDay(
+                        vm.currentChartData.days.firstWhere((day) => day.date == DateTime.utc(2026, 10, 31)),
+                      );
+                    }
+                    if (calendarState == 'selected') vm.selectDay(vm.currentChartData.days.last);
+                  }
+                }
+                await tester.pumpAndSettle();
+                return null;
+              },
+              builder: () {
+                if (calendarState == 'empty') activityRepository.result = const Success([]);
+                return _lightAndDarkGroup(
+                  builder: () {
+                    final account = AccountViewModel(getIt());
+                    final vm = StatisticsViewModel(getIt(), clock: () => DateTime(2026, 10, 31));
+                    addTearDown(account.dispose);
+                    addTearDown(vm.dispose);
+                    return StatisticPage(accountViewModel: account, viewModel: vm, onMenuPressed: () {});
+                  },
+                );
+              },
             );
           }
 

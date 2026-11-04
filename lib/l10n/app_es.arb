@@ -99,5 +99,13 @@
   "statisticsFuture": "Futuro",
   "statisticsPeriodTotal": "Total del periodo",
   "statisticsChartBucket": "{date}, {value}",
-  "statisticsChartScale": "Escala: {value}"
+  "statisticsChartScale": "Escala: {value}",
+  "statisticsConsistency": "Constancia",
+  "statisticsActiveDays": "{count, plural, =1{1 día activo} other{{count} días activos}}",
+  "statisticsNoActivityDay": "No se ha registrado actividad",
+  "statisticsCalendarFuture": "Día futuro",
+  "statisticsCalendarActive": "Día activo",
+  "statisticsCalendarInactive": "No se ha registrado actividad",
+  "statisticsOpenMonth": "Abrir {month}",
+  "statisticsCalendarDayValue": "{date}: {status}. {value}"
 }

@@ -8,6 +8,7 @@ import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_page.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
@@ -355,6 +356,53 @@ void main() {
       findsOneWidget,
     );
     semantics.dispose();
+  });
+
+  testWidgets('rest-only period does not claim that no activity was recorded', (tester) async {
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 10, 31));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+      ),
+    );
+    repository.reads.single.complete(
+      const Success([DailyActivity(localDate: '2026-10-31', roundCount: 0, workDurationMs: 0, restDurationMs: 30000)]),
+    );
+    await tester.pump();
+    vm.setView(StatisticsView.charts);
+    vm.setPerspective(StatisticsPerspective.consistency);
+    await tester.pumpAndSettle();
+    expect(find.text('Period total: 0 active days'), findsOneWidget);
+    expect(find.text('No activity recorded in this period.'), findsNothing);
+  });
+
+  testWidgets('selecting a later year day brings its exact values into view', (tester) async {
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 10, 31));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+      ),
+    );
+    repository.reads.single.complete(const Success([first]));
+    await tester.pump();
+    vm.setView(StatisticsView.charts);
+    vm.setPerspective(StatisticsPerspective.consistency);
+    vm.setPeriodUnit(ActivityPeriodUnit.year);
+    await tester.pumpAndSettle();
+    final day = find.bySemanticsLabel('Saturday, October 31, 2026: Active day. Work: 2 minutes 5 seconds · 2 rounds');
+    await tester.ensureVisible(day);
+    await tester.tap(day);
+    await tester.pumpAndSettle();
+    final details = find.text('October 31, 2026: Work: 2 minutes 5 seconds · 2 rounds');
+    expect(details, findsNWidgets(2));
+    expect(tester.getRect(details.last).overlaps(tester.getRect(find.byType(Scaffold))), isTrue);
+    expect(tester.takeException(), isNull);
   });
 
   for (final theme in [SportTheme.light, SportTheme.dark]) {

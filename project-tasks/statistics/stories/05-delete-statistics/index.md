@@ -28,6 +28,6 @@ Clear my recorded statistics when I no longer want to keep my workout history.
 
 ## Dependencies and visual context
 
-Uses the completed [recording](../done/01-record-activity/index.md) and [daily list](../done/02-daily-list/index.md) foundations; verify their availability in the implementation checkout. It is independent of [visualization](../04-visualize-activity/index.md); ensure any available views refresh after deletion.
+Uses the completed [recording](../done/01-record-activity/index.md) and [daily list](../done/02-daily-list/index.md) foundations; verify their availability in the implementation checkout. It is independent of [visualization](../done/04-visualize-activity/index.md); ensure any available views refresh after deletion.
 
 Current visual references: [statistics](../../../../test/snapshots/goldens/statistics.png), [empty](../../../../test/snapshots/goldens/statistics_empty.png), [error](../../../../test/snapshots/goldens/statistics_error.png), and the [snapshot flow index](../../../../test/snapshots/README.md). These do not capture a deletion menu or confirmation. Check the implementation checkout for the current layout before planning.

@@ -2,7 +2,7 @@
 
 Story: [Visualize activity](../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 Status: Done on `feat/prepare-chart-data`; merge pending.
 

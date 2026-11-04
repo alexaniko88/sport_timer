@@ -43,7 +43,7 @@ class StatisticsViewModel {
       (value, bucket) => math.max(
         value,
         switch (perspective) {
-          StatisticsPerspective.workTime => bucket.workDurationMs / 1000,
+          StatisticsPerspective.workTime || StatisticsPerspective.consistency => bucket.workDurationMs / 1000,
           StatisticsPerspective.rounds => bucket.roundCount.toDouble(),
           StatisticsPerspective.workVsRest || StatisticsPerspective.totalTime => bucket.totalDurationMs / 1000,
         },
@@ -91,6 +91,24 @@ class StatisticsViewModel {
     if (bucket.isFuture) return;
     _state.value = _state.value
         .copyWith(selectedBucket: bucket.start, clearSelection: _state.value.selectedBucket == bucket.start);
+  }
+
+  void selectDay(ActivityChartDay day) {
+    if (day.isFuture) return;
+    _state.value = _state.value.copyWith(
+      selectedBucket: day.date,
+      clearSelection: _state.value.selectedBucket == day.date,
+    );
+  }
+
+  void openMonth(DateTime month) {
+    final now = today;
+    if (DateTime.utc(month.year, month.month).isAfter(DateTime.utc(now.year, now.month))) return;
+    _state.value = _state.value.copyWith(
+      periodUnit: ActivityPeriodUnit.month,
+      referenceDate: month,
+      clearSelection: true,
+    );
   }
 
   Future<void> refresh() async {

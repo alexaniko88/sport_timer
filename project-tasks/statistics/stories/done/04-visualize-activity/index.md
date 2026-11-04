@@ -1,8 +1,8 @@
 # STORY 4: Visualize activity
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
-Status: Ready for planning. The five perspectives are the agreed starting set; their overlap may be revisited after design validation.
+Status: Done on `feat/consistency-calendar`; merge pending.
 
 ## User outcome
 
@@ -35,10 +35,10 @@ No goals, streaks, inferred fitness, additional measurements, editing, sync, or 
 1. [Prepare chart data and periods](done/01-prepare-chart-data.md).
 2. [Add chart view and controls](done/02-chart-view-and-controls.md).
 3. [Show activity perspectives](done/03-activity-perspectives.md).
-4. [Show consistency calendar](04-consistency-calendar.md).
+4. [Show consistency calendar](done/04-consistency-calendar.md).
 
 ## Dependencies and visual context
 
-[Recording](../done/01-record-activity/index.md) and the [daily list](../done/02-daily-list/index.md) are completed; verify their availability in the implementation checkout. [Day details](../done/03-day-details/index.md) is independent and completed on its feature branch, pending merge.
+[Recording](../01-record-activity/index.md) and the [daily list](../02-daily-list/index.md) are completed; verify their availability in the implementation checkout. [Day details](../03-day-details/index.md) is independent and completed on its feature branch, pending merge.
 
-Current references: [daily list](../../../../test/snapshots/goldens/statistics.png), [empty](../../../../test/snapshots/goldens/statistics_empty.png), [error](../../../../test/snapshots/goldens/statistics_error.png), and [snapshot flow index](../../../../test/snapshots/README.md). These capture the existing list in both themes, not charts, calendar, selection, or period navigation; add appropriate coverage as the UI is built.
+Current references: [daily list](../../../../../test/snapshots/goldens/statistics.png), [empty](../../../../../test/snapshots/goldens/statistics_empty.png), [error](../../../../../test/snapshots/goldens/statistics_error.png), and [snapshot flow index](../../../../../test/snapshots/README.md). These capture the existing list in both themes, not charts, calendar, selection, or period navigation; add appropriate coverage as the UI is built.

@@ -24,4 +24,4 @@ Revisit the daily activity cards and the day-details page, including its daily s
 
 ## Dependencies and open decisions
 
-No prerequisite task. Agree the visual direction, information hierarchy, and any changes to the displayed fields or navigation before implementation. Coordinate with the separately planned [visual activity story](../../../statistics/stories/04-visualize-activity/index.md); charts and calendar are not included here.
+No prerequisite task. Agree the visual direction, information hierarchy, and any changes to the displayed fields or navigation before implementation. Coordinate with the separately planned [visual activity story](../../../statistics/stories/done/04-visualize-activity/index.md); charts and calendar are not included here.
