@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:sport_timer/core/result.dart';
+import 'package:sport_timer/features/statistics/domain/activity_chart_data.dart';
+import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/extensions/daily_activity_list_extension.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 
 class StatisticsViewModel {
@@ -18,6 +21,9 @@ class StatisticsViewModel {
   }
 
   ValueListenable<StatisticsState> get state => _state;
+
+  ActivityChartData chartData({required ActivityPeriod period, required DateTime today}) =>
+      _state.value.dailyActivity.chartData(period: period, today: today);
 
   Future<void> refresh() async {
     if (_disposed) return;

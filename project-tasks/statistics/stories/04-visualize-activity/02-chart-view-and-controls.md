@@ -4,7 +4,7 @@ Story: [Visualize activity](index.md)
 
 Epic: [Statistics](../../index.md)
 
-Status: Blocked by [chart data and periods](01-prepare-chart-data.md).
+Status: Blocked by [chart data and periods](done/01-prepare-chart-data.md).
 
 ## Goal and scope
 
@@ -12,7 +12,7 @@ Provide the List / Charts switch and shared navigation, state and summary experi
 
 ## Dependencies
 
-[Task 4.1](01-prepare-chart-data.md).
+[Task 4.1](done/01-prepare-chart-data.md).
 
 ## Acceptance criteria
 

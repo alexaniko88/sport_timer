@@ -12,7 +12,7 @@ Add the Consistency perspective and its week, month and year views as described 
 
 ## Dependencies
 
-[Task 4.1](01-prepare-chart-data.md) and [Task 4.2](02-chart-view-and-controls.md); independent of Task 4.3.
+[Task 4.1](done/01-prepare-chart-data.md) and [Task 4.2](02-chart-view-and-controls.md); independent of Task 4.3.
 
 ## Acceptance criteria
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/core/result.dart';
+import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
@@ -89,6 +90,26 @@ void main() {
     repository.reads[3].complete(const Success([first]));
     await Future<void>.delayed(Duration.zero);
     expect(viewModel.state.value.dailyActivity, [second]);
+  });
+
+  test('chart data clears on account changes and ignores stale results', () async {
+    final period = ActivityPeriod(unit: ActivityPeriodUnit.week, date: DateTime(2026, 11, 1), firstWeekday: 1);
+    final today = DateTime(2026, 11, 1);
+    repository.reads[0].complete(const Success([first]));
+    await Future<void>.delayed(Duration.zero);
+    expect(viewModel.chartData(period: period, today: today).roundCount, 2);
+
+    repository.controller.add(null);
+    expect(viewModel.chartData(period: period, today: today).hasRecordedActivity, isFalse);
+    repository.controller.add(null);
+    repository.reads[2].complete(const Success([second]));
+    await Future<void>.delayed(Duration.zero);
+    repository.reads[1].complete(const Success([first]));
+    await Future<void>.delayed(Duration.zero);
+    final data = viewModel.chartData(period: period, today: today);
+    expect(data.roundCount, 1);
+    expect(data.workDurationMs, 50);
+    expect(data.days.last.date, DateTime.utc(2026, 11, 1));
   });
 
   test('ignores a pending result after disposal', () async {
