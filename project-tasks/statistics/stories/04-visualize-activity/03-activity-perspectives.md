@@ -12,7 +12,7 @@ Add Rounds, Work vs rest, and Total time to the Work time chart experience, foll
 
 ## Dependencies
 
-[Task 4.1](01-prepare-chart-data.md) and [Task 4.2](02-chart-view-and-controls.md).
+[Task 4.1](done/01-prepare-chart-data.md) and [Task 4.2](02-chart-view-and-controls.md).
 
 ## Acceptance criteria
 

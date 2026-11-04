@@ -32,7 +32,7 @@ No goals, streaks, inferred fitness, additional measurements, editing, sync, or 
 
 ## Tasks
 
-1. [Prepare chart data and periods](01-prepare-chart-data.md).
+1. [Prepare chart data and periods](done/01-prepare-chart-data.md).
 2. [Add chart view and controls](02-chart-view-and-controls.md).
 3. [Show activity perspectives](03-activity-perspectives.md).
 4. [Show consistency calendar](04-consistency-calendar.md).
