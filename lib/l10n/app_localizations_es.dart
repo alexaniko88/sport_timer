@@ -415,4 +415,40 @@ class AppLocalizationsEs extends AppLocalizations {
   String statisticsChartScale(String value) {
     return 'Escala: $value';
   }
+
+  @override
+  String get statisticsConsistency => 'Constancia';
+
+  @override
+  String statisticsActiveDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días activos',
+      one: '1 día activo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get statisticsNoActivityDay => 'No se ha registrado actividad';
+
+  @override
+  String get statisticsCalendarFuture => 'Día futuro';
+
+  @override
+  String get statisticsCalendarActive => 'Día activo';
+
+  @override
+  String get statisticsCalendarInactive => 'No se ha registrado actividad';
+
+  @override
+  String statisticsOpenMonth(String month) {
+    return 'Abrir $month';
+  }
+
+  @override
+  String statisticsCalendarDayValue(String date, String status, String value) {
+    return '$date: $status. $value';
+  }
 }

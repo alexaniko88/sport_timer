@@ -18,7 +18,7 @@ Daily cards show a date, rounds, work, rest and total. Tapping a card opens a da
 
 - Reconsider the visual hierarchy and layout of the daily cards, daily total and run details as one coherent experience.
 - Preserve the existing meaning and availability of the statistics, including selected-day values versus whole-run configuration; discuss any proposed change to displayed fields or navigation first.
-- Do not change activity recording, calculations, storage or introduce charts and calendar in this task. The [visual activity story](../../../statistics/stories/04-visualize-activity/index.md) owns its separately agreed scope.
+- Do not change activity recording, calculations, storage or introduce charts and calendar in this task. The [visual activity story](../../../statistics/stories/done/04-visualize-activity/index.md) owns its separately agreed scope.
 
 ## Dependencies
 

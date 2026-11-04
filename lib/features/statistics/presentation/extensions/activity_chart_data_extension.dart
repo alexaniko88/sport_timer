@@ -18,7 +18,9 @@ extension ActivityChartDataExtension on ActivityChartData {
             barRods: [
               BarChartRodData(
                 toY: switch (perspective) {
-                  StatisticsPerspective.workTime => buckets[i].workDurationMs / 1000,
+                  StatisticsPerspective.workTime ||
+                  StatisticsPerspective.consistency =>
+                    buckets[i].workDurationMs / 1000,
                   StatisticsPerspective.rounds => buckets[i].roundCount.toDouble(),
                   StatisticsPerspective.workVsRest ||
                   StatisticsPerspective.totalTime =>

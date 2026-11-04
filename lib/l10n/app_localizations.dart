@@ -691,6 +691,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scale: {value}'**
   String statisticsChartScale(String value);
+
+  /// Statistics consistency calendar: statisticsConsistency.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency'**
+  String get statisticsConsistency;
+
+  /// Statistics consistency calendar: statisticsActiveDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 active day} other{{count} active days}}'**
+  String statisticsActiveDays(int count);
+
+  /// Statistics consistency calendar: statisticsNoActivityDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity recorded'**
+  String get statisticsNoActivityDay;
+
+  /// Statistics consistency calendar: statisticsCalendarFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Future day'**
+  String get statisticsCalendarFuture;
+
+  /// Statistics consistency calendar: statisticsCalendarActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active day'**
+  String get statisticsCalendarActive;
+
+  /// Statistics consistency calendar: statisticsCalendarInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity recorded'**
+  String get statisticsCalendarInactive;
+
+  /// Statistics consistency calendar: statisticsOpenMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {month}'**
+  String statisticsOpenMonth(String month);
+
+  /// Statistics consistency calendar: statisticsCalendarDayValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}: {status}. {value}'**
+  String statisticsCalendarDayValue(String date, String status, String value);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

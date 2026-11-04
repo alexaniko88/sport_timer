@@ -11,6 +11,7 @@ enum StatisticsPerspective {
   rounds,
   workVsRest,
   totalTime,
+  consistency,
 }
 
 class StatisticsState {

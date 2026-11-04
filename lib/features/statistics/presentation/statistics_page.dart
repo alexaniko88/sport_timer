@@ -7,10 +7,12 @@ import 'package:sport_timer/features/account/presentation/account_avatar_button.
 import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/presentation/extensions/statistics_perspective_extension.dart';
+import 'package:sport_timer/features/statistics/presentation/extensions/duration_extension.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/features/statistics/presentation/widgets/daily_activity_tile.dart';
 import 'package:sport_timer/features/statistics/presentation/widgets/activity_chart.dart';
+import 'package:sport_timer/features/statistics/presentation/widgets/activity_consistency_calendar.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
@@ -126,6 +128,7 @@ class _StatisticPageState extends State<StatisticPage> {
   Widget _chart(BuildContext context, StatisticsState state) {
     final l10n = context.l10n;
     final data = _viewModel.currentChartData;
+    if (state.perspective == StatisticsPerspective.consistency) return _consistency(context, state);
     if (!data.hasRecordedActivity) return Center(child: Text(l10n.statisticsChartEmpty));
     final selected = data.buckets.where((bucket) => bucket.start == state.selectedBucket).firstOrNull;
     final locale = Localizations.localeOf(context).toString();
@@ -166,6 +169,61 @@ class _StatisticPageState extends State<StatisticPage> {
               onSelected: _viewModel.selectBucket,
               maxY: _viewModel.chartMaxY,
               perspective: state.perspective,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _consistency(BuildContext context, StatisticsState state) {
+    final l10n = context.l10n;
+    final data = _viewModel.currentChartData;
+    final selected = data.days.where((day) => day.date == state.selectedBucket).firstOrNull;
+    final locale = Localizations.localeOf(context).toString();
+    final label = selected == null ? l10n.statisticsPeriodTotal : DateFormat.yMMMMd(locale).format(selected.date);
+    final value = selected == null
+        ? l10n.statisticsActiveDays(data.activeDayCount)
+        : selected.isActive
+            ? '${l10n.statisticsWorkValue(Duration(milliseconds: selected.workDurationMs).formattedStatisticsDuration(l10n))} · ${l10n.statisticsRounds(selected.roundCount)}'
+            : l10n.statisticsNoActivityDay;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.s16,
+          AppSpacing.s16,
+          AppSpacing.s16,
+          AppSpacing.s16 + MediaQuery.paddingOf(context).bottom,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Semantics(liveRegion: true, child: Text('$label: $value', style: Theme.of(context).textTheme.titleMedium)),
+            if (!data.hasRecordedActivity && selected == null) ...[
+              const Gap(AppSpacing.s8),
+              Text(l10n.statisticsChartEmpty),
+            ],
+            const Gap(AppSpacing.s16),
+            Wrap(
+              spacing: AppSpacing.s16,
+              children: [
+                for (final (icon, label) in [
+                  (Icons.check_circle, l10n.statisticsCalendarActive),
+                  (Icons.remove, l10n.statisticsCalendarInactive),
+                  (Icons.schedule, l10n.statisticsCalendarFuture),
+                ])
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [Icon(icon, size: 16), const Gap(AppSpacing.s8), Flexible(child: Text(label))],
+                  ),
+              ],
+            ),
+            const Gap(AppSpacing.s8),
+            ActivityConsistencyCalendar(
+              data: data,
+              selected: state.selectedBucket,
+              onSelected: _viewModel.selectDay,
+              onMonthSelected: _viewModel.openMonth,
             ),
           ],
         ),
