@@ -861,6 +861,30 @@ void main() {
     expect(navBar.currentIndex, 1);
   });
 
+  testWidgets('returning to Statistics preserves the chart and period', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Statistics'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Charts'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Month'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Timer'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Statistics'));
+    await tester.pumpAndSettle();
+    expect(find.text('Perspective'), findsOneWidget);
+    expect(tester.widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Month')).selected, isTrue);
+  });
+
   testWidgets('reopening Templates preserves selected template and settings', (tester) async {
     tester.view.physicalSize = const Size(800, 1000);
     tester.view.devicePixelRatio = 1;

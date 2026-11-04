@@ -4,7 +4,7 @@ Story: [Visualize activity](index.md)
 
 Epic: [Statistics](../../index.md)
 
-Status: Blocked by [chart view and controls](02-chart-view-and-controls.md).
+Status: Blocked by [chart view and controls](done/02-chart-view-and-controls.md) pending merge.
 
 ## Goal and scope
 
@@ -12,7 +12,7 @@ Add Rounds, Work vs rest, and Total time to the Work time chart experience, foll
 
 ## Dependencies
 
-[Task 4.1](done/01-prepare-chart-data.md) and [Task 4.2](02-chart-view-and-controls.md).
+[Task 4.1](done/01-prepare-chart-data.md) and [Task 4.2](done/02-chart-view-and-controls.md).
 
 ## Acceptance criteria
 

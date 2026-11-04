@@ -463,5 +463,74 @@
         "type": "String"
       }
     }
+  },
+  "statisticsViewList": "List",
+  "@statisticsViewList": {
+    "description": "Statistics chart: statisticsViewList."
+  },
+  "statisticsViewCharts": "Charts",
+  "@statisticsViewCharts": {
+    "description": "Statistics chart: statisticsViewCharts."
+  },
+  "statisticsPerspective": "Perspective",
+  "@statisticsPerspective": {
+    "description": "Statistics chart: statisticsPerspective."
+  },
+  "statisticsWorkTime": "Work time",
+  "@statisticsWorkTime": {
+    "description": "Statistics chart: statisticsWorkTime."
+  },
+  "statisticsWeek": "Week",
+  "@statisticsWeek": {
+    "description": "Statistics chart: statisticsWeek."
+  },
+  "statisticsMonth": "Month",
+  "@statisticsMonth": {
+    "description": "Statistics chart: statisticsMonth."
+  },
+  "statisticsYear": "Year",
+  "@statisticsYear": {
+    "description": "Statistics chart: statisticsYear."
+  },
+  "statisticsPreviousPeriod": "Previous period",
+  "@statisticsPreviousPeriod": {
+    "description": "Statistics chart: statisticsPreviousPeriod."
+  },
+  "statisticsNextPeriod": "Next period",
+  "@statisticsNextPeriod": {
+    "description": "Statistics chart: statisticsNextPeriod."
+  },
+  "statisticsChartEmpty": "No activity recorded in this period.",
+  "@statisticsChartEmpty": {
+    "description": "Statistics chart: statisticsChartEmpty."
+  },
+  "statisticsFuture": "Future",
+  "@statisticsFuture": {
+    "description": "Statistics chart: statisticsFuture."
+  },
+  "statisticsPeriodTotal": "Period total",
+  "@statisticsPeriodTotal": {
+    "description": "Statistics chart: statisticsPeriodTotal."
+  },
+  "statisticsChartBucket": "{date}, {value}",
+  "@statisticsChartBucket": {
+    "description": "Statistics chart: statisticsChartBucket.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "statisticsChartScale": "Scale: {value}",
+  "@statisticsChartScale": {
+    "description": "The maximum value of the work time chart scale.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
   }
 }

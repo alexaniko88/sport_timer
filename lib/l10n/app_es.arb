@@ -80,5 +80,19 @@
   "statisticsWorkValue": "Trabajo: {value}",
   "statisticsRestValue": "Descanso: {value}",
   "statisticsTotalValue": "Total: {value}",
-  "statisticsTileSemantics": "{date}, {rounds}, trabajo {work}, descanso {rest}, total {total}"
+  "statisticsTileSemantics": "{date}, {rounds}, trabajo {work}, descanso {rest}, total {total}",
+  "statisticsViewList": "Lista",
+  "statisticsViewCharts": "Gráficos",
+  "statisticsPerspective": "Perspectiva",
+  "statisticsWorkTime": "Tiempo de trabajo",
+  "statisticsWeek": "Semana",
+  "statisticsMonth": "Mes",
+  "statisticsYear": "Año",
+  "statisticsPreviousPeriod": "Periodo anterior",
+  "statisticsNextPeriod": "Periodo siguiente",
+  "statisticsChartEmpty": "No hay actividad registrada en este periodo.",
+  "statisticsFuture": "Futuro",
+  "statisticsPeriodTotal": "Total del periodo",
+  "statisticsChartBucket": "{date}, {value}",
+  "statisticsChartScale": "Escala: {value}"
 }

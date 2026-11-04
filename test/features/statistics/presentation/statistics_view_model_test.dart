@@ -120,4 +120,70 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     await separateRepository.controller.close();
   });
+  test('chart controls default, navigate, and keep selection across refresh', () async {
+    final repo = FakeActivityRepository();
+    final vm = StatisticsViewModel(repo, clock: () => DateTime(2026, 11, 4));
+    addTearDown(() async {
+      vm.dispose();
+      await repo.controller.close();
+    });
+    repo.reads.single.complete(const Success([first]));
+    await Future<void>.delayed(Duration.zero);
+    expect(vm.state.value.view, StatisticsView.list);
+    vm.setView(StatisticsView.charts);
+    expect(vm.period.unit, ActivityPeriodUnit.week);
+    expect(vm.period.start, DateTime.utc(2026, 11, 2));
+    expect(vm.canNavigateNext, isFalse);
+    vm.previousPeriod();
+    expect(vm.period.start, DateTime.utc(2026, 10, 26));
+    final bucket = vm.currentChartData.buckets.last;
+    vm.selectBucket(bucket);
+    expect(vm.state.value.selectedBucket, bucket.start);
+    vm.selectBucket(bucket);
+    expect(vm.state.value.selectedBucket, isNull);
+    vm.selectBucket(bucket);
+    final refresh = vm.refresh();
+    repo.reads.last.complete(const Success([first]));
+    await refresh;
+    expect(vm.state.value.selectedBucket, bucket.start);
+    vm.setPeriodUnit(ActivityPeriodUnit.month);
+    expect(vm.state.value.selectedBucket, isNull);
+    expect(vm.period.start, DateTime.utc(2026, 10));
+    vm.nextPeriod();
+    expect(vm.period.start, DateTime.utc(2026, 11));
+    expect(vm.canNavigateNext, isFalse);
+    vm.nextPeriod();
+    expect(vm.period.start, DateTime.utc(2026, 11));
+    vm.setPeriodUnit(ActivityPeriodUnit.year);
+    expect(vm.period.start, DateTime.utc(2026));
+  });
+
+  test('locale week start, zero and future buckets and account changes', () async {
+    final repo = FakeActivityRepository();
+    final vm = StatisticsViewModel(repo, clock: () => DateTime(2026, 11, 4));
+    addTearDown(() async {
+      vm.dispose();
+      await repo.controller.close();
+    });
+    repo.reads.single.complete(const Success([second]));
+    await Future<void>.delayed(Duration.zero);
+    vm.setView(StatisticsView.charts);
+    vm.setFirstWeekday(DateTime.sunday);
+    expect(vm.period.start, DateTime.utc(2026, 11, 1));
+    final zero = vm.currentChartData.buckets[1];
+    expect(zero.workDurationMs, 0);
+    vm.selectBucket(zero);
+    expect(vm.state.value.selectedBucket, zero.start);
+    final future = vm.currentChartData.buckets.last;
+    expect(future.isFuture, isTrue);
+    vm.selectBucket(future);
+    expect(vm.state.value.selectedBucket, zero.start);
+    repo.controller.add(null);
+    expect(vm.state.value.selectedBucket, isNull);
+    expect(vm.state.value.view, StatisticsView.charts);
+    repo.reads.last.complete(Failure(Exception('failed')));
+    await Future<void>.delayed(Duration.zero);
+    expect(vm.state.value.status, StatisticsStatus.error);
+    expect(vm.state.value.view, StatisticsView.charts);
+  });
 }
