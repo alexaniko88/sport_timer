@@ -16,6 +16,9 @@ import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 import 'package:sport_timer/features/statistics/presentation/day_details_page.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_page.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
+import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
@@ -533,6 +536,38 @@ void main() {
               return _lightAndDarkGroup(builder: () => const HomePage());
             },
           );
+
+          for (final chartState in ['content', 'selected', 'empty', 'error']) {
+            goldenTest(
+              'statistics chart $chartState',
+              fileName: 'statistics_chart_$chartState',
+              constraints: _pairConstraints,
+              whilePerforming: (tester) async {
+                await _tapInBothFrames(find.text('Charts'))(tester);
+                if (chartState == 'selected') {
+                  for (final page in tester.widgetList<StatisticPage>(find.byType(StatisticPage))) {
+                    final vm = page.viewModel;
+                    if (vm != null) vm.selectBucket(vm.currentChartData.buckets.last);
+                  }
+                  await tester.pumpAndSettle();
+                }
+                return null;
+              },
+              builder: () {
+                if (chartState == 'empty') activityRepository.result = const Success([]);
+                if (chartState == 'error') activityRepository.result = Failure(Exception('Unable to load'));
+                return _lightAndDarkGroup(
+                  builder: () {
+                    final account = AccountViewModel(getIt());
+                    final vm = StatisticsViewModel(getIt(), clock: () => DateTime(2026, 10, 31));
+                    addTearDown(account.dispose);
+                    addTearDown(vm.dispose);
+                    return StatisticPage(accountViewModel: account, viewModel: vm, onMenuPressed: () {});
+                  },
+                );
+              },
+            );
+          }
 
           goldenTest(
             'day details',

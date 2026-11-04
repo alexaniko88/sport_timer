@@ -6,6 +6,7 @@ import 'package:sport_timer/features/account/presentation/account_view_model.dar
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/settings/presentation/timer_setup_page.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_page.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final SettingsViewModel _viewModel = SettingsViewModel(getIt());
   final AccountViewModel _accountViewModel = AccountViewModel(getIt());
+  final StatisticsViewModel _statisticsViewModel = StatisticsViewModel(getIt());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
 
@@ -43,6 +45,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _viewModel.dispose();
     _accountViewModel.dispose();
+    _statisticsViewModel.dispose();
     super.dispose();
   }
 
@@ -57,6 +60,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   }
 
   void _onItemTapped(int index) {
+    if (index == 1 && _selectedIndex != 1) unawaited(_statisticsViewModel.refresh());
     setState(() {
       _selectedIndex = index;
     });
@@ -128,6 +132,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   onStartPressed: _startTimer,
                 )
               : StatisticPage(
+                  viewModel: _statisticsViewModel,
                   accountViewModel: _accountViewModel,
                   onMenuPressed: _openDrawer,
                 ),

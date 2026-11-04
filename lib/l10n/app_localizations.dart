@@ -577,6 +577,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{date}, {rounds}, work {work}, rest {rest}, total {total}'**
   String statisticsTileSemantics(String date, String rounds, String work, String rest, String total);
+
+  /// Statistics chart: statisticsViewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get statisticsViewList;
+
+  /// Statistics chart: statisticsViewCharts.
+  ///
+  /// In en, this message translates to:
+  /// **'Charts'**
+  String get statisticsViewCharts;
+
+  /// Statistics chart: statisticsPerspective.
+  ///
+  /// In en, this message translates to:
+  /// **'Perspective'**
+  String get statisticsPerspective;
+
+  /// Statistics chart: statisticsWorkTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Work time'**
+  String get statisticsWorkTime;
+
+  /// Statistics chart: statisticsWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get statisticsWeek;
+
+  /// Statistics chart: statisticsMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get statisticsMonth;
+
+  /// Statistics chart: statisticsYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get statisticsYear;
+
+  /// Statistics chart: statisticsPreviousPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous period'**
+  String get statisticsPreviousPeriod;
+
+  /// Statistics chart: statisticsNextPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Next period'**
+  String get statisticsNextPeriod;
+
+  /// Statistics chart: statisticsChartEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity recorded in this period.'**
+  String get statisticsChartEmpty;
+
+  /// Statistics chart: statisticsFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Future'**
+  String get statisticsFuture;
+
+  /// Statistics chart: statisticsPeriodTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Period total'**
+  String get statisticsPeriodTotal;
+
+  /// Statistics chart: statisticsChartBucket.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, {value}'**
+  String statisticsChartBucket(String date, String value);
+
+  /// The maximum value of the work time chart scale.
+  ///
+  /// In en, this message translates to:
+  /// **'Scale: {value}'**
+  String statisticsChartScale(String value);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

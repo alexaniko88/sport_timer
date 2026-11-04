@@ -4,7 +4,7 @@ Story: [Visualize activity](index.md)
 
 Epic: [Statistics](../../index.md)
 
-Status: Blocked by [chart view and controls](02-chart-view-and-controls.md).
+Status: Blocked by [chart view and controls](done/02-chart-view-and-controls.md) pending merge.
 
 ## Goal and scope
 
@@ -12,7 +12,7 @@ Add the Consistency perspective and its week, month and year views as described 
 
 ## Dependencies
 
-[Task 4.1](done/01-prepare-chart-data.md) and [Task 4.2](02-chart-view-and-controls.md); independent of Task 4.3.
+[Task 4.1](done/01-prepare-chart-data.md) and [Task 4.2](done/02-chart-view-and-controls.md); independent of Task 4.3.
 
 ## Acceptance criteria
 

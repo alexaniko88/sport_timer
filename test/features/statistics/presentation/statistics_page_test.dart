@@ -1,3 +1,5 @@
+import "dart:ui" show SemanticsAction;
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -8,6 +10,9 @@ import 'package:sport_timer/features/account/presentation/account_view_model.dar
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_page.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
+import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
+import 'package:flutter/services.dart';
 import 'package:sport_timer/features/statistics/presentation/widgets/daily_activity_tile.dart';
 import 'package:sport_timer/features/user/domain/app_user.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
@@ -153,4 +158,155 @@ void main() {
     expect(tester.takeException(), isNull);
     semantics.dispose();
   });
+  testWidgets('chart controls expose selectable exact values and period navigation', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 10, 31));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+      ),
+    );
+    repository.reads.single.complete(const Success([first, second]));
+    await tester.pump();
+    await tester.tap(find.text('Charts'));
+    await tester.pumpAndSettle();
+    expect(find.text('Period total: 3 minutes 5 seconds'), findsOneWidget);
+    expect(
+      tester
+          .widget<IconButton>(find.ancestor(of: find.byIcon(Icons.chevron_right), matching: find.byType(IconButton)))
+          .onPressed,
+      isNull,
+    );
+    final bucket = find.bySemanticsLabel('October 31, 2026, 2 minutes 5 seconds');
+    expect(bucket, findsOneWidget);
+    tester.getSemantics(bucket).owner?.performAction(tester.getSemantics(bucket).id, SemanticsAction.tap);
+    await tester.pumpAndSettle();
+    expect(find.text('October 31, 2026: 2 minutes 5 seconds'), findsOneWidget);
+    tester.getSemantics(bucket).owner?.performAction(tester.getSemantics(bucket).id, SemanticsAction.tap);
+    await tester.pumpAndSettle();
+    expect(find.text('Period total: 3 minutes 5 seconds'), findsOneWidget);
+    final barButton = find.descendant(of: bucket, matching: find.byType(TextButton));
+    final barElement = tester.element(barButton);
+    var foundFocus = false;
+    for (var i = 0; i < 40 && !foundFocus; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+      FocusManager.instance.primaryFocus?.context?.visitAncestorElements((element) {
+        if (element == barElement) foundFocus = true;
+        return !foundFocus;
+      });
+    }
+    expect(foundFocus, isTrue);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('October 31, 2026: 2 minutes 5 seconds'), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(find.text('Period total: 3 minutes 5 seconds'), findsOneWidget);
+    await tester.tap(find.byTooltip('Previous period'));
+    await tester.pumpAndSettle();
+    expect(find.text('No activity recorded in this period.'), findsOneWidget);
+    expect(
+      tester
+          .widget<IconButton>(find.ancestor(of: find.byIcon(Icons.chevron_right), matching: find.byType(IconButton)))
+          .onPressed,
+      isNotNull,
+    );
+    semantics.dispose();
+  });
+
+  testWidgets('Spanish chart marks future dates and retains controls on errors', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 11, 4));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('es'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+      ),
+    );
+    repository.reads.single.complete(
+      const Success([
+        DailyActivity(localDate: '2026-11-02', roundCount: 1, workDurationMs: 60000, restDurationMs: 0),
+      ]),
+    );
+    await tester.pump();
+    await tester.tap(find.text('Gráficos'));
+    await tester.pumpAndSettle();
+    expect(vm.period.start, DateTime.utc(2026, 11, 2));
+    expect(find.bySemanticsLabel('8 de noviembre de 2026, Futuro'), findsOneWidget);
+    repository.changesController.add(null);
+    await tester.pump();
+    repository.reads.last.complete(Failure(Exception('failed')));
+    await tester.pump();
+    expect(find.text('Perspectiva'), findsOneWidget);
+    expect(find.text('Semana'), findsOneWidget);
+    expect(find.byTooltip('Periodo anterior'), findsOneWidget);
+    semantics.dispose();
+  });
+
+  testWidgets('short landscape scrolls from chart controls to content and back', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(700, 320));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 10, 31));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MediaQuery(
+          data: const MediaQueryData(size: Size(700, 320), textScaler: TextScaler.linear(2)),
+          child: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+        ),
+      ),
+    );
+    repository.reads.single.complete(const Success([first]));
+    await tester.pump();
+    await tester.tap(find.text('Charts'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byTooltip('Previous period'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Previous period'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('No activity recorded in this period.'));
+    await tester.pumpAndSettle();
+    expect(find.text('No activity recorded in this period.'), findsOneWidget);
+    await tester.ensureVisible(find.text('List'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('List'));
+    await tester.pumpAndSettle();
+    expect(find.text('October 31, 2026'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final theme in [SportTheme.light, SportTheme.dark]) {
+    testWidgets('chart works at narrow width and large text', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 10, 31));
+      addTearDown(vm.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(320, 800), textScaler: TextScaler.linear(2)),
+            child: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+          ),
+        ),
+      );
+      repository.reads.single.complete(const Success([first]));
+      await tester.pump();
+      await tester.tap(find.text('Charts'));
+      await tester.pumpAndSettle();
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pump();
+    });
+  }
 }

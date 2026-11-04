@@ -346,4 +346,50 @@ class AppLocalizationsEs extends AppLocalizations {
   String statisticsTileSemantics(String date, String rounds, String work, String rest, String total) {
     return '$date, $rounds, trabajo $work, descanso $rest, total $total';
   }
+
+  @override
+  String get statisticsViewList => 'Lista';
+
+  @override
+  String get statisticsViewCharts => 'Gráficos';
+
+  @override
+  String get statisticsPerspective => 'Perspectiva';
+
+  @override
+  String get statisticsWorkTime => 'Tiempo de trabajo';
+
+  @override
+  String get statisticsWeek => 'Semana';
+
+  @override
+  String get statisticsMonth => 'Mes';
+
+  @override
+  String get statisticsYear => 'Año';
+
+  @override
+  String get statisticsPreviousPeriod => 'Periodo anterior';
+
+  @override
+  String get statisticsNextPeriod => 'Periodo siguiente';
+
+  @override
+  String get statisticsChartEmpty => 'No hay actividad registrada en este periodo.';
+
+  @override
+  String get statisticsFuture => 'Futuro';
+
+  @override
+  String get statisticsPeriodTotal => 'Total del periodo';
+
+  @override
+  String statisticsChartBucket(String date, String value) {
+    return '$date, $value';
+  }
+
+  @override
+  String statisticsChartScale(String value) {
+    return 'Escala: $value';
+  }
 }
