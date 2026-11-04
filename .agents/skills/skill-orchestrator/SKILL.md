@@ -18,7 +18,11 @@ effort: medium
 
 When the request names a local task under `project-tasks/`, read the task file and its applicable parent indexes before planning: story/epic indexes for story tasks, or `bugs/index.md` / `improvements/index.md` for standalone bug/improvement tasks. Use that task as the request; no external ticket lookup is needed. Check dependencies and completion evidence in the actual checkout and branch before treating earlier outputs as reusable. Surface blockers rather than silently implementing prerequisite tasks or treating provisional scope as approved.
 
-Do not maintain traffic-light statuses, readiness counts, or repeated progress summaries in task files or parent indexes. Report implementation steps and validation evidence in conversation. Do not start another task automatically.
+Do not maintain traffic-light statuses, readiness counts, or repeated progress summaries in task files or parent indexes. Do not start another task automatically.
+
+## Communication
+
+Work quietly: do not send progress updates, explain ongoing actions, or present the plan as a standalone message. Prepare and maintain the plan internally. Communicate when a decision, clarification, approval or blocker needs the user's attention; include only the context needed to answer. Keep the existing implementation-and-tests and PR approval checkpoints, with enough change and validation details for an informed decision. Report the final outcome and any material failures or limitations.
 
 After review passes and any chosen review suggestions are addressed, archive the completed local task immediately, without asking, using [Project tasks — Archiving completed work](../skill-project-tasks/SKILL.md#archiving-completed-work). Record acceptance and validation evidence and branch context; move the task, and eligible parent story and epic, update links and validate them. Leave these changes uncommitted until the user authorizes a commit or opening the PR. Archive only this task's own file; previously archived tasks may move with their completed parent. Do not start another task solely for cleanup.
 
@@ -40,7 +44,7 @@ Opus is `gpt-6.1-sol` and Sonnet is `gpt-6.1-terra`. The role file frontmatter h
 
 There are no tickets. The user's own message is the request. Never look for a ticket, a Linear link or a ticket ID.
 
-**Approval cadence:** present the plan (Stage 1), then proceed without asking for plan approval unless an important requirement or decision is unclear and cannot be resolved from the request or code. Ask for clarification only on that uncertainty. Ask for approval of all implementation and tests together after the code is applied and required tests pass (end of Stage 3), then complete review and archive the task before the PR decision. Run review only after approval of the completed implementation and tests. If review leaves suggestions for the user, present them and wait for their choice; a clean review proceeds directly to archival and hand-off without a separate review approval. Then ask whether to open a PR (Stage 6). Complete each stage without asking between files, edits, tests or required review fixes. Reuse explicit approval already given in the session, including after a resume; one approval to open the PR authorizes the commit, push and PR creation; never ask separately for those actions. This is the user's chosen cadence, replacing the general one-step-per-turn validation workflow. Carry it in every agent brief.
+**Approval cadence:** prepare the plan internally (Stage 1), then proceed without asking for plan approval unless an important requirement or decision is unclear and cannot be resolved from the request or code. Ask for clarification only on that uncertainty. Ask for approval of all implementation and tests together after the code is applied and required tests pass (end of Stage 3), then complete review and archive the task before the PR decision. Run review only after approval of the completed implementation and tests. If review leaves suggestions for the user, present them and wait for their choice; a clean review proceeds directly to archival and hand-off without a separate review approval. Then ask whether to open a PR (Stage 6). Complete each stage without asking between files, edits, tests or required review fixes. Reuse explicit approval already given in the session, including after a resume; one approval to open the PR authorizes the commit, push and PR creation; never ask separately for those actions. This is the user's chosen cadence, replacing the general one-step-per-turn validation workflow. Carry it in every agent brief.
 
 ## Project context
 
@@ -67,11 +71,11 @@ Before planning or implementation for a new request, create a new branch named `
 
 Run `git status -sb` first. If there are uncommitted changes, report them and do not carry them into the new branch unless they belong to the request. Then run `git switch master`, `git pull --ff-only` and `git switch -c <prefix>/<short-summary>`. Start from another base only when the user says so, for example when the task depends on a branch that is not merged yet. Do not overwrite an existing branch; choose a short unique suffix when needed. When resuming the same orchestration, reuse its existing branch.
 
-Run all investigation, edits, tests, review and approved commits on that branch. Give every subagent the repo path and verify the branch before editing or committing. Report the feature branch and the starting commit in conversation.
+Run all investigation, edits, tests, review and approved commits on that branch. Give every subagent the repo path and verify the branch before editing or committing. Record the feature branch and starting commit for the approval checkpoint.
 
 ## Scope changes during an orchestration
 
-Use the original request and the plan presented in conversation as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own branch (`feat/`, `fix/` or `improve/`) and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the plan in conversation and proceed within that explicitly requested scope. Ask only if an important requirement or decision remains unclear. Necessary fixes and clarifications that fulfill the original plan are not separate features.
+Use the original request and the internally prepared plan as the scope boundary. If the user asks for a new feature outside that scope, explicitly say that it is outside the current plan and suggest a separate orchestration with its own branch (`feat/`, `fix/` or `improve/`) and plan. Keep the new feature out of the current implementation unless the user explicitly chooses to expand the current plan; then update the internal plan and proceed within that explicitly requested scope. Ask only if an important requirement or decision remains unclear. Necessary fixes and clarifications that fulfill the original plan are not separate features.
 
 ## Stage 1: Plan
 
@@ -83,9 +87,9 @@ Use the original request and the plan presented in conversation as the scope bou
    - Accessibility: `agent-flutter-a11y-agent`, plus one of the above when real logic is involved.
    - Skip the agent when the request is small and the fix is obvious after you read the code yourself.
 3. **Estimate (optional):** run `agent-ticket-estimator` only for risky areas: timer countdown logic, audio playback, Firebase auth, the Android or iOS build setup, or a dependency bump.
-   **Cold read (optional):** for the same risky areas as the estimate, and for any plan with 4 or more steps or a new screen, run `agent-plan-reader` once on the drafted plan. Give it only the plan text from the Steps, Approach and Tests parts: never the user's request, the investigator's report or any earlier conversation, because a reader that knows them cannot see what the plan leaves out. On Antigravity, which has no subagents, run it in the main thread only if the plan can be reread without leaning on the request; otherwise skip it and say so. Compare its 3-line summary with the request. Fix the plan for each real guess or unclear step, and settle the rest as decisions in step 4. Do one round only, and skip it for small or obvious changes.
+   **Cold read (optional):** for the same risky areas as the estimate, and for any plan with 4 or more steps or a new screen, run `agent-plan-reader` once on the drafted plan. Give it only the plan text from the Steps, Approach and Tests parts: never the user's request, the investigator's report or any earlier conversation, because a reader that knows them cannot see what the plan leaves out. On Antigravity, which has no subagents, run it in the main thread only if the plan can be reread without leaning on the request; otherwise skip it. Compare its 3-line summary with the request. Fix the plan for each real guess or unclear step, and settle the rest as decisions in step 4. Do one round only, and skip it for small or obvious changes.
 4. **Settle open decisions yourself.** For each Open Decision pick the recommended option and list it in the plan as "decided, change it if you disagree". Ask the user only when a decision is expensive to undo and you cannot judge it from the code. Use the `grilling` skill only when the user asks for it (`/grill-me`).
-5. **Present one plan, in plain English:**
+5. **Prepare one plan internally:**
    - **Request:** what is wanted and what "done" looks like, in 2-3 lines.
    - **Approach:** the fix or design, grounded in how the code is built today.
    - **Decisions made:** each with the alternative you rejected.
@@ -106,7 +110,7 @@ Dispatch one `agent-implementer`. Put in the brief: the plan, the decisions, the
 - **Stop only on a design surprise** that breaks the plan (a wrong assumption, a conflict between steps). Return 2 short options with a recommendation and the work done so far. Do not guess.
 - Final report: files touched, what changed and why in a few bullets, the analyze result, and every `TODO` or `FIXME` added.
 
-When the agent reports a surprise, decide it yourself if the answer is clear from the code and tell the user in one line afterwards. Ask the user only when the choice changes the plan in a way they would care about.
+When the agent reports a surprise, decide it yourself if the answer is clear from the code. Ask the user only when the choice changes the plan in a way they would care about.
 
 After all implementation steps are applied and format/analyze checks pass, continue directly to Stage 3. Do not ask for implementation approval before tests. If no new tests are needed, explain why and still run the full suite before the approval checkpoint. Do not seek validation of individual steps.
 
@@ -129,18 +133,18 @@ After all planned tests are written and the full suite passes, present the compl
 - After a change that applies a rule across the app (a style sweep, a rename), run your own search for the pattern (`grep`) and check the matches by hand. Do not rely only on a subagent's list.
 - Suggest the built-in `/code-review` for a second pass only when the change is large or risky. Do not run it unasked.
 
-Once review and checks pass, report the verdict, fixes applied and remaining suggestions. If there are no remaining suggestions, archive the completed task and proceed directly to Stage 5 without asking for review approval. If suggestions remain, present each with a recommended action and wait for the user's choice. Apply selected in-scope suggestions and validate them within this stage without asking for each edit, then archive the completed task and proceed to the hand-off. Never treat a blocked review as successful.
+Once review and checks pass, record the verdict and fixes for the hand-off. If there are no remaining suggestions, archive the completed task and proceed directly to Stage 5 without asking for review approval. If suggestions remain, present each with a recommended action and wait for the user's choice. Apply selected in-scope suggestions and validate them within this stage without asking for each edit, then archive the completed task and proceed to the hand-off. Never treat a blocked review as successful.
 
 ## Stage 5: Hand-off 🛑
 
-Run the checks that apply and show the result:
+Run the checks that apply and include their results with the PR approval question:
 
 - `fvm flutter analyze` reports no issues, and the full test suite passes (this includes `test/architecture/layer_boundaries_test.dart`). If the change adds or moves files, check that `CLAUDE.md` still describes the real layout. Report the latest full-suite result; rerun it if subsequent changes could affect the result.
 - `fvm dart tool/agent_check.dart` passes. It picks the checks from the changed files: format, analyze on the touched files, the mirrored tests, the golden snapshots when a presentation file, `navigation.dart` or an ARB file changed (for a domain, data or built-in template change that could alter a screen, run `fvm flutter test test/snapshots/ui_snapshots_test.dart` yourself), `gen-l10n` for ARB changes, the debug builds for `android/`, `ios/` or `pubspec.yaml` changes, a scan for local absolute paths in the diff, and the list of every open note the diff adds with `file:line`. Add `--skip-build` only when the user asks to skip the builds. Report its output.
 - If any captured UI screen, state, theme or route changed, `test/snapshots/README.md` is up to date (the tool runs the snapshot test but does not read the README).
 - No company name or work email address in the diff, when you read it.
 
-Then summarize the completed change, checks, review and archived task. Prepare the commit and PR details for review. Do not ask separately for commit approval: proceed to the single PR question in Stage 6 unless the user explicitly requested only a commit. An explicit commit-only request authorizes committing without separate message approval, but does not authorize a push.
+Prepare a concise summary of the completed change, checks, review and archived task with the commit and PR details for the PR approval question. Do not ask separately for commit approval: proceed to the single PR question in Stage 6 unless the user explicitly requested only a commit. An explicit commit-only request authorizes committing without separate message approval, but does not authorize a push.
 
 ## Stage 6: Offer to open the PR 🛑
 
