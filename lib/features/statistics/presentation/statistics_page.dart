@@ -6,11 +6,11 @@ import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/account/presentation/account_avatar_button.dart';
 import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/statistics/domain/activity_period.dart';
-import 'package:sport_timer/features/statistics/presentation/extensions/duration_extension.dart';
+import 'package:sport_timer/features/statistics/presentation/extensions/statistics_perspective_extension.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/features/statistics/presentation/widgets/daily_activity_tile.dart';
-import 'package:sport_timer/features/statistics/presentation/widgets/work_time_chart.dart';
+import 'package:sport_timer/features/statistics/presentation/widgets/activity_chart.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
@@ -134,8 +134,12 @@ class _StatisticPageState extends State<StatisticPage> {
         : data.period.unit == ActivityPeriodUnit.year
             ? DateFormat.yMMMM(locale).format(selected.start)
             : DateFormat.yMMMMd(locale).format(selected.start);
-    final duration =
-        Duration(milliseconds: selected?.workDurationMs ?? data.workDurationMs).formattedStatisticsDuration(l10n);
+    final value = state.perspective.value(
+      l10n,
+      rounds: selected?.roundCount ?? data.roundCount,
+      workMs: selected?.workDurationMs ?? data.workDurationMs,
+      restMs: selected?.restDurationMs ?? data.restDurationMs,
+    );
     return SingleChildScrollView(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
@@ -149,14 +153,19 @@ class _StatisticPageState extends State<StatisticPage> {
           children: [
             Semantics(
               liveRegion: true,
-              child: Text('$label: $duration', style: Theme.of(context).textTheme.titleMedium),
+              child: Text('$label: $value', style: Theme.of(context).textTheme.titleMedium),
             ),
             const Gap(AppSpacing.s16),
-            WorkTimeChart(
+            if (state.perspective == StatisticsPerspective.workVsRest) ...[
+              Text(l10n.statisticsStackLegend),
+              const Gap(AppSpacing.s8),
+            ],
+            ActivityChart(
               data: data,
               selected: state.selectedBucket,
               onSelected: _viewModel.selectBucket,
-              maxY: _viewModel.chartMaxSeconds,
+              maxY: _viewModel.chartMaxY,
+              perspective: state.perspective,
             ),
           ],
         ),
@@ -186,12 +195,17 @@ class _ChartControls extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
       child: Column(
         children: [
-          DropdownButtonFormField<String>(
+          DropdownButtonFormField<StatisticsPerspective>(
             isExpanded: true,
-            initialValue: 'work',
+            initialValue: state.perspective,
             decoration: InputDecoration(labelText: l10n.statisticsPerspective),
-            items: [DropdownMenuItem(value: 'work', child: Text(l10n.statisticsWorkTime))],
-            onChanged: (_) {},
+            items: [
+              for (final perspective in StatisticsPerspective.values)
+                DropdownMenuItem(value: perspective, child: Text(perspective.label(l10n))),
+            ],
+            onChanged: (value) {
+              if (value != null) viewModel.setPerspective(value);
+            },
           ),
           const Gap(AppSpacing.s8),
           Wrap(

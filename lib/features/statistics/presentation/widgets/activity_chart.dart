@@ -7,21 +7,25 @@ import 'package:sport_timer/features/statistics/domain/activity_chart_data.dart'
 import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/presentation/extensions/activity_chart_data_extension.dart';
 import 'package:sport_timer/features/statistics/presentation/extensions/duration_extension.dart';
+import 'package:sport_timer/features/statistics/presentation/extensions/statistics_perspective_extension.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 
-class WorkTimeChart extends StatelessWidget {
+class ActivityChart extends StatelessWidget {
   final ActivityChartData data;
   final DateTime? selected;
   final ValueChanged<ActivityChartBucket> onSelected;
   final double maxY;
+  final StatisticsPerspective perspective;
 
-  const WorkTimeChart({
+  const ActivityChart({
     super.key,
     required this.data,
     required this.selected,
     required this.onSelected,
     required this.maxY,
+    required this.perspective,
   });
 
   @override
@@ -39,7 +43,13 @@ class WorkTimeChart extends StatelessWidget {
           children: [
             Align(
               alignment: Alignment.centerLeft,
-              child: Text(l10n.statisticsChartScale(Duration(seconds: maxY.toInt()).formattedStatisticsDuration(l10n))),
+              child: Text(
+                l10n.statisticsChartScale(
+                  perspective == StatisticsPerspective.rounds
+                      ? l10n.statisticsRounds(maxY.toInt())
+                      : Duration(seconds: maxY.toInt()).formattedStatisticsDuration(l10n),
+                ),
+              ),
             ),
             Expanded(
               child: Stack(
@@ -60,7 +70,7 @@ class WorkTimeChart extends StatelessWidget {
                           ),
                           titlesData: const FlTitlesData(show: false),
                           barTouchData: const BarTouchData(enabled: false),
-                          barGroups: data.workBars(colors, selected, maxY),
+                          barGroups: data.bars(colors, selected, maxY, perspective),
                         ),
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeOutCubic,
@@ -83,7 +93,12 @@ class WorkTimeChart extends StatelessWidget {
                                     : DateFormat.yMMMMd(locale).format(bucket.start),
                                 bucket.isFuture
                                     ? l10n.statisticsFuture
-                                    : Duration(milliseconds: bucket.workDurationMs).formattedStatisticsDuration(l10n),
+                                    : perspective.value(
+                                        l10n,
+                                        rounds: bucket.roundCount,
+                                        workMs: bucket.workDurationMs,
+                                        restMs: bucket.restDurationMs,
+                                      ),
                               ),
                               child: ExcludeSemantics(
                                 child: TextButton(

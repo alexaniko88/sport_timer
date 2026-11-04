@@ -6,11 +6,19 @@ enum StatisticsStatus { initial, loading, content, empty, error }
 
 enum StatisticsView { list, charts }
 
+enum StatisticsPerspective {
+  workTime,
+  rounds,
+  workVsRest,
+  totalTime,
+}
+
 class StatisticsState {
   final StatisticsStatus status;
   final List<DailyActivity> dailyActivity;
   final String? errorMessage;
   final StatisticsView view;
+  final StatisticsPerspective perspective;
   final ActivityPeriodUnit periodUnit;
   final DateTime? referenceDate;
   final int firstWeekday;
@@ -21,6 +29,7 @@ class StatisticsState {
     List<DailyActivity> dailyActivity = const [],
     this.errorMessage,
     this.view = StatisticsView.list,
+    this.perspective = StatisticsPerspective.workTime,
     this.periodUnit = ActivityPeriodUnit.week,
     this.referenceDate,
     this.firstWeekday = DateTime.monday,
@@ -33,6 +42,7 @@ class StatisticsState {
     String? errorMessage,
     bool clearError = false,
     StatisticsView? view,
+    StatisticsPerspective? perspective,
     ActivityPeriodUnit? periodUnit,
     DateTime? referenceDate,
     int? firstWeekday,
@@ -44,6 +54,7 @@ class StatisticsState {
         dailyActivity: dailyActivity ?? this.dailyActivity,
         errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
         view: view ?? this.view,
+        perspective: perspective ?? this.perspective,
         periodUnit: periodUnit ?? this.periodUnit,
         referenceDate: referenceDate ?? this.referenceDate,
         firstWeekday: firstWeekday ?? this.firstWeekday,
@@ -58,6 +69,7 @@ class StatisticsState {
           listEquals(other.dailyActivity, dailyActivity) &&
           other.errorMessage == errorMessage &&
           other.view == view &&
+          other.perspective == perspective &&
           other.periodUnit == periodUnit &&
           other.referenceDate == referenceDate &&
           other.firstWeekday == firstWeekday &&
@@ -69,6 +81,7 @@ class StatisticsState {
         Object.hashAll(dailyActivity),
         errorMessage,
         view,
+        perspective,
         periodUnit,
         referenceDate,
         firstWeekday,

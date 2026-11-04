@@ -10,6 +10,7 @@ import 'package:sport_timer/features/account/presentation/account_view_model.dar
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_page.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 import 'package:flutter/services.dart';
@@ -284,6 +285,78 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('perspectives expose exact selected values and restore the total', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 10, 31));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+      ),
+    );
+    repository.reads.single.complete(const Success([first, second]));
+    await tester.pump();
+    await tester.tap(find.text('Charts'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Work time'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Work vs rest').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Period total: Work: 3 minutes 5 seconds · Rest: 30 seconds'), findsOneWidget);
+    final bucket = find.bySemanticsLabel('October 31, 2026, Work: 2 minutes 5 seconds · Rest: 30 seconds');
+    expect(bucket, findsOneWidget);
+    tester.getSemantics(bucket).owner?.performAction(tester.getSemantics(bucket).id, SemanticsAction.tap);
+    await tester.pumpAndSettle();
+    expect(find.text('October 31, 2026: Work: 2 minutes 5 seconds · Rest: 30 seconds'), findsOneWidget);
+    await tester.tap(find.text('Work vs rest'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Total time').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Period total: 3 minutes 35 seconds'), findsOneWidget);
+    await tester.tap(find.text('Total time'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Rounds').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Period total: 3 rounds'), findsOneWidget);
+    expect(find.bySemanticsLabel('October 31, 2026, 2 rounds'), findsOneWidget);
+    semantics.dispose();
+  });
+
+  testWidgets('Spanish stacked values include exact fractions', (tester) async {
+    final semantics = tester.ensureSemantics();
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 11, 4));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('es'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+      ),
+    );
+    repository.reads.single.complete(
+      const Success([
+        DailyActivity(localDate: '2026-11-02', roundCount: 1, workDurationMs: 1250, restDurationMs: 500),
+      ]),
+    );
+    await tester.pump();
+    await tester.tap(find.text('Gráficos'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tiempo de trabajo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Trabajo y descanso').last);
+    await tester.pumpAndSettle();
+    expect(
+      find.bySemanticsLabel(
+        '2 de noviembre de 2026, Trabajo: 1 segundo 250 milisegundos · Descanso: 500 milisegundos',
+      ),
+      findsOneWidget,
+    );
+    semantics.dispose();
+  });
+
   for (final theme in [SportTheme.light, SportTheme.dark]) {
     testWidgets('chart works at narrow width and large text', (tester) async {
       await tester.binding.setSurfaceSize(const Size(320, 800));
@@ -305,6 +378,11 @@ void main() {
       await tester.pump();
       await tester.tap(find.text('Charts'));
       await tester.pumpAndSettle();
+      for (final perspective in StatisticsPerspective.values) {
+        vm.setPerspective(perspective);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+      }
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pump();
     });

@@ -476,6 +476,19 @@
   "@statisticsPerspective": {
     "description": "Statistics chart: statisticsPerspective."
   },
+  "statisticsMilliseconds": "{count, plural, =1{1 millisecond} other{{count} milliseconds}}",
+  "@statisticsMilliseconds": {
+    "description": "Exact milliseconds in a statistics duration.",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "statisticsPerspectiveRounds": "Rounds",
+  "@statisticsPerspectiveRounds": {"description": "Chart perspective showing completed rounds."},
+  "statisticsWorkVsRest": "Work vs rest",
+  "@statisticsWorkVsRest": {"description": "Chart perspective comparing work and rest time."},
+  "statisticsTotalTime": "Total time",
+  "@statisticsTotalTime": {"description": "Chart perspective showing combined work and rest time."},
+  "statisticsStackLegend": "Work: solid, bottom · Rest: outlined, top",
+  "@statisticsStackLegend": {"description": "Legend describing the two segments of stacked work and rest bars."},
   "statisticsWorkTime": "Work time",
   "@statisticsWorkTime": {
     "description": "Statistics chart: statisticsWorkTime."

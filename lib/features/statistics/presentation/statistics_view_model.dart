@@ -36,10 +36,18 @@ class StatisticsViewModel {
       );
   bool get canNavigateNext => period.canNavigateNext(today);
   ActivityChartData get currentChartData => chartData(period: period, today: today);
-  double get chartMaxSeconds {
-    final max = currentChartData.buckets.fold<int>(
+  double get chartMaxY {
+    final perspective = _state.value.perspective;
+    final max = currentChartData.buckets.fold<double>(
       0,
-      (value, bucket) => math.max(value, bucket.workDurationMs ~/ 1000),
+      (value, bucket) => math.max(
+        value,
+        switch (perspective) {
+          StatisticsPerspective.workTime => bucket.workDurationMs / 1000,
+          StatisticsPerspective.rounds => bucket.roundCount.toDouble(),
+          StatisticsPerspective.workVsRest || StatisticsPerspective.totalTime => bucket.totalDurationMs / 1000,
+        },
+      ),
     );
     return math.max(1, (max * 1.15).ceil()).toDouble();
   }
@@ -49,6 +57,12 @@ class StatisticsViewModel {
 
   void setView(StatisticsView view) {
     _state.value = _state.value.copyWith(view: view, referenceDate: _state.value.referenceDate ?? today);
+  }
+
+  void setPerspective(StatisticsPerspective perspective) {
+    if (_state.value.perspective != perspective) {
+      _state.value = _state.value.copyWith(perspective: perspective, clearSelection: true);
+    }
   }
 
   void setFirstWeekday(int day) {

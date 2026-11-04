@@ -17,6 +17,7 @@ import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 import 'package:sport_timer/features/statistics/presentation/day_details_page.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_page.dart';
+import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
@@ -566,6 +567,41 @@ void main() {
                   },
                 );
               },
+            );
+          }
+
+          for (final perspective in [
+            StatisticsPerspective.rounds,
+            StatisticsPerspective.workVsRest,
+            StatisticsPerspective.totalTime,
+          ]) {
+            goldenTest(
+              'statistics chart ${perspective.name}',
+              fileName: 'statistics_chart_${perspective.name}',
+              constraints: _pairConstraints,
+              whilePerforming: (tester) async {
+                await _tapInBothFrames(find.text('Charts'))(tester);
+                for (final page in tester.widgetList<StatisticPage>(find.byType(StatisticPage))) {
+                  final vm = page.viewModel;
+                  if (vm != null) {
+                    vm.setPerspective(perspective);
+                    if (perspective == StatisticsPerspective.workVsRest) {
+                      vm.selectBucket(vm.currentChartData.buckets.last);
+                    }
+                  }
+                }
+                await tester.pumpAndSettle();
+                return null;
+              },
+              builder: () => _lightAndDarkGroup(
+                builder: () {
+                  final account = AccountViewModel(getIt());
+                  final vm = StatisticsViewModel(getIt(), clock: () => DateTime(2026, 10, 31));
+                  addTearDown(account.dispose);
+                  addTearDown(vm.dispose);
+                  return StatisticPage(accountViewModel: account, viewModel: vm, onMenuPressed: () {});
+                },
+              ),
             );
           }
 

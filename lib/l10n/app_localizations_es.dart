@@ -357,6 +357,29 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statisticsPerspective => 'Perspectiva';
 
   @override
+  String statisticsMilliseconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count milisegundos',
+      one: '1 milisegundo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get statisticsPerspectiveRounds => 'Rondas';
+
+  @override
+  String get statisticsWorkVsRest => 'Trabajo y descanso';
+
+  @override
+  String get statisticsTotalTime => 'Tiempo total';
+
+  @override
+  String get statisticsStackLegend => 'Trabajo: sólido, abajo · Descanso: contorno, arriba';
+
+  @override
   String get statisticsWorkTime => 'Tiempo de trabajo';
 
   @override
