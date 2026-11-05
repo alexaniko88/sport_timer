@@ -1,6 +1,6 @@
 # EPIC: Statistics
 
-Status: Recording, daily list and day details completed; visual activity and deletion stories ready for planning.
+Status: Recording, daily list and day details completed; visual activity and deletion stories ready for planning; partial activity recording (Story 6) ready for planning.
 
 
 ## Goal
@@ -14,10 +14,13 @@ Automatically preserve completed training activity and show daily totals in the 
 3. [Explore a day's activity](stories/done/03-day-details/index.md): completed on the day-details branch; merge pending.
 4. [Visualize activity](stories/done/04-visualize-activity/index.md): completed on the consistency calendar branch; merge pending.
 5. [Delete statistics](stories/05-delete-statistics/index.md): clear the signed-in account's local history; ready for planning.
+6. [Record partial activity](stories/06-record-partial-activity/index.md): count the seconds actually trained, save once when leaving the timer, and recover after a forced close; ready for planning.
 
 Stories 1 and 2 provide the foundation for Stories 3 and 4. Story 4 does not depend on the day-details story.
 
 ## Agreed behavior
+
+> Story 6 replaces the rules below about unfinished phases, saving at each completion, and forced closes. Until Story 6 is done, the rules below describe the current app.
 
 - A fresh timer start creates a run. Pause/resume continues that run.
 - A completed work round increments the round count and contributes its duration to work time.
