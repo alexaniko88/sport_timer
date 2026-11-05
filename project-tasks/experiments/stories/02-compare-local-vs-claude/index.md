@@ -2,8 +2,6 @@
 
 Epic: [Experiments](../../index.md)
 
-Status: Depends on Story 1.
-
 ## User outcome
 
 As the repo owner, I want evidence of how the local model compares with Claude so that I decide to keep, widen or drop the experiment with facts.
@@ -21,8 +19,8 @@ As the repo owner, I want evidence of how the local model compares with Claude s
 
 ## Tasks
 
-1. [Run the comparison on a real plan](01-run-comparison.md).
-2. [Record the result and the decision](02-record-decision.md).
+1. [Run the comparison on a real plan](01-run-comparison/index.md).
+2. [Record the result and the decision](02-record-decision/index.md).
 
 ## Dependencies and open decisions
 

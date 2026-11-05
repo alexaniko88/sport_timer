@@ -2,8 +2,6 @@
 
 Epic: [Experiments](../../index.md)
 
-Status: Provisional. Starts only after a go decision in [Story 2](../02-compare-local-vs-claude/index.md).
-
 ## User outcome
 
 As the repo owner, I want the local model to summarize format, analyze and test output so that these simple reads cost no Claude usage.
@@ -20,7 +18,7 @@ As the repo owner, I want the local model to summarize format, analyze and test 
 
 ## Tasks
 
-1. [Summarize format, analyze and test output locally](01-summarize-command-output.md).
+1. [Summarize format, analyze and test output locally](01-summarize-command-output/index.md).
 
 ## Dependencies and open decisions
 

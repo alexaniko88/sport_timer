@@ -12,7 +12,7 @@ A bug report does not authorize implementation. Diagnose and agree the fix throu
 
 ## Tasks
 
-- [BUG-01: iOS authentication dependency conflict](01-ios-auth-dependency-conflict.md) — ready for diagnosis and planning.
-- [BUG-02: Statistics and timer notice text is not translated](02-untranslated-statistics-and-timer-strings.md) — ready for planning.
-- [BUG-03: Android Firebase plugins report Kotlin Gradle Plugin usage](03-android-firebase-kotlin-gradle-warning.md) — ready for diagnosis and planning.
-- [BUG-04: Countdown beeps are out of sync and the stage sound is sometimes missing](04-countdown-beeps-out-of-sync-and-stage-sound-missing.md) — ready for diagnosis.
+- [BUG-01: iOS authentication dependency conflict](01-ios-auth-dependency-conflict/index.md) — ready for diagnosis and planning.
+- [BUG-02: Statistics and timer notice text is not translated](02-untranslated-statistics-and-timer-strings/index.md) — ready for planning.
+- [BUG-03: Android Firebase plugins report Kotlin Gradle Plugin usage](03-android-firebase-kotlin-gradle-warning/index.md) — ready for diagnosis and planning.
+- [BUG-04: Countdown beeps are out of sync and the stage sound is sometimes missing](04-countdown-beeps-out-of-sync-and-stage-sound-missing/index.md) — ready for diagnosis.

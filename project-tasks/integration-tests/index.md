@@ -1,6 +1,8 @@
-# EPIC: Integration tests
+---
+abbr: INT
+---
 
-Status: Agreed scope; Story 1 ready for planning, Stories 2 to 4 depend on earlier stories.
+# EPIC: Integration tests
 
 ## Goal
 
@@ -9,7 +11,7 @@ Give the app a fast, repeatable integration test process that runs locally on An
 ## Agreed behavior and boundaries
 
 - First version covers three smoke flows only: run a timer from setup, run a timer from a template, and see a finished session in statistics. Details of each screen stay with the unit, widget and golden tests.
-- Platform: Android only. An emulator named `sport-timer-emulator` is the default, and a connected real device is also allowed and wins over the emulator. iOS and macOS are out of scope; iOS builds are blocked by [BUG-01](../bugs/01-ios-auth-dependency-conflict.md).
+- Platform: Android only. An emulator named `sport-timer-emulator` is the default, and a connected real device is also allowed and wins over the emulator. iOS and macOS are out of scope; iOS builds are blocked by [BUG-01](../bugs/01-ios-auth-dependency-conflict/index.md).
 - Local only. No CI job in this epic; a manual or nightly CI job is a possible later story.
 - Tests run in the app process with fakes (user, audio, keep-alive, clock, database). They never call Firebase or Google sign-in.
 - One command runs everything: a single script, also exposed as a Zed task.

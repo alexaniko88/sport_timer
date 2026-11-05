@@ -2,8 +2,6 @@
 
 Epic: [Developer tools](../../index.md)
 
-Status: Ready for planning.
-
 ## User outcome
 
 As a developer, I can clear local activity for all accounts from a debug-only page so I can start testing with an empty history.
@@ -22,7 +20,7 @@ Add a debug-only navigation drawer entry and developer page with a single purge 
 
 ## Tasks
 
-1. [Add the developer page and activity purge](01-add-developer-page-and-purge.md).
+1. [Add the developer page and activity purge](01-add-developer-page-and-purge/index.md).
 
 ## Dependencies and visual context
 

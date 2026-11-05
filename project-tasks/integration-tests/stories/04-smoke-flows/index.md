@@ -2,8 +2,6 @@
 
 Epic: [Integration tests](../../index.md)
 
-Status: Depends on [Story 2](../02-arrange-existing-tests/index.md) and [Story 3](../03-fake-app-environment/index.md).
-
 ## User outcome
 
 As the developer, I want the three most important user paths checked in the running app so that a broken main flow is caught before release.
@@ -24,9 +22,9 @@ As the developer, I want the three most important user paths checked in the runn
 
 ## Tasks
 
-1. [Timer from setup](01-timer-from-setup.md).
-2. [Timer from a template](02-timer-from-template.md).
-3. [Finished session in statistics](03-session-in-statistics.md).
+1. [Timer from setup](01-timer-from-setup/index.md).
+2. [Timer from a template](02-timer-from-template/index.md).
+3. [Finished session in statistics](03-session-in-statistics/index.md).
 
 ## Dependencies and open decisions
 

@@ -1,6 +1,8 @@
-# EPIC: Experiments
+---
+abbr: EXP
+---
 
-Status: Agreed scope; Story 1 ready for planning, Stories 2 to 4 depend on earlier stories.
+# EPIC: Experiments
 
 ## Goal
 

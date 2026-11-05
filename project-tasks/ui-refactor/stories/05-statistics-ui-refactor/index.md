@@ -2,8 +2,6 @@
 
 Epic: [UI refactor](../../index.md)
 
-Status: Provisional; the design and information hierarchy need agreement before implementation.
-
 ## User outcome
 
 Make daily statistics and the details of a training day easier to read and understand through a considered UI refactor.
@@ -20,8 +18,8 @@ Revisit the daily activity cards and the day-details page, including its daily s
 
 ## Tasks
 
-1. [Rethink statistics cards and details](01-rethink-statistics-cards-and-details.md) — Provisional.
+1. [Rethink statistics cards and details](01-rethink-statistics-cards-and-details/index.md) — Provisional.
 
 ## Dependencies and open decisions
 
-No prerequisite task. Agree the visual direction, information hierarchy, and any changes to the displayed fields or navigation before implementation. Coordinate with the separately planned [visual activity story](../../../statistics/stories/done/04-visualize-activity/index.md); charts and calendar are not included here.
+No prerequisite task. Agree the visual direction, information hierarchy, and any changes to the displayed fields or navigation before implementation. Coordinate with the separately planned [visual activity story](../../../statistics/stories/04-visualize-activity/index.md); charts and calendar are not included here.

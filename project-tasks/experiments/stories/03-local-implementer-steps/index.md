@@ -2,8 +2,6 @@
 
 Epic: [Experiments](../../index.md)
 
-Status: Provisional. Starts only after a go decision in [Story 2](../02-compare-local-vs-claude/index.md).
-
 ## User outcome
 
 As the repo owner, I want small, fully specified edits to run on the local model so that typing-heavy steps cost no Claude usage, without lowering code quality.
@@ -23,9 +21,9 @@ As the repo owner, I want small, fully specified edits to run on the local model
 
 ## Tasks
 
-1. [Define which steps count as mechanical](01-define-mechanical-steps.md).
-2. [Run local steps in the sandbox and return a patch](02-sandbox-patch-flow.md).
-3. [Require Claude review before hand-off](03-review-gate.md).
+1. [Define which steps count as mechanical](01-define-mechanical-steps/index.md).
+2. [Run local steps in the sandbox and return a patch](02-sandbox-patch-flow/index.md).
+3. [Require Claude review before hand-off](03-review-gate/index.md).
 
 ## Dependencies and open decisions
 
