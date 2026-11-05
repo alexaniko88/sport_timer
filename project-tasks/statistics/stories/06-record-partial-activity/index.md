@@ -2,8 +2,6 @@
 
 Epic: [Statistics](../../index.md)
 
-Status: Ready for planning.
-
 ## User outcome
 
 As a person training with the timer, I want every second I actually trained or rested to be saved, even when I leave in the middle of a round or the app is killed. That way my statistics show the real work I did.
@@ -46,14 +44,14 @@ Excluded: restoring the timer itself after a forced close, marking partial round
 
 ## Tasks
 
-1. [Count partial progress in whole seconds](01-count-partial-progress.md).
-2. [Save the run once when leaving the timer](02-save-on-leaving-timer.md).
-3. [Checkpoint the run and recover it after a forced close](03-checkpoint-and-recover.md).
-4. [Verify partial recording end to end](04-verify-partial-recording.md).
+1. [Count partial progress in whole seconds](01-count-partial-progress/index.md).
+2. [Save the run once when leaving the timer](02-save-on-leaving-timer/index.md).
+3. [Checkpoint the run and recover it after a forced close](03-checkpoint-and-recover/index.md).
+4. [Verify partial recording end to end](04-verify-partial-recording/index.md).
 
 ## Dependencies and open decisions
 
-Builds on the completed [recording story](../done/01-record-activity/index.md). Check its availability in the implementation checkout. Coordinate with [Delete statistics](../05-delete-statistics/index.md) and the developer purge in [developer tools](../../../developer-tools/index.md): deleting or purging history must also remove pending drafts, so a later recovery cannot bring deleted history back.
+Builds on the completed [recording story](../01-record-activity/index.md). Check its availability in the implementation checkout. Coordinate with [Delete statistics](../05-delete-statistics/index.md) and the developer purge in [developer tools](../../../developer-tools/index.md): deleting or purging history must also remove pending drafts, so a later recovery cannot bring deleted history back.
 
 To settle during planning (recommendations, not agreed requirements):
 

@@ -16,15 +16,15 @@ effort: medium
 
 ## Local tasks
 
-When the request names a local task under `project-tasks/`, read the task file and its applicable parent indexes before planning: story/epic indexes for story tasks, or `bugs/index.md` / `improvements/index.md` for standalone bug/improvement tasks. Use that task as the request; no external ticket lookup is needed. Check dependencies and completion evidence in the actual checkout and branch before treating earlier outputs as reusable. Surface blockers rather than silently implementing prerequisite tasks or treating provisional scope as approved.
+When the request names a local task under `project-tasks/`, read the format in `.agents/rules/project-tasks-format.md`, then the task's `index.md` and its applicable parent indexes before planning: story/epic indexes for story tasks, or `bugs/index.md` / `improvements/index.md` for standalone bug/improvement tasks. Use that task as the request; no external ticket lookup is needed. Check dependencies and completion evidence in the actual checkout and branch before treating earlier outputs as reusable. Surface blockers rather than silently implementing prerequisite tasks. A task with `status: draft` still has open decisions: say so and ask before implementing it.
 
-Do not maintain traffic-light statuses, readiness counts, or repeated progress summaries in task files or parent indexes. Do not start another task automatically.
+Do not maintain progress statuses, readiness counts, or repeated progress summaries in task files or parent indexes. Do not start another task automatically.
 
 ## Communication
 
 Work quietly: do not send progress updates, explain ongoing actions, or present the plan as a standalone message. Prepare and maintain the plan internally. Communicate when a decision, clarification, approval or blocker needs the user's attention; include only the context needed to answer. Keep the existing implementation-and-tests and PR approval checkpoints, with enough change and validation details for an informed decision. Report the final outcome and any material failures or limitations.
 
-After review passes and any chosen review suggestions are addressed, archive the completed local task immediately, without asking, using [Project tasks — Archiving completed work](../skill-project-tasks/SKILL.md#archiving-completed-work). Record acceptance and validation evidence and branch context; move the task, and eligible parent story and epic, update links and validate them. Leave these changes uncommitted until the user authorizes a commit or opening the PR. Archive only this task's own file; previously archived tasks may move with their completed parent. Do not start another task solely for cleanup.
+After review passes and any chosen review suggestions are addressed, archive the completed local task immediately, without asking, using [Project tasks — Archiving completed work](../skill-project-tasks/SKILL.md#archiving-completed-work). Record acceptance and validation evidence and branch context in the task's `notes.md`; move the task folder into `done/` with `status: done`, update links and validate them. Leave these changes uncommitted until the user authorizes a commit or opening the PR. Archive only this task's own folder: stories and epics never move. Do not start another task solely for cleanup.
 
 You are the conductor. Read-heavy work (investigate, plan, estimate, review) goes to read-only subagents (where the tool has them) so their file dumps stay out of the main chat. Code edits and tests go to `agent-implementer`, which runs on the cheaper model.
 

@@ -1,6 +1,8 @@
-# EPIC: Statistics
+---
+abbr: STAT
+---
 
-Status: Recording, daily list and day details completed; visual activity and deletion stories ready for planning; partial activity recording (Story 6) ready for planning.
+# EPIC: Statistics
 
 
 ## Goal
@@ -9,10 +11,10 @@ Automatically preserve completed training activity and show daily totals in the 
 
 ## Stories
 
-1. [Record completed activity](stories/done/01-record-activity/index.md): integrate the local database and reliably record completed work rounds and rests.
-2. [Show daily statistics](stories/done/02-daily-list/index.md): replace the Statistics placeholder with daily totals.
-3. [Explore a day's activity](stories/done/03-day-details/index.md): completed on the day-details branch; merge pending.
-4. [Visualize activity](stories/done/04-visualize-activity/index.md): completed on the consistency calendar branch; merge pending.
+1. [Record completed activity](stories/01-record-activity/index.md): integrate the local database and reliably record completed work rounds and rests.
+2. [Show daily statistics](stories/02-daily-list/index.md): replace the Statistics placeholder with daily totals.
+3. [Explore a day's activity](stories/03-day-details/index.md): completed on the day-details branch; merge pending.
+4. [Visualize activity](stories/04-visualize-activity/index.md): completed on the consistency calendar branch; merge pending.
 5. [Delete statistics](stories/05-delete-statistics/index.md): clear the signed-in account's local history; ready for planning.
 6. [Record partial activity](stories/06-record-partial-activity/index.md): count the seconds actually trained, save once when leaving the timer, and recover after a forced close; ready for planning.
 

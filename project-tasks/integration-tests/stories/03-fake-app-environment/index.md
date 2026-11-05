@@ -2,8 +2,6 @@
 
 Epic: [Integration tests](../../index.md)
 
-Status: Depends on [Story 1](../01-run-locally/index.md).
-
 ## User outcome
 
 As the developer, I want to start the real app in a test with fake dependencies so that flows run fast, offline and without a Google account.
@@ -24,8 +22,8 @@ As the developer, I want to start the real app in a test with fake dependencies 
 
 ## Tasks
 
-1. [Extract app start-up](01-extract-app-bootstrap.md).
-2. [Add the fakes and the reset](02-add-fakes-and-reset.md).
+1. [Extract app start-up](01-extract-app-bootstrap/index.md).
+2. [Add the fakes and the reset](02-add-fakes-and-reset/index.md).
 
 ## Dependencies and open decisions
 

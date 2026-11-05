@@ -1,6 +1,8 @@
-# EPIC: Developer tools
+---
+abbr: DEV
+---
 
-Status: Agreed scope.
+# EPIC: Developer tools
 
 ## Goal
 

@@ -2,8 +2,6 @@
 
 Epic: [Experiments](../../index.md)
 
-Status: Ready for planning.
-
 ## User outcome
 
 As the repo owner, I want the orchestrator's cold plan read to run on a local model so that this check costs no Claude usage and stays on my machine.
@@ -24,9 +22,9 @@ As the repo owner, I want the orchestrator's cold plan read to run on a local mo
 
 ## Tasks
 
-1. [Add the runner field and dispatch rule](01-runner-field-and-dispatch-rule.md).
-2. [Fall back to Claude when the local setup is missing](02-fallback-to-claude.md).
-3. [Keep the Codex shim and setup test consistent](03-codex-shim-and-setup-test.md).
+1. [Add the runner field and dispatch rule](01-runner-field-and-dispatch-rule/index.md).
+2. [Fall back to Claude when the local setup is missing](02-fallback-to-claude/index.md).
+3. [Keep the Codex shim and setup test consistent](03-codex-shim-and-setup-test/index.md).
 
 ## Dependencies and open decisions
 

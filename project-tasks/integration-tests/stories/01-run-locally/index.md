@@ -2,8 +2,6 @@
 
 Epic: [Integration tests](../../index.md)
 
-Status: Ready for planning.
-
 ## User outcome
 
 As the developer, I want one command that prepares an Android target and runs the integration tests so that I can check the app quickly without setting up anything by hand.
@@ -26,8 +24,8 @@ As the developer, I want one command that prepares an Android target and runs th
 
 ## Tasks
 
-1. [Add the run script](01-add-run-script.md).
-2. [Expose the script as a Zed task and document it](02-add-zed-task-and-docs.md).
+1. [Add the run script](01-add-run-script/index.md).
+2. [Expose the script as a Zed task and document it](02-add-zed-task-and-docs/index.md).
 
 ## Dependencies and open decisions
 

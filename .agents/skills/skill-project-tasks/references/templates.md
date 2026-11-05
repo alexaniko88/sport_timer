@@ -1,16 +1,17 @@
 # Backlog templates
 
-Use these as starting points. Replace example names and all placeholders with the agreed scope. Omit irrelevant fields rather than leaving empty headings. Requirements should describe observable behavior; a list of implementation actions alone is not acceptance criteria.
+Use these as starting points. Replace example names and all placeholders with the agreed scope. Omit irrelevant fields rather than leaving empty headings. Requirements should describe observable behavior; a list of implementation actions alone is not acceptance criteria. The layout, ids, task fields and the ready checklist are defined in [.agents/rules/project-tasks-format.md](../../../rules/project-tasks-format.md); these templates only show the shape.
 
 ## Epic index
 
 Path: `project-tasks/<epic-slug>/index.md`
 
 ```markdown
+---
+abbr: <ABBR>
+---
+
 # EPIC: <Capability>
-
-Status: <Agreed scope / Draft>.
-
 
 ## Goal
 
@@ -27,8 +28,8 @@ Status: <Agreed scope / Draft>.
 
 ## Stories
 
-1. [<Outcome>](stories/01-<story-slug>/index.md) — <scope and status>.
-2. [<Outcome>](stories/02-<story-slug>/index.md) — <scope and status>.
+1. [<Outcome>](stories/01-<story-slug>/index.md) — <scope>.
+2. [<Outcome>](stories/02-<story-slug>/index.md) — <scope>.
 
 ## Delivery order
 
@@ -43,8 +44,6 @@ Path: `project-tasks/<epic-slug>/stories/01-<story-slug>/index.md`
 # STORY 1: <Outcome>
 
 Epic: [<Capability>](../../index.md)
-
-Status: <Ready for planning / Depends on ... / Provisional>.
 
 ## User outcome
 
@@ -61,64 +60,75 @@ As <user>, I want <behavior> so that <benefit>.
 
 ## Tasks
 
-1. [<Deliverable>](01-<task-slug>.md).
-2. [<Deliverable>](02-<task-slug>.md).
+1. [<Deliverable>](01-<task-slug>/index.md).
+2. [<Deliverable>](02-<task-slug>/index.md).
 
 ## Dependencies and open decisions
 
-<Links to prerequisites and decisions that still need discussion. A provisional story must say what requires confirmation before implementation.>
+<Links to prerequisites and decisions that still need discussion. A story with a decision still open says what requires confirmation before its tasks can be `ready`.>
 ```
 
-## Task ticket
+## Task
 
-Path: `project-tasks/<epic-slug>/stories/01-<story-slug>/01-<task-slug>.md`
+Path: `project-tasks/<epic-slug>/stories/01-<story-slug>/01-<task-slug>/index.md`
 
 ```markdown
-# TASK 1.1: <Deliverable>
+---
+id: <ABBR>-01-01
+status: draft
+type: feat
+complexity: low
+depends-on: []
+touches:
+  - <path or glob the task changes>
+---
 
-Story: [<Outcome>](index.md)
+# <Deliverable>
 
-Epic: [<Capability>](../../index.md)
+Story: [<Outcome>](../index.md)
 
-Status: <Ready for planning / Blocked by ... / Provisional>.
+Epic: [<Capability>](../../../index.md)
 
 ## Goal
 
-<Concrete result this ticket delivers.>
+<Concrete result this task delivers, in 2 or 3 sentences.>
 
-## Scope
+## Context
 
-- <Included work.>
+<Relative links to the story, epic, related code and goldens. Verified repository-relative code entry points. Name the feature and layer (`domain`, `data`, `presentation`, `shared`) that new code belongs in, following `CLAUDE.md`. A helper on one type is an extension in that layer's `extensions/` folder.>
+
+## Behavior
+
+<Exact behavior and edge cases.>
+
+## Decisions
+
+- <What the user decided, and why.>
+
+## Out of scope
+
 - <Relevant exclusions.>
 
-## Dependencies
+## Files and tests
 
-<Relative links to actual prerequisites; say none if independent.>
+<What is created or changed, and which tests are written, following the repository's test conventions.>
 
-## Acceptance criteria
+## Acceptance
 
-- <Result someone can verify without knowing the implementation.>
-- <Relevant error handling or data integrity condition.>
-
-## Validation
-
-<Focused checks that prove the criteria, following the repository's test conventions. For a research ticket, the deliverable may instead be a documented, approved decision.>
-
-## Implementation context
-
-<Verified repository-relative code entry points or constraints, if useful. Name the feature and layer (`domain`, `data`, `presentation`, `shared`) that new code belongs in, following `CLAUDE.md`. A helper on one type is an extension in that layer's `extensions/` folder. Read parent indexes before starting and follow the applicable orchestration workflow.>
+- [ ] When <situation>, then <result>. Check: <test, golden or command>.
 ```
+
+For a UI task, add `## View spec` (after `## Behavior`) and `## Mockup` (after it), as listed in the rule file. Pure logic tasks omit both.
 
 ## Standalone bug or improvement task
 
-Paths: `project-tasks/bugs/01-<bug-slug>.md` or `project-tasks/improvements/01-<improvement-slug>.md`.
+Paths: `project-tasks/bugs/01-<bug-slug>/index.md` or `project-tasks/improvements/01-<improvement-slug>/index.md`.
 
 Use the task template above with these changes:
 
-- Title: `# BUG-01: <Problem>` or `# IMP-01: <Improvement>`.
-- Replace required story/epic links with `[Bugs](index.md)` or `[Improvements](index.md)`. Related epic/story links are optional.
-- For bugs, add expected/actual behavior, reproduction steps, environment, and impact when known; state unknowns and distinguish suspected causes from confirmed diagnosis.
-- For improvements, add current behavior/limitation, desired change, benefit, and open decisions.
-- Keep dependencies, scope/exclusions, observable acceptance criteria, and validation. A report can be ready for diagnosis while its eventual fix still requires approval.
+- Front matter `id` is `BUG-01` or `IMP-01`; `type` is `fix` for a bug and `improve` for an improvement.
+- Replace the story and epic links with `[Bugs](../index.md)` or `[Improvements](../index.md)`. Related epic or story links are optional.
+- For bugs, add expected and actual behavior, reproduction steps, environment and impact when known, in `## Context`. State unknowns and distinguish suspected causes from a confirmed diagnosis. A bug is not `ready` until its cause is confirmed.
+- For improvements, add the current behavior or limitation, the desired change and the benefit, in `## Context`.
 
-Each category `index.md` explains what belongs in that folder, links to `../status.md` if it exists, and lists its tasks. Keep it explicitly empty until real reports or proposals exist; example filenames are not tasks to create.
+Each category `index.md` explains what belongs in that folder and lists its tasks. Keep it explicitly empty until real reports or proposals exist; example filenames are not tasks to create.

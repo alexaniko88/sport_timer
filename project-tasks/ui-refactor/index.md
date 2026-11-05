@@ -1,6 +1,8 @@
-# EPIC: UI refactor
+---
+abbr: UI
+---
 
-Status: Stories 1–4 completed; Story 5 is provisional.
+# EPIC: UI refactor
 
 
 ## Goal
@@ -13,17 +15,17 @@ Make the app feel consistent and clear across its screens while allowing layouts
 - Timer Setup retains its four existing settings, selectors, persistence and timer launch behavior.
 - Story 1 preserves the current Start presentation. Story 2 owns its removal from Templates; Story 3 owns its redesign on Timer Setup.
 - The first delivery is the centered timer setup grid. Wheel styling is separate provisional work.
-- Other screens, active timer layouts, navigation changes and new features are outside the timer setup grid delivery. Templates navigation is separately agreed in Story 2. App-wide border widths and corner radii belong to Story 4. Remaining app consistency stays in [IMP-01](../improvements/done/01-unify-styles-app-wide.md); do not duplicate work between these entries.
+- Other screens, active timer layouts, navigation changes and new features are outside the timer setup grid delivery. Templates navigation is separately agreed in Story 2. App-wide border widths and corner radii belong to Story 4. Remaining app consistency stays in [IMP-01](../improvements/done/01-unify-styles-app-wide/index.md); do not duplicate work between these entries.
 
 - Home will retain Timer Setup and Statistics; Templates moves to a separate drawer destination under Story 2. Start then exists only on Timer Setup, superseding the shared-Start requirement for that delivery.
 
 ## Stories
 
-1. [Timer setup refactor](stories/done/01-timer-setup-refactor/index.md) — all tasks archived; Timer tab update pending PR and merge.
+1. [Timer setup refactor](stories/01-timer-setup-refactor/index.md) — all tasks archived; Timer tab update pending PR and merge.
 
-2. [Access Templates from the drawer](stories/done/02-templates-in-drawer/index.md) — all tasks archived; Templates drawer navigation pending PR and merge.
-3. [Refactor the Start button](stories/done/03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
-4. [Unify borders and corner radii across the app](stories/done/04-unify-borders-and-corners/index.md) — Done; shared rules and drawer treatment completed.
+2. [Access Templates from the drawer](stories/02-templates-in-drawer/index.md) — all tasks archived; Templates drawer navigation pending PR and merge.
+3. [Refactor the Start button](stories/03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
+4. [Unify borders and corner radii across the app](stories/04-unify-borders-and-corners/index.md) — Done; shared rules and drawer treatment completed.
 5. [Rethink statistics cards and day details](stories/05-statistics-ui-refactor/index.md) — Provisional; design decisions remain open.
 
 ## Delivery order

@@ -2,8 +2,6 @@
 
 Epic: [Integration tests](../../index.md)
 
-Status: Depends on [Story 1](../01-run-locally/index.md).
-
 ## User outcome
 
 As the developer, I want the existing real-SQLite tests and the future flows in a clear structure, built once per run, so that the suite stays fast and easy to extend.
@@ -21,7 +19,7 @@ As the developer, I want the existing real-SQLite tests and the future flows in 
 
 ## Tasks
 
-1. [Move the tests and add the aggregator](01-move-tests-and-add-aggregator.md).
+1. [Move the tests and add the aggregator](01-move-tests-and-add-aggregator/index.md).
 
 ## Dependencies and open decisions
 

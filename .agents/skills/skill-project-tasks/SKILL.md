@@ -23,36 +23,14 @@ Preserve uncommitted work: do not carry unrelated changes onto the new branch or
 
 - **Epic:** the broader capability or goal.
 - **Story:** a useful user outcome within that epic.
-- **Task / ticket:** a bounded, independently orchestratable piece of that story. These are two names for the same level, not separate folders.
+- **Task / ticket:** a bounded, independently orchestratable piece of that story, written as a folder. These are two names for the same level.
 - **Implementation steps:** small file-level or concern-level changes planned later during orchestration; do not confuse them with backlog tickets.
 
-Use this structure unless the user explicitly requests a different one:
-
-```text
-project-tasks/
-├── bugs/
-│   ├── index.md
-│   └── 01-<bug-slug>.md
-├── improvements/
-│   ├── index.md
-│   └── 01-<improvement-slug>.md
-└── <epic-slug>/
-    ├── index.md
-    └── stories/
-        ├── 01-<story-slug>/
-        │   ├── index.md
-        │   ├── 01-<task-slug>.md
-        │   └── 02-<task-slug>.md
-        └── 02-<story-slug>/
-            ├── index.md
-            └── 01-<task-slug>.md
-```
-
-Use lowercase kebab-case for these documentation paths, including in Flutter projects. Epics are unnumbered; stories and tasks use two-digit sequence prefixes, reflecting the intended order. Active tasks live directly inside their story folder; after successful review, completed tasks move into its `done/` folder before the PR decision. Finished stories move into `stories/done/`, and finished epics move into `project-tasks/done/`, as described below. Every epic and story has an `index.md` overview. Keep existing identifiers and filenames stable when extending a backlog; avoid renumbering existing work just to insert a dependency.
+The layout, task ids, task front matter and sections, the ready checklist and the done rules are in [.agents/rules/project-tasks-format.md](../../rules/project-tasks-format.md). Follow that file and do not copy it here. Epics and stories are never archived; only tasks move into `done/`. Keep existing identifiers and paths stable when extending a backlog; avoid renumbering existing work just to insert a dependency.
 
 ### Standalone bugs and improvements
 
-`bugs/` and `improvements/` are reserved categories, not epics. Each has an `index.md` explaining its purpose and linking to its tasks. Tasks live directly in the category folder; do not require an epic or story for a standalone report. Number tasks independently within each category using the next unused number, preserving existing paths. Use identifiers such as `BUG-01` and `IMP-01` to avoid confusion with story tasks.
+`bugs/` and `improvements/` are reserved categories, not epics. Each has an `index.md` explaining its purpose and linking to its tasks. Tasks are folders directly in the category folder; do not require an epic or story for a standalone report. Number tasks independently within each category using the next unused number, preserving existing paths. Use identifiers such as `BUG-01` and `IMP-01` to avoid confusion with story tasks.
 
 - Use `project-tasks/bugs/` only for broken existing behavior. Capture expected/actual behavior, reproduction steps and environment when known, impact, and testable fix criteria. Keep suspected causes separate from facts. Record a useful report even if reproduction or diagnosis is incomplete; do not invent a root cause. Unresolved diagnosis can be recorded as the next planning step rather than implying a fix is approved.
 - Use `project-tasks/improvements/` for improvements to working behavior. Capture the current limitation, desired change, benefit, scope/exclusions, decisions, and testable criteria. Broader new capabilities still use epics/stories. Preserve an explicit user classification, or clarify only if routing materially changes scope.
@@ -64,7 +42,7 @@ Read only the repository instructions, existing backlog, and code needed to esta
 
 Before creating any task, search all of `project-tasks/`, including standalone categories and archived `done/` folders, for the same or overlapping work. Search for related terms as well as the proposed title, then read possible matches and their parent context to compare scope and status. If the work already exists, point the user to it and update or extend it when appropriate instead of creating a duplicate. For a completed match, check its completion evidence and current behavior to distinguish a duplicate from a regression or further work; link a new follow-up to the completed task when appropriate. If the distinction remains unclear or completed work may need to be reopened, discuss it with the user before creating another task. Repeat this check for each task in a proposed split.
 
-Also look for a suitable existing epic and story for each new task, including archived epics and stories, without waiting for the user to name them. Match their outcomes and acceptance criteria, not just their titles or technical area. Prefer the most relevant existing hierarchy when the task belongs to its outcome (for example, a UI refactor belonging to a UI refactor epic and story); use a standalone category when no existing hierarchy fits and the request is a standalone bug or improvement. If multiple parents fit equally well, ask the user which to use. If new work belongs in an archived story or epic, restore the necessary parent folders to their active paths before adding it. Update their statuses and summaries to reflect the pending work, and update affected links and indexes. Preserve completed tasks, their statuses and evidence. Never overwrite an existing destination; resolve any collision before moving.
+Also look for a suitable existing epic and story for each new task without waiting for the user to name them. Match their outcomes and acceptance criteria, not just their titles or technical area. Prefer the most relevant existing hierarchy when the task belongs to its outcome (for example, a UI refactor belonging to a UI refactor epic and story); use a standalone category when no existing hierarchy fits and the request is a standalone bug or improvement. If multiple parents fit equally well, ask the user which to use. Update the parent summaries and links to reflect the new work. Preserve completed tasks and their evidence. Never overwrite an existing destination; resolve any collision before moving.
 
 Read the relevant task, its linked dependencies and parent context, and check the current checkout before treating an output as available.
 
@@ -94,30 +72,27 @@ Read [references/templates.md](references/templates.md) when generating the back
 
 - The epic index explains the goal, agreed behavior, scope boundaries, major decisions, current constraints, and story order, with links to every story index.
 - Each story index explains the user outcome, scope, acceptance criteria, dependencies, unresolved decisions, and ordered links to its tasks.
-- Each story task links to its parent story and epic; each standalone task links to its category index. All tasks include status, goal, scope/exclusions, dependencies, and observable acceptance criteria. Include relevant validation and code entry points when known. Do not invent exact filenames or APIs as verified facts.
-- State whether a task is ready for planning, blocked by a decision/dependency, or provisional. Approval of the backlog does not approve application code changes.
+- Each story task links to its parent story and epic; each standalone task links to its category index. Every task follows the task format in the rule file: front matter, ordered sections and checkable acceptance criteria. Include relevant validation and code entry points when known. Do not invent exact filenames or APIs as verified facts.
+- Set `status: draft` or `status: ready` in the front matter, using the rule's ready checklist. Epic and story indexes carry no status. Approval of the backlog does not approve application code changes.
 - Make the task usable as input to the repository's applicable orchestration workflow. Do not copy global coding, git, or model/agent policies into every ticket or override that workflow from this skill.
 - For UI-related tasks, inspect and link the relevant `test/snapshots/goldens/` images and `test/snapshots/README.md` as current visual and navigation context. Describe important coverage gaps or placeholder states, retain agreed and provisional design decisions, and check the implementation checkout when work starts. Include applicable snapshot and index maintenance in validation. Pure logic tasks do not need visual references.
 - Use relative Markdown links between backlog files. Use repository-relative paths in prose and avoid local usernames, account secrets, or machine-specific absolute paths.
 - Keep shared decisions in the epic/story and link to them instead of repeating long requirements in every task. Each task still needs enough context to identify its own deliverable.
-- Initialize status from actual progress, not the existence of planning files. Ready means ready for planning, not approved implementation. Preserve provisional scope. Do not mark work Done without acceptance/validation evidence or assume a completed branch is available in another checkout.
+- Set `status` from the ready checklist, not from the existence of planning files. Ready means ready for implementation under the rule's checklist. Preserve provisional scope as `draft`. Do not move a task to `done/` without acceptance and validation evidence, and do not assume a completed branch is available in another checkout.
 
 When reorganizing, preserve the existing requirements and provisional status, move rather than duplicate files, update affected inbound/outbound links, and remove obsolete paths only as part of the requested move. Do not replace unrelated content.
 
 ## Archiving completed work
 
-Archive immediately after successful review and resolution of selected suggestions, before asking whether to open the PR. Verify that the task is Done with acceptance and validation evidence recorded. Move it on the same feature branch, validate the affected links, and include the archive in the authorized commit or a separate `docs:` commit before the initial PR push. Approval to open the PR covers committing and pushing it; no extra confirmation is needed. Do not defer archival to a post-creation follow-up commit. If an open PR already exists, include the archive in the next approved branch update rather than creating another PR.
+Only tasks are archived; epics and stories never move (see the rule file). Archive immediately after successful review and resolution of selected suggestions, before asking whether to open the PR. Verify that the task is Done with acceptance and validation evidence recorded.
 
-Record completion evidence and branch context in the completed task; include the PR link when already available, otherwise return it after creation without requiring a metadata-only follow-up commit. If PR creation fails, preserve the archived files and record the pending PR step so the orchestration can resume. If the PR is later closed without merging, restore the task's previous status and active path. Done still does not mean merged or available in another checkout.
+- Move the task folder into `done/` under its current parent (the story, `bugs/` or `improvements/`), keeping its folder name, and set `status: done` in its `index.md`. For example, `stories/01-template-set-and-tiles/01-move-templates-to-feature/` becomes `stories/01-template-set-and-tiles/done/01-move-templates-to-feature/`.
+- Do the move on the same feature branch and include it in the authorized commit or a separate `docs:` commit before the initial PR push. Approval to open the PR covers committing and pushing it. If an open PR already exists, include the move in the next approved branch update.
+- Record acceptance evidence and branch context in the task's `notes.md`, plus the PR link when it is already available. If PR creation fails, keep the moved folder and note the pending PR step so the work can resume. If the PR is later closed without merging, move the task back and restore its previous `status`.
+- Create `done/` only when needed, move rather than copy, and never overwrite an existing destination.
+- Update all affected inbound and outbound relative links (task parent links, `depends-on`, story and epic indexes, references from other epics), and search for stale paths before committing and pushing.
 
-- Move the completed task file into `done/` under its current parent, preserving its filename, after successful review, before the PR decision. For example, `stories/01-template-set-and-tiles/01-move-templates-to-feature.md` becomes `stories/01-template-set-and-tiles/done/01-move-templates-to-feature.md`. Apply the same rule to standalone files in `bugs/` and `improvements/`.
-- Move a whole story folder into `stories/done/` when no task is left outside its `done/` folder, so every task of the story is archived. For example, `stories/01-template-set-and-tiles/` becomes `stories/done/01-template-set-and-tiles/`. Keep its task-level `done/` folder inside it. A story with any pending, blocked, provisional or in-progress task stays active.
-- Move a whole epic folder into `project-tasks/done/` when no story is left outside `stories/done/`, so every story of the epic is archived. For example, `project-tasks/templates/` becomes `project-tasks/done/templates/`. Keep its `stories/done/` folder inside it. An epic with any active story stays where it is.
-- Do the story and epic moves in the same commit as the move of the last task, so the chain task, story, epic happens together.
-- Create `done/` only when needed, move rather than copy, and never overwrite an existing destination. Keep identifiers, scope, completion history and evidence intact.
-- Update all affected inbound and outbound relative links, including task parent links, dependencies, story/epic indexes and references from other epics. Record branch context in the completed task, plus the PR link if available; validate targets and search for stale paths before committing and pushing.
-
-Do not start another task just to archive finished work, and do not create a separate archival PR. Discover parent indexes from the actual path: a task, story or epic under `done/` has an extra directory level.
+Do not start another task just to archive finished work, and do not create a separate archival PR. A task under `done/` has one extra directory level.
 
 ## 4. Validate and hand off
 
