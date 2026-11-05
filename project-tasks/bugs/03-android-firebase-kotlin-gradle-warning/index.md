@@ -2,46 +2,57 @@
 id: BUG-03
 status: draft
 type: fix
-depends-on: []
+complexity: medium
+depends-on: [BUG-01]
+touches:
+  - android/gradle.properties
+  - pubspec.yaml
+  - CLAUDE.md
+skills: []
 ---
 
 # Android Firebase plugins report Kotlin Gradle Plugin usage
 
 Category: [Bugs](../index.md)
 
-## Problem and impact
+## Goal
 
-The user reports that running the app on a physical phone repeatedly prints a Flutter warning that `firebase_auth` and `firebase_core` apply the Kotlin Gradle Plugin (KGP). The warning says future Flutter versions will fail to build with plugins that apply KGP. This is a build-time compatibility warning; a current build failure has not been reported.
+Android builds without the warning that `firebase_auth` and `firebase_core` apply the Kotlin Gradle Plugin (KGP), on built-in Kotlin. **Blocked upstream:** this task stays `draft` until FlutterFire removes the KGP line from its plugins.
 
-**Expected:** The Android app builds and runs without this plugin KGP warning, using a configuration compatible with Flutter's built-in Kotlin migration.
+## Context
 
-**Actual:** The warning names both Firebase plugins when the app is run on the user's phone.
+- **Warning (reproduced on `master` on 5 November 2026 with `fvm flutter build apk --debug`, Flutter 3.47.7, AGP 9.1.0):** `Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): firebase_auth, firebase_core. Future versions of Flutter will fail to build if your app uses plugins that apply KGP.` The build itself succeeds.
+- `android/gradle.properties` sets `android.builtInKotlin=false` and `android.newDsl=false` (both added by the Flutter migrator). `CLAUDE.md` ("Dependencies and Android build") says the flag must stay until the Firebase plugins migrate.
+- **Cause (confirmed):**
+  - The FlutterFire plugins apply KGP only when the app opts out of built-in Kotlin with `android.builtInKotlin=false`. Their build files say: "AGP 9+ has built-in Kotlin support unless Flutter opts out via android.builtInKotlin=false" ([FlutterFire discussion #18756](https://github.com/firebase/flutterfire/discussions/18756)).
+  - Flutter finds KGP use by searching the plugins' `build.gradle` text, so it warns even when that line is skipped.
+- **Experiment (5 November 2026):** with `firebase_core` 4.15.0, `firebase_auth` 6.7.0 (the [BUG-01](../01-ios-auth-dependency-conflict/index.md) versions) and `android.builtInKotlin=true`, `fvm flutter build apk --debug` succeeded, but the warning was still printed. So the app side can migrate today, but the warning only goes away when FlutterFire removes the line ([FlutterFire issue #18304, "Migrates to built-in Kotlin"](https://github.com/firebase/flutterfire/issues/18304), open).
+- Not tested yet: the app running on a phone with built-in Kotlin on (Firebase initialization, Google sign-in and sign-out).
 
-## Reproduction and environment
+## Next step (before this task can be `ready`)
 
-1. Resolve dependencies with `fvm flutter pub get`.
-2. Connect an Android phone and run `fvm flutter run` using the repository's pinned SDK.
-3. Check the build output for the warning naming `firebase_auth` and `firebase_core`.
+Watch FlutterFire issue #18304 and the [core](https://pub.dev/packages/firebase_core/changelog) and [auth](https://pub.dev/packages/firebase_auth/changelog) changelogs. When a release removes the KGP line and fits the pins chosen in BUG-01 (or a `google_sign_in_ios` release lifts the BUG-01 limit), plan the task:
 
-The checkout pins Flutter 3.47.7, `firebase_core` 5.1.0 and `firebase_auth` 7.0.1. Android uses AGP 9.1.0 and declares Kotlin 2.4.0. `android/gradle.properties` sets `android.builtInKotlin=false` and `android.newDsl=false`. The phone model, Android version and exact run command are unknown. The report has not been independently reproduced on a device.
+- the plugin versions;
+- set `android.builtInKotlin=true` (or remove the line);
+- update the `CLAUDE.md` line;
+- confirm on a phone.
 
-## Investigation context
+## Decisions
 
-Flutter describes the disabled built-in Kotlin flag as a temporary compatibility setting and requires migration of the app and its plugins before enabling built-in Kotlin. See the [Flutter migration overview](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/) and [app developer guide](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers). The app module does not explicitly apply `kotlin-android`, though `android/settings.gradle` declares the plugin with `apply false`; determine the actual plugin application path before changing configuration.
+- Do nothing until upstream migrates. Keep `android.builtInKotlin=false` for now, even though `true` builds today (user, during planning).
 
-On 3 November 2026, the pinned versions matched the latest releases shown in the [Core changelog](https://pub.dev/packages/firebase_core/changelog) and [Auth changelog](https://pub.dev/packages/firebase_auth/changelog). This alone does not establish built-in Kotlin compatibility or a fix. Recheck releases, plugin build scripts and upstream issues during diagnosis. The existing [iOS authentication dependency conflict](../01-ios-auth-dependency-conflict/index.md) may constrain Firebase dependency changes.
+## Out of scope
 
-## Scope and dependencies
+- Hiding the warning without removing its cause.
+- `android.newDsl` (a separate compatibility flag).
+- The iOS dependency conflict (BUG-01).
 
-Diagnose the warning and implement a supported migration or dependency fix when available. Preserve Firebase initialization, authentication and platform compatibility; avoid suppressing the warning without resolving its cause. If upstream support prevents a fix, document the blocker and relevant existing issue or prepare a specific upstream report for the user to submit. Do not assume a plugin upgrade or flag change is sufficient. There is no prerequisite for diagnosis; coordinate any dependency changes with BUG-01.
+## Files and tests
 
-## Acceptance criteria
+To be decided when the upstream release exists. Expected: `pubspec.yaml`, `android/gradle.properties` and `CLAUDE.md`.
 
-- An Android debug build and physical-device run complete without the reported Firebase KGP warning, and the chosen configuration supports built-in Kotlin without relying on the legacy KGP compatibility flag.
-- Firebase initialization and Google sign-in and sign-out continue to work on Android; relevant authentication error behavior remains intact.
-- Dependency changes remain pinned and their effects on other supported platforms, including the existing iOS conflict, are assessed and reported.
-- If a supported fix is unavailable, record reproducible evidence, the upstream blocker and the next actionable step; keep the bug open until the warning is resolved and verified.
+## Acceptance
 
-## Validation
-
-Reproduce or explain any difference on the implementation checkout. Check current official Flutter and FlutterFire guidance and the resolved plugin build scripts. Run dependency resolution, relevant authentication tests, analysis and the full test suite, plus an Android debug build and a physical-device run. Exercise authentication on the device where feasible. Validate other affected platform builds when dependencies change and report any unavailable checks. Follow the applicable orchestration workflow before implementation.
+- [ ] When the Android app is built, then the KGP warning naming `firebase_auth` and `firebase_core` is not printed and the build succeeds with built-in Kotlin. Check: `fvm flutter build apk --debug`.
+- [ ] When the app runs on an Android phone, then Firebase starts and Google sign-in and sign-out work. Check: manual run with `fvm flutter run`, recorded in `notes.md`.
