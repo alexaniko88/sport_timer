@@ -8,6 +8,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../tool/dispatcher/role_models.dart';
+
 const _modelPairs = {'gpt-6.1-sol': 'opus', 'gpt-6.1-terra': 'sonnet'};
 
 const _rolesDir = '.agents/skills/skill-orchestrator/roles';
@@ -171,6 +173,50 @@ void main() {
     }
   });
 
+  group('dispatcher', () {
+    const folder = '.agents/skills/skill-dispatcher';
+
+    for (final role in Role.values) {
+      test('${role.name} has a role file that the runner can read', () {
+        final markdown = File('$folder/roles/${role.name}.md').readAsStringSync();
+
+        expect(_frontmatterValue(markdown, 'name'), role.name);
+        expect(_accessModes, contains(_frontmatterValue(markdown, 'access')));
+      });
+    }
+
+    test('the reviewer role is read-only and says so', () {
+      final markdown = File('$folder/roles/reviewer.md').readAsStringSync();
+
+      expect(_frontmatterValue(markdown, 'access'), 'read-only');
+      expect(markdown, contains('Never edit'));
+    });
+
+    test('there is no role file without a Role value', () {
+      expect(_names('$folder/roles', '.md'), (Role.values.map((role) => role.name).toList()..sort()));
+    });
+
+    test('SKILL.md names every fixed model of the script', () {
+      final text = File('$folder/SKILL.md').readAsStringSync();
+
+      for (final models in RoleModels.table.values) {
+        for (final model in models.values) {
+          expect(text, contains(model.displayName), reason: 'SKILL.md does not mention ${model.displayName}');
+        }
+      }
+    });
+
+    test('every file the roles tell to read exists', () {
+      for (final role in Role.values) {
+        final text = File('$folder/roles/${role.name}.md').readAsStringSync();
+        for (final match in RegExp(r'\.agents/(?:rules|skills)/[A-Za-z0-9_./\-]+\.md').allMatches(text)) {
+          final path = match.group(0) ?? '';
+          expect(File(path).existsSync(), isTrue, reason: '${role.name}.md mentions $path, which does not exist');
+        }
+      }
+    });
+  });
+
   group('project layout', () {
     test('every folder under lib/features is named in the "Project layout" section of CLAUDE.md', () {
       final claude = File('CLAUDE.md').readAsStringSync();
@@ -195,6 +241,7 @@ void main() {
 
   group('documented paths', () {
     const skillFiles = [
+      '.agents/skills/skill-dispatcher/SKILL.md',
       '.agents/skills/skill-orchestrator/SKILL.md',
       '.agents/skills/skill-project-tasks/SKILL.md',
     ];
