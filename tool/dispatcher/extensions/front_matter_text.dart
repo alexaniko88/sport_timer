@@ -12,7 +12,7 @@ extension FrontMatterText on String {
     for (final line in lines.skip(1)) {
       if (line.trim() == '---') break;
       if (openList != null) {
-        if (RegExp(r'^\s+-\s+(.*)$').firstMatch(line) case final item?) {
+        if (RegExp(r'^\s*-\s+(.*)$').firstMatch(line) case final item?) {
           openList.add((item.group(1) ?? '')._uncommented._unquoted);
           continue;
         }

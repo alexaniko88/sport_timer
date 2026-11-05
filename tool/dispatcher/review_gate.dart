@@ -42,9 +42,18 @@ class ReviewGate {
   /// Null when the message has no readable JSON block: the review did not
   /// happen and must not count as passed.
   static List<ReviewFinding>? parse(String message) {
-    final block = RegExp(r'```json\s*(.*?)```', dotAll: true).allMatches(message).lastOrNull;
-    final text = block?.group(1);
-    if (text == null) return null;
+    // A `fix` text may hold its own code fence, and prose may follow the block,
+    // so try each closing fence from the last one back until the JSON decodes.
+    final start = message.lastIndexOf('```json');
+    if (start < 0) return null;
+    final from = start + '```json'.length;
+    for (var end = message.lastIndexOf('```'); end >= from; end = message.lastIndexOf('```', end - 1)) {
+      if (_decode(message.substring(from, end)) case final findings?) return findings;
+    }
+    return null;
+  }
+
+  static List<ReviewFinding>? _decode(String text) {
     try {
       if (jsonDecode(text) case {'findings': final List<Object?> entries}) {
         return [

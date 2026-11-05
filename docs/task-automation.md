@@ -61,7 +61,7 @@ Script commands (`fvm dart tool/dispatcher.dart ...`):
 
 `launch` pipeline, in a temporary clone of `master` (`tool/dispatcher/launch_pipeline.dart`):
 
-1. Clone, create the task branch `<type>/<id>-<slug>`, `pub get`.
+1. Full clone, create the task branch `<type>/<id>-<slug>`, `fvm install`, `pub get`, baseline `flutter analyze` (a broken master stops the run before any AI time is spent).
 2. **Implementer** stage, commit.
 3. **Tests** stage, commit.
 4. Project checks (`tool/agent_check.dart`); one fix attempt by the implementer.
@@ -105,7 +105,7 @@ Fixed models per stage (`tool/dispatcher/role_models.dart`): implementer and tes
 | Tasks | `task.dart`, `task_loader.dart`, `task_selector.dart`, `extensions/front_matter_text.dart`, `markdown_sections.dart`, `touch_paths.dart` | Parse `index.md` into a `Task`; load all tasks from disk or from `origin/master` (`git ls-tree` and `git show`, so a task only on another branch is never offered); decide what can start (`blockReason`, `candidates`, `next`); the overlap rule. |
 | Models | `role_models.dart`, `model_catalog.dart` | The fixed model and effort per tool and role; the co-author text (`attribution`); the `models` command parses `codex debug models` and `agy models` and warns about stale fixed models. |
 | One stage | `tool_command.dart`, `stage_runner.dart`, `stage_report.dart`, `review_gate.dart` | Build the exact command line per tool and role; start the process with a timeout (45 min); read the final answer (Claude: JSON `result`; Codex: `-o` file; Antigravity: stdout); collect Claude's `permission_denials`; parse the `## Commit / Summary / Evidence / Open notes / Blocked` report; parse the reviewer's JSON findings and decide pass, fix or blocked. |
-| The clone | `run_workspace.dart`, `command_runner.dart` | Temporary clone in `<system temp>/sport-timer-runs/<ID>/repo`, task branch, repo-local noreply git identity, `.runner/` excluded from git, `state.json` (stage, pid) for `status`, cleanup. |
+| The clone | `run_workspace.dart`, `command_runner.dart` | Temporary full clone in `<system temp>/sport-timer-runs/<ID>/repo`, task branch, `fvm install`, `pub get`, baseline analyze, repo-local noreply git identity, `.runner/` excluded from git, `state.json` (stage, pid) for `status`, written as soon as the run folder exists (stage `prepare`), cleanup. |
 | Git and GitHub | `git_publisher.dart`, `pr_description.dart`, `task_archiver.dart` | Commit with format and co-author checks, private data scan, push that refuses `master`/`main`, `gh pr create`, PR text with before/after golden links, move the task to `done/` and fix links. |
 | Orchestration | `launch_pipeline.dart` | The state machine of one run (see "`launch` pipeline" above). Returns a `RunResult` (`pullRequest`, `blocked`, `failed`). |
 
@@ -133,7 +133,7 @@ Injection points for tests: `RunCommand` (every shell command) and `RunProcess` 
 | No session kept | `--no-session-persistence` | `--ephemeral` | not available |
 | Implementer and tests | `--permission-mode acceptEdits` | `-s workspace-write` | `--mode accept-edits` |
 | Reviewer (read-only) | `--permission-mode plan` | `-s read-only` | `--mode plan` |
-| Allowed shell | `--allowedTools` read-only git and file commands, plus `Bash(fvm:*)` for implementer and tests, plus `--allow` | sandbox decides | sandbox decides |
+| Allowed shell | `--allowedTools` read-only git and file commands, plus, for implementer and tests, only `fvm dart format`, `fvm flutter analyze`, `fvm flutter test`, `fvm flutter gen-l10n`, `fvm flutter pub get` and `fvm dart tool/agent_check.dart`, plus `--allow` | sandbox decides | sandbox decides |
 | Unknown permission | `--permission-prompts none`: denied and listed in `permission_denials` | denied by the sandbox | denied by the sandbox |
 | Final answer | JSON `result` on stdout | `-o <file>` | stdout |
 | Timeout | the script kills the process after 45 minutes | same | `--print-timeout` plus the script |
@@ -144,6 +144,8 @@ Injection points for tests: `RunCommand` (every shell command) and `RunProcess` 
 | --- | --- | --- | --- | --- |
 | Everything passes | one per stage, plus `docs: close task <id>` | task branch | opened | deleted |
 | A stage reports `## Blocked`, a stage fails or times out, a permission is denied, the checks still fail after one fix, the review still has critical or general findings after 2 rounds | `wip: <id> stopped`, reason appended to `notes.md` under `## Blocked` | task branch | none | deleted |
+| An unexpected error inside a stage | `wip: <id> stopped`, reason in `notes.md` | task branch | none | deleted |
+| An unexpected error while publishing (the task may already be in `done/` or pushed) | maybe | maybe | none | **kept** |
 | Private data found in the added lines (normal or `wip` push) | made locally | **none** | none | **kept**, path in `RESULT.keptWorkspace` |
 | Push or `gh pr create` fails | made locally | maybe | none | **kept** |
 | Wrong git email, or a run for that id already exists | none | none | none | none (nothing was created, or it is cleaned) |
@@ -241,7 +243,6 @@ Be honest when reviewing: these were not proven end to end.
 - **Codex network** inside its sandbox. The script does the network steps itself, so this should not matter, but it was not measured.
 - **Reading the final answer** of Antigravity (it is the printed output) may pick up extra text.
 - **Denied permissions** are detected from Claude's JSON only. For Codex and Antigravity a blocked run depends on the report's `## Blocked` section. `--allow` works for Claude only.
-- **Relaunching a `wip:` branch** (the shallow fetch and checkout) has no real-repo test.
 - **No tasks are `ready` yet.** All migrated tasks are `draft`, so `next` returns nothing until the planner produces some.
 
 ## Known limits and follow-ups

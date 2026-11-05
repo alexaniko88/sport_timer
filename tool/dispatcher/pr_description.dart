@@ -26,6 +26,7 @@ class PrDescription {
     required String baseSha,
     required String headSha,
     required String checkResult,
+    required String taskPath,
   }) {
     final blob = 'https://github.com/$slug/blob';
     final lines = <String>[
@@ -33,7 +34,7 @@ class PrDescription {
       '',
       implementer.summary.isEmpty ? task.title : implementer.summary,
       '',
-      'Task: [${task.id}]($blob/${task.branch}/${task.indexPath.replaceFirst('/done/', '/')})',
+      'Task: [${task.id}]($blob/$headSha/$taskPath)',
       '',
       '## Acceptance',
       '',

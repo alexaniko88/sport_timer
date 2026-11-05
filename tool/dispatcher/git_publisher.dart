@@ -72,11 +72,11 @@ class GitPublisher {
   Future<String> baseSha() async => (await _git(['rev-parse', 'origin/master'])).stdout.trim();
 
   /// The lines the branch adds compared with `origin/master`.
-  Future<String> addedLinesDiff() async => (await _git(['diff', 'origin/master', 'HEAD', '--unified=0'])).stdout;
+  Future<String> addedLinesDiff() async => (await _git(['diff', 'origin/master...HEAD', '--unified=0'])).stdout;
 
   /// The golden images that were added or changed.
   Future<List<GoldenChange>> changedGoldens() async {
-    final result = await _git(['diff', '--name-status', 'origin/master', 'HEAD', '--', 'test/snapshots/goldens']);
+    final result = await _git(['diff', '--name-status', 'origin/master...HEAD', '--', 'test/snapshots/goldens']);
     final changes = <GoldenChange>[];
     for (final line in result.stdout.split('\n')) {
       final parts = line.split('\t');

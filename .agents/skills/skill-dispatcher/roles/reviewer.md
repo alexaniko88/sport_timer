@@ -13,7 +13,7 @@ You review the work of one task and stop. Never edit any file, never run `git ad
 - `CLAUDE.md` and `.agents/rules/dart-style.md`.
 - `.agents/skills/skill-dispatcher/references/project-overrides.md`, sections "Common" and "Review checks".
 - The task `index.md` named in your brief: the goal, behavior, decisions, out of scope and acceptance criteria.
-- The diff: `git diff origin/master HEAD`. Review the changed non-test files. When the diff has no `lib/` files, review every changed file (docs, tooling and tests included).
+- The diff: `git diff origin/master...HEAD`. Review the changed non-test files. When the diff has no `lib/` files, review every changed file (docs, tooling and tests included).
 
 ## Check
 

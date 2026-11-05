@@ -24,15 +24,17 @@ class RunWorkspace {
   static String baseDirectory() => '${Directory.systemTemp.path}/sport-timer-runs';
 
   /// Clones `master`, creates (or continues) the task branch and prepares the
-  /// clone for work. Throws a [StateError] with a readable message on failure.
+  /// clone for work. Throws a [StateError] with a readable message on failure, and
+  /// cleans up on any error.
   static Future<RunWorkspace> prepare({
     required RunCommand run,
     required Task task,
     required String originUrl,
     required String email,
     required String name,
+    required String tool,
     required String baseDirectory,
-    bool skipPubGet = false,
+    bool skipFlutterSetup = false,
   }) async {
     if (!email.endsWith('@users.noreply.github.com')) {
       throw StateError('The git email "$email" is not the repo noreply email.');
@@ -51,11 +53,16 @@ class RunWorkspace {
     }
 
     try {
-      await step('git', ['clone', '--quiet', '--depth', '1', '--branch', 'master', originUrl, 'repo']);
+      workspace.writeState(taskId: task.id, tool: tool, stage: 'prepare');
+      await step('git', ['clone', '--quiet', '--branch', 'master', originUrl, 'repo']);
       final remote =
           await run('git', ['ls-remote', '--heads', 'origin', task.branch], workingDirectory: workspace.directory);
       if (remote.ok && remote.stdout.trim().isNotEmpty) {
-        await step('git', ['fetch', '--quiet', '--depth', '1', 'origin', task.branch], inside: workspace.directory);
+        await step(
+          'git',
+          ['fetch', '--quiet', 'origin', task.branch],
+          inside: workspace.directory,
+        );
         await step('git', ['checkout', '--quiet', '-b', task.branch, 'FETCH_HEAD'], inside: workspace.directory);
       } else {
         await step('git', ['checkout', '--quiet', '-b', task.branch], inside: workspace.directory);
@@ -64,12 +71,30 @@ class RunWorkspace {
       await step('git', ['config', 'user.name', name], inside: workspace.directory);
       File('${workspace.directory}/.git/info/exclude').writeAsStringSync('.runner/\n', mode: FileMode.append);
       Directory(workspace.runnerDirectory).createSync();
-      if (!skipPubGet) await step('fvm', ['flutter', 'pub', 'get'], inside: workspace.directory);
-    } on StateError {
+      if (!skipFlutterSetup) await _setUpFlutter(workspace.directory, run);
+    } catch (_) {
       workspace.cleanup();
       rethrow;
     }
     return workspace;
+  }
+
+  /// Installs the pinned SDK, gets packages and checks that master analyzes
+  /// clean, so a runner is never blamed for issues it did not cause.
+  static Future<void> _setUpFlutter(String directory, RunCommand run) async {
+    for (final args in [
+      ['install', '--skip-pub-get'],
+      ['flutter', 'pub', 'get'],
+    ]) {
+      final result = await run('fvm', args, workingDirectory: directory);
+      if (!result.ok) throw StateError('"fvm ${args.join(' ')}" failed: ${result.stderr.trim()}');
+    }
+    final analyze = await run('fvm', ['flutter', 'analyze', '--no-pub'], workingDirectory: directory);
+    if (!analyze.ok) {
+      final lines = '${analyze.stdout}\n${analyze.stderr}'.trim().split('\n');
+      final tail = lines.skip(lines.length > 20 ? lines.length - 20 : 0).join('\n');
+      throw StateError('master does not pass "fvm flutter analyze"; fix master before running tasks.\n$tail');
+    }
   }
 
   /// Records which stage is running, for the `status` command.

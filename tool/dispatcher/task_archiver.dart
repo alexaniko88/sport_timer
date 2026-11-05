@@ -18,7 +18,7 @@ class TaskArchiver {
   Future<String> archive(Task task, {required String notes}) async {
     final oldDirectory = task.directory;
     final parent = oldDirectory.substring(0, oldDirectory.lastIndexOf('/'));
-    final newDirectory = '$parent/done/${oldDirectory.split('/').last}';
+    final newDirectory = task.doneDirectory;
     if (Directory('$workspace/$newDirectory').existsSync()) {
       throw StateError('$newDirectory already exists.');
     }

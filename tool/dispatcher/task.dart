@@ -32,6 +32,9 @@ class Task {
 
   bool get isReady => status == 'ready' && !isDone;
 
+  /// Where the task folder lives once it is closed: `<parent>/done/<name>`.
+  String get doneDirectory => '${directory.substring(0, directory.lastIndexOf('/'))}/done/${directory.split('/').last}';
+
   String get indexPath => '$directory/index.md';
 
   String get slug => directory.split('/').last.replaceFirst(RegExp(r'^\d+-'), '');
@@ -71,5 +74,9 @@ class Task {
 
   static String? _scalar(Object? value) => value is String && value.isNotEmpty ? value : null;
 
-  static List<String> _list(Object? value) => value is List<String> ? value : const [];
+  static List<String> _list(Object? value) => switch (value) {
+        final List<String> list => list,
+        final String text when text.isNotEmpty => [text],
+        _ => const [],
+      };
 }
