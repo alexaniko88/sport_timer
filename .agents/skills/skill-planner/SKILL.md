@@ -18,6 +18,15 @@ Turn the user's idea into tasks that a runner can implement without asking anyon
 
 The layout, ids, task fields and sections, the ready checklist and the done rules are in `.agents/rules/project-tasks-format.md`. Follow that file and do not copy it into tasks. Running the tasks is `skill-dispatcher`'s job, not yours.
 
+## Talking to the user
+
+These rules apply to every step below.
+
+- **Only questions.** Work quietly. Do not tell the user what you read, search, write or check, and do not show plans, findings or progress. A message to the user is a question, a blocker that stops you, or the final summary in step 10. Nothing else.
+- **One question per message.** Never show two questions at once, not even as a numbered list. With a question dialog, put exactly one question in each call. Wait for the answer before the next.
+- **Atomic questions.** Each question asks about one thing only, in short plain words. Split a question that has "and", "or" or several parts into separate questions. Give only the context needed to answer it, in one or two short lines, and your recommended answer, worded so that "yes" accepts it.
+- **Final summary.** When everything is settled, show the summary from step 10. That is the only long message.
+
 ## Before you start
 
 - **Check your model.** A skill's `model` only lasts one turn and this is a long conversation, so check which model you are running on. The planner needs a strong one:
@@ -37,7 +46,7 @@ The layout, ids, task fields and sections, the ready checklist and the done rule
 Find the facts yourself; ask the user only for decisions.
 
 - Read `CLAUDE.md`, the format rule and the code the idea touches. For UI, read the matching images in `test/snapshots/goldens/` and `test/snapshots/README.md`; they show how the app looks today. Check a library's official documentation when a choice depends on what it can do.
-- Search all of `project-tasks/`, including `done/` folders, for the same or overlapping work (search related terms, not only the title). If it exists, point the user to it and extend it. For a finished task, decide whether the new work is a duplicate, a regression or a follow-up, and link it. If that is unclear, ask.
+- Search all of `project-tasks/`, including `done/` folders, for the same or overlapping work (search related terms, not only the title). If it exists, extend it, and name it in your next question when the user needs to know. For a finished task, decide whether the new work is a duplicate, a regression or a follow-up, and link it. If that is unclear, ask.
 - Find the epic and story each new task belongs to by outcome and acceptance criteria, not by title. Epics and stories never move, so add to them freely. Use `bugs/` or `improvements/` for a standalone report. Ask the user only if two parents fit equally well.
 
 ## 2. Pick the depth
@@ -51,7 +60,7 @@ Find the facts yourself; ask the user only for decisions.
 
 ## 3. Interview
 
-Ask **one question at a time**, each with your recommended answer, worded so that "yes" accepts it. Wait for the answer before the next. Put a concrete example in a question when it helps.
+Ask **one atomic question at a time**, as described in "Talking to the user". Put a concrete example in a question when it helps.
 
 - Settle: the user outcome, what counts toward it, what is excluded, edge cases, error cases, where data lives and for how long, and what is in the first version versus later.
 - Keep asking until nothing is left open. "Good enough" is not the goal; a task that makes a runner guess is not done.
@@ -77,7 +86,7 @@ Read [references/mockup.md](references/mockup.md). Build `mockup.html` in the ta
 
 ## 7. Acceptance criteria
 
-You propose the criteria from the interview and the user confirms them. Do not ask the user to write them.
+You propose the criteria from the interview and the user confirms them. Do not ask the user to write them. Show the list with one yes or no question ("Are these criteria right?") and nothing else in that message.
 
 - One line each: `- [ ] When <situation>, then <result>. Check: <test, golden or command>.`
 - Cover the main result, each edge case and error case from the interview, and empty or partial states.

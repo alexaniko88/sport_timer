@@ -11,7 +11,7 @@ Before you ask anything, read what exists and use it as the starting point:
 - The shared pieces in `lib/shared/presentation/`: `AppSurface` (tiles and cards), `AppButton`, the theme (`theme/sport_theme.dart`, `app_palette.dart`, `timer_colors.dart`), the spacing and radius tokens (`app_spacing.dart`, `AppRadius`, `AppBorderWidth`), and the text roles (`extensions/text_theme_extension.dart`, `theme/app_text_styles.dart`).
 - `CLAUDE.md` ("Styling and theme").
 
-Do not ask the user for a design. Propose the layout from the existing screens and ask only what you cannot see. One question at a time, each with your recommended answer.
+Do not ask the user for a design. Propose the layout from the existing screens and ask only what you cannot see. One short question at a time, about one thing only, each with your recommended answer (see "Talking to the user" in the skill).
 
 ## What to settle
 
