@@ -81,6 +81,7 @@ complexity: low
 depends-on: []
 touches:
   - <path or glob the task changes>
+skills: []
 ---
 
 # <Deliverable>

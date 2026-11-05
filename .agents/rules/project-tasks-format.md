@@ -53,6 +53,7 @@ depends-on: [TPL-03-01]
 touches:               # paths or globs the task changes
   - lib/features/templates/**
   - test/snapshots/goldens/templates_custom.png
+skills: []             # optional; project skills the roles read, e.g. [skill-fl-chart]
 ---
 ```
 
