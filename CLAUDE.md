@@ -131,7 +131,7 @@ To plan work into tasks that runners can implement without asking anything, use 
 
 For an end-to-end change (bug, feature, improvement, refactor), read and follow `.agents/skills/skill-orchestrator/SKILL.md`. This is the single repo-local skill folder shared by Claude, Codex and Antigravity. Never use `skill-ticket-orchestrator` here: this project has no tickets and no Linear. Follow the skill's approval cadence for implementation, review, commit and PR.
 
-To run tasks that are already planned in `project-tasks/`, with no questions asked while they run, use `.agents/skills/skill-dispatcher/SKILL.md`. It starts one runner per task (implementer, tests, review, each with its own model) in a clean clone through `tool/dispatcher.dart`. Under that skill the runner commits, pushes its own task branch and opens the PR without asking; the script never pushes to `master` and never merges.
+To run tasks that are already planned in `project-tasks/`, with no questions asked while they run, use `.agents/skills/skill-dispatcher/SKILL.md`. It starts one runner per task (implementer, tests, review, each with its own model) in a clean clone through `tool/dispatcher.dart`. Under that skill the script (not the runners) commits, pushes the task branch and opens the PR without asking; the script never pushes to `master` and never merges.
 
 ## AI tools setup (Claude, Codex, Antigravity)
 

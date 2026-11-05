@@ -24,10 +24,16 @@ class ToolCommand {
     'Bash(ls:*)',
     'Bash(cat:*)',
     'Bash(grep:*)',
-    'Bash(find:*)',
   ];
 
-  static const _checkShell = ['Bash(fvm:*)'];
+  static const _checkShell = [
+    'Bash(fvm dart format:*)',
+    'Bash(fvm flutter analyze:*)',
+    'Bash(fvm flutter test:*)',
+    'Bash(fvm flutter gen-l10n:*)',
+    'Bash(fvm flutter pub get:*)',
+    'Bash(fvm dart tool/agent_check.dart:*)',
+  ];
 
   static ToolInvocation build({
     required Tool tool,

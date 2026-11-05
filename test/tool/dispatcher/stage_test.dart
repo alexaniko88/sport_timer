@@ -25,9 +25,19 @@ void main() {
 
       expect(work, containsAllInOrder(['--setting-sources', 'project', '--permission-prompts', 'none']));
       expect(work, containsAllInOrder(['--permission-mode', 'acceptEdits']));
-      expect(work, contains('Bash(fvm:*)'));
+      expect(work, contains('Bash(fvm flutter test:*)'));
       expect(review, containsAllInOrder(['--permission-mode', 'plan']));
-      expect(review, isNot(contains('Bash(fvm:*)')));
+      expect(review, isNot(contains('Bash(fvm flutter test:*)')));
+    });
+
+    test('Claude allows only the named fvm commands and no find', () {
+      final work = _build(Tool.claude, Role.implementer).args;
+      final review = _build(Tool.claude, Role.reviewer).args;
+
+      expect(work, isNot(contains('Bash(fvm:*)')));
+      expect(work, isNot(contains('Bash(find:*)')));
+      expect(review, isNot(contains('Bash(find:*)')));
+      expect(review.where((arg) => arg.startsWith('Bash(fvm')), isEmpty);
     });
 
     test('Codex uses a clean config and a read-only sandbox for the reviewer', () {
@@ -151,6 +161,22 @@ void main() {
       expect(findings?.single.location, 'lib/a.dart:3');
     });
 
+    test('reads a block whose fix text holds its own code fence', () {
+      final findings = ReviewGate.parse(
+        message(
+          r'[{"severity": "general", "file": "a.dart", "line": 1, "summary": "S", "fix": "Use:\n```dart\nx();\n```"}]',
+        ),
+      );
+
+      expect(findings?.single.fix, contains('```dart'));
+    });
+
+    test('reads the block when prose follows it', () {
+      final findings = ReviewGate.parse('${message('[{"severity": "minor", "summary": "S"}]')}\nThat is all.\n');
+
+      expect(findings?.single.severity, Severity.minor);
+    });
+
     test('no json block means the review did not happen', () {
       expect(ReviewGate.parse('looks fine'), isNull);
     });
@@ -190,6 +216,7 @@ void main() {
         baseSha: 'base',
         headSha: 'head',
         checkResult: 'All checks passed.',
+        taskPath: 'project-tasks/e/stories/01-s/done/01-a/index.md',
       );
 
       expect(text, contains('- Adds it.'));
@@ -198,6 +225,26 @@ void main() {
       expect(text, contains('| b.png | new |'));
       expect(text, contains('All checks passed.'));
       expect(text.toLowerCase(), isNot(contains('generated with')));
+    });
+
+    test('links the task at the head commit, under done/', () {
+      final text = PrDescription.build(
+        task: task,
+        implementer: report,
+        tests: report,
+        reviewNotes: const [],
+        goldens: const [],
+        slug: 'o/r',
+        baseSha: 'base',
+        headSha: 'head',
+        checkResult: 'ok',
+        taskPath: 'project-tasks/e/stories/01-s/done/01-a/index.md',
+      );
+
+      expect(
+        text,
+        contains('[E-01-01](https://github.com/o/r/blob/head/project-tasks/e/stories/01-s/done/01-a/index.md)'),
+      );
     });
   });
 }

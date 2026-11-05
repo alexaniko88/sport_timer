@@ -89,7 +89,7 @@ class LaunchPipeline {
   final String email;
   final String name;
   final String baseDirectory;
-  final bool skipPubGet;
+  final bool skipFlutterSetup;
   final LogLine log;
 
   const LaunchPipeline({
@@ -103,7 +103,7 @@ class LaunchPipeline {
     required this.log,
     this.overrides = const {},
     this.extraAllowed = const [],
-    this.skipPubGet = false,
+    this.skipFlutterSetup = false,
   });
 
   Future<RunResult> launch(Task task) async {
@@ -115,20 +115,45 @@ class LaunchPipeline {
         originUrl: originUrl,
         email: email,
         name: name,
+        tool: tool.name,
         baseDirectory: baseDirectory,
-        skipPubGet: skipPubGet,
+        skipFlutterSetup: skipFlutterSetup,
       );
     } on StateError catch (error) {
       return RunResult(taskId: task.id, outcome: RunOutcome.failed, message: error.message);
+    } catch (error, stack) {
+      log('$stack');
+      return RunResult(taskId: task.id, outcome: RunOutcome.failed, message: 'Could not prepare the clone: $error');
     }
     final session = _Session(
       task: task,
       workspace: workspace,
       publisher: GitPublisher(workspace: workspace.directory, run: run),
     );
-    final stop = await _work(session);
-    if (stop != null) return _abandon(session, stop);
-    return _publish(session);
+    final _Stop? stop;
+    try {
+      stop = await _work(session);
+    } catch (error, stack) {
+      log('$stack');
+      return _safeAbandon(session, _Stop(RunOutcome.failed, 'Unexpected error: $error'));
+    }
+    if (stop != null) return _safeAbandon(session, stop);
+    try {
+      return await _publish(session);
+    } catch (error, stack) {
+      log('$stack');
+      return _keep(session, 'Unexpected error: $error');
+    }
+  }
+
+  /// Like [_abandon], but keeps the clone when abandoning itself fails.
+  Future<RunResult> _safeAbandon(_Session session, _Stop stop) async {
+    try {
+      return await _abandon(session, stop);
+    } catch (error, stack) {
+      log('$stack');
+      return _keep(session, '${stop.message} (Unexpected error: $error)');
+    }
   }
 
   Future<_Stop?> _work(_Session session) async {
@@ -254,16 +279,21 @@ class LaunchPipeline {
   /// Archives the task, scans for private data, pushes and opens the PR.
   Future<RunResult> _publish(_Session session) async {
     final task = session.task;
+    session.workspace.writeState(taskId: task.id, tool: tool.name, stage: 'publish');
+    final String archived;
     try {
-      await TaskArchiver(workspace: session.workspace.directory, run: run).archive(task, notes: _notes(session));
+      archived = await TaskArchiver(workspace: session.workspace.directory, run: run).archive(
+        task,
+        notes: _notes(session),
+      );
     } on StateError catch (error) {
-      return _abandon(session, _Stop(RunOutcome.failed, error.message));
+      return _safeAbandon(session, _Stop(RunOutcome.failed, error.message));
     }
     final closing = await session.publisher.commitAll(
       subject: 'docs: close task ${task.id.toLowerCase()}',
       trailer: 'Co-Authored-By: ${session.models[Role.implementer]?.attribution(tool) ?? tool.label}',
     );
-    if (closing != null) return _abandon(session, _Stop(RunOutcome.failed, closing));
+    if (closing != null) return _safeAbandon(session, _Stop(RunOutcome.failed, closing));
 
     final leaks = DiffScanner.scan(await session.publisher.addedLinesDiff());
     if (leaks.isNotEmpty) {
@@ -289,6 +319,7 @@ class LaunchPipeline {
       baseSha: await session.publisher.baseSha(),
       headSha: await session.publisher.headSha(),
       checkResult: session.checkResult,
+      taskPath: '$archived/index.md',
     );
     final bodyFile = '${session.workspace.runnerDirectory}/pr-body.md';
     final url = await _writeBodyAndOpen(session, body: body, bodyFile: bodyFile);
@@ -310,8 +341,11 @@ class LaunchPipeline {
   /// the task notes, and deletes the clone once it is pushed.
   Future<RunResult> _abandon(_Session session, _Stop stop) async {
     final task = session.task;
-    final notes = '${session.workspace.directory}/${task.directory}/notes.md';
-    await File(notes).writeAsString('\n## Blocked\n\n${stop.message}\n', mode: FileMode.append);
+    final workspace = session.workspace.directory;
+    // The archiver may already have moved the task into its `done/` folder.
+    final oldFolder = '$workspace/${task.directory}';
+    final folder = Directory(oldFolder).existsSync() ? oldFolder : '$workspace/${task.doneDirectory}';
+    await File('$folder/notes.md').writeAsString('\n## Blocked\n\n${stop.message}\n', mode: FileMode.append);
     final error = await session.publisher.commitAll(
       subject: 'wip: ${task.id.toLowerCase()} stopped',
       trailer: 'Co-Authored-By: ${session.models[Role.implementer]?.attribution(tool) ?? tool.label}',

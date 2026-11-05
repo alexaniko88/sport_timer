@@ -6,8 +6,10 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../tool/dispatcher/command_runner.dart';
+import '../../../tool/dispatcher/git_publisher.dart';
 import '../../../tool/dispatcher/launch_pipeline.dart';
 import '../../../tool/dispatcher/role_models.dart';
+import '../../../tool/dispatcher/run_workspace.dart';
 import '../../../tool/dispatcher/stage_runner.dart';
 import '../../../tool/dispatcher/task.dart';
 import '../../../tool/dispatcher/tool_command.dart';
@@ -74,7 +76,11 @@ _Fixture _fixture() {
 }
 
 /// A fake tool: [work] decides what each role does and answers with its final message.
-LaunchPipeline _pipeline(_Fixture fixture, String Function(Role role, String workspace) work) {
+LaunchPipeline _pipeline(
+  _Fixture fixture,
+  String Function(Role role, String workspace) work, {
+  RunCommand? run,
+}) {
   Future<ProcessOutcome> process(
     ToolInvocation invocation, {
     required String workingDirectory,
@@ -88,12 +94,12 @@ LaunchPipeline _pipeline(_Fixture fixture, String Function(Role role, String wor
   return LaunchPipeline(
     tool: Tool.claude,
     stages: StageRunner(run: process),
-    run: fixture.run,
+    run: run ?? fixture.run,
     originUrl: fixture.origin,
     email: 'dev@users.noreply.github.com',
     name: 'Dev',
     baseDirectory: fixture.runs,
-    skipPubGet: true,
+    skipFlutterSetup: true,
     log: (_) {},
   );
 }
@@ -246,7 +252,7 @@ void main() {
       email: 'dev@users.noreply.github.com',
       name: 'Dev',
       baseDirectory: fixture.runs,
-      skipPubGet: true,
+      skipFlutterSetup: true,
       log: (_) {},
     );
 
@@ -266,7 +272,7 @@ void main() {
       email: 'me@company.com',
       name: 'Dev',
       baseDirectory: fixture.runs,
-      skipPubGet: true,
+      skipFlutterSetup: true,
       log: (_) {},
     );
 
@@ -275,5 +281,225 @@ void main() {
     expect(result.outcome, RunOutcome.failed);
     expect(result.message, contains('noreply'));
     expect(Directory('${fixture.runs}/TST-01-01').existsSync(), isFalse);
+  });
+
+  group('RunWorkspace.prepare', () {
+    Future<RunWorkspace> prepare(
+      _Fixture fixture, {
+      RunCommand? run,
+      bool skipFlutterSetup = true,
+    }) {
+      return RunWorkspace.prepare(
+        run: run ?? fixture.run,
+        task: _task(fixture),
+        originUrl: fixture.origin,
+        email: 'dev@users.noreply.github.com',
+        name: 'Dev',
+        tool: 'claude',
+        baseDirectory: fixture.runs,
+        skipFlutterSetup: skipFlutterSetup,
+      );
+    }
+
+    test('a relaunch checks out the wip branch and diffs only the branch lines after master moved', () async {
+      final fixture = _fixture();
+      final seed = '${fixture.root.path}/seed';
+      _git(seed, ['checkout', '-q', '-b', _branch]);
+      File('$seed/branch.txt').writeAsStringSync('from the branch\n');
+      _git(seed, ['add', '-A']);
+      _git(seed, ['commit', '-q', '-m', 'wip: tst-01-01 stopped']);
+      _git(seed, ['push', '-q', 'origin', _branch]);
+      _git(seed, ['checkout', '-q', 'master']);
+      File('$seed/master.txt').writeAsStringSync('newer on master\n');
+      _git(seed, ['add', '-A']);
+      _git(seed, ['commit', '-q', '-m', 'newer master']);
+      _git(seed, ['push', '-q', 'origin', 'master']);
+
+      final workspace = await prepare(fixture);
+
+      expect(_git(workspace.directory, ['rev-parse', '--abbrev-ref', 'HEAD']), _branch);
+      expect(_git(workspace.directory, ['merge-base', 'HEAD', 'origin/master']), isNotEmpty);
+      final diff = await GitPublisher(workspace: workspace.directory, run: fixture.run).addedLinesDiff();
+      expect(diff, contains('from the branch'));
+      expect(diff, isNot(contains('newer on master')));
+    });
+
+    test('state.json says "prepare" with the tool name before the clone runs', () async {
+      final fixture = _fixture();
+      String? state;
+      Future<CommandResult> run(String executable, List<String> args, {String? workingDirectory}) async {
+        if (executable == 'git' && args.contains('clone')) {
+          state = File('${fixture.runs}/TST-01-01/state.json').readAsStringSync();
+          return const CommandResult(exitCode: 1, stdout: '', stderr: 'stop here');
+        }
+        return fixture.run(executable, args, workingDirectory: workingDirectory);
+      }
+
+      await expectLater(prepare(fixture, run: run), throwsStateError);
+
+      expect(jsonDecode(state ?? '{}'), containsPair('stage', 'prepare'));
+      expect(jsonDecode(state ?? '{}'), containsPair('tool', 'claude'));
+    });
+
+    test('the run folder is deleted when a command throws something other than a StateError', () async {
+      final fixture = _fixture();
+      Future<CommandResult> run(String executable, List<String> args, {String? workingDirectory}) {
+        throw const ProcessException('git', ['clone'], 'not installed');
+      }
+
+      await expectLater(prepare(fixture, run: run), throwsA(isA<ProcessException>()));
+
+      expect(Directory('${fixture.runs}/TST-01-01').existsSync(), isFalse);
+    });
+
+    test('the Flutter setup runs install, pub get and analyze in order', () async {
+      final fixture = _fixture();
+      final fvmCalls = <String>[];
+      Future<CommandResult> run(String executable, List<String> args, {String? workingDirectory}) {
+        if (executable == 'fvm') fvmCalls.add(args.join(' '));
+        return fixture.run(executable, args, workingDirectory: workingDirectory);
+      }
+
+      await prepare(fixture, run: run, skipFlutterSetup: false);
+
+      expect(fvmCalls, ['install --skip-pub-get', 'flutter pub get', 'flutter analyze --no-pub']);
+    });
+
+    test('a failing baseline analyze throws with the analyzer output and cleans up', () async {
+      final fixture = _fixture();
+      Future<CommandResult> run(String executable, List<String> args, {String? workingDirectory}) async {
+        if (executable == 'fvm' && args.contains('analyze')) {
+          return const CommandResult(exitCode: 1, stdout: 'error • lib/a.dart:1 • broken', stderr: '');
+        }
+        return fixture.run(executable, args, workingDirectory: workingDirectory);
+      }
+
+      await expectLater(
+        prepare(fixture, run: run, skipFlutterSetup: false),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            allOf(contains('fvm flutter analyze'), contains('lib/a.dart:1 • broken')),
+          ),
+        ),
+      );
+
+      expect(Directory('${fixture.runs}/TST-01-01').existsSync(), isFalse);
+    });
+  });
+
+  group('launch never throws once the clone exists', () {
+    test('a stage process that throws ends as failed, pushed as wip, with the clone deleted', () async {
+      final fixture = _fixture();
+      Future<ProcessOutcome> process(
+        ToolInvocation invocation, {
+        required String workingDirectory,
+        required Duration timeout,
+      }) {
+        throw const ProcessException('claude', [], 'not installed');
+      }
+
+      final pipeline = LaunchPipeline(
+        tool: Tool.claude,
+        stages: StageRunner(run: process),
+        run: fixture.run,
+        originUrl: fixture.origin,
+        email: 'dev@users.noreply.github.com',
+        name: 'Dev',
+        baseDirectory: fixture.runs,
+        skipFlutterSetup: true,
+        log: (_) {},
+      );
+
+      final result = await pipeline.launch(_task(fixture));
+
+      expect(result.outcome, RunOutcome.failed);
+      expect(result.message, contains('Unexpected error'));
+      expect(fixture.originLog(_branch).split('\n').first, 'wip: tst-01-01 stopped');
+      expect(Directory('${fixture.runs}/TST-01-01').existsSync(), isFalse);
+    });
+
+    test('a failed closing commit still writes the Blocked note into the archived done/ folder', () async {
+      final fixture = _fixture();
+      Future<CommandResult> run(String executable, List<String> args, {String? workingDirectory}) async {
+        if (executable == 'git' && args.contains('commit') && args.any((arg) => arg.startsWith('docs: close task'))) {
+          return const CommandResult(exitCode: 1, stdout: '', stderr: 'commit refused');
+        }
+        return fixture.run(executable, args, workingDirectory: workingDirectory);
+      }
+
+      final pipeline = _pipeline(
+        fixture,
+        (role, workspace) {
+          switch (role) {
+            case Role.implementer:
+              _write(workspace, 'lib/x.dart', 'const x = 1;\n');
+              return _message();
+            case Role.tests:
+              return _message(commit: 'test: add x tests');
+            case Role.reviewer:
+              return _review('[]');
+          }
+        },
+        run: run,
+      );
+
+      final result = await pipeline.launch(_task(fixture));
+
+      expect(result.outcome, RunOutcome.failed);
+      expect(result.message, contains('commit refused'));
+      final notes = _git(fixture.origin, ['show', '$_branch:project-tasks/tst/stories/01-s/done/01-do-thing/notes.md']);
+      expect(notes, contains('## Blocked'));
+      expect(notes, contains('commit refused'));
+    });
+
+    test('a failing abandon keeps the clone', () async {
+      final fixture = _fixture();
+      Future<CommandResult> run(String executable, List<String> args, {String? workingDirectory}) {
+        if (executable == 'git' && args.contains('push')) throw const ProcessException('git', ['push'], 'boom');
+        return fixture.run(executable, args, workingDirectory: workingDirectory);
+      }
+
+      final pipeline = _pipeline(fixture, (role, workspace) => _message(blocked: 'Which storage?'), run: run);
+
+      final result = await pipeline.launch(_task(fixture));
+
+      expect(result.outcome, RunOutcome.failed);
+      expect(result.message, contains('Unexpected error'));
+      expect(result.keptWorkspace, isNotNull);
+      expect(Directory(result.keptWorkspace ?? '').existsSync(), isTrue);
+    });
+
+    test('an error while publishing ends as failed and keeps the clone', () async {
+      final fixture = _fixture();
+      Future<CommandResult> run(String executable, List<String> args, {String? workingDirectory}) {
+        if (executable == 'gh') throw const ProcessException('gh', [], 'not installed');
+        return fixture.run(executable, args, workingDirectory: workingDirectory);
+      }
+
+      final pipeline = _pipeline(
+        fixture,
+        (role, workspace) {
+          switch (role) {
+            case Role.implementer:
+              _write(workspace, 'lib/x.dart', 'const x = 1;\n');
+              return _message();
+            case Role.tests:
+              return _message(commit: 'test: add x tests');
+            case Role.reviewer:
+              return _review('[]');
+          }
+        },
+        run: run,
+      );
+
+      final result = await pipeline.launch(_task(fixture));
+
+      expect(result.outcome, RunOutcome.failed);
+      expect(result.message, contains('Unexpected error'));
+      expect(result.keptWorkspace, isNotNull);
+      expect(Directory(result.keptWorkspace ?? '').existsSync(), isTrue);
+    });
   });
 }

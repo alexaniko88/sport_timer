@@ -31,6 +31,16 @@ void main() {
       expect(task?.isDone, isFalse);
     });
 
+    test('a scalar depends-on is a one-item list, and unindented block items are read', () {
+      final task = Task.tryParse(
+        path: 'project-tasks/x/stories/01-s/01-t/index.md',
+        text: '---\nid: X-01-01\ndepends-on: TPL-01-01\ntouches:\n- lib/a.dart\n---\n\n# T\n',
+      );
+
+      expect(task?.dependsOn, ['TPL-01-01']);
+      expect(task?.touches, ['lib/a.dart']);
+    });
+
     test('an epic or story index without an id is not a task', () {
       expect(Task.tryParse(path: 'project-tasks/x/index.md', text: '---\nabbr: X\n---\n# Epic\n'), isNull);
     });

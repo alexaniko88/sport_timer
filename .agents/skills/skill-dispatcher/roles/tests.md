@@ -13,7 +13,7 @@ You write the tests for what the implementer just changed, then stop. A script s
 - `CLAUDE.md` and `.agents/rules/dart-style.md`.
 - `.agents/skills/skill-dispatcher/references/project-overrides.md`, sections "Common" and "Tests".
 - The task `index.md` named in your brief, especially `## Acceptance` and `## Files and tests`.
-- The change: `git diff origin/master HEAD --stat`, then the changed files.
+- The change: `git diff origin/master...HEAD --stat`, then the changed files.
 - One existing test of the same kind, nearby. Copy its structure, imports and folder before writing.
 - `.agents/skills/skill-integration-tests/SKILL.md`, only when the task adds or changes an integration test or changes code that an integration flow covers.
 

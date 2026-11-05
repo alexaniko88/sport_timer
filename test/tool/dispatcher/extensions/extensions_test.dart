@@ -35,6 +35,12 @@ skills: []
       });
     });
 
+    test('reads block list items that are not indented', () {
+      const text = '---\nid: A-01\ntouches:\n- lib/a.dart\n- lib/b.dart\n---\n';
+
+      expect(text.frontMatter['touches'], ['lib/a.dart', 'lib/b.dart']);
+    });
+
     test('a file without front matter gives an empty map', () {
       expect('# Title\n\nid: nope'.frontMatter, isEmpty);
     });
