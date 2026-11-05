@@ -8,7 +8,7 @@ As a developer, I can clear local activity for all accounts from a debug-only pa
 
 ## Scope
 
-Add a debug-only navigation drawer entry and developer page with a single purge action. Explain the scope in a confirmation dialog. Preserve settings and authentication; do not add other tools in this version.
+Add a debug-only entry at the bottom of the navigation drawer and a developer page with a single purge action. Explain the scope in a confirmation dialog. Preserve settings and authentication; do not add other tools in this version. Texts are English only, with no localization.
 
 ## Acceptance criteria
 
@@ -16,14 +16,16 @@ Add a debug-only navigation drawer entry and developer page with a single purge 
 - Canceling or dismissing the confirmation leaves activity unchanged. Confirming removes all local activity for all accounts on the device, including sessions and their recorded phases.
 - An empty database can be purged safely. Success or failure is communicated accurately, and statistics views reflect a successful purge.
 - Pending activity writes cannot restore purged history after success; future workouts can still be recorded. Settings and sign-in remain unchanged.
-- The page and confirmation are accessible and usable in both themes and at larger text sizes.
+- A purge cannot be started twice at the same time.
+- The page and confirmation are usable in both themes and at larger text sizes.
 
 ## Tasks
 
-1. [Add the developer page and activity purge](01-add-developer-page-and-purge/index.md).
+1. [Purge activity storage](01-purge-activity-storage/index.md).
+2. [Add the developer page](02-add-developer-page/index.md).
 
-## Dependencies and visual context
+## Dependencies and open decisions
 
-Uses the existing activity database and recording foundation; verify the implementation checkout before planning. The [account-specific deletion story](../../../statistics/stories/05-delete-statistics/index.md) is independent; coordinate shared behavior if it has been implemented by then.
+No open decisions. DEV-01-02 depends on DEV-01-01. The story does not depend on the [account-specific deletion story](../../../statistics/stories/05-delete-statistics/index.md).
 
-The [drawer snapshot](../../../../test/snapshots/goldens/home_drawer.png) and [snapshot flow index](../../../../test/snapshots/README.md) show the current navigation. There is no developer page or purge confirmation snapshot yet. Check the implementation checkout for current UI before planning.
+Visual references: the [drawer golden](../../../../test/snapshots/goldens/home_drawer.png) and the [snapshot flow index](../../../../test/snapshots/README.md). The approved [mockup](02-add-developer-page/mockup.html) shows the new page and dialog.
