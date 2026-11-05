@@ -13,9 +13,9 @@ An improvement task does not authorize implementation. Plan and agree the change
 
 ## Tasks
 
-1. [IMP-01: Unify styles across the app](done/01-unify-styles-app-wide/index.md) — archived; done on `improve/unify-app-styles`, pending PR and merge.
-2. [IMP-02: Rethink the navigation drawer](02-rethink-navigation-drawer/index.md) — Provisional.
-3. [IMP-03: Capture a UI snapshot reference](done/03-capture-ui-snapshot-reference/index.md) — archived; final decisions and evidence are in the saved plan.
-4. [IMP-04: Align timer setup summary and Start styling](04-align-timer-setup-summary-and-start/index.md) — Ready for planning.
+1. [IMP-01: Unify styles across the app](done/01-unify-styles-app-wide/index.md)
+2. [IMP-02: Rethink the navigation drawer](02-rethink-navigation-drawer/index.md)
+3. [IMP-03: Capture a UI snapshot reference](done/03-capture-ui-snapshot-reference/index.md)
+4. [IMP-04: Align timer setup summary and Start styling](04-align-timer-setup-summary-and-start/index.md)
 
 Add each new task here and in the shared status tracker.

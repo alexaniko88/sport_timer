@@ -1,0 +1,591 @@
+<!--
+  IMP-02 Rethink the navigation drawer.
+  Based on the goldens: home_drawer.png (drawer over HomePage), setup_custom.png (TimerSetupPage),
+  templates_selected.png, and timer_styles.png.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigation Drawer Mockup — IMP-02</title>
+<style>
+  :root {
+    /* ColorScheme.fromSeed(AppPalette.brand = #FF5252), light */
+    --primary: #904a43;
+    --on-primary: #ffffff;
+    --primary-container: #ffdad5;
+    --on-primary-container: #3b0907;
+    --secondary-container: #ffdad5;
+    --surface: #fff8f6;
+    --surface-container-low: #fff0ee;
+    --surface-container: #fceae7;
+    --surface-container-high: #f6e4e1;
+    --on-surface: #231918;
+    --on-surface-variant: #534341;
+    --outline-variant: #d8c2be;
+    --app-bar: #ffb4a9;
+    --scrim: rgba(0, 0, 0, 0.32);
+    --page: #2a56a5;
+    --control-bg: #ffffff;
+    --control-fg: #1b1b1b;
+    /* TimerColors.light */
+    --prep: #e1ad01;
+    --round: #ff5252;
+    --rest: #448aff;
+    --rounds-count: #ffab40;
+  }
+  :root[data-theme="dark"] {
+    --primary: #ffb4ab;
+    --on-primary: #561e19;
+    --primary-container: #73332d;
+    --on-primary-container: #ffdad5;
+    --secondary-container: #5d3f3b;
+    --surface: #1a1110;
+    --surface-container-low: #231918;
+    --surface-container: #271d1c;
+    --surface-container-high: #322827;
+    --on-surface: #f1dfdc;
+    --on-surface-variant: #d8c2be;
+    --outline-variant: #534341;
+    --app-bar: #271d1c;
+    --scrim: rgba(0, 0, 0, 0.6);
+    --control-bg: #1f1f1f;
+    --control-fg: #f1f1f1;
+    /* TimerColors.dark */
+    --prep: #e8c23a;
+    --round: #ff8a80;
+    --rest: #82b1ff;
+    --rounds-count: #ffb74d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--page);
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+  }
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 780px;
+  }
+  .controls-bar button {
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid #888;
+    background: var(--control-bg);
+    color: var(--control-fg);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .controls-bar button[aria-pressed="true"] {
+    outline: 3px solid #ffd54f;
+    font-weight: 700;
+  }
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    height: 844px;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    color: var(--on-surface);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Underlying HomePage (TimerSetupPage) */
+  .home-app-bar {
+    height: 56px;
+    background: var(--app-bar);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+  }
+  .icon-btn {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: none;
+    color: var(--on-surface);
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .home-app-bar-title {
+    flex: 1;
+    font-size: 22px;
+    font-weight: 400;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .home-body {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .setup-card {
+    height: 170px;
+    border-radius: 12px;
+    border: 1px solid var(--outline-variant);
+    background: var(--surface-container);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+  }
+  .setup-card-label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .setup-card-value {
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .session-box {
+    border-radius: 12px;
+    border: 1px solid var(--outline-variant);
+    background: var(--surface-container);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .session-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+  .start-btn {
+    height: 48px;
+    border-radius: 12px;
+    background: var(--primary);
+    color: var(--on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .bottom-nav {
+    height: 56px;
+    background: var(--app-bar);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    place-items: center;
+    font-size: 12px;
+  }
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    color: var(--on-surface-variant);
+  }
+  .bottom-nav-item.active {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  /* Scrim & Redesigned Drawer */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: var(--scrim);
+  }
+  .drawer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 304px;
+    background: var(--surface-container-low);
+    border-radius: 0 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.2);
+  }
+  .drawer-header {
+    padding: 20px 16px 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .drawer-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .drawer-title {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .divider {
+    height: 1px;
+    background: var(--outline-variant);
+    margin: 0 16px;
+  }
+  .drawer-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  /* AppSurface tile inside drawer */
+  .drawer-tile {
+    width: 100%;
+    min-height: 64px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--outline-variant);
+    background: var(--surface-container);
+    color: var(--on-surface);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .drawer-tile:hover {
+    background: var(--surface-container-high);
+  }
+  .drawer-tile-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--primary);
+    flex: none;
+    display: grid;
+    place-items: center;
+  }
+  .drawer-tile-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .drawer-tile-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .drawer-tile-subtitle {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--on-surface-variant);
+    line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .drawer-tile-trailing {
+    width: 24px;
+    height: 24px;
+    color: var(--on-surface-variant);
+    flex: none;
+    display: grid;
+    place-items: center;
+  }
+  .drawer-footer {
+    display: none;
+    flex-direction: column;
+  }
+  .drawer-footer.visible {
+    display: flex;
+  }
+  .drawer-footer-inner {
+    padding: 12px 16px 24px 16px;
+  }
+  .phone.large-text .drawer-title {
+    font-size: 30px;
+  }
+  .phone.large-text .drawer-tile-title {
+    font-size: 22px;
+  }
+  .phone.large-text .drawer-tile-subtitle {
+    font-size: 17px;
+  }
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+</style>
+</head>
+<body>
+  <div class="controls-bar" role="group" aria-label="State">
+    <button data-state="custom" aria-pressed="true">State: Custom + Ring</button>
+    <button data-state="preset" aria-pressed="false">State: Hyrox + Rounds strip</button>
+    <button data-state="debug" aria-pressed="false">State: With Debug Footer (DEV-01-02)</button>
+    <button data-state="long" aria-pressed="false">State: Large Text (Single-line Ellipsis)</button>
+  </div>
+  <div class="controls-bar" role="group" aria-label="Theme and Language">
+    <button data-theme="light" aria-pressed="true">Light</button>
+    <button data-theme="dark" aria-pressed="false">Dark</button>
+    <button data-lang="en" aria-pressed="true">English</button>
+    <button data-lang="es" aria-pressed="false">Español</button>
+  </div>
+
+  <div class="phone" id="phone">
+    <!-- Underlying Home Screen -->
+    <div class="home-app-bar">
+      <button class="icon-btn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="home-app-bar-title" id="home-title">Are you prepared?</div>
+      <div class="avatar">A</div>
+    </div>
+    <div class="home-body">
+      <div class="grid">
+        <div class="setup-card">
+          <span style="color: var(--prep)">⏳</span>
+          <span class="setup-card-label" id="lbl-prep">Preparation</span>
+          <span class="setup-card-value">00:10</span>
+        </div>
+        <div class="setup-card">
+          <span style="color: var(--round)">🏋️</span>
+          <span class="setup-card-label" id="lbl-work">Work</span>
+          <span class="setup-card-value">01:30</span>
+        </div>
+        <div class="setup-card">
+          <span style="color: var(--rest)">🧘</span>
+          <span class="setup-card-label" id="lbl-rest">Rest</span>
+          <span class="setup-card-value">00:15</span>
+        </div>
+        <div class="setup-card">
+          <span style="color: var(--rounds-count)">🔁</span>
+          <span class="setup-card-label" id="lbl-rounds">Rounds</span>
+          <span class="setup-card-value">3</span>
+        </div>
+      </div>
+      <div class="session-box">
+        <div class="session-row">
+          <span id="lbl-session">Session length</span>
+          <span>05:10</span>
+        </div>
+        <div class="start-btn" id="lbl-start">▶ Start</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="bottom-nav-item active" id="nav-timer">⏱ Timer</div>
+      <div class="bottom-nav-item" id="nav-stats">📈 Statistics</div>
+    </div>
+
+    <!-- Scrim + Redesigned Navigation Drawer -->
+    <div class="scrim"></div>
+    <nav class="drawer" aria-label="Navigation drawer">
+      <div class="drawer-header">
+        <div class="drawer-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+        </div>
+        <div class="drawer-title">Sport Timer</div>
+      </div>
+      <div class="divider" role="separator"></div>
+
+      <div class="drawer-list">
+        <button class="drawer-tile" type="button" id="tile-templates">
+          <span class="drawer-tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 16H5V5h14v14zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
+          </span>
+          <span class="drawer-tile-content">
+            <span class="drawer-tile-title" id="t-templates-title">Templates</span>
+            <span class="drawer-tile-subtitle" id="t-templates-sub">Custom</span>
+          </span>
+          <span class="drawer-tile-trailing" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </span>
+        </button>
+
+        <button class="drawer-tile" type="button" id="tile-styles">
+          <span class="drawer-tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M2.53 19.65l1.34.56v-9.03l-2.43 5.86c-.41 1.02.08 2.19 1.09 2.61zm19.5-3.7L17.07 3.98a2.01 2.01 0 0 0-1.81-1.23c-.26 0-.53.04-.79.15L7.1 5.95a2 2 0 0 0-1.08 2.6l4.96 11.97a2 2 0 0 0 2.6 1.08l7.36-3.05a2 2 0 0 0 1.09-2.6zM7.88 8.75c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2 11c0 1.1.9 2 2 2h1.45l-3.45-8.34v6.34z"/></svg>
+          </span>
+          <span class="drawer-tile-content">
+            <span class="drawer-tile-title" id="t-styles-title">Styles</span>
+            <span class="drawer-tile-subtitle" id="t-styles-sub">Ring</span>
+          </span>
+          <span class="drawer-tile-trailing" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </span>
+        </button>
+      </div>
+
+      <!-- Optional debug footer (DEV-01-02) -->
+      <div class="drawer-footer" id="drawer-footer">
+        <div class="divider" role="separator"></div>
+        <div class="drawer-footer-inner">
+          <button class="drawer-tile" type="button">
+            <span class="drawer-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 8h-2.81a5.985 5.985 0 0 0-1.82-1.96l.93-.93a.996.996 0 1 0-1.41-1.41l-1.47 1.47C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L9.11 3.7A.996.996 0 1 0 7.7 5.11l.92.93C7.88 6.55 7.26 7.22 6.81 8H4c-.55 0-1 .45-1 1s.45 1 1 1h2.09c-.05.33-.09.66-.09 1v1H4c-.55 0-1 .45-1 1s.45 1 1 1h2v1c0 .34.04.67.09 1H4c-.55 0-1 .45-1 1s.45 1 1 1h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20c.55 0 1-.45 1-1s-.45-1-1-1h-2.09c.05-.33.09-.66.09-1v-1h2c.55 0 1-.45 1-1s-.45-1-1-1h-2v-1c0-.34-.04-.67-.09-1H20c.55 0 1-.45 1-1s-.45-1-1-1zm-4 7c0 2.21-1.79 4-4 4s-4-1.79-4-4v-4c0-2.21 1.79-4 4-4s4 1.79 4 4v4zm-6-1h4v2h-4zm0-4h4v2h-4z"/></svg>
+            </span>
+            <span class="drawer-tile-content">
+              <span class="drawer-tile-title">Developer tools</span>
+            </span>
+            <span class="drawer-tile-trailing" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+<script>
+  const i18n = {
+    en: {
+      homeTitle: 'Are you prepared?',
+      prep: 'Preparation',
+      work: 'Work',
+      rest: 'Rest',
+      rounds: 'Rounds',
+      session: 'Session length',
+      start: '▶ Start',
+      navTimer: '⏱ Timer',
+      navStats: '📈 Statistics',
+      templatesTitle: 'Templates',
+      stylesTitle: 'Styles',
+      custom: 'Custom',
+      hyrox: 'Hyrox',
+      fullAbs: 'Full Abs',
+      ring: 'Ring',
+      roundsStrip: 'Rounds strip',
+    },
+    es: {
+      homeTitle: '¿Estás listo?',
+      prep: 'Preparación',
+      work: 'Trabajo',
+      rest: 'Descanso',
+      rounds: 'Rondas',
+      session: 'Duración de la sesión',
+      start: '▶ Iniciar',
+      navTimer: '⏱ Temporizador',
+      navStats: '📈 Estadísticas',
+      templatesTitle: 'Plantillas',
+      stylesTitle: 'Estilos',
+      custom: 'Personalizado',
+      hyrox: 'Hyrox',
+      fullAbs: 'Abdominales completos',
+      ring: 'Anillo',
+      roundsStrip: 'Barra de rondas',
+    },
+  };
+
+  let currentState = 'custom';
+  let currentTheme = 'light';
+  let currentLang = 'en';
+
+  function render() {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const t = i18n[currentLang];
+    document.getElementById('home-title').textContent = t.homeTitle;
+    document.getElementById('lbl-prep').textContent = t.prep;
+    document.getElementById('lbl-work').textContent = t.work;
+    document.getElementById('lbl-rest').textContent = t.rest;
+    document.getElementById('lbl-rounds').textContent = t.rounds;
+    document.getElementById('lbl-session').textContent = t.session;
+    document.getElementById('lbl-start').textContent = t.start;
+    document.getElementById('nav-timer').textContent = t.navTimer;
+    document.getElementById('nav-stats').textContent = t.navStats;
+    document.getElementById('t-templates-title').textContent = t.templatesTitle;
+    document.getElementById('t-styles-title').textContent = t.stylesTitle;
+
+    const isPreset = currentState === 'preset';
+    const isLong = currentState === 'long';
+    const isDebug = currentState === 'debug';
+
+    document.getElementById('t-templates-sub').textContent = isLong
+      ? t.fullAbs
+      : isPreset
+        ? t.hyrox
+        : t.custom;
+    document.getElementById('t-styles-sub').textContent = isLong || isPreset
+      ? t.roundsStrip
+      : t.ring;
+
+    document.getElementById('drawer-footer').classList.toggle('visible', isDebug);
+    document.getElementById('phone').classList.toggle('large-text', isLong);
+
+    document.querySelectorAll('[data-state]').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.state === currentState));
+    });
+    document.querySelectorAll('[data-theme]').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.theme === currentTheme));
+    });
+    document.querySelectorAll('[data-lang]').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.lang === currentLang));
+    });
+  }
+
+  document.querySelectorAll('[data-state]').forEach(b => {
+    b.addEventListener('click', () => {
+      currentState = b.dataset.state;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-theme]').forEach(b => {
+    b.addEventListener('click', () => {
+      currentTheme = b.dataset.theme;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-lang]').forEach(b => {
+    b.addEventListener('click', () => {
+      currentLang = b.dataset.lang;
+      render();
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>
