@@ -239,10 +239,52 @@ void main() {
     });
   });
 
+  group('planner', () {
+    const folder = '.agents/skills/skill-planner';
+
+    test('the cold-reader role is read-only and says so', () {
+      final markdown = File('$folder/roles/cold-reader.md').readAsStringSync();
+
+      expect(_frontmatterValue(markdown, 'name'), 'cold-reader');
+      expect(_frontmatterValue(markdown, 'access'), 'read-only');
+      expect(markdown, contains('Never edit'));
+    });
+
+    test('SKILL.md names the planner model of every tool', () {
+      final text = File('$folder/SKILL.md').readAsStringSync();
+
+      for (final model in ['Opus 5.5', 'GPT-6.1 Sol', 'Gemini 4 Argon']) {
+        expect(text, contains(model), reason: 'SKILL.md does not mention $model');
+      }
+    });
+
+    test('every reference and role that SKILL.md links to exists', () {
+      final text = File('$folder/SKILL.md').readAsStringSync();
+      final links = RegExp(r'\]\(((?:references|roles)/[A-Za-z0-9_./\-]+)\)').allMatches(text);
+
+      expect(links, isNotEmpty);
+      for (final match in links) {
+        final path = '$folder/${match.group(1)}';
+        expect(File(path).existsSync(), isTrue, reason: 'SKILL.md links to $path, which does not exist');
+      }
+    });
+
+    test('every file the planner files mention exists', () {
+      for (final path in ['$folder/SKILL.md', '$folder/roles/cold-reader.md']) {
+        final text = File(path).readAsStringSync();
+        for (final match in RegExp(r'\.agents/(?:rules|skills)/[A-Za-z0-9_./\-]+\.md').allMatches(text)) {
+          final mentioned = match.group(0) ?? '';
+          expect(File(mentioned).existsSync(), isTrue, reason: '$path mentions $mentioned, which does not exist');
+        }
+      }
+    });
+  });
+
   group('documented paths', () {
     const skillFiles = [
       '.agents/skills/skill-dispatcher/SKILL.md',
       '.agents/skills/skill-orchestrator/SKILL.md',
+      '.agents/skills/skill-planner/SKILL.md',
       '.agents/skills/skill-project-tasks/SKILL.md',
     ];
     final sources = [
