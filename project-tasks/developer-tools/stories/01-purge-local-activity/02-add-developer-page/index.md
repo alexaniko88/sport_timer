@@ -3,7 +3,7 @@ id: DEV-01-02
 status: ready
 type: feat
 complexity: high
-depends-on: [DEV-01-01]
+depends-on: [DEV-01-01, IMP-02]
 touches:
   - lib/features/developer/**
   - lib/features/home/presentation/home_page.dart
@@ -30,8 +30,8 @@ Add a debug-only "Developer tools" page, opened from the bottom of the navigatio
 
 ## Context
 
-- Story: [Purge local activity](../index.md). Epic: [Developer tools](../../../index.md). Storage purge: [DEV-01-01](../01-purge-activity-storage/index.md).
-- Drawer: `lib/features/home/presentation/home_page.dart` builds a `NavigationDrawer` with a title and two `NavigationDrawerDestination`s (Templates index 0, Timer styles index 1) handled by `_onDrawerDestinationSelected`. Flutter 3.47.7 `NavigationDrawer` has a `footer` parameter that is pinned below the scrolling destinations.
+- Story: [Purge local activity](../index.md). Epic: [Developer tools](../../../index.md). Storage purge: [DEV-01-01](../01-purge-activity-storage/index.md). Drawer redesign: [IMP-02](../../../../improvements/02-rethink-navigation-drawer/index.md).
+- Drawer: after [IMP-02](../../../../improvements/02-rethink-navigation-drawer/index.md), `lib/features/home/presentation/home_page.dart` builds a `Drawer` with a `SafeArea` and `Column` holding a header (`Icons.timer_outlined` badge + `Sport Timer` title), a `Divider`, and an `Expanded` `ListView` of `_DrawerTile` (`AppSurface`) items for `Templates` and `Styles`.
 - Routes: `lib/navigation.dart` has the `RoutePath` enum and `Routes.router`, a `static final GoRouter`. `HomePage` is created there as `const HomePage()`.
 - `ActivityRepository` (`lib/features/statistics/domain/activity_repository.dart`) is registered in `getIt` in `lib/di/di.dart`. Statistics screens refresh on `changes`, which the purge emits, so this page does nothing extra to refresh them.
 - ViewModel pattern to copy: `lib/features/login/presentation/login_view_model.dart` and `login_state.dart` (`ValueNotifier` state, `Future<bool>` for a one-time result, `_disposed` flag) and how `login_page.dart` shows a snackbar after awaiting it.
@@ -45,14 +45,9 @@ Add a debug-only "Developer tools" page, opened from the bottom of the navigatio
   - `Routes` gets `static GoRouter build({required bool developerToolsEnabled})` that returns the router, and `static final router = build(developerToolsEnabled: kDebugMode);`. The existing routes stay unchanged.
   - `RoutePath` gets `developer('/developer')`. The `/developer` `GoRoute` is added to the list only when `developerToolsEnabled` is true. When it is false, going to `/developer` shows go_router's default error page and `DeveloperToolsPage` is never built.
   - `HomePage` gets `final bool developerToolsEnabled;` with `const HomePage({super.key, this.developerToolsEnabled = kDebugMode})`. `Routes.build` passes its flag: `HomePage(developerToolsEnabled: developerToolsEnabled)`.
-- **Drawer entry:** when `developerToolsEnabled` is true, `NavigationDrawer.footer` is a `Column(mainAxisSize: MainAxisSize.min)` with a `Divider(indent: 28, endIndent: 28)` and then, inside `Padding(padding: EdgeInsets.fromLTRB(12, 8, 12, 24))`, this `ListTile`:
-  - `shape: const StadiumBorder()`, `minTileHeight: 56`, `contentPadding: const EdgeInsets.symmetric(horizontal: 16)`;
-  - `leading: const Icon(Icons.bug_report_outlined)`, `iconColor` and `textColor` `colorScheme.onSurfaceVariant`;
-  - `title: const Text('Developer tools', overflow: TextOverflow.ellipsis)`, `titleTextStyle: textTheme.labelLarge` (the Material 3 drawer destination label style);
-  - the default `ListTile` ink highlight on press;
-  - wrapped in `Semantics(button: true, child: ...)` so screen readers announce it as a button.
-
-  It is not a `NavigationDrawerDestination`, so the indexes 0 and 1 do not change. Tapping it closes the drawer and calls `context.pushNamed(RoutePath.developer.value)`. When the flag is false, `footer` is null. Where the mockup and this text differ, this text wins; the mockup is the visual reference.
+- **Drawer entry:** when `developerToolsEnabled` is true, below the `Expanded` `ListView` inside the `Drawer`'s `Column`, render a `Divider(height: 1, indent: AppSpacing.s16, endIndent: AppSpacing.s16)` followed by `Padding(padding: const EdgeInsets.fromLTRB(AppSpacing.s16, AppSpacing.s12, AppSpacing.s16, AppSpacing.s24))` holding an `AppSurface` tile wrapped in `Semantics(button: true, child: ...)`:
+  - Inside `AppSurface`: a `Row` with `Icon(Icons.bug_report_outlined, color: colorScheme.primary)`, `const Gap(AppSpacing.s12)`, `Expanded(child: Text('Developer tools', maxLines: 1, overflow: TextOverflow.ellipsis, style: textTheme.tileTitle))`, `const Gap(AppSpacing.s12)`, and `Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant)`.
+  - Tapping it closes the drawer (`_scaffoldKey.currentState?.closeDrawer()`) and calls `context.pushNamed(RoutePath.developer.value)`. When `developerToolsEnabled` is false, neither this bottom `Divider` nor the footer `Padding` is rendered. Where the mockup and this text differ, this text wins; the mockup is the visual reference.
 - **Page `DeveloperToolsPage`:** a `StatefulWidget` that creates `DeveloperToolsViewModel(getIt())` in its `State` and disposes it in `dispose()`.
 - **ViewModel `DeveloperToolsViewModel(ActivityRepository)`:**
   - State `DeveloperToolsState { final bool isPurging; final String? errorMessage; }` with a `const` constructor (defaults `false` and `null`), `copyWith`, `==` and `hashCode`.
@@ -114,7 +109,7 @@ Fakes: every new test file declares its own private, hand-written fakes (no mock
 
 - `test/features/developer/presentation/developer_tools_view_model_test.dart`: success, failure (`errorMessage` set), second call while the first is pending (repository called once), dispose while pending.
 - `test/features/developer/presentation/developer_tools_page_test.dart`: cancel, barrier dismiss, confirm, purging state, failure snackbar, guidelines, text scale. The fake is registered in `getIt` in `setUp`, and `getIt.reset()` runs in `tearDown`.
-- `test/features/home/presentation/home_page_test.dart`: drawer footer shown or hidden by the flag; tapping it opens the developer page through `Routes.build(developerToolsEnabled: true)` in `MaterialApp.router`. `HomePage` creates `SettingsViewModel`, `AccountViewModel` and `StatisticsViewModel` from `getIt`, so `setUp` registers private fakes for `SettingsRepository`, `UserRepository` and `ActivityRepository`, and `tearDown` calls `getIt.reset()`. The app under test uses `SportTheme` and the `AppLocalizations` delegates, as `ui_snapshots_test.dart` does, because the home page reads `context.l10n`.
+- `test/features/home/presentation/home_page_test.dart`: extend the existing home drawer tests from `IMP-02` to verify that the drawer footer is shown or hidden by `developerToolsEnabled` and that tapping it opens `DeveloperToolsPage` through `Routes.build(developerToolsEnabled: true)` in `MaterialApp.router`.
 - `test/navigation_test.dart`: `Routes.build(developerToolsEnabled: false)` then `go('/developer')` builds no `DeveloperToolsPage`. The same `getIt` fakes as the home page test are registered, because the router's initial route can build pages that read them.
 
 Changed:
