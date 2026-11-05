@@ -74,6 +74,108 @@ If a stage asks a question, fails, is denied a permission, or the review does no
 
 Fixed models per stage (`tool/dispatcher/role_models.dart`): implementer and tests use Sonnet 5.5 / GPT-6.1 Terra / Gemini 4 Argon (medium); the reviewer uses Opus 5.5 / GPT-6.1 Sol (medium) and Gemini 4 Argon (high). Claude uses the `sonnet` and `opus` aliases, which always mean the newest model.
 
+## Architecture
+
+### Parts and who talks to whom
+
+```text
+                    user (Spanish chat)
+                     |              |
+              skill-planner    skill-dispatcher        <- instructions only, run inside the AI tool
+                     |              |
+   writes tasks -----+              +--> fvm dart tool/dispatcher.dart next | models | launch | status
+   (PR, reviewed, merged)                         |
+        |                                         v
+        v                               tool/dispatcher/*  (Dart, unit tested)
+  origin/master: project-tasks/                   |
+        ^                                         +--> git, gh          (all writes to git and GitHub)
+        |                                         +--> claude | codex | agy   (one headless run per stage, sandboxed)
+        +---------- read by `next` and `launch` --+
+```
+
+- The two skills only hold instructions and talk to the user. They never touch git beyond what their text says.
+- `tool/dispatcher.dart` is a thin command line. Every rule lives in `tool/dispatcher/` and is tested.
+- The AI tools never write to git and never open the PR. The script does, after the stages end.
+
+### Layers of the script
+
+| Layer | Files in `tool/dispatcher/` | Job |
+| --- | --- | --- |
+| Command line | `../dispatcher.dart` | Parses `next`, `models`, `launch`, `status`. Reads remote branches and open PRs, reads live runs from state files, prints JSON, sets the exit code. |
+| Tasks | `task.dart`, `task_loader.dart`, `task_selector.dart`, `extensions/front_matter_text.dart`, `markdown_sections.dart`, `touch_paths.dart` | Parse `index.md` into a `Task`; load all tasks from disk or from `origin/master` (`git ls-tree` and `git show`, so a task only on another branch is never offered); decide what can start (`blockReason`, `candidates`, `next`); the overlap rule. |
+| Models | `role_models.dart`, `model_catalog.dart` | The fixed model and effort per tool and role; the co-author text (`attribution`); the `models` command parses `codex debug models` and `agy models` and warns about stale fixed models. |
+| One stage | `tool_command.dart`, `stage_runner.dart`, `stage_report.dart`, `review_gate.dart` | Build the exact command line per tool and role; start the process with a timeout (45 min); read the final answer (Claude: JSON `result`; Codex: `-o` file; Antigravity: stdout); collect Claude's `permission_denials`; parse the `## Commit / Summary / Evidence / Open notes / Blocked` report; parse the reviewer's JSON findings and decide pass, fix or blocked. |
+| The clone | `run_workspace.dart`, `command_runner.dart` | Temporary clone in `<system temp>/sport-timer-runs/<ID>/repo`, task branch, repo-local noreply git identity, `.runner/` excluded from git, `state.json` (stage, pid) for `status`, cleanup. |
+| Git and GitHub | `git_publisher.dart`, `pr_description.dart`, `task_archiver.dart` | Commit with format and co-author checks, private data scan, push that refuses `master`/`main`, `gh pr create`, PR text with before/after golden links, move the task to `done/` and fix links. |
+| Orchestration | `launch_pipeline.dart` | The state machine of one run (see "`launch` pipeline" above). Returns a `RunResult` (`pullRequest`, `blocked`, `failed`). |
+
+Injection points for tests: `RunCommand` (every shell command) and `RunProcess` (every AI tool process). The pipeline test replaces both.
+
+### Data that moves between the parts
+
+| From | To | What |
+| --- | --- | --- |
+| Planner | `project-tasks/<...>/NN-slug/` | `index.md`, optional `mockup.html`, `notes.md`; opened as a PR on `feat/plan-<topic>`. |
+| `next` | Dispatcher skill | JSON: `next` (id, title, path, type, complexity, dependsOn, touches, skills, branch), `alsoReady`, `waiting` (id to reason). |
+| Dispatcher skill | `launch` | `<ID> --tool=... [--implementer --tests --reviewer --allow]`. |
+| `launch` | Stage | A fixed prompt: read `roles/<role>.md`, the task is `<path>`, plus an extra instruction (review the diff, or the findings to fix). |
+| Stage | `launch` | Final message with the report sections (reviewer: a fenced `json` block of findings). |
+| `launch` | Dispatcher skill | One line `RESULT {taskId, outcome, prUrl, message, tail, keptWorkspace}`; exit 0 PR, 2 blocked, 1 failed. |
+| Run | `<temp>/sport-timer-runs/<ID>/state.json` | `taskId, tool, stage, pid, updated`; `status` and `next` read it and check the pid with `kill -0`. |
+
+### The command line of each stage (`tool_command.dart`)
+
+| | Claude | Codex | Antigravity |
+| --- | --- | --- | --- |
+| Program | `claude -p` | `codex exec` | `agy` |
+| Model and effort | `--model <alias> --effort <level>` | `-m <id> -c model_reasoning_effort="<level>"` | `--model <id>` (the level is part of the id) |
+| User config off | `--setting-sources project` | `--ignore-user-config` | not available; `--sandbox` only |
+| No session kept | `--no-session-persistence` | `--ephemeral` | not available |
+| Implementer and tests | `--permission-mode acceptEdits` | `-s workspace-write` | `--mode accept-edits` |
+| Reviewer (read-only) | `--permission-mode plan` | `-s read-only` | `--mode plan` |
+| Allowed shell | `--allowedTools` read-only git and file commands, plus `Bash(fvm:*)` for implementer and tests, plus `--allow` | sandbox decides | sandbox decides |
+| Unknown permission | `--permission-prompts none`: denied and listed in `permission_denials` | denied by the sandbox | denied by the sandbox |
+| Final answer | JSON `result` on stdout | `-o <file>` | stdout |
+| Timeout | the script kills the process after 45 minutes | same | `--print-timeout` plus the script |
+
+### Outcomes and what is left behind
+
+| Situation | Commit | Push | PR | Clone |
+| --- | --- | --- | --- | --- |
+| Everything passes | one per stage, plus `docs: close task <id>` | task branch | opened | deleted |
+| A stage reports `## Blocked`, a stage fails or times out, a permission is denied, the checks still fail after one fix, the review still has critical or general findings after 2 rounds | `wip: <id> stopped`, reason appended to `notes.md` under `## Blocked` | task branch | none | deleted |
+| Private data found in the added lines (normal or `wip` push) | made locally | **none** | none | **kept**, path in `RESULT.keptWorkspace` |
+| Push or `gh pr create` fails | made locally | maybe | none | **kept** |
+| Wrong git email, or a run for that id already exists | none | none | none | none (nothing was created, or it is cleaned) |
+
+### Invariants the code enforces
+
+Each one has a test in `test/tool/dispatcher/`. A reviewer should try to break them.
+
+1. Nothing is pushed to `master` or `main` (`GitPublisher.push`).
+2. A commit subject is `<type>: <description>`, lowercase, no final period, at most 100 characters (`CommitMessage.problem`; `wip` is also allowed).
+3. Every commit has `Co-Authored-By: <tool> <model>` and no email (`LaunchPipeline._commit`).
+4. The git identity of the clone must end with `@users.noreply.github.com`, or nothing starts (`RunWorkspace.prepare`).
+5. The added lines are scanned before any push for a local home path, a private key, a GitHub token, a `sk-` key and a company email (`DiffScanner`). A hit blocks the push and keeps the clone.
+6. A review without a readable findings block never counts as a pass (`ReviewGate.parse` returns null, the run fails).
+7. The reviewer is read-only on all three tools (`ToolCommand.build`, guarded by `ai_setup_test.dart`).
+8. Two tasks whose `touches` overlap never run together, and an empty `touches` overlaps everything (`TaskSelector`, `TouchPaths.overlaps`).
+9. A task starts only when it is `ready`, all its dependencies are under `done/` on `origin/master`, and it has no branch, open PR or live run (`TaskSelector.blockReason`).
+10. The clone is deleted on every ending except a leak or a failed push (`RunWorkspace.cleanup`, `LaunchPipeline._keep`).
+11. After a move to `done/`, every relative link in the task and in other task files is rewritten (`TaskArchiver`).
+12. The PR description has no attribution line (`PrDescription`).
+
+### Where each rule is written
+
+| Rule | Written in | Enforced by |
+| --- | --- | --- |
+| Task format, ready checklist, overlap | `.agents/rules/project-tasks-format.md` | `task_selector.dart` and the cold read |
+| Commit and branch names, co-author | `.agents/rules/git-commits.md` | `CommitMessage`, `LaunchPipeline._commit` |
+| Dart style | `.agents/rules/dart-style.md` | Runner roles read it; `fvm dart tool/agent_check.dart` checks format and analyze |
+| What each runner does and reports | `skill-dispatcher/roles/*.md`, `references/project-overrides.md` | `StageReport`, `ReviewGate` parse the reports |
+| What the planner asks and writes | `skill-planner/SKILL.md`, `roles/cold-reader.md`, `references/*.md` | `ai_setup_test.dart` (files exist, models named, read-only roles) |
+| Standing authorization to push and open PRs | `skill-dispatcher/SKILL.md`, `CLAUDE.md` | The script's own limits (invariants 1 to 5) |
+
 ## Design decisions and why
 
 | Decision | Reason |
@@ -88,6 +190,41 @@ Fixed models per stage (`tool/dispatcher/role_models.dart`): implementer and tes
 | A cold read before `ready`. | The only reliable way to know a task needs nobody: an agent with no context lists what it would have to guess. |
 | Standing authorization to commit, push the task branch and open the PR. | The point is that the user only reviews PRs. The script limits it: never `master`, never merge, never another branch. |
 | Denied permissions stop the run and come back through the dispatcher. | A headless process cannot ask the user; a run blocked on an invisible prompt is worse than "stop, tell, relaunch". |
+
+## Decision log (the grill)
+
+Rebuilt from the planning conversation, in order, so a reviewer can see what was asked, what the maintainer decided and what it changed. It is a summary, not a transcript. The conversation was in Spanish; the original request, in short: rethink `skill-project-tasks`, a planner that grills and writes concrete tasks, and a dispatcher that runs several tasks and ends with open PRs.
+
+| # | Topic | What was decided (maintainer's words, in short) | Effect in the design |
+| --- | --- | --- | --- |
+| 1 | Language | Talk in Spanish, one question at a time; the skills, rules and docs stay in English. | The planner interviews one question at a time with a recommended answer. All files are English. |
+| 2 | Old or new skill | "Nueva": a new skill, not a rewrite. The old ones stay until the new ones are proven; the maintainer deletes them later. | `skill-planner` and `skill-dispatcher` were added next to `skill-project-tasks` and `skill-orchestrator`. The old ones only read the new format. |
+| 3 | Hierarchy | The task is the measurable unit. A task is inside a story, a story inside an epic. | Epic, story, task folders. Only tasks are archived; epics and stories never move. |
+| 4 | Who decides what | The planner only plans. The orchestrator (later: dispatcher) goes its own way and decides which task to take. | No state written by the planner. State is deduced from `done/`, branches and PRs. |
+| 5 | Best practices | Look at current good practice for this kind of system. | Cold read, deduced state, fixed sections, a ready checklist. |
+| 6 | Acceptance criteria | They come out of the grill. The maintainer does not write them, the planner proposes and the maintainer confirms. | Planner step 7; the `When..., then.... Check:...` form so each one can be checked. |
+| 7 | UI tasks | First look at what exists. The maintainer gives no design. The planner must show an example visually, and the answer is "ok" or "no". | `references/ui-questions.md` (look first, ask second) and `references/mockup.md`. |
+| 8 | Mockup | An HTML mockup, kept inside the task folder, plus golden snapshots after the work. | `mockup.html` next to `index.md`; goldens stay the record of the real app. |
+| 9 | Task as folder | Tasks become folders; the migration of the old ones is separate work. | Format v2 and a one-off migration of 67 tasks (PR #65). All active ones became `draft`. |
+| 10 | Several AI tools | Launch with Codex, Antigravity or Claude; ask the tool each time. Everything lives in this repo, nothing from `my-dev-env`. | `--tool=` option, one table of models, no outside script. |
+| 11 | PR content | PR descriptions with visuals. | Before and after golden images in the PR (`PrDescription`). |
+| 12 | Co-author | Add `Co-Authored-By` with the tool and model, no email. Apply the rule now. | `git-commits.md` changed (PR #64); the script writes the trailer; no attribution line in PR bodies. |
+| 13 | Runner behavior | "Runners": one task at a time per runner, a loop: pick, ask the tool, launch, "another task?". Up to 3 at once. | The loop in `skill-dispatcher/SKILL.md`; `status` and `next` count live runs. |
+| 14 | Names | The dispatcher skill is called `skill-dispatcher`. Its own model is the newest Sonnet. | Frontmatter model `claude-sonnet-5-5`. |
+| 15 | PR count | Fewer PRs: three stacked ones. | #65 format and migration, #66 dispatcher, #67 planner (plus #64 for the co-author rule). |
+| 16 | Archiving | Never archive epics or stories. | `TaskArchiver` moves tasks only. |
+| 17 | Ask Opus | Ask the model question to Opus 5.5 in a subagent. | Planner model table; planner models are Opus 5.5, GPT-6.1 Sol, Gemini 4 Argon, medium. |
+| 18 | Commit first, then grill the run | Commit what exists, then grill the process: implementer, another model reviewing, peer review like `skill-orchestrator`. | Three stages: implementer, tests, reviewer, each its own run. |
+| 19 | Models per role | Predefine all of it: implementer and tests intermediate, reviewer more powerful (Opus 5.5, Sol 6.1, Argon high). Medium effort everywhere except Argon high. | `role_models.dart` table; `models` warns when it is stale. |
+| 20 | Script drives the runner | "ok" to a script conducting the runner. | `launch` is a script pipeline, not a prompt. |
+| 21 | Questions from runners | Runners cannot ask live, so every question and every sandbox block must be redirected to the dispatcher, or runs will be blocked. | Headless live routing is not possible, so: deny, stop, report through the dispatcher, relaunch (`--allow` for Claude). |
+| 22 | Try it | "Vale, probamos así, a ver qué tal." | Measured with the real CLIs: all three edit and test in their sandbox; none can write to `.git`. |
+| 23 | Git ownership | (Consequence of 22) the script does every git and GitHub write. | `GitPublisher`, the commit checks and the diff scan. |
+| 24 | Authorization | Commit, push and open the PR for the planned PRs "all at once"; for dispatcher runners, commit, push their own task branch and open the PR without asking. Never `master`, never merge. | Standing authorization text in the skill and `CLAUDE.md`; invariant 1. |
+| 25 | Privacy | Never the company email, never a local path with the username, in a personal repo. | Noreply email check; `DiffScanner`; nothing pushed on a leak. |
+| 26 | Clean machine | Nothing should stay on the disk after a run. | Temporary clone deleted on every ending except a leak or failed push. |
+| 27 | Scope of testing | "The big tests, later. Finish the implementation." | The "Not verified yet" list. |
+| 28 | This document | Write a Markdown file in the project that lets the maintainer launch a review later. | This file. |
 
 ## Tests
 
@@ -125,4 +262,53 @@ Give a reviewer this file and the commits above, and ask for findings as Critica
 5. **The skills and roles:** are the instructions complete, consistent with the code and with `.agents/rules/`, and free of anything that depends on a file outside the repo?
 6. **Not verified list above:** which of these should be proven before the first real use?
 
-Suggested prompt: "Review the task automation system described in `docs/task-automation.md`. Read the files it names, run `fvm flutter test test/tool/dispatcher test/architecture/ai_setup_test.dart`, and report findings as Critical, General and Minor with file and line. Start with the 'Not verified yet' list."
+### Where to look, by file
+
+| Area | Files | Test |
+| --- | --- | --- |
+| Format and parsing | `.agents/rules/project-tasks-format.md`, `task.dart`, `extensions/front_matter_text.dart`, `markdown_sections.dart` | `test/tool/dispatcher/extensions/`, `task_selector_test.dart` |
+| Selection and overlap | `task_selector.dart`, `extensions/touch_paths.dart`, `task_loader.dart` | `task_selector_test.dart` |
+| Models | `role_models.dart`, `model_catalog.dart` | `model_catalog_test.dart`, `ai_setup_test.dart` |
+| One stage | `tool_command.dart`, `stage_runner.dart`, `stage_report.dart`, `review_gate.dart` | `stage_test.dart` |
+| Git and PR | `git_publisher.dart`, `pr_description.dart`, `task_archiver.dart`, `run_workspace.dart` | `git_publisher_test.dart`, `launch_pipeline_test.dart` |
+| Whole run | `launch_pipeline.dart`, `../dispatcher.dart` | `launch_pipeline_test.dart` (real git, temporary bare repo, fake tool and fake `gh`) |
+| Skills and roles | `skill-planner/**`, `skill-dispatcher/**`, `CLAUDE.md` | `ai_setup_test.dart` |
+
+### Things a reviewer should question on purpose
+
+These are places where the design chose something that is easy to doubt. They are not known bugs.
+
+- **Cautious overlap.** An empty `touches` blocks every other running task, and a glob counts as its folder. This is safe but can serialize work that could run together.
+- **Branch names decide "running".** `busyIdsFromBranches` matches the prefix `<type>/<id>-`. A branch made by hand with that prefix hides the task from `next`.
+- **Denial detection is Claude only.** For Codex and Antigravity, a blocked permission shows up only if the runner writes `## Blocked`, otherwise as a generic failed stage with the output tail.
+- **Antigravity answer.** The final message is the whole stdout, so extra text before the report sections could confuse `StageReport.parse` (it reads sections by heading, which should tolerate it).
+- **Reviewer rounds.** Two reviews at most. A third problem is never fixed automatically; it becomes a `wip:` branch.
+- **One fix attempt for the checks.** `agent_check.dart --skip-build` runs in the clone; the debug builds are skipped on purpose, so a change in `android/`, `ios/` or `pubspec.yaml` is not built by the run.
+- **Scan patterns.** `DiffScanner` knows five patterns. It does not know other secret formats. Branch protection and the maintainer's review are the next barriers.
+- **Wide `--allow`.** `--allow="Bash(<program>:*)"` gives a whole program to a Claude run. The dispatcher skill must ask before using it.
+- **Time.** A stage times out after 45 minutes; a whole run has no global limit.
+- **The planner depends on the user.** The cold read catches missing detail but not a wrong decision the maintainer approved. The mockup "ok" is the guard for views.
+
+### Commands to reproduce
+
+```bash
+fvm flutter test test/tool/dispatcher test/architecture/ai_setup_test.dart   # unit and guard tests
+fvm dart tool/agent_check.dart --skip-build                                    # format, analyze, mirrored tests
+fvm dart tool/dispatcher.dart next                                             # nothing until a task is ready
+fvm dart tool/dispatcher.dart models                                           # stale model warnings
+fvm dart tool/dispatcher.dart status                                           # live runs
+git log --oneline 1079fb5^..HEAD                                               # the commits of this work
+```
+
+### Suggested review prompts
+
+Full review:
+
+"Review the task automation system described in `docs/task-automation.md`. Read the files it names, run `fvm flutter test test/tool/dispatcher test/architecture/ai_setup_test.dart`, and report findings as Critical, General and Minor with file and line. Start with the 'Not verified yet' list, then try to break each invariant under 'Invariants the code enforces'."
+
+Focused reviews, one per area (each can run on its own):
+
+- "Read `tool/dispatcher/launch_pipeline.dart` and `git_publisher.dart`. Find any path where something is pushed to `master`, a leak is pushed, or a clone stays on disk by accident."
+- "Read `tool/dispatcher/tool_command.dart` and the three runner roles. Check that the reviewer cannot write on any tool, and that user settings cannot change a run."
+- "Read `skill-planner/SKILL.md` and its references. Check that a runner would never need to ask a question about a task that passed the cold read, and that the instructions agree with `.agents/rules/project-tasks-format.md`."
+- "Compare this document with the code. List every claim that is no longer true."
