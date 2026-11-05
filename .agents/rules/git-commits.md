@@ -5,7 +5,7 @@ Rules for this project only.
 - The first line is `<type>: <description>`. The type says what the commit does, in lowercase: `feat` (new behavior), `fix` (bug fix), `refactor` (code change with no behavior change), `chore` (dependencies, tooling, config, rules), `docs` (documentation only), `style` (formatting only), `perf`, `test`, `build`.
 - The description is short, in the imperative, starts in lowercase and has no final period. Example: `refactor: migrate login to a LoginViewModel`.
 - Add a body after a blank line only when the reason is not obvious from the first line.
-- Do not add AI co-author trailers or email addresses to commit messages.
+- End every commit made by an AI tool with a `Co-Authored-By: <tool> <model>` line, after a blank line, for example `Co-Authored-By: Claude Opus 5.5`, `Co-Authored-By: Codex` or `Co-Authored-By: Antigravity`. Use the model that really did the work; if it is unknown, write only the tool. Never add an email address. Do not add any attribution line to a PR description.
 - Always show the full commit message when you show it to the user.
 - Existing commits keep their old messages. The format applies to new commits.
 
