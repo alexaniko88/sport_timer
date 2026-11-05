@@ -10,14 +10,21 @@ Give developers a place in debug builds to perform useful local maintenance whil
 
 ## Agreed behavior and boundaries
 
-- Open the developer page from the navigation drawer in debug builds only. The page and its actions must also be inaccessible through navigation in profile and release builds.
+- Open the developer page from the bottom of the navigation drawer in debug builds only. In profile and release builds the drawer entry and the `/developer` route do not exist, so the page and its actions cannot be reached.
 - The first tool purges all locally stored activity for every account on the device, after confirmation. Settings and authentication remain untouched.
 - Other developer controls are outside the first version; future ideas are provisional.
 
-## Current context
+## Decisions and current constraints
 
-The app stores activity in a local SQLite database. The separate [delete statistics story](../statistics/stories/05-delete-statistics/index.md) is a user-facing, account-specific action; it is not a prerequisite for this developer tool.
+- **Debug gate:** one `developerToolsEnabled` flag, set from `kDebugMode` by the app and settable by tests, so the release behavior is tested too.
+- **No localization:** the developer page is never seen by end users, so its texts are plain English constants in the code, with no ARB keys.
+- **Purge means purge:** writes queued before a purge (for example by the timer recorder) are dropped silently and can never bring purged history back.
+- The app stores activity in a local SQLite database (`activity.db`). The [delete statistics story](../statistics/stories/05-delete-statistics/index.md) is a separate, user-facing, account-specific action; this epic does not depend on it.
 
 ## Stories
 
-1. [Purge local activity](stories/01-purge-local-activity/index.md) — debug-only page and purge action; ready for planning.
+1. [Purge local activity](stories/01-purge-local-activity/index.md) — debug-only page and purge action.
+
+## Delivery order
+
+[DEV-01-01](stories/01-purge-local-activity/01-purge-activity-storage/index.md) (storage purge) first, then [DEV-01-02](stories/01-purge-local-activity/02-add-developer-page/index.md) (developer page).
