@@ -1,43 +1,63 @@
 ---
 id: BUG-01
-status: draft
+status: ready
 type: fix
+complexity: high
 depends-on: []
+touches:
+  - pubspec.yaml
+  - ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+  - ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved
+  - CLAUDE.md
+skills: []
 ---
 
 # iOS build fails to resolve authentication dependencies
 
 Category: [Bugs](../index.md)
 
-## Problem and impact
+> **Run this task with `skill-orchestrator`, not `skill-dispatcher`.** It needs an iOS and an Android build, which the dispatcher's runners cannot run (they skip builds and, on Codex, have no network). When the dispatcher offers BUG-01, skip it.
 
-An unsigned iOS debug build fails during Swift Package Manager dependency resolution, before compilation. This blocks iOS builds and native validation, including the iOS checks for the [statistics database foundation](../../statistics/stories/01-record-activity/done/02-add-database-foundation/index.md).
+## Goal
 
-**Expected:** The iOS dependencies resolve and the app builds; Google sign-in and sign-out remain functional.
+The unsigned iOS debug build resolves its Swift Package Manager dependencies and builds again, with Google sign-in unchanged. The fix pins the Firebase plugins to the last versions built on Firebase iOS SDK 12.
 
-**Actual:** Resolution reports incompatible `gtm-session-fetcher` requirements from Firebase iOS SDK and Google Sign-In iOS.
+## Context
 
-## Reproduction and evidence
+- **Expected:** `fvm flutter build ios --debug --no-codesign` succeeds.
+- **Actual (reproduced on `master` on 5 November 2026, Flutter 3.47.7):** Xcode fails before compiling: `'firebase_core-5.1.0' depends on 'firebase-ios-sdk' 13.1.1 and 'google_sign_in_ios-6.3.8' depends on 'googlesignin-ios' 9.0.0..<10.0.0`. Firebase iOS SDK 13.1.1 needs `gtm-session-fetcher` 4.0.0..<6.0.0, while Google Sign-In iOS 9.x needs 3.3.0..<4.0.0.
+- **Cause (confirmed):** `google_sign_in_ios` 6.3.8, the latest Flutter plugin release, still pins Google Sign-In iOS 9.x. Upstream [Google Sign-In iOS 10.0.0](https://github.com/google/GoogleSignIn-iOS/releases) widened `gtm-session-fetcher` to allow 4.x and 5.x, but the Flutter plugin has not adopted it yet. `fvm flutter pub outdated` shows no newer `google_sign_in`, `firebase_core` or `firebase_auth` release.
+- **Compatible versions (verified):** `firebase_core` 4.15.0 and `firebase_auth` 6.7.0 are the last releases before the Firebase iOS SDK 13 bump (see the [core changelog](https://pub.dev/packages/firebase_core/changelog) and the [auth changelog](https://pub.dev/packages/firebase_auth/changelog)). They use Firebase iOS SDK 12.19.0, whose [Package.swift](https://raw.githubusercontent.com/firebase/firebase-ios-sdk/12.19.0/Package.swift) accepts `gtm-session-fetcher` 3.4.1..<6.0.0. The `firebase_auth` 7.0.0 changelog lists only platform requirement changes and no Dart API change.
+- **Proof:** in a clean clone of `master` with only those two pins changed, `fvm flutter pub get`, `fvm flutter build ios --debug --no-codesign` and `fvm flutter build apk --debug` all succeeded. SPM resolved `gtm-session-fetcher` 3.5.0, `googlesignin-ios` 9.2.0 and `firebase-ios-sdk` 12.19.0. The two tracked `Package.resolved` files changed as a result.
+- Code that uses Firebase: `lib/main.dart` (initialization), `lib/features/user/data/` (`FirebaseUserRepository`, the `toAppUser()` extension), and the statistics Firebase account source in `lib/features/statistics/data/`.
 
-1. Use the repository's pinned Flutter SDK and resolve dependencies with `fvm flutter pub get`.
-2. Run `fvm flutter build ios --debug --no-codesign` on a configured macOS/Xcode environment.
-3. Observe the Swift Package Manager dependency resolution failure.
+## Behavior
 
-Observed on branch `feat/database-foundation` during database foundation validation. The checkout pinned `firebase_core 5.1.0`, `firebase_auth 7.0.1`, and `google_sign_in 7.2.0`; those pins and the Swift Package Manager setting also existed on `master`. The installed Firebase plugin required Firebase iOS SDK 13.1.1, which requires `gtm-session-fetcher` 4..<6; the installed Google Sign-In adapter selected a native 9.x range requiring 3.3..<4. The conflict was observed before compilation. A separate build of `master` was not run, so reproduce on the implementation checkout before treating its baseline as confirmed.
+1. In `pubspec.yaml`, change `firebase_core: 5.1.0` to `firebase_core: 4.15.0` and `firebase_auth: 7.0.1` to `firebase_auth: 6.7.0`. Keep the exact pins (no `^`) and change nothing else.
+2. Run `fvm flutter pub get`, then `fvm flutter build ios --debug --no-codesign`. Commit the regenerated `ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved` and `ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved`.
+3. In `CLAUDE.md`, section "Dependencies and Android build", add one line saying `firebase_core` and `firebase_auth` stay on 4.15.0 and 6.7.0 because `google_sign_in_ios` still pins Google Sign-In iOS 9.x, which conflicts with Firebase iOS SDK 13 on `gtm-session-fetcher`. They can move up once `google_sign_in_ios` supports Google Sign-In iOS 10.
+4. No Dart code change is expected. If analyze or a test fails because of the downgrade, stop and report it instead of changing app code.
 
-References: [Firebase iOS SDK 13.1.1 manifest](https://raw.githubusercontent.com/firebase/firebase-ios-sdk/13.1.1/Package.swift) and [Google Sign-In iOS 9.1.0 manifest](https://raw.githubusercontent.com/google/GoogleSignIn-iOS/9.1.0/Package.swift). Recheck current released versions and their compatibility when planning.
+## Decisions
 
-## Scope and dependencies
+- Downgrade the two Firebase plugins now, instead of waiting for `google_sign_in_ios` to adopt Google Sign-In iOS 10, so iOS builds again (user, during planning).
+- Run by hand with `skill-orchestrator`, because the task needs real builds (user, during planning).
 
-Diagnose the actual checkout and choose a supported, compatible dependency configuration. Any plugin version changes, downgrade, or adapter change require an explicit plan and approval; no particular fix is assumed here. Preserve existing authentication behavior and avoid unrelated dependency changes. No prerequisite task is required for diagnosis.
+## Out of scope
 
-## Acceptance criteria
+- `google_sign_in` and every other package.
+- The Android KGP warning ([BUG-03](../03-android-firebase-kotlin-gradle-warning/index.md)) and `android/gradle.properties`.
+- macOS: the repo has no configured macOS desktop project (`fvm flutter build macos` reports "No macOS desktop project configured").
 
-- The native iOS dependencies resolve and an unsigned debug iOS build succeeds from the implementation checkout.
-- Google sign-in, sign-out, and existing authentication error behavior remain functional; document any environment-dependent manual verification.
-- Android authentication and builds remain compatible, and project dependency versions remain explicitly pinned as required.
-- The dependency choice and any remaining limitations are documented with evidence. The statistics task's native SQLite checks are run separately when that task resumes.
+## Files and tests
 
-## Validation
+- Change `pubspec.yaml`, the two `Package.resolved` files (generated by the iOS build) and `CLAUDE.md`.
+- No new tests: no app code changes. The existing suite, including `test/features/user/data/extensions/firebase_user_extension_test.dart`, must still pass.
 
-Reproduce the failure or document why the current checkout differs; verify compatible released package constraints using primary sources. Run package resolution, relevant authentication tests, full analysis and tests, an unsigned iOS debug build, and an Android debug build. Exercise sign-in and sign-out on supported devices or simulators where feasible and report any unverified behavior. Follow the applicable orchestration workflow before editing code.
+## Acceptance
+
+- [ ] When the iOS app is built, then dependency resolution and the build succeed. Check: `fvm flutter build ios --debug --no-codesign`.
+- [ ] When the Android app is built, then it still builds. Check: `fvm flutter build apk --debug`.
+- [ ] When the analyzer and the tests run, then there are no issues and every test passes. Check: `fvm flutter analyze` and `fvm flutter test`.
+- [ ] When `pubspec.yaml` is read, then `firebase_core: 4.15.0` and `firebase_auth: 6.7.0` are pinned exactly and no other dependency changed. Check: `git diff master -- pubspec.yaml` shows only those two lines.
+- [ ] When a user signs in with Google and signs out on the iOS simulator, then both work as before. Check: manual run with `fvm flutter run` on an iOS simulator, recorded in `notes.md`.

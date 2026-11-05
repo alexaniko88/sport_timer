@@ -1,60 +1,65 @@
 ---
 id: BUG-02
-status: draft
+status: ready
 type: fix
+complexity: low
 depends-on: []
+touches:
+  - lib/features/timer/presentation/timer_page.dart
+  - lib/l10n/**
+  - test/features/timer/presentation/timer_page_test.dart
+skills: []
 ---
 
-# Statistics and timer notice text is not translated
+# Timer recording notice is not translated
 
 Category: [Bugs](../index.md)
 
-Related: [Statistics epic](../../statistics/index.md) shares these files; coordinate with any active Statistics story that edits them.
+## Goal
 
-## Problem and impact
+The snackbar that says a workout cannot be saved to the statistics shows Spanish text when the app is in Spanish. It is the last hardcoded user-facing string in `lib/`.
 
-The app is localized in English and Spanish with `gen-l10n`, but part of the Statistics screen and one timer notice are hardcoded in English. With the device in Spanish these texts stay in English next to translated text, for example an English error message above the translated Retry button.
+## Context
 
-**Expected:** Every user-facing string, including accessibility labels, comes from `context.l10n` in both `app_en.arb` and `app_es.arb`, and dates follow the app locale.
+- **Expected:** every user-facing string comes from `context.l10n`, with a key in both `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`.
+- **Actual:** `TimerPage._showRecordingNotice` in `lib/features/timer/presentation/timer_page.dart` shows `Text('Could not save this workout to your statistics.')`. Above it sits a `FIXME-ALEX` comment block (a convention of another codebase, not used here) that names the intended key `timerRecordingUnavailable`. The key does not exist in either ARB file.
+- **When it shows:** `TimerPage` shows the notice when the activity recorder cannot start a recording run (for example no signed-in account or a storage failure). The timer keeps running.
+- **Reproduction:** set the device to Spanish, make the recorder fail to start, open the timer. The snackbar text is English. The widget test `test/features/timer/presentation/timer_page_test.dart` already forces this case with a fake recorder (`_Recorder()..fail = true`) and checks the English text.
+- **Cause (confirmed):** the string is a literal in the widget. A search of `lib/` on `master` finds no other hardcoded user-facing English sentence. The `errorMessage` fields in the statistics and settings ViewModels are never shown by a view.
+- **History:** this bug first listed several Statistics strings (empty and error states, tile labels, duration units, the date format). Later Statistics PRs moved all of them to `l10n` keys, so only this notice is left.
+- Feature `timer`, layer `presentation`. Golden reference: [`timer_recording_notice.png`](../../../test/snapshots/goldens/timer_recording_notice.png), captured in English.
 
-**Actual:** The strings below are English literals in the widgets or in presentation extensions.
+## Behavior
 
-## Confirmed findings
+- New key `timerRecordingUnavailable`:
+  - English (`app_en.arb`): `Could not save this workout to your statistics.` with an `@timerRecordingUnavailable` entry whose `description` is `Short notice shown when the workout runs but its activity cannot be saved to the statistics.`
+  - Spanish (`app_es.arb`): `No se pudo guardar este entrenamiento en tus estadísticas.`
+- Regenerate the localizations with `fvm flutter gen-l10n`.
+- `_showRecordingNotice` reads the text from `context.l10n.timerRecordingUnavailable`. The `SnackBar` and its `Text` can no longer be `const`; keep the same `duration` and `showCloseIcon`.
+- Remove the whole `FIXME-ALEX` comment block (the four comment lines above `content:`).
+- Nothing else changes: same timing, same close icon, same English text.
 
-Found by searching `lib/` for hardcoded user-facing text on the checkout of branch `improve/unify-app-styles`. The Retry button label was already localized there as `statisticsRetryButton`.
+## Decisions
 
-- Statistics page (`lib/features/statistics/presentation/statistics_page.dart`): the empty-state message "No completed activity yet." and the error message "Could not load your statistics."
-- Daily activity tile (`lib/features/statistics/presentation/widgets/daily_activity_tile.dart`): the "Work:", "Rest:" and "Total:" lines, the "round" and "rounds" text built with a manual singular and plural check, and the accessibility label ("..., work ..., rest ..., total ...").
-- Duration text (`lib/features/statistics/presentation/extensions/duration_extension.dart`): "hour(s)", "minute(s)" and "second(s)" with manual plurals.
-- Date (`lib/features/statistics/presentation/extensions/daily_activity_extension.dart`): `DateFormat('d MMMM y', 'en_US')` ignores the app locale, so Spanish shows an English month name.
-- Timer notice (`lib/features/timer/presentation/timer_page.dart`): "Could not save this workout to your statistics." It carries a `FIXME-ALEX` block, which this project does not use, because real localization exists.
+- Scope is only this notice, because the other strings of the original report are already translated on `master` (user, during planning).
+- Spanish text: `No se pudo guardar este entrenamiento en tus estadísticas.`, matching the style of `statisticsError` and `dayDetailsError` (user accepted the proposal).
 
-Not confirmed: whether other hardcoded strings exist outside `Text`, `label` and `tooltip` call sites (for example in data-layer error messages shown to the user). Planning should repeat the search.
+## Out of scope
 
-## Scope and exclusions
+- Any other string, screen or ARB key.
+- Showing the ViewModels' `errorMessage` values anywhere.
+- Changing when or how long the notice is shown.
 
-- Replace each string above with `l10n` keys in both ARB files, using ICU plural messages for counts, and regenerate with `fvm flutter gen-l10n`. Add a `description` to each English key.
-- Format the date with the app locale, not a fixed `en_US` locale.
-- Remove the `FIXME-ALEX` block from the timer notice once its key exists.
-- Keep the Statistics layout and styles unchanged. No new features and no changes to what is recorded or shown.
-- Presentation extensions that need `l10n` take it as a parameter or become extensions on `AppLocalizations`, following the project's extension rules. The plan names each file.
+## Files and tests
 
-## Dependencies
+- Change `lib/features/timer/presentation/timer_page.dart`, `lib/l10n/app_en.arb`, `lib/l10n/app_es.arb`, and the generated files under `lib/l10n/` (from `fvm flutter gen-l10n`).
+- In `test/features/timer/presentation/timer_page_test.dart`, keep the existing English test of the notice and add a Spanish case. Copy the existing test's setup (fake recorder that fails, `getIt` registrations, the method channel mock) and build the `MaterialApp` with `locale: const Locale('es')`.
+- The golden `test/snapshots/goldens/timer_recording_notice.png` must not change. Do not run `--update-goldens`.
 
-None. The Statistics charts story edits some of the same files, so check which branch lands first.
+## Acceptance
 
-## Acceptance criteria
-
-- No hardcoded user-facing English text remains in the Statistics feature or the timer notice, including semantic labels.
-- With the app in Spanish, the Statistics screens (content, empty, error) and the timer notice show Spanish text, and the date uses a Spanish month name.
-- Counts use correct singular and plural forms in both languages.
-- English output looks the same as before.
-- The `FIXME-ALEX` block is gone from the timer notice.
-
-## Validation
-
-Update the existing Statistics widget and unit tests that assert the English strings, and add a Spanish case for the tile, the empty and error states, and the date. Run `fvm flutter analyze` and the full test suite, and refresh the affected goldens in `test/snapshots/goldens/` with `fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart` only if English output changes.
-
-## UI snapshot reference
-
-Current captured states: [statistics](../../../test/snapshots/goldens/statistics.png), [statistics_empty](../../../test/snapshots/goldens/statistics_empty.png), [statistics_error](../../../test/snapshots/goldens/statistics_error.png) and [timer_recording_notice](../../../test/snapshots/goldens/timer_recording_notice.png). See the [snapshot index](../../../test/snapshots/README.md). The goldens are captured in English, so Spanish needs widget tests. These images are a baseline, not an approved design.
+- [ ] When the recorder cannot start and the app is in English, then the snackbar shows `Could not save this workout to your statistics.` with a close icon, as before. Check: `fvm flutter test test/features/timer/presentation/timer_page_test.dart`.
+- [ ] When the recorder cannot start and the app is in Spanish, then the snackbar shows `No se pudo guardar este entrenamiento en tus estadísticas.`. Check: the new Spanish case in `test/features/timer/presentation/timer_page_test.dart`.
+- [ ] When the ARB files are read, then `timerRecordingUnavailable` exists in both, and the English file has its `@timerRecordingUnavailable` description. Check: `grep -n "timerRecordingUnavailable" lib/l10n/app_en.arb lib/l10n/app_es.arb` prints two lines for `app_en.arb` (key and `@` entry) and one for `app_es.arb`, and `fvm flutter gen-l10n` finishes without errors.
+- [ ] When `timer_page.dart` is read, then it contains no `FIXME-ALEX` and no hardcoded English sentence. Check: `grep -n "FIXME-ALEX\|Could not save" lib/features/timer/presentation/timer_page.dart` prints nothing.
+- [ ] When the UI snapshots run, then `timer_recording_notice.png` still matches. Check: `fvm flutter test test/snapshots/ui_snapshots_test.dart` passes without `--update-goldens`.
