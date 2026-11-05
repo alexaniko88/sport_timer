@@ -140,7 +140,7 @@ All three tools must behave the same. Every rule and role is defined once; each 
 | Agent roles | `.agents/skills/skill-orchestrator/roles/<name>.md` (model, effort and access in its frontmatter) | none |
 | Codex model carrier | `.codex/agents/*.toml` | only name, description, model, effort and one line that points to the role file |
 
-Claude and Antigravity need no agent files: Claude passes the role file's model and effort to a general-purpose agent, and Antigravity runs the role in the main thread by reading the role file. Edit the single source, never copy a rule into a shim or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), and `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title.
+Claude and Antigravity need no agent files: Claude passes the role file's model and effort to a general-purpose agent, and Antigravity runs the role in the main thread by reading the role file. Edit the single source, never copy a rule into a shim or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title, and `.agents/rules/project-tasks-format.md` before you read, create or change a task under `project-tasks/`.
 
 What stays tool-specific: Claude hooks and auto memory, and how a skill is started (Claude `/skill-orchestrator`, Codex `$skill-orchestrator`, Antigravity by naming the skill). `test/architecture/ai_setup_test.dart` guards this setup.
 
