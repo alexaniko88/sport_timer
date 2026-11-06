@@ -30,8 +30,8 @@ Add a debug-only "Developer tools" page, opened from the bottom of the navigatio
 
 ## Context
 
-- Story: [Purge local activity](../index.md). Epic: [Developer tools](../../../index.md). Storage purge: [DEV-01-01](../01-purge-activity-storage/index.md). Drawer redesign: [IMP-02](../../../../improvements/02-rethink-navigation-drawer/index.md).
-- Drawer: after [IMP-02](../../../../improvements/02-rethink-navigation-drawer/index.md), `lib/features/home/presentation/home_page.dart` builds a `Drawer` with a `SafeArea` and `Column` holding a header (`Icons.timer_outlined` badge + `Sport Timer` title), a `Divider`, and an `Expanded` `ListView` of `_DrawerTile` (`AppSurface`) items for `Templates` and `Styles`.
+- Story: [Purge local activity](../index.md). Epic: [Developer tools](../../../index.md). Storage purge: [DEV-01-01](../01-purge-activity-storage/index.md). Drawer redesign: [IMP-02](../../../../improvements/done/02-rethink-navigation-drawer/index.md).
+- Drawer: after [IMP-02](../../../../improvements/done/02-rethink-navigation-drawer/index.md), `lib/features/home/presentation/home_page.dart` builds a `Drawer` with a `SafeArea` and `Column` holding a header (`Icons.timer_outlined` badge + `Sport Timer` title), a `Divider`, and an `Expanded` `ListView` of `_DrawerTile` (`AppSurface`) items for `Templates` and `Styles`.
 - Routes: `lib/navigation.dart` has the `RoutePath` enum and `Routes.router`, a `static final GoRouter`. `HomePage` is created there as `const HomePage()`.
 - `ActivityRepository` (`lib/features/statistics/domain/activity_repository.dart`) is registered in `getIt` in `lib/di/di.dart`. Statistics screens refresh on `changes`, which the purge emits, so this page does nothing extra to refresh them.
 - ViewModel pattern to copy: `lib/features/login/presentation/login_view_model.dart` and `login_state.dart` (`ValueNotifier` state, `Future<bool>` for a one-time result, `_disposed` flag) and how `login_page.dart` shows a snackbar after awaiting it.

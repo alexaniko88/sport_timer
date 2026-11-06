@@ -1,6 +1,6 @@
 ---
 id: IMP-02
-status: ready
+status: done
 type: improve
 complexity: medium
 depends-on: []
@@ -17,7 +17,7 @@ skills: []
 
 # Rethink the navigation drawer
 
-Improvements: [Improvements](../index.md)
+Improvements: [Improvements](../../index.md)
 
 ## Goal
 
@@ -25,14 +25,14 @@ Replace the bare `NavigationDrawer` on `HomePage` with a styled `Drawer` that ha
 
 ## Context
 
-- Improvements index: [Improvements](../index.md). Related completed story: [UI refactor Story 2](../../ui-refactor/stories/02-templates-in-drawer/index.md) (moved `Templates` into the drawer). Related downstream task: [DEV-01-02](../../developer-tools/stories/01-purge-local-activity/02-add-developer-page/index.md) (adds a debug-only `Developer tools` footer tile to this drawer).
+- Improvements index: [Improvements](../../index.md). Related completed story: [UI refactor Story 2](../../../ui-refactor/stories/02-templates-in-drawer/index.md) (moved `Templates` into the drawer). Related downstream task: [DEV-01-02](../../../developer-tools/stories/01-purge-local-activity/02-add-developer-page/index.md) (adds a debug-only `Developer tools` footer tile to this drawer).
 - Current behavior and limitation: `lib/features/home/presentation/home_page.dart` builds a Material `NavigationDrawer` with a plain text title and two `NavigationDrawerDestination` rows (`Templates` and `Timer styles`). Because `NavigationDrawer.selectedIndex` defaults to `0`, `Templates` always renders with a selected pill highlight even though the user is on Home (`Timer` or `Statistics`) and both drawer items push separate routes. In addition, the Spanish label `"Estilos del temporizador"` wraps onto two lines, making the two items uneven, and the drawer hides the currently active template and timer style until the user opens each page.
 - Desired change and benefit: replace `NavigationDrawer` with a `Drawer` (which keeps the 20px trailing-edge radius from `SportTheme.drawerTheme`) containing a header row (`Icons.timer_outlined` badge + `Sport Timer` title), a `Divider`, and a `ValueListenableBuilder<SettingsState>` over `_viewModel.state` that renders two equal-height `AppSurface` tiles with single-line titles (`"Templates"` / `"Plantillas"`, `"Styles"` / `"Estilos"`), single-line subtitles showing the active template (`"Custom"` or the selected template name) and active timer style (`"Ring"`, `"Full color"`, or `"Rounds strip"`), and a trailing `Icons.chevron_right`.
 - Existing code to reuse:
   - `AppSurface` (`lib/shared/presentation/widgets/app_surface.dart`), `AppSpacing` and `AppRadius` (`lib/shared/presentation/theme/app_spacing.dart`), and text roles `tileTitle` and `tileSecondary` (`lib/shared/presentation/extensions/text_theme_extension.dart`).
   - `TemplateNames` extension on `AppLocalizations` (`lib/features/templates/presentation/extensions/template_names_extension.dart`) maps `TemplateId` to its localized name (`l10n.templateName(id)`), and `l10n.templateCustomName` provides `"Custom"` / `"Personalizado"`.
   - Add a matching `TimerStyleNames` extension on `AppLocalizations` in `lib/features/settings/presentation/extensions/timer_style_names_extension.dart` (`String timerStyleName(TimerStyle style)`) and reuse it in both `HomePage` and `lib/features/settings/presentation/timer_styles/timer_styles_page.dart`.
-- Goldens: [home_drawer.png](../../../test/snapshots/goldens/home_drawer.png) (current drawer snapshot), [setup_custom.png](../../../test/snapshots/goldens/setup_custom.png), [timer_styles.png](../../../test/snapshots/goldens/timer_styles.png), and the flow catalog in [test/snapshots/README.md](../../../test/snapshots/README.md).
+- Goldens: [home_drawer.png](../../../../test/snapshots/goldens/home_drawer.png) (current drawer snapshot), [setup_custom.png](../../../../test/snapshots/goldens/setup_custom.png), [timer_styles.png](../../../../test/snapshots/goldens/timer_styles.png), and the flow catalog in [test/snapshots/README.md](../../../../test/snapshots/README.md).
 
 ## Behavior
 
@@ -107,7 +107,7 @@ Replace the bare `NavigationDrawer` on `HomePage` with a styled `Drawer` that ha
 
 - Adding new settings pages (theme switcher, language switcher, about page).
 - Changing how `TemplatesPage` or `TimerStylesPage` work internally (beyond reusing the `TimerStyleNames` extension in `TimerStylesPage`).
-- The debug-only `Developer tools` footer and page (owned by [DEV-01-02](../../developer-tools/stories/01-purge-local-activity/02-add-developer-page/index.md)).
+- The debug-only `Developer tools` footer and page (owned by [DEV-01-02](../../../developer-tools/stories/01-purge-local-activity/02-add-developer-page/index.md)).
 
 ## Files and tests
 
@@ -134,11 +134,11 @@ Changed:
 
 ## Acceptance
 
-- [ ] When the drawer is opened on `HomePage`, then it renders a `Drawer` with the header (`Icons.timer_outlined` badge, `"Sport Timer"` title, and `Divider`) and two `AppSurface` tiles (`"Templates"` and `"Styles"`), each with a leading icon, single-line title (`maxLines: 1, overflow: TextOverflow.ellipsis`), single-line active value subtitle (`maxLines: 1, overflow: TextOverflow.ellipsis`), and trailing `Icons.chevron_right`. Check: `test/features/home/presentation/home_page_test.dart` and `test/snapshots/goldens/home_drawer.png`.
-- [ ] When the drawer is rendered in English (`"Templates"` / `"Styles"`), in Spanish (`"Plantillas"` / `"Estilos"`), or at `TextScaler.linear(2)`, then both drawer tiles have the exact same height and render without overflow. Check: `test/features/home/presentation/home_page_test.dart`.
-- [ ] When `SettingsState.selectedTemplateId` is `null`, then the `Templates` drawer tile subtitle shows `"Custom"` (`"Personalizado"` in Spanish); when `selectedTemplateId` is `TemplateId.hyrox`, then the subtitle shows `"Hyrox"`. Check: `test/features/home/presentation/home_page_test.dart`.
-- [ ] When `SettingsState.timerStyle` is `TimerStyle.ring`, `TimerStyle.fullColor`, or `TimerStyle.roundsStrip`, then the `Styles` drawer tile subtitle shows the corresponding localized style name. Check: `test/features/home/presentation/home_page_test.dart`.
-- [ ] When the user taps the `Templates` or `Styles` tile in the drawer, then the drawer closes and the app navigates to `TemplatesPage` (`/templates`) or `TimerStylesPage` (`/timer-styles`) with the shared `SettingsViewModel`. Check: `test/features/home/presentation/home_page_test.dart`.
-- [ ] When the open drawer is checked in light and dark themes, then it meets `androidTapTargetGuideline`, `iOSTapTargetGuideline`, and `textContrastGuideline`. Check: `test/features/home/presentation/home_page_test.dart`.
-- [ ] When the snapshot test runs, then `test/snapshots/goldens/home_drawer.png` matches in light and dark. Check: `fvm flutter test test/snapshots/ui_snapshots_test.dart`.
-- [ ] When the full test suite and agent check run, then all tests and layer boundary checks pass. Check: `fvm flutter test` and `fvm dart tool/agent_check.dart`.
+- [x] When the drawer is opened on `HomePage`, then it renders a `Drawer` with the header (`Icons.timer_outlined` badge, `"Sport Timer"` title, and `Divider`) and two `AppSurface` tiles (`"Templates"` and `"Styles"`), each with a leading icon, single-line title (`maxLines: 1, overflow: TextOverflow.ellipsis`), single-line active value subtitle (`maxLines: 1, overflow: TextOverflow.ellipsis`), and trailing `Icons.chevron_right`. Check: `test/features/home/presentation/home_page_test.dart` and `test/snapshots/goldens/home_drawer.png`.
+- [x] When the drawer is rendered in English (`"Templates"` / `"Styles"`), in Spanish (`"Plantillas"` / `"Estilos"`), or at `TextScaler.linear(2)`, then both drawer tiles have the exact same height and render without overflow. Check: `test/features/home/presentation/home_page_test.dart`.
+- [x] When `SettingsState.selectedTemplateId` is `null`, then the `Templates` drawer tile subtitle shows `"Custom"` (`"Personalizado"` in Spanish); when `selectedTemplateId` is `TemplateId.hyrox`, then the subtitle shows `"Hyrox"`. Check: `test/features/home/presentation/home_page_test.dart`.
+- [x] When `SettingsState.timerStyle` is `TimerStyle.ring`, `TimerStyle.fullColor`, or `TimerStyle.roundsStrip`, then the `Styles` drawer tile subtitle shows the corresponding localized style name. Check: `test/features/home/presentation/home_page_test.dart`.
+- [x] When the user taps the `Templates` or `Styles` tile in the drawer, then the drawer closes and the app navigates to `TemplatesPage` (`/templates`) or `TimerStylesPage` (`/timer-styles`) with the shared `SettingsViewModel`. Check: `test/features/home/presentation/home_page_test.dart`.
+- [x] When the open drawer is checked in light and dark themes, then it meets `androidTapTargetGuideline`, `iOSTapTargetGuideline`, and `textContrastGuideline`. Check: `test/features/home/presentation/home_page_test.dart`.
+- [x] When the snapshot test runs, then `test/snapshots/goldens/home_drawer.png` matches in light and dark. Check: `fvm flutter test test/snapshots/ui_snapshots_test.dart`.
+- [x] When the full test suite and agent check run, then all tests and layer boundary checks pass. Check: `fvm flutter test` and `fvm dart tool/agent_check.dart`.
