@@ -105,6 +105,22 @@ void main() {
       });
     });
 
+    group('label', () {
+      testWidgets('is a single line with an ellipsis, with and without an icon', (tester) async {
+        await tester.pumpWidget(_app(AppButton.primary(label: 'Go', onPressed: () {})));
+        var text = tester.widget<Text>(find.text('Go'));
+        expect(text.maxLines, 1);
+        expect(text.overflow, TextOverflow.ellipsis);
+
+        await tester.pumpWidget(
+          _app(AppButton.secondary(label: 'Go', icon: const Icon(Icons.add), onPressed: () {})),
+        );
+        text = tester.widget<Text>(find.text('Go'));
+        expect(text.maxLines, 1);
+        expect(text.overflow, TextOverflow.ellipsis);
+      });
+    });
+
     group('secondary', () {
       testWidgets('calls onPressed on tap', (tester) async {
         var taps = 0;

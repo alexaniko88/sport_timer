@@ -285,6 +285,7 @@ void main() {
       '.agents/skills/skill-dispatcher/SKILL.md',
       '.agents/skills/skill-orchestrator/SKILL.md',
       '.agents/skills/skill-planner/SKILL.md',
+      '.agents/skills/skill-pr-feedback/SKILL.md',
       '.agents/skills/skill-project-tasks/SKILL.md',
     ];
     final sources = [

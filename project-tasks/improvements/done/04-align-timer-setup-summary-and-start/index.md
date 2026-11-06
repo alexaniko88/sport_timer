@@ -1,6 +1,6 @@
 ---
 id: IMP-04
-status: ready
+status: done
 type: improve
 complexity: low
 depends-on: []
@@ -19,7 +19,7 @@ skills: []
 
 # Align timer setup summary and Start styling
 
-Improvements: [Improvements](../index.md)
+Improvements: [Improvements](../../index.md)
 
 ## Goal
 
@@ -27,14 +27,14 @@ Align the session length summary row and the `Start` button inside `_SessionOver
 
 ## Context
 
-- Improvements index: [Improvements](../index.md). Related completed tasks: [UI-03-01](../../ui-refactor/stories/03-start-button-refactor/done/01-refactor-timer-setup-start-button/index.md) (moved `Start` into the fixed `_SessionOverview` surface at the bottom of `TimerSetupPage`) and [IMP-01](../done/01-unify-styles-app-wide/index.md) (introduced `AppSurface` and `AppTextThemeExtension`).
+- Improvements index: [Improvements](../../index.md). Related completed tasks: [UI-03-01](../../../ui-refactor/stories/03-start-button-refactor/done/01-refactor-timer-setup-start-button/index.md) (moved `Start` into the fixed `_SessionOverview` surface at the bottom of `TimerSetupPage`) and [IMP-01](../01-unify-styles-app-wide/index.md) (introduced `AppSurface` and `AppTextThemeExtension`).
 - Current behavior and limitation: in `lib/features/settings/presentation/timer_setup_page.dart`, `_SessionOverview` renders `Text(l10n.setupSessionLength)` and `Text(formattedDuration)` with the default `bodyMedium` text style (14px regular, no `maxLines` or `overflow`), while `AppButton.primary` renders the `Start` label with the default `FilledButton` `labelLarge` text style (14px w500) and a default 18–24px `Icons.play_arrow` icon inside a fixed 48px-minimum button. By contrast, each `TimerSettingCard` in `lib/features/settings/presentation/widgets/timer_setting_card.dart` renders a `40.0` (`AppSpacing.s40`) icon, a single-line `emphasizedLabel` (`titleMedium`, w500) label in `colorScheme.onSurfaceVariant`, and a single-line `tileValue` (`headlineSmall`, w700) value in `colorScheme.onSurface`. As a result, the session summary and `Start` action look visually smaller and less prominent than the setting cards above them.
 - Desired change and benefit: match the session length label to the grid card labels (`emphasizedLabel` in `onSurfaceVariant`, single-line with ellipsis), match the session length duration to the grid card values (`tileValue`, single-line with ellipsis), and match the `Start` button to the grid card values and icons (`tileValue` text style, `AppSpacing.s40` icon size, single-line label with ellipsis, and `EdgeInsets.symmetric(horizontal: AppSpacing.s24, vertical: AppSpacing.s8)` padding in `_SessionOverview`'s local `FilledButtonTheme`), giving `TimerSetupPage` a unified visual hierarchy while keeping `SportTheme.filledButtonTheme` and other `AppButton` uses unchanged.
 - Existing code to reuse:
   - `AppTextThemeExtension` (`lib/shared/presentation/extensions/text_theme_extension.dart`): `textTheme.emphasizedLabel` (`titleMedium` with `FontWeight.w500`) and `textTheme.tileValue` (`headlineSmall` with `FontWeight.w700`).
   - `AppSpacing` (`lib/shared/presentation/theme/app_spacing.dart`): `AppSpacing.s8` (`8.0`), `AppSpacing.s16` (`16.0`), `AppSpacing.s24` (`24.0`), and `AppSpacing.s40` (`40.0`).
   - `AppSurface` (`lib/shared/presentation/widgets/app_surface.dart`) and `AppButton.primary` (`lib/shared/presentation/widgets/app_button.dart`).
-- Goldens: [setup_custom.png](../../../test/snapshots/goldens/setup_custom.png), [setup_template_selected.png](../../../test/snapshots/goldens/setup_template_selected.png), and the flow catalog in [test/snapshots/README.md](../../../test/snapshots/README.md).
+- Goldens: [setup_custom.png](../../../../test/snapshots/goldens/setup_custom.png), [setup_template_selected.png](../../../../test/snapshots/goldens/setup_template_selected.png), and the flow catalog in [test/snapshots/README.md](../../../../test/snapshots/README.md).
 
 ## Behavior
 
@@ -186,11 +186,11 @@ Changed:
 
 ## Acceptance
 
-- [ ] When `TimerSetupPage` is rendered in light or dark theme, then the session length label (`l10n.setupSessionLength`) uses `theme.textTheme.emphasizedLabel.copyWith(color: theme.colorScheme.onSurfaceVariant)` with `maxLines: 1` and `overflow: TextOverflow.ellipsis`, matching the grid card labels in font size, font weight (`FontWeight.w500`), and color (`colorScheme.onSurfaceVariant`). Check: `test/features/templates/presentation/templates_page_test.dart` and `test/snapshots/goldens/setup_custom.png`.
-- [ ] When `TimerSetupPage` is rendered in light or dark theme, then the formatted session length duration uses `theme.textTheme.tileValue` with `maxLines: 1` and `overflow: TextOverflow.ellipsis`, matching the grid card values in font size (`headlineSmall`) and font weight (`FontWeight.w700`). Check: `test/features/templates/presentation/templates_page_test.dart` and `test/snapshots/goldens/setup_custom.png`.
-- [ ] When `TimerSetupPage` is rendered in light or dark theme, then the `Start` button inside `_SessionOverview` uses `theme.textTheme.tileValue` for its label (with `maxLines: 1` and `overflow: TextOverflow.ellipsis`), `AppSpacing.s40` (`40.0`) for its `Icons.play_arrow` icon size, `EdgeInsets.symmetric(horizontal: AppSpacing.s24, vertical: AppSpacing.s8)` padding, and `Size(0, 48)` minimum size while preserving `AppRadius.r12` corners from `SportTheme.filledButtonTheme`. Check: `test/features/templates/presentation/templates_page_test.dart` and `test/snapshots/goldens/setup_custom.png`.
-- [ ] When `AppButton.primary` or `AppButton.secondary` renders elsewhere in the app (without `_SessionOverview`'s local `FilledButtonTheme`), then its label has `maxLines: 1` and `overflow: TextOverflow.ellipsis` and its default button height (`40` dp) and styling remain unchanged. Check: `test/shared/presentation/widgets/app_button_test.dart`.
-- [ ] When `TimerSetupPage` is rendered on a narrow screen (`320 × 568`) with `TextScaler.linear(1.5)` in English and Spanish (light and dark), or with a long multi-hour duration (`2:00:31`), then the session summary and `Start` button render without overflow or clipping, the session length label truncates to one line with ellipsis when needed while the full duration remains visible, and the settings grid scrolls independently above the fixed summary card. Check: `test/features/templates/presentation/templates_page_test.dart`.
-- [ ] When the user taps the `Start` button, taps the session summary surface, or activates the single merged semantics button (`label: l10n.homeStartButton`, `value: '${l10n.setupSessionLength}: $formattedDuration'`), then the timer starts with the current `TimerParams`. Check: `test/features/templates/presentation/templates_page_test.dart`.
-- [ ] When the UI snapshot test runs, then `test/snapshots/goldens/setup_custom.png`, `test/snapshots/goldens/setup_template_selected.png`, `test/snapshots/goldens/home_drawer.png`, `test/snapshots/goldens/account_sheet.png`, and `test/snapshots/goldens/account_sign_out_dialog.png` match in light and dark themes. Check: `fvm flutter test test/snapshots/ui_snapshots_test.dart`.
-- [ ] When the full test suite and agent check run, then all tests and layer boundary checks pass. Check: `fvm flutter test` and `fvm dart tool/agent_check.dart`.
+- [x] When `TimerSetupPage` is rendered in light or dark theme, then the session length label (`l10n.setupSessionLength`) uses `theme.textTheme.emphasizedLabel.copyWith(color: theme.colorScheme.onSurfaceVariant)` with `maxLines: 1` and `overflow: TextOverflow.ellipsis`, matching the grid card labels in font size, font weight (`FontWeight.w500`), and color (`colorScheme.onSurfaceVariant`). Check: `test/features/templates/presentation/templates_page_test.dart` and `test/snapshots/goldens/setup_custom.png`.
+- [x] When `TimerSetupPage` is rendered in light or dark theme, then the formatted session length duration uses `theme.textTheme.tileValue` with `maxLines: 1` and `overflow: TextOverflow.ellipsis`, matching the grid card values in font size (`headlineSmall`) and font weight (`FontWeight.w700`). Check: `test/features/templates/presentation/templates_page_test.dart` and `test/snapshots/goldens/setup_custom.png`.
+- [x] When `TimerSetupPage` is rendered in light or dark theme, then the `Start` button inside `_SessionOverview` uses `theme.textTheme.tileValue` for its label (with `maxLines: 1` and `overflow: TextOverflow.ellipsis`), `AppSpacing.s40` (`40.0`) for its `Icons.play_arrow` icon size, `EdgeInsets.symmetric(horizontal: AppSpacing.s24, vertical: AppSpacing.s8)` padding, and `Size(0, 48)` minimum size while preserving `AppRadius.r12` corners from `SportTheme.filledButtonTheme`. Check: `test/features/templates/presentation/templates_page_test.dart` and `test/snapshots/goldens/setup_custom.png`.
+- [x] When `AppButton.primary` or `AppButton.secondary` renders elsewhere in the app (without `_SessionOverview`'s local `FilledButtonTheme`), then its label has `maxLines: 1` and `overflow: TextOverflow.ellipsis` and its default button height (`40` dp) and styling remain unchanged. Check: `test/shared/presentation/widgets/app_button_test.dart`.
+- [x] When `TimerSetupPage` is rendered on a narrow screen (`320 × 568`) with `TextScaler.linear(1.5)` in English and Spanish (light and dark), or with a long multi-hour duration (`2:00:31`), then the session summary and `Start` button render without overflow or clipping, the session length label truncates to one line with ellipsis when needed while the full duration remains visible, and the settings grid scrolls independently above the fixed summary card. Check: `test/features/templates/presentation/templates_page_test.dart`.
+- [x] When the user taps the `Start` button, taps the session summary surface, or activates the single merged semantics button (`label: l10n.homeStartButton`, `value: '${l10n.setupSessionLength}: $formattedDuration'`), then the timer starts with the current `TimerParams`. Check: `test/features/templates/presentation/templates_page_test.dart`.
+- [x] When the UI snapshot test runs, then `test/snapshots/goldens/setup_custom.png`, `test/snapshots/goldens/setup_template_selected.png`, `test/snapshots/goldens/home_drawer.png`, `test/snapshots/goldens/account_sheet.png`, and `test/snapshots/goldens/account_sign_out_dialog.png` match in light and dark themes. Check: `fvm flutter test test/snapshots/ui_snapshots_test.dart`.
+- [x] When the full test suite and agent check run, then all tests and layer boundary checks pass. Check: `fvm flutter test` and `fvm dart tool/agent_check.dart`.
