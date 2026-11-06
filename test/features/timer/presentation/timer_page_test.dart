@@ -149,4 +149,30 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     expect(recorder.run.ends, 0);
   });
+
+  testWidgets('shows the recording notice in Spanish', (tester) async {
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMessageHandler(channel, (_) async => const StandardMessageCodec().encodeMessage([null]));
+    addTearDown(() => messenger.setMockMessageHandler(channel, null));
+    final recorder = _Recorder()..fail = true;
+    getIt.registerSingleton<AudioManager>(_Audio());
+    getIt.registerSingleton<BackgroundKeepAlive>(_KeepAlive());
+    getIt.registerSingleton<TimerActivityRecorder>(recorder);
+    addTearDown(getIt.reset);
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('es'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: TimerPage(params: params),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('No se pudo guardar este entrenamiento en tus estadísticas.'), findsOneWidget);
+    expect(find.byIcon(Icons.close), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+  });
 }

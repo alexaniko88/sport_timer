@@ -81,12 +81,8 @@ class _TimerPageState extends State<TimerPage> with WidgetsBindingObserver {
 
   void _showRecordingNotice() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        // FIXME-ALEX: hardcoded English, add to translations.
-        // key: timerRecordingUnavailable
-        // description: Short notice shown when the workout runs but its activity cannot be saved to the statistics.
-        // en: Could not save this workout to your statistics.
-        content: Text('Could not save this workout to your statistics.'),
+      SnackBar(
+        content: Text(context.l10n.timerRecordingUnavailable),
         duration: _noticeDuration,
         showCloseIcon: true,
       ),

@@ -92,6 +92,12 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('es')];
 
+  /// Short notice shown when the workout runs but its activity cannot be saved to the statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save this workout to your statistics.'**
+  String get timerRecordingUnavailable;
+
   /// Scheduled workout duration on timer setup, excluding pauses.
   ///
   /// In en, this message translates to:

@@ -9,6 +9,9 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get timerRecordingUnavailable => 'Could not save this workout to your statistics.';
+
+  @override
   String get setupSessionLength => 'Session length';
 
   @override

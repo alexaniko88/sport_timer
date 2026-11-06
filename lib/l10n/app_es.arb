@@ -1,5 +1,6 @@
 {
   "@@locale": "es",
+  "timerRecordingUnavailable": "No se pudo guardar este entrenamiento en tus estadísticas.",
   "setupSessionLength": "Duración de la sesión",
   "setupPreparation": "Preparación",
   "setupWork": "Trabajo",
