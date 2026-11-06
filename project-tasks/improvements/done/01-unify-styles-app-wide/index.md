@@ -27,7 +27,7 @@ The audit found no gradients or hardcoded `Color(0x...)` values left in feature 
 - The Statistics Retry button is now an `AppButton.primary` with a localized label.
 - The repository rules were updated so every AI tool knows these rules: the `Styling and theme` section in `CLAUDE.md`, the orchestrator skill overrides and the Codex agent files.
 
-Not included: the active timer screens (intentional phase colors and shapes), a separate light and dark color review (only the Timer styles border was a theme defect), and the untranslated Statistics text, which is recorded as [BUG-02](../../../bugs/02-untranslated-statistics-and-timer-strings/index.md).
+Not included: the active timer screens (intentional phase colors and shapes), a separate light and dark color review (only the Timer styles border was a theme defect), and the untranslated Statistics text, which is recorded as [BUG-02](../../../bugs/done/02-untranslated-statistics-and-timer-strings/index.md).
 
 ## Acceptance evidence
 
