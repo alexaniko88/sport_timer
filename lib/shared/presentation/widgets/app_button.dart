@@ -11,6 +11,7 @@ class AppButton extends StatelessWidget {
   final Color? color;
   final Color? foregroundColor;
   final bool isExpanded;
+  final ButtonStyle? style;
 
   const AppButton.primary({
     super.key,
@@ -20,6 +21,7 @@ class AppButton extends StatelessWidget {
     this.color,
     this.foregroundColor,
     this.isExpanded = false,
+    this.style,
   }) : _variant = _AppButtonVariant.primary;
 
   const AppButton.secondary({
@@ -30,7 +32,8 @@ class AppButton extends StatelessWidget {
     this.color,
     this.isExpanded = false,
   })  : _variant = _AppButtonVariant.secondary,
-        foregroundColor = null;
+        foregroundColor = null,
+        style = null;
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +43,11 @@ class AppButton extends StatelessWidget {
     final Widget button = _variant == _AppButtonVariant.primary
         ? FilledButton(
             onPressed: onPressed,
-            style: FilledButton.styleFrom(
-              backgroundColor: color,
-              foregroundColor: foregroundColor,
+            style: (style ?? const ButtonStyle()).merge(
+              FilledButton.styleFrom(
+                backgroundColor: color,
+                foregroundColor: foregroundColor,
+              ),
             ),
             child: content,
           )

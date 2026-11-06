@@ -296,7 +296,7 @@ void main() {
         final buttonContext = tester.element(button);
         final shape = FilledButtonTheme.of(buttonContext).style!.shape!.resolve({}) as RoundedRectangleBorder;
         expect(shape.borderRadius, BorderRadius.circular(AppRadius.r12));
-        final buttonStyle = FilledButtonTheme.of(buttonContext).style!;
+        final buttonStyle = tester.widget<FilledButton>(button).style!;
         final buttonTextStyle = buttonStyle.textStyle!.resolve({});
         expect(buttonTextStyle?.fontSize, appTheme.textTheme.headlineSmall?.fontSize);
         expect(buttonTextStyle?.fontWeight, FontWeight.w700);

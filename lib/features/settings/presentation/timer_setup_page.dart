@@ -260,26 +260,19 @@ class _SessionOverview extends StatelessWidget {
                 const SizedBox(height: AppSpacing.s8),
                 ExcludeFocus(
                   child: IgnorePointer(
-                    child: FilledButtonTheme(
-                      // A local button theme replaces the app one, so keep its shape and only change the size, padding, text, and icon.
-                      data: FilledButtonThemeData(
-                        style: (theme.filledButtonTheme.style ?? FilledButton.styleFrom()).copyWith(
-                          minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
-                          padding: const WidgetStatePropertyAll(
-                            EdgeInsets.symmetric(
-                              horizontal: AppSpacing.s24,
-                              vertical: AppSpacing.s8,
-                            ),
-                          ),
-                          textStyle: WidgetStatePropertyAll(textTheme.tileValue),
-                          iconSize: const WidgetStatePropertyAll(AppSpacing.s40),
+                    child: AppButton.primary(
+                      label: l10n.homeStartButton,
+                      icon: const Icon(Icons.play_arrow),
+                      onPressed: onStartPressed,
+                      isExpanded: true,
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(0, 48),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s24,
+                          vertical: AppSpacing.s8,
                         ),
-                      ),
-                      child: AppButton.primary(
-                        label: l10n.homeStartButton,
-                        icon: const Icon(Icons.play_arrow),
-                        onPressed: onStartPressed,
-                        isExpanded: true,
+                        textStyle: textTheme.tileValue,
+                        iconSize: AppSpacing.s40,
                       ),
                     ),
                   ),
