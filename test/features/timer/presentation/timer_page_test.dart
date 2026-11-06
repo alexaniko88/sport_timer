@@ -16,7 +16,7 @@ class _Audio implements AudioManager {
   @override
   Future<void> dispose() async {}
   @override
-  void playPreparationSound() {}
+  void playCountdownBeep() {}
   @override
   void playRoundFinishSound() {}
   @override

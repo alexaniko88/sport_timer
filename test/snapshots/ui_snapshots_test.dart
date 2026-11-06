@@ -134,7 +134,7 @@ class _SilentAudioManager implements AudioManager {
   void playRoundStartSound() {}
 
   @override
-  void playPreparationSound() {}
+  void playCountdownBeep() {}
 
   @override
   Future<void> dispose() async {}
