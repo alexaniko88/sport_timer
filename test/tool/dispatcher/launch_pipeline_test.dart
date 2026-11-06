@@ -80,6 +80,7 @@ LaunchPipeline _pipeline(
   _Fixture fixture,
   String Function(Role role, String workspace) work, {
   RunCommand? run,
+  List<String> denied = const [],
 }) {
   Future<ProcessOutcome> process(
     ToolInvocation invocation, {
@@ -88,7 +89,20 @@ LaunchPipeline _pipeline(
   }) async {
     final prompt = invocation.args.last;
     final role = Role.values.firstWhere((role) => prompt.contains('roles/${role.name}.md'));
-    return ProcessOutcome(exitCode: 0, stdout: jsonEncode({'result': work(role, workingDirectory)}), stderr: '');
+    return ProcessOutcome(
+      exitCode: 0,
+      stdout: jsonEncode({
+        'result': work(role, workingDirectory),
+        'permission_denials': [
+          for (final command in denied)
+            {
+              'tool_name': 'Bash',
+              'tool_input': {'command': command},
+            },
+        ],
+      }),
+      stderr: '',
+    );
   }
 
   return LaunchPipeline(
@@ -222,44 +236,63 @@ void main() {
     expect(fixture.ghCalls, isEmpty);
   });
 
-  test('a permission the tool was denied blocks the task with the command', () async {
+  test('a denied command does not stop a run whose stages still deliver, and is listed in the notes', () async {
     final fixture = _fixture();
-    Future<ProcessOutcome> process(
-      ToolInvocation invocation, {
-      required String workingDirectory,
-      required Duration timeout,
-    }) async {
-      return ProcessOutcome(
-        exitCode: 0,
-        stdout: jsonEncode({
-          'result': 'could not',
-          'permission_denials': [
-            {
-              'tool_name': 'Bash',
-              'tool_input': {'command': 'curl https://example.com'},
-            },
-          ],
-        }),
-        stderr: '',
-      );
-    }
+    final pipeline = _pipeline(
+      fixture,
+      (role, workspace) {
+        switch (role) {
+          case Role.implementer:
+            _write(workspace, 'lib/x.dart', 'const x = 1;\n');
+            return _message();
+          case Role.tests:
+            _write(workspace, 'test/x_test.dart', 'void main() {}\n');
+            return _message(commit: 'test: add x tests');
+          case Role.reviewer:
+            return _review('[]');
+        }
+      },
+      denied: ['python3 script.py'],
+    );
 
-    final pipeline = LaunchPipeline(
-      tool: Tool.claude,
-      stages: StageRunner(run: process),
-      run: fixture.run,
-      originUrl: fixture.origin,
-      email: 'dev@users.noreply.github.com',
-      name: 'Dev',
-      baseDirectory: fixture.runs,
-      skipFlutterSetup: true,
-      log: (_) {},
+    final result = await pipeline.launch(_task(fixture));
+
+    expect(result.outcome, RunOutcome.pullRequest);
+    final notes = _git(
+      fixture.origin,
+      ['show', '$_branch:project-tasks/tst/stories/01-s/done/01-do-thing/notes.md'],
+    );
+    expect(notes, contains('## Commands denied'));
+    expect(notes, contains('- `python3 script.py`'));
+  });
+
+  test('a denied command is named in the block message when the stage asks a question', () async {
+    final fixture = _fixture();
+    final pipeline = _pipeline(
+      fixture,
+      (role, workspace) {
+        _write(workspace, 'lib/x.dart', 'const x = 1;\n');
+        return _message(blocked: 'I need to run curl.');
+      },
+      denied: ['curl https://example.com'],
     );
 
     final result = await pipeline.launch(_task(fixture));
 
     expect(result.outcome, RunOutcome.blocked);
-    expect(result.message, contains('curl https://example.com'));
+    expect(result.message, contains('I need to run curl.'));
+    expect(result.message, contains('`curl https://example.com`'));
+    expect(result.message, contains('--allow='));
+  });
+
+  test('a denied command is named when the stage gives no usable report', () async {
+    final fixture = _fixture();
+    final pipeline = _pipeline(fixture, (role, workspace) => 'could not', denied: ['curl https://example.com']);
+
+    final result = await pipeline.launch(_task(fixture));
+
+    expect(result.outcome, RunOutcome.failed);
+    expect(result.message, contains('`curl https://example.com`'));
   });
 
   test('a git email that is not the noreply one is refused before anything runs', () async {

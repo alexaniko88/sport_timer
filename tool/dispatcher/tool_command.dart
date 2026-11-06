@@ -26,6 +26,19 @@ class ToolCommand {
     'Bash(grep:*)',
   ];
 
+  /// Harmless helpers that only touch files inside the clone. `git` writes and
+  /// `python3` stay out on purpose: the script owns the git work, and a script
+  /// interpreter can run anything. They remain available through `--allow`.
+  static const _fileShell = [
+    'Bash(head:*)',
+    'Bash(tail:*)',
+    'Bash(wc:*)',
+    'Bash(sort:*)',
+    'Bash(diff:*)',
+    'Bash(sed:*)',
+    'Bash(mkdir:*)',
+  ];
+
   static const _checkShell = [
     'Bash(fvm dart format:*)',
     'Bash(fvm flutter analyze:*)',
@@ -64,6 +77,7 @@ class ToolCommand {
             '--allowedTools',
             ..._readOnlyShell,
             if (!isReadOnly) ..._checkShell,
+            if (!isReadOnly) ..._fileShell,
             ...extraAllowed,
             '--output-format',
             'json',

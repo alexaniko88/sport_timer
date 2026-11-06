@@ -70,6 +70,10 @@ class _Session {
   List<ReviewFinding> reviewNotes = const [];
   String checkResult = '';
 
+  /// Commands the tool refused to run. They no longer stop the run: the stage
+  /// goes on with another way, and the list is shown in the PR or the notes.
+  final Set<String> deniedCommands = {};
+
   _Session({required this.task, required this.workspace, required this.publisher});
 }
 
@@ -218,13 +222,7 @@ class LaunchPipeline {
       lastMessageFile: '${session.workspace.runnerDirectory}/${role.name}-last.txt',
       extraAllowed: extraAllowed,
     );
-    if (result.deniedCommands.isNotEmpty) {
-      final commands = result.deniedCommands.map((command) => '`$command`').join(', ');
-      return (
-        stop: _Stop(RunOutcome.blocked, 'Needs permission for: $commands. Relaunch with --allow="Bash(<program>:*)".'),
-        message: ''
-      );
-    }
+    session.deniedCommands.addAll(result.deniedCommands);
     if (result.timedOut) {
       return (stop: _Stop(RunOutcome.failed, 'The ${role.name} stage timed out.', tail: result.tail), message: '');
     }
@@ -319,6 +317,7 @@ class LaunchPipeline {
       baseSha: await session.publisher.baseSha(),
       headSha: await session.publisher.headSha(),
       checkResult: session.checkResult,
+      deniedCommands: session.deniedCommands.toList(),
       taskPath: '$archived/index.md',
     );
     final bodyFile = '${session.workspace.runnerDirectory}/pr-body.md';
@@ -339,7 +338,15 @@ class LaunchPipeline {
 
   /// Keeps the work as a `wip:` commit on the task branch, with the reason in
   /// the task notes, and deletes the clone once it is pushed.
-  Future<RunResult> _abandon(_Session session, _Stop stop) async {
+  Future<RunResult> _abandon(_Session session, _Stop original) async {
+    final stop = session.deniedCommands.isEmpty
+        ? original
+        : _Stop(
+            original.outcome,
+            '${original.message} Commands the tool was not allowed to run: ${_commandList(session)}. '
+            'If one was needed, relaunch with --allow="Bash(<program>:*)".',
+            tail: original.tail,
+          );
     final task = session.task;
     final workspace = session.workspace.directory;
     // The archiver may already have moved the task into its `done/` folder.
@@ -373,6 +380,8 @@ class LaunchPipeline {
     );
   }
 
+  String _commandList(_Session session) => session.deniedCommands.map((command) => '`$command`').join(', ');
+
   String _notes(_Session session) {
     final implementer = session.implementer;
     final tests = session.tests;
@@ -397,6 +406,12 @@ class LaunchPipeline {
       '## Run',
       '',
       models,
+      if (session.deniedCommands.isNotEmpty) ...[
+        '',
+        '## Commands denied',
+        '',
+        ...session.deniedCommands.map((command) => '- `$command`'),
+      ],
     ].join('\n');
   }
 }

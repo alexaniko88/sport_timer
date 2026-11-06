@@ -27,6 +27,7 @@ class PrDescription {
     required String headSha,
     required String checkResult,
     required String taskPath,
+    List<String> deniedCommands = const [],
   }) {
     final blob = 'https://github.com/$slug/blob';
     final lines = <String>[
@@ -64,6 +65,17 @@ class PrDescription {
       if (tests.openNotes.isNotEmpty) tests.openNotes,
     ];
     if (notes.isNotEmpty) lines.addAll(['', '## Points to review', '', ...notes]);
+
+    if (deniedCommands.isNotEmpty) {
+      lines.addAll([
+        '',
+        '## Commands denied',
+        '',
+        'The tool was not allowed to run these. Check that nothing important was skipped.',
+        '',
+        ...deniedCommands.map((command) => '- `$command`'),
+      ]);
+    }
 
     return '${lines.join('\n')}\n';
   }

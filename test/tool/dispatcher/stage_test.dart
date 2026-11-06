@@ -40,6 +40,20 @@ void main() {
       expect(review.where((arg) => arg.startsWith('Bash(fvm')), isEmpty);
     });
 
+    test('work roles get the harmless file helpers, the reviewer none, and nobody git writes or python3', () {
+      final work = _build(Tool.claude, Role.tests).args;
+      final review = _build(Tool.claude, Role.reviewer).args;
+
+      expect(work, containsAll(['Bash(head:*)', 'Bash(tail:*)', 'Bash(sed:*)', 'Bash(mkdir:*)']));
+      expect(review, isNot(contains('Bash(sed:*)')));
+      for (final args in [work, review]) {
+        expect(args, isNot(contains('Bash(python3:*)')));
+        expect(args, isNot(contains('Bash(git:*)')));
+        expect(args, isNot(contains('Bash(git add:*)')));
+        expect(args, isNot(contains('Bash(git push:*)')));
+      }
+    });
+
     test('Codex uses a clean config and a read-only sandbox for the reviewer', () {
       final work = _build(Tool.codex, Role.tests);
       final review = _build(Tool.codex, Role.reviewer);
@@ -225,6 +239,25 @@ void main() {
       expect(text, contains('| b.png | new |'));
       expect(text, contains('All checks passed.'));
       expect(text.toLowerCase(), isNot(contains('generated with')));
+    });
+
+    test('lists the commands the tool was denied, and nothing when there were none', () {
+      String build({List<String> denied = const []}) => PrDescription.build(
+            task: task,
+            implementer: report,
+            tests: report,
+            reviewNotes: const [],
+            goldens: const [],
+            slug: 'o/r',
+            baseSha: 'base',
+            headSha: 'head',
+            checkResult: 'ok',
+            taskPath: 'project-tasks/e/stories/01-s/done/01-a/index.md',
+            deniedCommands: denied,
+          );
+
+      expect(build(), isNot(contains('Commands denied')));
+      expect(build(denied: ['python3 x.py']), allOf(contains('## Commands denied'), contains('- `python3 x.py`')));
     });
 
     test('links the task at the head commit, under done/', () {
