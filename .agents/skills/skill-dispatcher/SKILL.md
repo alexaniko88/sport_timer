@@ -45,8 +45,8 @@ Always use `fvm dart tool/dispatcher.dart ...`, never bare `dart`.
 4. **Launch.** Start `fvm dart tool/dispatcher.dart launch <ID> --tool=<tool>` as a background command (it runs until the task ends, which can take a long time). Tell the user it started.
 5. **Ask once:** "Do you want another task?" If yes, go back to step 1 (skip every task you launched in this session). If no, do not ask again. Wait quietly for the runners.
 6. **When a runner ends,** read the last line of its output, `RESULT {json}`, and tell the user:
-   - `pullRequest`: the PR link. The task is theirs to review.
-   - `blocked`: the exact question or the permission it needs. The branch has a `wip:` commit with the reason in the task's `notes.md`. The task needs to be refined (the `skill-planner` skill) or relaunched. If the message says "Needs permission for: ...", offer to relaunch with `--allow="Bash(<program>:*)"` (Claude only).
+   - `pullRequest`: the PR link. The task is theirs to review. If its description has a "Commands denied" section, mention it: those commands did not run.
+   - `blocked`: the exact question or the permission it needs. The branch has a `wip:` commit with the reason in the task's `notes.md`. The task needs to be refined (the `skill-planner` skill) or relaunched. A denied command alone no longer blocks a task. If the message lists "Commands the tool was not allowed to run", say which ones and offer to relaunch with `--allow="Bash(<program>:*)"` (Claude only) only when one of them was needed.
    - `failed`: the message and the last lines of output. If `keptWorkspace` is set, the work could not be pushed and the clone was kept there; say so.
    When a run ends and more tasks can start, remind the user, but do not launch anything on your own.
 
