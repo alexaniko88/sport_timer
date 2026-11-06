@@ -1,0 +1,831 @@
+<!--
+  UI-05-01 Rethink statistics cards and details.
+  Based on the goldens: statistics.png, statistics_empty.png, statistics_error.png
+  (replaces separate DayDetailsPage route with inline expandable DailyActivityTile cards
+  following Material 3: no nested cards inside cards — sessions are flat list rows separated by dividers,
+  each showing a reusable bordered AppTag widget with transparent background + colored summary + total duration).
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Statistics Expandable Cards Mockup — UI-05-01</title>
+<style>
+  :root {
+    /* ColorScheme.fromSeed(AppPalette.brand = #FF5252), light */
+    --primary: #904a43;
+    --on-primary: #ffffff;
+    --primary-container: #ffdad5;
+    --on-primary-container: #3b0907;
+    --secondary-container: #ffdad5;
+    --on-secondary-container: #2c1512;
+    --surface: #fff8f6;
+    --surface-container: #fceae7;
+    --surface-container-high: #f6e4e1;
+    --on-surface: #231918;
+    --on-surface-variant: #534341;
+    --outline: #857370;
+    --outline-variant: #d8c2be;
+    --app-bar: #ffb4a9;
+    --control-bg: #ffffff;
+    --control-fg: #1b1b1b;
+    /* TimerColors.light */
+    --preparation: #e1ad01;
+    --round: #ff5252;
+    --rest: #448aff;
+    --rounds-count: #ffab40;
+    /* Spacing & shape tokens */
+    --s4: 4px;
+    --s8: 8px;
+    --s12: 12px;
+    --s16: 16px;
+    --s24: 24px;
+    --r8: 8px;
+    --r12: 12px;
+    --thin: 1px;
+    --scale: 1;
+  }
+  :root[data-theme="dark"] {
+    --primary: #ffb4ab;
+    --on-primary: #561e19;
+    --primary-container: #73332d;
+    --on-primary-container: #ffdad5;
+    --secondary-container: #5c3f3b;
+    --on-secondary-container: #ffdad5;
+    --surface: #1a1110;
+    --surface-container: #271d1c;
+    --surface-container-high: #322827;
+    --on-surface: #f1dfdc;
+    --on-surface-variant: #d8c2be;
+    --outline: #a08c89;
+    --outline-variant: #534341;
+    --app-bar: #271d1c;
+    --control-bg: #1f1f1f;
+    --control-fg: #f1f1f1;
+    /* TimerColors.dark */
+    --preparation: #e8c23a;
+    --round: #ff8a80;
+    --rest: #82b1ff;
+    --rounds-count: #ffb74d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0 16px;
+  }
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    max-width: 720px;
+  }
+  .controls-bar button {
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: var(--r12);
+    border: 1px solid #888;
+    background: var(--control-bg);
+    color: var(--control-fg);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .controls-bar button[aria-pressed="true"] {
+    outline: 3px solid #ffd54f;
+    font-weight: 700;
+  }
+
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    height: 844px;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    color: var(--on-surface);
+    border-radius: 16px;
+    border: 1px solid var(--outline-variant);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    display: flex;
+    flex-direction: column;
+  }
+  .phone.narrow-large {
+    width: 320px;
+    height: 640px;
+    --scale: 1.5;
+  }
+
+  /* AppBar */
+  .app-bar {
+    height: 56px;
+    background: var(--app-bar);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+    flex: none;
+  }
+  .icon-btn {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: none;
+    color: var(--on-surface);
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex: none;
+  }
+  .app-bar-title {
+    flex: 1;
+    min-width: 0;
+    font-size: calc(22px * var(--scale));
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .avatar-btn {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex: none;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* SegmentedButton (List / Charts) */
+  .segmented-wrap {
+    padding: var(--s16);
+    display: flex;
+    justify-content: center;
+    flex: none;
+  }
+  .segmented {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--outline);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .seg-item {
+    min-height: 40px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: calc(14px * var(--scale));
+    font-weight: 500;
+    color: var(--on-surface);
+    background: transparent;
+  }
+  .seg-item.selected {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+  }
+  .seg-item + .seg-item {
+    border-left: 1px solid var(--outline);
+  }
+
+  /* Content scroll area */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 var(--s16) var(--s16);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s8);
+  }
+
+  /* AppSurface card */
+  .surface-card {
+    width: 100%;
+    border-radius: var(--r12);
+    border: var(--thin) solid var(--outline-variant);
+    background: var(--surface-container);
+    color: var(--on-surface);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .card-header-btn {
+    width: 100%;
+    padding: var(--s12);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s12);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+  }
+  .card-header-btn:hover {
+    background: var(--surface-container-high);
+  }
+
+  /* Typography roles */
+  .role-tile-title {
+    font-size: calc(16px * var(--scale));
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--on-surface);
+  }
+  .role-tile-secondary {
+    font-size: calc(12px * var(--scale));
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--on-surface-variant);
+  }
+
+  /* Colored value spans */
+  .val-rounds {
+    color: var(--rounds-count);
+    font-weight: 700;
+  }
+  .val-work {
+    color: var(--round);
+    font-weight: 700;
+  }
+  .val-rest {
+    color: var(--rest);
+    font-weight: 700;
+  }
+
+  /* Card header & summary */
+  .tile-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s8);
+  }
+  .tile-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .single-line {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .two-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .trailing-total {
+    flex: none;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .chevron {
+    width: 24px;
+    height: 24px;
+    color: var(--on-surface-variant);
+    flex: none;
+    display: grid;
+    place-items: center;
+    transition: transform 0.2s ease;
+  }
+  .chevron.expanded {
+    transform: rotate(180deg);
+  }
+
+  /* 6px Work/Rest proportion bar */
+  .phase-bar {
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    width: 100%;
+    background: var(--outline-variant);
+  }
+  .phase-work {
+    background: var(--round);
+    height: 100%;
+  }
+  .phase-rest {
+    background: var(--rest);
+    height: 100%;
+  }
+
+  /* Expanded flat list rows inside DailyActivityTile (M3: no nested cards) */
+  .expanded-body {
+    padding: 0 var(--s12) var(--s12);
+    display: flex;
+    flex-direction: column;
+  }
+  .row-divider {
+    height: 1px;
+    background: var(--outline-variant);
+    width: 100%;
+  }
+  .session-row {
+    padding: var(--s12) 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s8);
+  }
+  .session-row:last-child {
+    padding-bottom: 0;
+  }
+  .session-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  /* Reusable AppTag widget:
+     Always same border (1px outlineVariant) and transparent background
+     (inheriting the parent surfaceContainer), with primary icon + onSurface label. */
+  .app-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px var(--s8);
+    border-radius: var(--r8);
+    border: var(--thin) solid var(--outline-variant);
+    background: transparent;
+    color: var(--on-surface);
+    font-size: calc(12px * var(--scale));
+    font-weight: 500;
+    line-height: 1.3;
+    max-width: 100%;
+  }
+  .app-tag svg {
+    width: calc(14px * var(--scale));
+    height: calc(14px * var(--scale));
+    fill: var(--primary);
+    flex: none;
+  }
+  .app-tag span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .session-completed {
+    font-size: calc(12px * var(--scale));
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--on-surface-variant);
+  }
+  .session-total {
+    flex: none;
+    font-size: calc(14px * var(--scale));
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--on-surface);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Inline error/loading inside expanded card */
+  .inline-state {
+    padding: var(--s12) 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s8);
+    font-size: calc(12px * var(--scale));
+    color: var(--on-surface-variant);
+  }
+  .inline-spinner-wrap {
+    padding: var(--s12) 0 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Centered page states (empty, error, loading) */
+  .center-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s8);
+    padding: var(--s16);
+    text-align: center;
+    font-size: calc(14px * var(--scale));
+  }
+  .small-btn {
+    min-height: 36px;
+    padding: 0 var(--s16);
+    border-radius: var(--r12);
+    border: 0;
+    background: var(--primary);
+    color: var(--on-primary);
+    font-size: calc(12px * var(--scale));
+    font-weight: 500;
+    cursor: pointer;
+    flex: none;
+  }
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2.5px solid var(--outline-variant);
+    border-top-color: var(--primary);
+  }
+
+  /* BottomNavigationBar */
+  .bottom-nav {
+    height: 56px;
+    background: var(--app-bar);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    place-items: center;
+    flex: none;
+  }
+  .bottom-nav-item {
+    min-height: 48px;
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 12px;
+    color: var(--on-surface-variant);
+  }
+  .bottom-nav-item.active {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .bottom-nav-item svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+</style>
+</head>
+<body>
+  <div class="controls-bar" role="group" aria-label="Screen and State">
+    <button data-state="expanded" aria-pressed="true">1. Expanded</button>
+    <button data-state="collapsed" aria-pressed="false">2. All Collapsed</button>
+    <button data-state="narrow" aria-pressed="false">3. Narrow + 1.5x Text</button>
+    <button data-state="run-error" aria-pressed="false">4. Session Load Error</button>
+    <button data-state="run-loading" aria-pressed="false">5. Session Loading</button>
+    <button data-state="empty" aria-pressed="false">6. Empty List</button>
+  </div>
+  <div class="controls-bar" role="group" aria-label="Theme and Language">
+    <button data-theme="light" aria-pressed="true">Light</button>
+    <button data-theme="dark" aria-pressed="false">Dark</button>
+    <button data-lang="en" aria-pressed="true">English</button>
+    <button data-lang="es" aria-pressed="false">Español</button>
+  </div>
+
+  <div class="phone" id="phone">
+    <header class="app-bar" id="app-bar"></header>
+    <div id="segmented-slot"></div>
+    <main class="scroll-area" id="main-area"></main>
+    <footer id="footer-slot"></footer>
+  </div>
+
+<script>
+  const ICONS = {
+    strength: `<svg viewBox="0 0 24 24"><path d="M20.57 14.86 22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>`,
+    custom: `<svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>`,
+    standard: `<svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>`
+  };
+
+  let currentState = "expanded";
+  let currentTheme = "light";
+  let currentLang = "en";
+  let oct31Open = true;
+  let oct30Open = false;
+
+  const STRINGS = {
+    en: {
+      statsTitle: "Your statistics",
+      menuTooltip: "Open menu",
+      avatarTooltip: "Account, Alex Runner",
+      viewList: "List",
+      viewCharts: "Charts",
+      tabTimer: "Timer",
+      tabStats: "Statistics",
+      statsEmpty: "No completed activity yet.",
+      dayError: "Could not load this day.",
+      retry: "Retry",
+      oct31: "October 31, 2026",
+      oct30: "October 30, 2026",
+      tplStrength: "Strength",
+      tplCustom: "Custom",
+      tplDefault: "Default",
+      roundWord: (r) => (r === 1 ? "round" : "rounds"),
+      dur26m: "26m",
+      dur20m: "20m",
+      dur6m: "6m",
+      dur3m35s: "3m 35s",
+      dur3m5s: "3m 5s",
+      dur30s: "30s",
+      dur19m30s: "19m 30s",
+      dur16m: "16m",
+      dur3m30s: "3m 30s",
+      dur6m30s: "6m 30s",
+      dur4m: "4m",
+      dur2m30s: "2m 30s",
+      durLongTotal: "37h 2m 12s",
+      durLongWork: "34h 17m 36s",
+      durLongRest: "2h 44m 36s"
+    },
+    es: {
+      statsTitle: "Tus estadísticas",
+      menuTooltip: "Abrir menú",
+      avatarTooltip: "Cuenta, Alex Runner",
+      viewList: "Lista",
+      viewCharts: "Gráficos",
+      tabTimer: "Temporizador",
+      tabStats: "Estadísticas",
+      statsEmpty: "Aún no hay actividad completada.",
+      dayError: "No se pudo cargar este día.",
+      retry: "Reintentar",
+      oct31: "31 de octubre de 2026",
+      oct30: "30 de octubre de 2026",
+      tplStrength: "Fuerza",
+      tplCustom: "Personalizado",
+      tplDefault: "Por defecto",
+      roundWord: (r) => (r === 1 ? "ronda" : "rondas"),
+      dur26m: "26m",
+      dur20m: "20m",
+      dur6m: "6m",
+      dur3m35s: "3m 35s",
+      dur3m5s: "3m 5s",
+      dur30s: "30s",
+      dur19m30s: "19m 30s",
+      dur16m: "16m",
+      dur3m30s: "3m 30s",
+      dur6m30s: "6m 30s",
+      dur4m: "4m",
+      dur2m30s: "2m 30s",
+      durLongTotal: "37h 2m 12s",
+      durLongWork: "34h 17m 36s",
+      durLongRest: "2h 44m 36s"
+    }
+  };
+
+  function formatSummary(s, r, w, rest) {
+    return `<span class="val-rounds">${r}</span> ${s.roundWord(r)} · <span class="val-work">${w}</span> · <span class="val-rest">${rest}</span>`;
+  }
+
+  const chevronDownSvg = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>`;
+
+  function render() {
+    const s = STRINGS[currentLang];
+    const phone = document.getElementById("phone");
+    const appBar = document.getElementById("app-bar");
+    const segSlot = document.getElementById("segmented-slot");
+    const main = document.getElementById("main-area");
+    const footerSlot = document.getElementById("footer-slot");
+
+    document.documentElement.setAttribute("data-theme", currentTheme === "dark" ? "dark" : "light");
+    document.documentElement.lang = currentLang;
+    phone.classList.toggle("narrow-large", currentState === "narrow");
+
+    appBar.innerHTML = `
+      <button class="icon-btn" type="button" aria-label="${s.menuTooltip}">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="app-bar-title">${s.statsTitle}</div>
+      <button class="avatar-btn" type="button" aria-label="${s.avatarTooltip}">
+        <span class="avatar" aria-hidden="true">A</span>
+      </button>
+    `;
+    segSlot.innerHTML = `
+      <div class="segmented-wrap">
+        <div class="segmented" role="group" aria-label="View">
+          <div class="seg-item selected">✓ ${s.viewList}</div>
+          <div class="seg-item">${s.viewCharts}</div>
+        </div>
+      </div>
+    `;
+    footerSlot.innerHTML = `
+      <nav class="bottom-nav" aria-label="Primary">
+        <div class="bottom-nav-item">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+          <span>${s.tabTimer}</span>
+        </div>
+        <div class="bottom-nav-item active">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          <span>${s.tabStats}</span>
+        </div>
+      </nav>
+    `;
+
+    if (currentState === "empty") {
+      main.innerHTML = `<div class="center-state"><span>${s.statsEmpty}</span></div>`;
+      return;
+    }
+
+    const isNarrow = currentState === "narrow";
+
+    let oct31ExpandedHtml = "";
+    if (oct31Open) {
+      if (currentState === "run-error") {
+        oct31ExpandedHtml = `
+          <div class="expanded-body">
+            <div class="row-divider" aria-hidden="true"></div>
+            <div class="inline-state">
+              <span>${s.dayError}</span>
+              <button class="small-btn" type="button" id="btn-retry-day">${s.retry}</button>
+            </div>
+          </div>
+        `;
+      } else if (currentState === "run-loading") {
+        oct31ExpandedHtml = `
+          <div class="expanded-body">
+            <div class="row-divider" aria-hidden="true"></div>
+            <div class="inline-spinner-wrap">
+              <div class="spinner" role="progressbar" aria-label="Loading"></div>
+            </div>
+          </div>
+        `;
+      } else {
+        oct31ExpandedHtml = `
+          <div class="expanded-body">
+            <div class="row-divider" aria-hidden="true"></div>
+
+            <!-- Session 1 (Built-in template: Strength) -->
+            <div class="session-row">
+              <div class="session-main">
+                <div class="app-tag">
+                  ${ICONS.strength}
+                  <span>${s.tplStrength}</span>
+                </div>
+                <div class="session-completed two-lines">${formatSummary(s, 8, s.dur16m, s.dur3m30s)}</div>
+              </div>
+              <div class="session-total">${s.dur19m30s}</div>
+            </div>
+
+            <div class="row-divider" aria-hidden="true"></div>
+
+            <!-- Session 2 (Custom settings - same AppTag style) -->
+            <div class="session-row">
+              <div class="session-main">
+                <div class="app-tag">
+                  ${ICONS.custom}
+                  <span>${s.tplCustom}</span>
+                </div>
+                <div class="session-completed two-lines">${formatSummary(s, 4, s.dur4m, s.dur2m30s)}</div>
+              </div>
+              <div class="session-total">${s.dur6m30s}</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    let oct30ExpandedHtml = "";
+    if (oct30Open) {
+      oct30ExpandedHtml = `
+        <div class="expanded-body">
+          <div class="row-divider" aria-hidden="true"></div>
+          <div class="session-row">
+            <div class="session-main">
+              <div class="app-tag">
+                ${ICONS.standard}
+                <span>${s.tplDefault}</span>
+              </div>
+              <div class="session-completed two-lines">${formatSummary(s, 3, s.dur3m5s, s.dur30s)}</div>
+            </div>
+            <div class="session-total">${s.dur3m35s}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    main.innerHTML = `
+      <!-- Card 1: October 31, 2026 -->
+      <div class="surface-card">
+        <button class="card-header-btn" type="button" id="toggle-oct31" aria-expanded="${oct31Open}">
+          <div class="tile-row">
+            <div class="tile-main">
+              <div class="role-tile-title single-line">${s.oct31}</div>
+              <div class="role-tile-secondary two-lines">${
+                isNarrow
+                  ? formatSummary(s, 123, s.durLongWork, s.durLongRest)
+                  : formatSummary(s, 12, s.dur20m, s.dur6m)
+              }</div>
+            </div>
+            <div class="role-tile-title trailing-total">${isNarrow ? s.durLongTotal : s.dur26m}</div>
+            <div class="chevron ${oct31Open ? "expanded" : ""}" aria-hidden="true">${chevronDownSvg}</div>
+          </div>
+          <div class="phase-bar" aria-hidden="true">
+            <div class="phase-work" style="flex: 1200"></div>
+            <div class="phase-rest" style="flex: 360"></div>
+          </div>
+        </button>
+        ${oct31ExpandedHtml}
+      </div>
+
+      <!-- Card 2: October 30, 2026 -->
+      <div class="surface-card">
+        <button class="card-header-btn" type="button" id="toggle-oct30" aria-expanded="${oct30Open}">
+          <div class="tile-row">
+            <div class="tile-main">
+              <div class="role-tile-title single-line">${s.oct30}</div>
+              <div class="role-tile-secondary two-lines">${formatSummary(s, 3, s.dur3m5s, s.dur30s)}</div>
+            </div>
+            <div class="role-tile-title trailing-total">${s.dur3m35s}</div>
+            <div class="chevron ${oct30Open ? "expanded" : ""}" aria-hidden="true">${chevronDownSvg}</div>
+          </div>
+          <div class="phase-bar" aria-hidden="true">
+            <div class="phase-work" style="flex: 185"></div>
+            <div class="phase-rest" style="flex: 30"></div>
+          </div>
+        </button>
+        ${oct30ExpandedHtml}
+      </div>
+    `;
+
+    const btn31 = document.getElementById("toggle-oct31");
+    if (btn31) {
+      btn31.addEventListener("click", () => {
+        oct31Open = !oct31Open;
+        render();
+      });
+    }
+    const btn30 = document.getElementById("toggle-oct30");
+    if (btn30) {
+      btn30.addEventListener("click", () => {
+        oct30Open = !oct30Open;
+        render();
+      });
+    }
+    const retryDay = document.getElementById("btn-retry-day");
+    if (retryDay) {
+      retryDay.addEventListener("click", () => setState("expanded"));
+    }
+  }
+
+  function setState(st) {
+    currentState = st;
+    if (st === "collapsed") {
+      oct31Open = false;
+      oct30Open = false;
+    } else if (st === "expanded" || st === "narrow" || st === "run-error" || st === "run-loading") {
+      oct31Open = true;
+      oct30Open = false;
+    }
+    document.querySelectorAll("[data-state]").forEach((b) => {
+      b.setAttribute("aria-pressed", b.dataset.state === st ? "true" : "false");
+    });
+    render();
+  }
+
+  document.querySelectorAll("[data-state]").forEach((btn) => {
+    btn.addEventListener("click", () => setState(btn.dataset.state));
+  });
+  document.querySelectorAll("[data-theme]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentTheme = btn.dataset.theme;
+      document.querySelectorAll("[data-theme]").forEach((b) => {
+        b.setAttribute("aria-pressed", b.dataset.theme === currentTheme ? "true" : "false");
+      });
+      render();
+    });
+  });
+  document.querySelectorAll("[data-lang]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentLang = btn.dataset.lang;
+      document.querySelectorAll("[data-lang]").forEach((b) => {
+        b.setAttribute("aria-pressed", b.dataset.lang === currentLang ? "true" : "false");
+      });
+      render();
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>
