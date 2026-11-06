@@ -52,6 +52,7 @@ Always use `fvm dart tool/dispatcher.dart ...`, never bare `dart`.
 
 ## Rules
 
+- **Always allow a typed answer.** When you ask the user something (which tool, another task, a relaunch with a permission), they must be able to answer in their own words when none of your options fits. With a question dialog, keep a last choice such as "Something else (I will type it)", and never remove the tool's own "Other" choice. If the dialog cannot take typed text, ask as plain chat text instead.
 - Launch only a task that `next` returned or that the user named and the script accepts (`ready`, on `origin/master`). Never edit a task, its status or its indexes.
 - Do not run the stages yourself, even if the script fails. Report the failure.
 - Nothing stays on the local disk after a run: the script deletes the clone when the task ends. `status` shows the runs in progress.
