@@ -1,6 +1,6 @@
 ---
 id: BUG-04
-status: ready
+status: done
 type: fix
 complexity: low
 depends-on: []
@@ -16,9 +16,9 @@ skills: []
 
 # Countdown beeps do not follow the displayed seconds
 
-Category: [Bugs](../index.md)
+Category: [Bugs](../../index.md)
 
-Related: [BUG-05: the stage sound is sometimes missing](../05-stage-sound-sometimes-missing/index.md), the second half of the original report.
+Related: [BUG-05: the stage sound is sometimes missing](../../05-stage-sound-sometimes-missing/index.md), the second half of the original report.
 
 ## Goal
 
@@ -56,7 +56,7 @@ In the last 3 seconds of a stage, one beep plays each time the displayed number 
 
 ## Decisions
 
-- Split from the original BUG-04: this task fixes only the beep timing, whose cause is confirmed. The sometimes-missing stage sound is [BUG-05](../05-stage-sound-sometimes-missing/index.md), which needs device logs first (user, during planning).
+- Split from the original BUG-04: this task fixes only the beep timing, whose cause is confirmed. The sometimes-missing stage sound is [BUG-05](../../05-stage-sound-sometimes-missing/index.md), which needs device logs first (user, during planning).
 - One beep per tick, driven by the ViewModel, instead of a timed chain in the audio manager. The timer's ticks are the clock the screen uses, so the sound cannot drift from it.
 
 ## Out of scope
@@ -75,10 +75,10 @@ In the last 3 seconds of a stage, one beep plays each time the displayed number 
 
 ## Acceptance
 
-- [ ] When a whole workout runs with `_params()`, then the sound calls are, in order: `beep, beep, beep, start` (preparation), `beep, beep, beep, finish` (round 1), `beep, beep, beep, start` (rest), `beep, beep, beep, done` (round 2). Check: `plays each sound once per event over the whole workout` in `test/features/timer/presentation/timer_view_model_test.dart`.
-- [ ] When the preparation of 5 s runs, then a beep is recorded exactly at elapsed 2 s, 3 s and 4 s (displayed 3, 2, 1) and none before 2 s. Check: a test in `timer_view_model_test.dart` that elapses the fake clock second by second and checks the calls after each step.
-- [ ] When the timer is paused at displayed 2 and resumed, then no second beep for 2 plays, and the next beep plays when 1 is displayed. Check: a test in `timer_view_model_test.dart`.
-- [ ] When a late tick (less than 2 s late) jumps from displayed 3 to displayed 1, then exactly one beep plays for that tick. Check: a test in `timer_view_model_test.dart` using a time source skew, like `plays only the current start sound after a late tick`.
-- [ ] When a stage lasts 3 s or less, or a tick is stale, then no countdown beep plays. Check: the existing `does not beep in a stage of 3 seconds or less` and stale-tick tests in `timer_view_model_test.dart` still pass.
-- [ ] When the code is searched, then `playPreparationSound` and `onPlayerComplete` no longer appear in `lib/` or `test/`. Check: `grep -rn "playPreparationSound\|onPlayerComplete" lib test` prints nothing.
-- [ ] When the project checks run, then they pass. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When a whole workout runs with `_params()`, then the sound calls are, in order: `beep, beep, beep, start` (preparation), `beep, beep, beep, finish` (round 1), `beep, beep, beep, start` (rest), `beep, beep, beep, done` (round 2). Check: `plays each sound once per event over the whole workout` in `test/features/timer/presentation/timer_view_model_test.dart`.
+- [x] When the preparation of 5 s runs, then a beep is recorded exactly at elapsed 2 s, 3 s and 4 s (displayed 3, 2, 1) and none before 2 s. Check: a test in `timer_view_model_test.dart` that elapses the fake clock second by second and checks the calls after each step.
+- [x] When the timer is paused at displayed 2 and resumed, then no second beep for 2 plays, and the next beep plays when 1 is displayed. Check: a test in `timer_view_model_test.dart`.
+- [x] When a late tick (less than 2 s late) jumps from displayed 3 to displayed 1, then exactly one beep plays for that tick. Check: a test in `timer_view_model_test.dart` using a time source skew, like `plays only the current start sound after a late tick`.
+- [x] When a stage lasts 3 s or less, or a tick is stale, then no countdown beep plays. Check: the existing `does not beep in a stage of 3 seconds or less` and stale-tick tests in `timer_view_model_test.dart` still pass.
+- [x] When the code is searched, then `playPreparationSound` and `onPlayerComplete` no longer appear in `lib/` or `test/`. Check: `grep -rn "playPreparationSound\|onPlayerComplete" lib test` prints nothing.
+- [x] When the project checks run, then they pass. Check: `fvm dart tool/agent_check.dart --skip-build`.

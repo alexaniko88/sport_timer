@@ -15,5 +15,5 @@ A bug report does not authorize implementation. Diagnose and agree the fix throu
 - [BUG-01: iOS authentication dependency conflict](01-ios-auth-dependency-conflict/index.md)
 - [BUG-02: Timer recording notice is not translated](done/02-untranslated-statistics-and-timer-strings/index.md)
 - [BUG-03: Android Firebase plugins report Kotlin Gradle Plugin usage](03-android-firebase-kotlin-gradle-warning/index.md)
-- [BUG-04: Countdown beeps do not follow the displayed seconds](04-countdown-beeps-out-of-sync-and-stage-sound-missing/index.md)
+- [BUG-04: Countdown beeps do not follow the displayed seconds](done/04-countdown-beeps-out-of-sync-and-stage-sound-missing/index.md)
 - [BUG-05: The stage sound is sometimes missing](05-stage-sound-sometimes-missing/index.md)
