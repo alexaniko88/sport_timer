@@ -14,7 +14,7 @@ skills: []
 
 Category: [Bugs](../index.md)
 
-Related: [BUG-04: countdown beeps do not follow the displayed seconds](../04-countdown-beeps-out-of-sync-and-stage-sound-missing/index.md), split from the same report.
+Related: [BUG-04: countdown beeps do not follow the displayed seconds](../done/04-countdown-beeps-out-of-sync-and-stage-sound-missing/index.md), split from the same report.
 
 ## Goal
 
@@ -31,7 +31,7 @@ The sound that marks a stage change (round start, round finish) plays every time
   - All sounds share one `AudioPlayer` registered in `lib/di/di.dart`. The background keep-alive uses its own `AudioPlayer` with a silent loop (`lib/features/timer/data/default_background_keep_alive.dart`).
   - `DefaultAudioManager` sets an Android audio context with `AndroidAudioFocus.gainTransientMayDuck`.
 - **Suspected causes (not confirmed):**
-  1. The chained countdown beeps of the old `playPreparationSound` call `stop()` or play another beep on the shared player while the stage sound starts. By the asset lengths the chain should end about 0.8 s before the stage change, so this is unlikely. [BUG-04](../04-countdown-beeps-out-of-sync-and-stage-sound-missing/index.md) removes the chain anyway.
+  1. The chained countdown beeps of the old `playPreparationSound` call `stop()` or play another beep on the shared player while the stage sound starts. By the asset lengths the chain should end about 0.8 s before the stage change, so this is unlikely. [BUG-04](../done/04-countdown-beeps-out-of-sync-and-stage-sound-missing/index.md) removes the chain anyway.
   2. Ticks are late with the screen off, so a stale tick skips the round finish sound by design.
   3. Android audio focus or player state between the shared player and the keep-alive player drops a `play` call.
 

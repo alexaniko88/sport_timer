@@ -5,7 +5,7 @@ abstract class AudioManager {
 
   void playRoundStartSound();
 
-  void playPreparationSound();
+  void playCountdownBeep();
 
   Future<void> dispose();
 }

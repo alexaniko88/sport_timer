@@ -23,7 +23,7 @@ class _FakeAudioManager extends AudioManager {
   void playRoundStartSound() => calls.add('start');
 
   @override
-  void playPreparationSound() => calls.add('beep');
+  void playCountdownBeep() => calls.add('beep');
 
   @override
   Future<void> dispose() async {}
@@ -310,7 +310,7 @@ void main() {
         expect(viewModel.state.value.timerStatus, TimerStatus.round);
         expect(viewModel.state.value.currentRound, 2);
         expect(viewModel.state.value.currentSeconds, 10);
-        expect(audio.calls, ['start', 'beep', 'start']);
+        expect(audio.calls, ['start', 'beep', 'beep', 'beep', 'start']);
       });
     });
 
@@ -320,19 +320,15 @@ void main() {
         fake.elapse(const Duration(seconds: 40));
 
         expect(audio.calls, [
-          'beep', // preparation, 3 seconds left
-          'start', // round 1
-          'beep',
-          'finish', // round 1 ends
-          'beep', // rest, 3 seconds left
-          'start', // round 2
-          'beep',
-          'done', // workout ends, once
+          'beep', 'beep', 'beep', 'start', // preparation, round 1 starts
+          'beep', 'beep', 'beep', 'finish', // round 1 ends
+          'beep', 'beep', 'beep', 'start', // rest, round 2 starts
+          'beep', 'beep', 'beep', 'done', // workout ends, once
         ]);
       });
     });
 
-    test('plays the countdown beep at 3 seconds left', () {
+    test('plays one beep on each displayed second 3, 2 and 1', () {
       run(_params(), (fake, viewModel) {
         viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
         fake.elapse(const Duration(milliseconds: 1999));
@@ -341,6 +337,57 @@ void main() {
         fake.elapse(const Duration(milliseconds: 1));
         expect(viewModel.state.value.currentSeconds, 3);
         expect(audio.calls, ['beep']);
+
+        fake.elapse(const Duration(seconds: 1));
+        expect(viewModel.state.value.currentSeconds, 2);
+        expect(audio.calls, ['beep', 'beep']);
+
+        fake.elapse(const Duration(seconds: 1));
+        expect(viewModel.state.value.currentSeconds, 1);
+        expect(audio.calls, ['beep', 'beep', 'beep']);
+
+        fake.elapse(const Duration(seconds: 1));
+        expect(audio.calls, ['beep', 'beep', 'beep', 'start']);
+      });
+    });
+
+    test('does not repeat a beep when paused and resumed on the same number', () {
+      run(_params(), (fake, viewModel) {
+        viewModel.start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
+        fake.elapse(const Duration(milliseconds: 3000));
+        expect(viewModel.state.value.currentSeconds, 2);
+        expect(audio.calls, ['beep', 'beep']);
+
+        viewModel.togglePauseResume();
+        fake.elapse(const Duration(seconds: 10));
+        viewModel.togglePauseResume();
+        expect(audio.calls, ['beep', 'beep']);
+
+        fake.elapse(const Duration(seconds: 1));
+        expect(viewModel.state.value.currentSeconds, 1);
+        expect(audio.calls, ['beep', 'beep', 'beep']);
+      });
+    });
+
+    test('plays one beep when a late tick skips from 3 to 1', () {
+      fakeAsync((fake) {
+        var skew = Duration.zero;
+        final viewModel = TimerViewModel(
+          _params(),
+          audio,
+          keepAlive,
+          timeSource: () => fake.elapsed + skew,
+        )..start(notificationTitle: 'Workout', notificationTextBuilder: (_) => 'Text');
+        fake.elapse(const Duration(seconds: 2));
+        expect(viewModel.state.value.currentSeconds, 3);
+        expect(audio.calls, ['beep']);
+
+        skew = const Duration(seconds: 1);
+        fake.elapse(const Duration(seconds: 1));
+
+        expect(viewModel.state.value.currentSeconds, 1);
+        expect(audio.calls, ['beep', 'beep']);
+        viewModel.dispose();
       });
     });
 
