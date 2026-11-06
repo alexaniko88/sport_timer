@@ -59,3 +59,5 @@ The exact question, or "None".
 ```
 
 The commit line is `<type>: <description>` from `.agents/rules/git-commits.md`: lowercase, imperative, no final period, at most 72 characters.
+
+The commit type is one of `feat`, `fix`, `refactor`, `chore`, `docs`, `style`, `perf`, `test` or `build`. It is not the `type` in the task's front matter: `improve` is a branch prefix only and the script rejects it as a commit type. Pick the commit type from what the change does (new behavior `feat`, bug `fix`, UI styling only `style`, code change with no behavior change `refactor`).
