@@ -25,6 +25,7 @@ These rules apply to every step below.
 - **Only questions.** Work quietly. Do not tell the user what you read, search, write or check, and do not show plans, findings or progress. A message to the user is a question, a blocker that stops you, or the final summary in step 10. Nothing else.
 - **One question per message.** Never show two questions at once, not even as a numbered list. With a question dialog, put exactly one question in each call. Wait for the answer before the next.
 - **Atomic questions.** Each question asks about one thing only, in short plain words. Split a question that has "and", "or" or several parts into separate questions. Give only the context needed to answer it, in one or two short lines, and your recommended answer, worded so that "yes" accepts it.
+- **Always allow a typed answer.** The user must be able to answer in their own words when none of your options fits. With a question dialog, keep a last choice such as "Something else (I will type it)", and never remove the tool's own "Other" choice. If the dialog cannot take typed text, or the answer is open (a name, a number, a description), ask as plain chat text instead of a dialog.
 - **Final summary.** When everything is settled, show the summary from step 10. That is the only long message.
 
 ## Before you start
