@@ -9,6 +9,7 @@ The rules of this app, by stage. Each role reads "Common" and its own section. T
 - **No style guide file.** `docs/CodeStyleGuide.md` does not exist. The Dart rules that matter are in `.agents/rules/dart-style.md`.
 - **Scope.** Do what the task asks. Mention an unrelated problem in one line and do not act on it.
 - **Git.** Never run `git add`, `git commit`, `git push` or `git checkout`. The script does all git work.
+- **One simple command per check.** The sandbox allows a command only when it starts with an allowed program (`fvm flutter test`, `fvm dart format`, `fvm flutter analyze`, `grep`, ...). Run each check as its own command with literal file paths. Never use a variable (`F="..."`), `;`, `&&`, `||`, `|` or `$(...)`: one chained line is denied as a whole, even when every part is allowed. To check everything the change needs in one command, run `fvm dart tool/agent_check.dart --skip-build`.
 - **Edit with your edit tools.** Change files with the edit and write tools, never with a `python3` or `sed` script. If a command is denied, do not retry it another way through the shell. Do the work with the edit tools, or report it under "Blocked" with the exact command you needed. A denied command does not stop the run, but the script lists it in the PR, so never skip a format, analyze or test run silently.
 
 ## Implementation

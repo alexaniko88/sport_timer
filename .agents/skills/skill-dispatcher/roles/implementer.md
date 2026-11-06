@@ -23,7 +23,7 @@ You implement one task of this repository and stop. A script started you in a cl
 2. Do the steps in order. Do exactly what the task says: no bonus refactors, no unrelated cleanup, no extra docs. Mention an unrelated problem in one line under "Open notes".
 3. Put every new file in the right layer, following `CLAUDE.md` and the overrides. A helper on one type is an extension. New user-facing strings go in both ARB files, then run `fvm flutter gen-l10n`.
 4. Comments: one or two short plain sentences explaining why, only where the code is not obvious.
-5. Run `fvm dart format` and `fvm flutter analyze --no-pub` on the files you touched, by literal path, and fix what they report.
+5. Run `fvm dart format` and `fvm flutter analyze --no-pub` on the files you touched, by literal path, as separate simple commands (see "One simple command per check" in the overrides), and fix what they report.
 6. Do not write tests. The next stage does. Do not edit anything under `project-tasks/`: the script closes the task.
 7. Never run `git add`, `git commit`, `git push` or `git checkout`, and never change branches. The script commits.
 

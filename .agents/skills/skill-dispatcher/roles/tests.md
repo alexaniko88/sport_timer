@@ -22,7 +22,7 @@ You write the tests for what the implementer just changed, then stop. A script s
 1. Write tests only for code the task changed, never for untouched code around it. Follow `## Files and tests` of the task. If a test needs infrastructure that does not exist yet (a first fake or helper), build the smallest version the task needs and say so in the report.
 2. Run only the tests you wrote or changed, by file path (`fvm flutter test <path>`). Fix stale expectations that the change caused in other tests, and run those too.
 3. When the change alters a captured screen, state, theme or route transition, update `test/snapshots/ui_snapshots_test.dart` if needed, run `fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart`, and update the flow links in `test/snapshots/README.md`. Compare the new goldens with `mockup.html` when the task has one.
-4. Run `fvm dart format` and `fvm flutter analyze --no-pub` on the files you touched, by literal path.
+4. Run `fvm dart format` and `fvm flutter analyze --no-pub` on the files you touched, by literal path. Run every check as its own simple command (see "One simple command per check" in the overrides), so none is denied.
 5. Never edit production code. If a test shows a real bug, stop and put it under "Blocked". Do not patch it.
 6. Never run `git add`, `git commit`, `git push` or `git checkout`. Do not edit anything under `project-tasks/`.
 
