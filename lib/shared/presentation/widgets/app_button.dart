@@ -71,15 +71,20 @@ class _AppButtonContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = this.icon;
+    final text = Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
     if (icon == null) {
-      return Text(label);
+      return text;
     }
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         icon,
         const SizedBox(width: AppSpacing.s8),
-        Flexible(child: Text(label)),
+        Flexible(child: text),
       ],
     );
   }

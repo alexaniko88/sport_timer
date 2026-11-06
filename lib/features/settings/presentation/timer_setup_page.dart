@@ -12,6 +12,7 @@ import 'package:sport_timer/features/settings/presentation/widgets/timer_setting
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/timer/domain/timer_schedule.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
+import 'package:sport_timer/shared/presentation/extensions/text_theme_extension.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/extensions/theme_context.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_button.dart';
@@ -213,6 +214,9 @@ class _SessionOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
@@ -234,21 +238,42 @@ class _SessionOverview extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text(l10n.setupSessionLength)),
+                    Expanded(
+                      child: Text(
+                        l10n.setupSessionLength,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.emphasizedLabel.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: AppSpacing.s8),
-                    Text(formattedDuration),
+                    Text(
+                      formattedDuration,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.tileValue,
+                    ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 ExcludeFocus(
                   child: IgnorePointer(
                     child: FilledButtonTheme(
-                      // A local button theme replaces the app one, so keep its shape and only change the height.
+                      // A local button theme replaces the app one, so keep its shape and only change the size, padding, text, and icon.
                       data: FilledButtonThemeData(
-                        style: Theme.of(context).filledButtonTheme.style?.copyWith(
-                                  minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
-                                ) ??
-                            FilledButton.styleFrom(minimumSize: const Size(0, 48)),
+                        style: (theme.filledButtonTheme.style ?? FilledButton.styleFrom()).copyWith(
+                          minimumSize: const WidgetStatePropertyAll(Size(0, 48)),
+                          padding: const WidgetStatePropertyAll(
+                            EdgeInsets.symmetric(
+                              horizontal: AppSpacing.s24,
+                              vertical: AppSpacing.s8,
+                            ),
+                          ),
+                          textStyle: WidgetStatePropertyAll(textTheme.tileValue),
+                          iconSize: const WidgetStatePropertyAll(AppSpacing.s40),
+                        ),
                       ),
                       child: AppButton.primary(
                         label: l10n.homeStartButton,
