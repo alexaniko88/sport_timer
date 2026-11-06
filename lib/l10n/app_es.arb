@@ -24,7 +24,7 @@
   "durationMinutesSeconds": "{m}m {s}s",
   "durationSeconds": "{s}s",
   "homeDrawerTemplates": "Plantillas",
-  "homeDrawerTimerStyles": "Estilos del temporizador",
+  "homeDrawerTimerStyles": "Estilos",
   "homeMenuTooltip": "Abrir menú",
   "homeStartButton": "Iniciar",
   "homeTabTimer": "Temporizador",

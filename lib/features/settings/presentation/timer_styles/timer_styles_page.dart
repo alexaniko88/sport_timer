@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
+import 'package:sport_timer/features/settings/presentation/extensions/timer_style_names_extension.dart';
 import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/settings/presentation/timer_styles/timer_style_previews.dart';
@@ -58,11 +59,7 @@ class _TimerStyleTile extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final name = switch (style) {
-      TimerStyle.ring => l10n.timerStyleRing,
-      TimerStyle.fullColor => l10n.timerStyleFullColor,
-      TimerStyle.roundsStrip => l10n.timerStyleRoundsStrip,
-    };
+    final name = l10n.timerStyleName(style);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.s12),

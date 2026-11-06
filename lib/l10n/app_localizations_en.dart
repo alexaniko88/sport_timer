@@ -91,7 +91,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeDrawerTemplates => 'Templates';
 
   @override
-  String get homeDrawerTimerStyles => 'Timer styles';
+  String get homeDrawerTimerStyles => 'Styles';
 
   @override
   String get homeMenuTooltip => 'Open menu';

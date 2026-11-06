@@ -91,7 +91,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeDrawerTemplates => 'Plantillas';
 
   @override
-  String get homeDrawerTimerStyles => 'Estilos del temporizador';
+  String get homeDrawerTimerStyles => 'Estilos';
 
   @override
   String get homeMenuTooltip => 'Abrir menú';
