@@ -240,8 +240,9 @@ class TimerViewModel {
         next.timerStatus != TimerStatus.finished &&
         stageLengthSeconds > _countdownSeconds &&
         next.currentSeconds <= _countdownSeconds;
-    if (isCountdown && (previous == null || stageChanged || previous.currentSeconds > _countdownSeconds)) {
-      _audioManager.playPreparationSound();
+    // One beep per displayed number, so the beeps follow the screen.
+    if (isCountdown && (previous == null || stageChanged || previous.currentSeconds != next.currentSeconds)) {
+      _audioManager.playCountdownBeep();
     }
   }
 }
