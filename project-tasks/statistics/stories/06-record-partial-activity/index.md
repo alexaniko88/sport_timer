@@ -16,45 +16,47 @@ Result: if you leave 2:30 into a 3:00 round, those 2:30 and the round are not sa
 
 ## Agreed behavior
 
-- **What counts:** only active time that has really passed, in **whole seconds, rounded down**, for both work and rest. Milliseconds never count. Example: leaving at 1:23.8 into a round saves 1:23 of work.
-- **Rounds:** a work round counts toward the round total once **5 seconds** of it have passed. A partial work phase shorter than 5 s still adds its seconds to work time, but not to the round count.
+- **What counts:** only active time that has really passed, in **whole seconds, rounded down**, for both work and rest. Milliseconds never count. Example: leaving at 1:23.8 into a round saves 1:23 of work. A partial phase with less than 1 whole second is not saved.
+- **Rounds:** a partial work phase counts as a round once **5 seconds** of it have passed. A partial work phase shorter than 5 s still adds its seconds to work time, but not to the round count. A work phase that runs to its end always counts as a round, even when it is set shorter than 5 s.
 - **Not counted:** preparation and paused time, as today.
 - **When to save:** the run is kept in memory while the timer page is open. The final records are written **once, when the user leaves the timer page**. This applies whether the timer finished, is running or is paused. Finishing or pausing does not write the final records.
-- **Forced close:** the app gets no signal when the OS kills it, so it cannot save at that moment. Instead the recorder keeps a **draft checkpoint** in the database. On the next app start, an unfinished draft becomes final records. At most, the time since the last checkpoint is lost.
-- **Recovered run:** its end time and the date of its last partial phase come from the last checkpoint, not from when the app opens again.
-- **Dates:** each phase keeps its own logical local completion date and UTC offset, as today. A partial phase's completion instant is the moment the user left (or the last checkpoint).
+- **Forced close:** the app gets no signal when the OS kills it, so it cannot save at that moment. Instead the recorder keeps a hidden **draft** in the database: every 10 s while running, at each phase change (including finish) and on pause. Statistics never read the draft. On the next app start, an unfinished draft becomes final records. At most, the time since the last draft is lost.
+- **Recovered run:** its end time and the date of its last partial phase come from the last draft, not from when the app opens again. It is saved under the account that started it.
+- **Dates:** each phase keeps its own logical local completion date and UTC offset, as today. A partial phase's completion instant is the moment the user left (or the last draft).
 - **History and UI:** existing records stay as they are, with no data migration of old rows. There is no Statistics UI change. Partial time just adds to the existing daily totals, round counts and day details.
 
 ## Scope
 
-Included: counting partial time and rounds, a single final write on leaving the timer, draft checkpoints and recovery after a forced close, the schema and query changes these need, and tests.
+Included: counting partial time and rounds, a single final write on leaving the timer, drafts and recovery after a forced close, the schema and query changes these need, and tests.
 
-Excluded: restoring the timer itself after a forced close, marking partial rounds in the UI, changing preparation or pause rules, backup or sync.
+Excluded: restoring the timer itself after a forced close, marking partial rounds in the UI, changing preparation or pause rules, backup or sync, integration tests (the integration test setup does not exist yet).
 
 ## Acceptance criteria
 
 - Leaving partway through a work or rest phase saves the whole seconds that phase actually ran. Completed phases before it keep their full durations.
-- A partial work phase of 5 s or more adds one round. One shorter than 5 s adds its seconds but no round.
+- A partial work phase of 5 s or more adds one round. One shorter than 5 s adds its seconds but no round. A work phase that runs to its end always adds a round.
 - Preparation and paused time never count. Leaving during preparation saves nothing, and the run does not appear in statistics.
-- A finished timer is saved once, when the user leaves the page, with no duplicate rows.
-- Final records are written once per run, no matter whether the user leaves while finished, running or paused. Retrying a failed write cannot double-count.
-- After a forced close while training, the next app start saves the run up to its last checkpoint, under the account that started it. Recovery runs only once per draft.
+- Final records are written once per run, when the user leaves the page, whether the timer finished, is running or is paused. Retrying a failed write cannot double-count.
+- After a forced close while training, the next app start saves the run up to its last draft, under the account that started it. Recovery runs only once per draft.
+- Deleted or purged statistics cannot come back through recovery.
 - Activity keeps its logical local date, including a partial phase that crosses midnight.
-- Daily totals, round counts, chart data and day details include partial time and follow the 5-second round rule. Existing history is unchanged.
+- Daily totals, round counts, chart data and day details include partial time and follow the round rule. Existing history is unchanged.
 
 ## Tasks
 
 1. [Count partial progress in whole seconds](01-count-partial-progress/index.md).
 2. [Save the run once when leaving the timer](02-save-on-leaving-timer/index.md).
-3. [Checkpoint the run and recover it after a forced close](03-checkpoint-and-recover/index.md).
-4. [Verify partial recording end to end](04-verify-partial-recording/index.md).
+3. [Save drafts and recover a run after a forced close](03-checkpoint-and-recover/index.md).
 
-## Dependencies and open decisions
+## Decisions
 
-Builds on the completed [recording story](../01-record-activity/index.md). Check its availability in the implementation checkout. Coordinate with [Delete statistics](../05-delete-statistics/index.md) and the developer purge in [developer tools](../../../developer-tools/index.md): deleting or purging history must also remove pending drafts, so a later recovery cannot bring deleted history back.
+- **Final save on leaving, plus a hidden draft for kills.** The user keeps "save once when leaving the timer page" as the only normal save. The draft exists only so a killed app does not lose the run.
+- **Draft moments:** every 10 s while running, at each phase change (including finish) and on pause. There is no extra "app went to background" trigger: the foreground service keeps ticks running, and the recorder stays free of Flutter lifecycle code.
+- **Short rounds:** a work phase that runs to its end always counts as a round. The 5 s rule only applies to a partial work phase.
+- **Draft storage:** a separate `draft_phases` table linked to `timer_sessions` with `ON DELETE CASCADE`. Statistics never read it, and deleting a session deletes its draft, so deleted history cannot come back.
+- **Round rule in SQL, no new phase column (planner choice):** a work row counts as a round when `duration_ms >= 5000` or `duration_ms >= timer_sessions.work_duration_ms`. Full phases always match the second condition, so old rows keep their meaning and `completed_phases` needs no migration.
+- **No end-to-end task:** the old task 6.4 was dropped, because the integration test setup does not exist yet. Each task carries its own real-SQLite tests.
 
-To settle during planning (recommendations, not agreed requirements):
+## Dependencies
 
-- **Checkpoint moments:** recommended on each phase change, when the app goes to the background, and every ~10 s while running. The user accepted that the last few seconds can be lost after a kill. Only the final records are written on leaving.
-- **Round rule for short configured rounds:** recommended that a work round that fully completes always counts, even if it is configured shorter than 5 s.
-- **Storage shape:** how a draft is stored (a draft table, or session rows marked as unfinished) and how the round rule reaches the queries (a stored flag, or a duration condition in SQL). The choice must use a non-destructive migration.
+Builds on the completed [recording story](../01-record-activity/index.md). Tasks 6.2 and 6.3 build on the purge in [developer tools](../../../developer-tools/index.md) (`DEV-01-01`), which adds the real-SQLite test setup and the purge epoch that stale writes must respect. [Delete statistics](../05-delete-statistics/index.md) deletes sessions, so the cascade removes their drafts too.
