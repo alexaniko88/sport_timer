@@ -4,22 +4,22 @@ Epic: [UI refactor](../../index.md)
 
 ## User outcome
 
-Make daily statistics and the details of a training day easier to read and understand through a considered UI refactor.
+As a user reviewing my training, I want each day's card to show its totals at a glance and to open in place to show that day's sessions, so I can read my activity without leaving the list.
 
 ## Scope
 
-Revisit the daily activity cards and the day-details page, including its daily summary and run cards. The current design shows the figures as compact text lists. Preserve the meaning of existing statistics and distinguish activity completed on the selected day from the original run configuration. Changes to recorded data, calculations, and new analytics are outside this story unless separately agreed.
+The daily cards on the Statistics `List` tab and the day details. The cards get a compact total, a colored rounds · work · rest line and a work/rest bar. A card expands in place (one at a time) to list the day's sessions as flat rows, each with a template tag; the separate `/day-details` page is removed. The original run configuration is no longer shown. Recorded data, calculations, the `Charts` view and the calendar are not changed.
 
 ## Acceptance criteria
 
-- An agreed design covers the daily cards and the day-details experience in light and dark themes.
-- Users can still open a day and understand its daily totals and separate runs, including the difference between completed activity and original settings.
-- Loading, empty and error experiences, navigation, accessibility and different content sizes are considered in the design and verified for any changes.
+- The daily cards and the expanded sessions follow the [approved mockup](01-rethink-statistics-cards-and-details/mockup.html) in light and dark themes, English and Spanish.
+- A user can open a day in place, see each session with its template (or `Custom`), and close it again; only one day is open at a time.
+- Loading, empty and error states of a day, screen reader labels with full words, and large text on narrow screens work.
 
 ## Tasks
 
-1. [Rethink statistics cards and details](01-rethink-statistics-cards-and-details/index.md) — Provisional.
+1. [Rethink statistics cards and details](01-rethink-statistics-cards-and-details/index.md).
 
 ## Dependencies and open decisions
 
-No prerequisite task. Agree the visual direction, information hierarchy, and any changes to the displayed fields or navigation before implementation. Coordinate with the separately planned [visual activity story](../../../statistics/stories/04-visualize-activity/index.md); charts and calendar are not included here.
+Task 1 depends on [IMP-05](../../../improvements/05-add-shared-app-tag/index.md), which adds the shared `AppTag` used in the session rows. No open decisions. Charts and the calendar belong to the separate [visual activity story](../../../statistics/stories/04-visualize-activity/index.md).

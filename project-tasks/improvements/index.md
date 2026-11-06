@@ -17,5 +17,6 @@ An improvement task does not authorize implementation. Plan and agree the change
 2. [IMP-02: Rethink the navigation drawer](02-rethink-navigation-drawer/index.md)
 3. [IMP-03: Capture a UI snapshot reference](done/03-capture-ui-snapshot-reference/index.md)
 4. [IMP-04: Align timer setup summary and Start styling](04-align-timer-setup-summary-and-start/index.md)
+5. [IMP-05: Add a shared AppTag widget and use it on Timer Setup](05-add-shared-app-tag/index.md)
 
 Add each new task here and in the shared status tracker.

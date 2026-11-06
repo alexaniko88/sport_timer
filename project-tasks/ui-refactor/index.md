@@ -26,7 +26,7 @@ Make the app feel consistent and clear across its screens while allowing layouts
 2. [Access Templates from the drawer](stories/02-templates-in-drawer/index.md) — all tasks archived; Templates drawer navigation pending PR and merge.
 3. [Refactor the Start button](stories/03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
 4. [Unify borders and corner radii across the app](stories/04-unify-borders-and-corners/index.md) — Done; shared rules and drawer treatment completed.
-5. [Rethink statistics cards and day details](stories/05-statistics-ui-refactor/index.md) — Provisional; design decisions remain open.
+5. [Rethink statistics cards and day details](stories/05-statistics-ui-refactor/index.md) — expandable daily cards with session rows; replaces the day details page.
 
 ## Delivery order
 
