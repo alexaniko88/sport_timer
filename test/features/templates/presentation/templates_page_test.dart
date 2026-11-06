@@ -277,6 +277,18 @@ void main() {
         expect(button, findsOneWidget);
         expect(find.byType(FloatingActionButton), findsNothing);
         expect(find.descendant(of: button, matching: find.byIcon(Icons.play_arrow)), findsOneWidget);
+        final appTheme = Theme.of(tester.element(sessionLabel));
+        final labelText = tester.widget<Text>(sessionLabel);
+        expect(labelText.maxLines, 1);
+        expect(labelText.overflow, TextOverflow.ellipsis);
+        expect(labelText.style?.fontSize, appTheme.textTheme.titleMedium?.fontSize);
+        expect(labelText.style?.fontWeight, FontWeight.w500);
+        expect(labelText.style?.color, theme.colorScheme.onSurfaceVariant);
+        final durationText = tester.widget<Text>(find.text('05:10'));
+        expect(durationText.maxLines, 1);
+        expect(durationText.overflow, TextOverflow.ellipsis);
+        expect(durationText.style?.fontSize, appTheme.textTheme.headlineSmall?.fontSize);
+        expect(durationText.style?.fontWeight, FontWeight.w700);
         final buttonRect = tester.getRect(button);
         final labelRect = tester.getRect(sessionLabel);
         // The session tile's 1px border now takes layout space, so the button is 2px narrower.
@@ -284,6 +296,21 @@ void main() {
         final buttonContext = tester.element(button);
         final shape = FilledButtonTheme.of(buttonContext).style!.shape!.resolve({}) as RoundedRectangleBorder;
         expect(shape.borderRadius, BorderRadius.circular(AppRadius.r12));
+        final buttonStyle = FilledButtonTheme.of(buttonContext).style!;
+        final buttonTextStyle = buttonStyle.textStyle!.resolve({});
+        expect(buttonTextStyle?.fontSize, appTheme.textTheme.headlineSmall?.fontSize);
+        expect(buttonTextStyle?.fontWeight, FontWeight.w700);
+        expect(buttonStyle.iconSize!.resolve({}), AppSpacing.s40);
+        expect(buttonStyle.minimumSize!.resolve({}), const Size(0, 48));
+        expect(
+          buttonStyle.padding!.resolve({}),
+          const EdgeInsets.symmetric(horizontal: AppSpacing.s24, vertical: AppSpacing.s8),
+        );
+        final startText = tester.widget<Text>(find.descendant(of: button, matching: find.text(label)));
+        expect(startText.maxLines, 1);
+        expect(startText.overflow, TextOverflow.ellipsis);
+        final icon = find.descendant(of: button, matching: find.byIcon(Icons.play_arrow));
+        expect(IconTheme.of(tester.element(icon)).size, AppSpacing.s40);
         final material = tester.widget<Material>(find.descendant(of: button, matching: find.byType(Material)).first);
         expect(material.color, theme.colorScheme.primary);
         final node = tester.getSemantics(find.text(label));
@@ -298,6 +325,8 @@ void main() {
           120,
           scrollable: scrollable,
         );
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.byType(TimerSettingCard).last);
         await tester.pumpAndSettle();
         expect(tester.getRect(button), buttonRect);
         expect(tester.getRect(sessionLabel), labelRect);
