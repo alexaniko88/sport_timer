@@ -39,7 +39,8 @@ These rules apply to every step below.
 
   If you run on another model, say so in one line and ask the user to switch (`/model` in Claude Code) before you start. Go on only if they say to.
 - **Language.** Talk with the user in the language they use. Every file you write is in plain, simple English.
-- **Branch.** Check `git status -sb` and read `.agents/rules/git-commits.md`. Then `git switch master`, `git pull --ff-only` and `git switch -c feat/plan-<short-topic>`. Do not carry unrelated uncommitted work onto the branch and never discard or stash it. If the checkout cannot be switched safely or the pull fails, stop and explain. Continue an existing planning branch for follow-up messages.
+- **Sync master.** Run `fvm dart tool/sync_master.dart` first. It switches to `master`, pulls it and deletes merged local branches (rules in `.agents/skills/skill-dispatcher/SKILL.md`). Do not ask; report its result in one line with the final summary. If it fails (for example uncommitted changes), stop and explain.
+- **Branch.** Check `git status -sb` and read `.agents/rules/git-commits.md`. Then, from the updated `master`, run `git switch -c feat/plan-<short-topic>`. Do not carry unrelated uncommitted work onto the branch and never discard or stash it. If the checkout cannot be switched safely or the pull fails, stop and explain. Continue an existing planning branch for follow-up messages.
 
 ## 1. Understand
 

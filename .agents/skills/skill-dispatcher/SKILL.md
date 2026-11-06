@@ -20,6 +20,12 @@ This skill's `model` and `effort` are a recommendation and only last for the cur
 
 For tasks from `project-tasks/` started through this skill, the runner commits, pushes its own task branch and opens the PR without asking each time. The script enforces the limits: it never pushes to `master` or `main`, never merges, never touches another branch, checks the commit format and adds the `Co-Authored-By: <tool> <model>` line, scans the diff for private data and uses the repo-local noreply email. You never run `git push`, `git commit` or `gh pr` yourself.
 
+## Sync master and clean merged branches
+
+Run `fvm dart tool/sync_master.dart` once before the first step of the loop, and before the planner starts (`skill-planner` uses it too). It stops with no change when there are uncommitted changes. Otherwise it fetches, switches to `master`, runs `git pull --ff-only` and deletes the local branches that are already merged.
+
+A branch is deleted only when GitHub shows a merged pull request into `master` with the same branch name and the same last commit. A branch with no pull request, new commits after the merge, an open pull request or a checkout in another worktree is kept. If GitHub cannot be read, nothing is deleted. It never touches remote branches. Report its output in one line. If it fails, show the error and stop; do not delete branches by hand.
+
 ## The loop
 
 Always use `fvm dart tool/dispatcher.dart ...`, never bare `dart`.
