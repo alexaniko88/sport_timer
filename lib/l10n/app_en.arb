@@ -1,5 +1,7 @@
 {
   "@@locale": "en",
+  "timerRecordingUnavailable": "Could not save this workout to your statistics.",
+  "@timerRecordingUnavailable": {"description": "Short notice shown when the workout runs but its activity cannot be saved to the statistics."},
   "setupSessionLength": "Session length",
   "@setupSessionLength": {"description": "Scheduled workout duration on timer setup, excluding pauses."},
   "setupPreparation": "Preparation",

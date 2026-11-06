@@ -1,6 +1,6 @@
 ---
 id: BUG-02
-status: ready
+status: done
 type: fix
 complexity: low
 depends-on: []
@@ -13,7 +13,7 @@ skills: []
 
 # Timer recording notice is not translated
 
-Category: [Bugs](../index.md)
+Category: [Bugs](../../index.md)
 
 ## Goal
 
@@ -27,7 +27,7 @@ The snackbar that says a workout cannot be saved to the statistics shows Spanish
 - **Reproduction:** set the device to Spanish, make the recorder fail to start, open the timer. The snackbar text is English. The widget test `test/features/timer/presentation/timer_page_test.dart` already forces this case with a fake recorder (`_Recorder()..fail = true`) and checks the English text.
 - **Cause (confirmed):** the string is a literal in the widget. A search of `lib/` on `master` finds no other hardcoded user-facing English sentence. The `errorMessage` fields in the statistics and settings ViewModels are never shown by a view.
 - **History:** this bug first listed several Statistics strings (empty and error states, tile labels, duration units, the date format). Later Statistics PRs moved all of them to `l10n` keys, so only this notice is left.
-- Feature `timer`, layer `presentation`. Golden reference: [`timer_recording_notice.png`](../../../test/snapshots/goldens/timer_recording_notice.png), captured in English.
+- Feature `timer`, layer `presentation`. Golden reference: [`timer_recording_notice.png`](../../../../test/snapshots/goldens/timer_recording_notice.png), captured in English.
 
 ## Behavior
 
@@ -58,8 +58,8 @@ The snackbar that says a workout cannot be saved to the statistics shows Spanish
 
 ## Acceptance
 
-- [ ] When the recorder cannot start and the app is in English, then the snackbar shows `Could not save this workout to your statistics.` with a close icon, as before. Check: `fvm flutter test test/features/timer/presentation/timer_page_test.dart`.
-- [ ] When the recorder cannot start and the app is in Spanish, then the snackbar shows `No se pudo guardar este entrenamiento en tus estadísticas.`. Check: the new Spanish case in `test/features/timer/presentation/timer_page_test.dart`.
-- [ ] When the ARB files are read, then `timerRecordingUnavailable` exists in both, and the English file has its `@timerRecordingUnavailable` description. Check: `grep -n "timerRecordingUnavailable" lib/l10n/app_en.arb lib/l10n/app_es.arb` prints two lines for `app_en.arb` (key and `@` entry) and one for `app_es.arb`, and `fvm flutter gen-l10n` finishes without errors.
-- [ ] When `timer_page.dart` is read, then it contains no `FIXME-ALEX` and no hardcoded English sentence. Check: `grep -n "FIXME-ALEX\|Could not save" lib/features/timer/presentation/timer_page.dart` prints nothing.
-- [ ] When the UI snapshots run, then `timer_recording_notice.png` still matches. Check: `fvm flutter test test/snapshots/ui_snapshots_test.dart` passes without `--update-goldens`.
+- [x] When the recorder cannot start and the app is in English, then the snackbar shows `Could not save this workout to your statistics.` with a close icon, as before. Check: `fvm flutter test test/features/timer/presentation/timer_page_test.dart`.
+- [x] When the recorder cannot start and the app is in Spanish, then the snackbar shows `No se pudo guardar este entrenamiento en tus estadísticas.`. Check: the new Spanish case in `test/features/timer/presentation/timer_page_test.dart`.
+- [x] When the ARB files are read, then `timerRecordingUnavailable` exists in both, and the English file has its `@timerRecordingUnavailable` description. Check: `grep -n "timerRecordingUnavailable" lib/l10n/app_en.arb lib/l10n/app_es.arb` prints two lines for `app_en.arb` (key and `@` entry) and one for `app_es.arb`, and `fvm flutter gen-l10n` finishes without errors.
+- [x] When `timer_page.dart` is read, then it contains no `FIXME-ALEX` and no hardcoded English sentence. Check: `grep -n "FIXME-ALEX\|Could not save" lib/features/timer/presentation/timer_page.dart` prints nothing.
+- [x] When the UI snapshots run, then `timer_recording_notice.png` still matches. Check: `fvm flutter test test/snapshots/ui_snapshots_test.dart` passes without `--update-goldens`.
