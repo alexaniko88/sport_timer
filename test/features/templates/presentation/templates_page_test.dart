@@ -26,6 +26,7 @@ import 'package:sport_timer/features/settings/presentation/widgets/timer_setting
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 import 'package:sport_timer/shared/presentation/theme/timer_colors.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 import '../../statistics/fake_activity_repository.dart';
 
 class _SettingsRepository implements SettingsRepository {
@@ -840,10 +841,9 @@ void main() {
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
 
-    final destinations = find.byType(NavigationDrawerDestination);
-    expect(destinations, findsNWidgets(2));
-    final templatesDest = find.widgetWithText(NavigationDrawerDestination, 'Templates');
-    final timerStylesDest = find.widgetWithText(NavigationDrawerDestination, 'Timer styles');
+    expect(find.byType(Drawer), findsOneWidget);
+    final templatesDest = find.ancestor(of: find.text('Templates'), matching: find.byType(AppSurface));
+    final timerStylesDest = find.ancestor(of: find.text('Styles'), matching: find.byType(AppSurface));
     expect(templatesDest, findsOneWidget);
     expect(timerStylesDest, findsOneWidget);
     expect(tester.getTopLeft(templatesDest).dy, lessThan(tester.getTopLeft(timerStylesDest).dy));
@@ -851,7 +851,7 @@ void main() {
     await tester.tap(templatesDest);
     await tester.pumpAndSettle();
     expect(find.byType(TemplatesPage), findsOneWidget);
-    expect(find.byType(NavigationDrawer), findsNothing);
+    expect(find.byType(Drawer), findsNothing);
     expect(find.text('Choose your template'), findsOneWidget);
     expect(find.byType(BackButton), findsOneWidget);
     expect(find.byIcon(Icons.menu), findsNothing);
@@ -879,7 +879,7 @@ void main() {
 
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(NavigationDrawerDestination, 'Templates'));
+    await tester.tap(find.ancestor(of: find.text('Templates'), matching: find.byType(AppSurface)));
     await tester.pumpAndSettle();
     expect(find.byType(TemplatesPage), findsOneWidget);
 
@@ -930,7 +930,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(NavigationDrawerDestination, 'Templates'));
+    await tester.tap(find.ancestor(of: find.text('Templates'), matching: find.byType(AppSurface)));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hyrox'));
     await tester.pumpAndSettle();
@@ -942,7 +942,7 @@ void main() {
     // Reopen without choosing
     await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(NavigationDrawerDestination, 'Templates'));
+    await tester.tap(find.ancestor(of: find.text('Templates'), matching: find.byType(AppSurface)));
     await tester.pumpAndSettle();
     final selected = tester.widgetList<TemplateTile>(find.byType(TemplateTile)).where((tile) => tile.isSelected);
     expect(selected.map((tile) => tile.name), ['Hyrox']);

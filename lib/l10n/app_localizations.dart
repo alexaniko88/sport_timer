@@ -239,7 +239,7 @@ abstract class AppLocalizations {
   /// Label of the side drawer item that opens the timer styles page.
   ///
   /// In en, this message translates to:
-  /// **'Timer styles'**
+  /// **'Styles'**
   String get homeDrawerTimerStyles;
 
   /// Tooltip of the menu button in the app bars that opens the side drawer.

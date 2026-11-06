@@ -118,7 +118,7 @@
   "@homeDrawerTemplates": {
     "description": "Label of the side drawer item that opens the templates page."
   },
-  "homeDrawerTimerStyles": "Timer styles",
+  "homeDrawerTimerStyles": "Styles",
   "@homeDrawerTimerStyles": {
     "description": "Label of the side drawer item that opens the timer styles page."
   },
