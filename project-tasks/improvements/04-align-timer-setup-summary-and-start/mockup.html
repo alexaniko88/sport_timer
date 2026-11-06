@@ -1,0 +1,565 @@
+<!--
+  IMP-04 Align timer setup summary and Start styling.
+  Based on the goldens: setup_custom.png and setup_template_selected.png.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timer Setup Summary &amp; Start Mockup — IMP-04</title>
+<style>
+  :root {
+    /* ColorScheme.fromSeed(AppPalette.brand = #FF5252), light */
+    --primary: #904a43;
+    --on-primary: #ffffff;
+    --primary-container: #ffdad5;
+    --on-primary-container: #3b0907;
+    --surface: #fff8f6;
+    --surface-container: #fceae7;
+    --surface-container-high: #f6e4e1;
+    --on-surface: #231918;
+    --on-surface-variant: #534341;
+    --outline-variant: #d8c2be;
+    --app-bar: #ffb4a9;
+    --control-bg: #ffffff;
+    --control-fg: #1b1b1b;
+    /* TimerColors.light */
+    --preparation: #e1ad01;
+    --round: #ff5252;
+    --rest: #448aff;
+    --rounds-count: #ffab40;
+    /* Spacing & shape tokens */
+    --s8: 8px;
+    --s12: 12px;
+    --s16: 16px;
+    --s24: 24px;
+    --s40: 40px;
+    --r12: 12px;
+    --thin: 1px;
+    --scale: 1;
+  }
+  :root[data-theme="dark"] {
+    --primary: #ffb4ab;
+    --on-primary: #561e19;
+    --primary-container: #73332d;
+    --on-primary-container: #ffdad5;
+    --surface: #1a1110;
+    --surface-container: #271d1c;
+    --surface-container-high: #322827;
+    --on-surface: #f1dfdc;
+    --on-surface-variant: #d8c2be;
+    --outline-variant: #534341;
+    --app-bar: #271d1c;
+    --control-bg: #1f1f1f;
+    --control-fg: #f1f1f1;
+    /* TimerColors.dark */
+    --preparation: #e8c23a;
+    --round: #ff8a80;
+    --rest: #82b1ff;
+    --rounds-count: #ffb74d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0 16px;
+  }
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    max-width: 720px;
+  }
+  .controls-bar button {
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: var(--r12);
+    border: 1px solid #888;
+    background: var(--control-bg);
+    color: var(--control-fg);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .controls-bar button[aria-pressed="true"] {
+    outline: 3px solid #ffd54f;
+    font-weight: 700;
+  }
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    height: 844px;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    color: var(--on-surface);
+    border-radius: 16px;
+    border: 1px solid var(--outline-variant);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    display: flex;
+    flex-direction: column;
+  }
+  .phone.narrow-large {
+    width: 320px;
+    height: 568px;
+    --scale: 1.5;
+  }
+
+  /* AppBar */
+  .app-bar {
+    height: 56px;
+    background: var(--app-bar);
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+    flex: none;
+  }
+  .icon-btn {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: none;
+    color: var(--on-surface);
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex: none;
+  }
+  .app-bar-title {
+    flex: 1;
+    min-width: 0;
+    font-size: calc(22px * var(--scale));
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .avatar-btn {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    background: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex: none;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  /* Scrollable settings area */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--s16);
+    display: flex;
+    flex-direction: column;
+  }
+  .template-chip-row {
+    display: none;
+    margin-bottom: var(--s8);
+  }
+  .template-chip-row.visible {
+    display: flex;
+  }
+  .template-chip {
+    min-height: 48px;
+    padding: var(--s16);
+    border-radius: var(--r12);
+    border: var(--thin) solid var(--outline-variant);
+    background: var(--surface-container);
+    color: var(--primary);
+    font-size: calc(14px * var(--scale));
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  /* TimerSettingGrid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s16);
+  }
+  .phone.narrow-large .grid {
+    grid-template-columns: 1fr;
+  }
+  .setting-card {
+    aspect-ratio: 1 / 1;
+    min-height: 160px;
+    padding: var(--s12);
+    border-radius: var(--r12);
+    border: var(--thin) solid var(--outline-variant);
+    background: var(--surface-container);
+    color: var(--on-surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s8);
+    cursor: pointer;
+    text-align: center;
+    font: inherit;
+  }
+  .phone.narrow-large .setting-card {
+    aspect-ratio: auto;
+    min-height: 156px;
+  }
+  .setting-card:hover,
+  .session-overview:hover {
+    background: var(--surface-container-high);
+  }
+  .card-icon {
+    width: var(--s40);
+    height: var(--s40);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .card-icon svg {
+    width: var(--s40);
+    height: var(--s40);
+    fill: currentColor;
+  }
+  /* emphasizedLabel: titleMedium (16px) w500, onSurfaceVariant */
+  .role-emphasized-label {
+    font-size: calc(16px * var(--scale));
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  /* tileValue: headlineSmall (24px) w700, onSurface */
+  .role-tile-value {
+    font-size: calc(24px * var(--scale));
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* _SessionOverview fixed at bottom above BottomNavigationBar */
+  .session-overview-wrap {
+    padding: 0 var(--s16) var(--s16) var(--s16);
+    flex: none;
+  }
+  .session-overview {
+    width: 100%;
+    padding: var(--s16);
+    border-radius: var(--r12);
+    border: var(--thin) solid var(--outline-variant);
+    background: var(--surface-container);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s8);
+    cursor: pointer;
+  }
+  .session-length-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s8);
+    width: 100%;
+  }
+  .session-length-label {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+  }
+  .session-length-value {
+    flex: none;
+  }
+  /* Start FilledButton inside _SessionOverview */
+  .start-button {
+    width: 100%;
+    min-height: 48px;
+    padding: var(--s8) var(--s24);
+    border: 0;
+    border-radius: var(--r12);
+    background: var(--primary);
+    color: var(--on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s8);
+    cursor: pointer;
+    font: inherit;
+  }
+  .start-button-icon {
+    width: var(--s40);
+    height: var(--s40);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .start-button-icon svg {
+    width: var(--s40);
+    height: var(--s40);
+    fill: currentColor;
+  }
+  .start-button-label {
+    font-size: calc(24px * var(--scale));
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--on-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* BottomNavigationBar */
+  .bottom-nav {
+    height: 56px;
+    background: var(--app-bar);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    place-items: center;
+    flex: none;
+  }
+  .bottom-nav-item {
+    min-height: 48px;
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 12px;
+    color: var(--on-surface-variant);
+  }
+  .bottom-nav-item.active {
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .bottom-nav-item svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+</style>
+</head>
+<body>
+  <div class="controls-bar" role="group" aria-label="State">
+    <button data-state="custom" aria-pressed="true">State: Custom (05:10)</button>
+    <button data-state="template" aria-pressed="false">State: Template Hyrox (47:20)</button>
+    <button data-state="hours" aria-pressed="false">State: Multi-hour (2:00:31)</button>
+    <button data-state="narrow" aria-pressed="false">State: Narrow + 1.5x Text</button>
+  </div>
+  <div class="controls-bar" role="group" aria-label="Theme and Language">
+    <button data-theme="light" aria-pressed="true">Light</button>
+    <button data-theme="dark" aria-pressed="false">Dark</button>
+    <button data-lang="en" aria-pressed="true">English</button>
+    <button data-lang="es" aria-pressed="false">Español</button>
+  </div>
+
+  <div class="phone" id="phone">
+    <header class="app-bar">
+      <button class="icon-btn" type="button" id="btn-menu" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="app-bar-title" id="app-bar-title">Are you prepared?</div>
+      <button class="avatar-btn" type="button" id="btn-avatar" aria-label="Account, Alex Runner">
+        <span class="avatar" aria-hidden="true">A</span>
+      </button>
+    </header>
+
+    <main class="scroll-area">
+      <div class="template-chip-row" id="template-chip-row">
+        <button class="template-chip" type="button" id="template-chip">Template: Hyrox</button>
+      </div>
+
+      <div class="grid">
+        <button class="setting-card" type="button">
+          <span class="card-icon" style="color: var(--preparation)" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4z"/></svg>
+          </span>
+          <span class="role-emphasized-label" id="lbl-prep">Preparation</span>
+          <span class="role-tile-value" id="val-prep">00:10</span>
+        </button>
+
+        <button class="setting-card" type="button">
+          <span class="card-icon" style="color: var(--round)" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M20.57 14.86 22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>
+          </span>
+          <span class="role-emphasized-label" id="lbl-work">Work</span>
+          <span class="role-tile-value" id="val-work">01:30</span>
+        </button>
+
+        <button class="setting-card" type="button">
+          <span class="card-icon" style="color: var(--rest)" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm9 10v-2c-2.24 0-4.16-.96-5.6-2.68l-1.34-1.6A1.98 1.98 0 0 0 12.53 9h-1.05c-.59 0-1.15.26-1.53.72l-1.34 1.6C7.16 13.04 5.24 14 3 14v2c2.77 0 5.19-1.17 7-3.25V15l-3.88 1.55c-.67.27-1.12.92-1.12 1.66C5 19.2 5.8 20 6.79 20H9v-.5c0-1.38 1.12-2.5 2.5-2.5h3c.28 0 .5.22.5.5s-.22.5-.5.5h-3c-.83 0-1.5.67-1.5 1.5v.5h7.21c.99 0 1.79-.8 1.79-1.79 0-.74-.45-1.39-1.12-1.66L14 15v-2.25c1.81 2.08 4.23 3.25 7 3.25z"/></svg>
+          </span>
+          <span class="role-emphasized-label" id="lbl-rest">Rest</span>
+          <span class="role-tile-value" id="val-rest">00:15</span>
+        </button>
+
+        <button class="setting-card" type="button">
+          <span class="card-icon" style="color: var(--rounds-count)" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+          </span>
+          <span class="role-emphasized-label" id="lbl-rounds">Rounds</span>
+          <span class="role-tile-value" id="val-rounds">3</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- _SessionOverview -->
+    <div class="session-overview-wrap">
+      <div class="session-overview" id="session-overview" role="button" tabindex="0" aria-label="Start, Session length: 05:10">
+        <div class="session-length-row">
+          <span class="role-emphasized-label session-length-label" id="lbl-session">Session length</span>
+          <span class="role-tile-value session-length-value" id="val-session">05:10</span>
+        </div>
+        <div class="start-button" aria-hidden="true">
+          <span class="start-button-icon">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </span>
+          <span class="start-button-label" id="lbl-start">Start</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Bottom navigation">
+      <div class="bottom-nav-item active">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61z"/></svg>
+        <span id="nav-timer">Timer</span>
+      </div>
+      <div class="bottom-nav-item">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        <span id="nav-stats">Statistics</span>
+      </div>
+    </nav>
+  </div>
+
+<script>
+  const i18n = {
+    en: {
+      title: 'Are you prepared?',
+      menuTooltip: 'Open menu',
+      avatarTooltip: 'Account, Alex Runner',
+      templateChip: 'Template: Hyrox',
+      prep: 'Preparation',
+      work: 'Work',
+      rest: 'Rest',
+      rounds: 'Rounds',
+      session: 'Session length',
+      start: 'Start',
+      navTimer: 'Timer',
+      navStats: 'Statistics',
+    },
+    es: {
+      title: '¿Estás listo?',
+      menuTooltip: 'Abrir menú',
+      avatarTooltip: 'Cuenta, Alex Runner',
+      templateChip: 'Plantilla: Hyrox',
+      prep: 'Preparación',
+      work: 'Trabajo',
+      rest: 'Descanso',
+      rounds: 'Rondas',
+      session: 'Duración de la sesión',
+      start: 'Iniciar',
+      navTimer: 'Temporizador',
+      navStats: 'Estadísticas',
+    },
+  };
+
+  const stateValues = {
+    custom: { prep: '00:10', work: '01:30', rest: '00:15', rounds: '3', session: '05:10', template: false, narrow: false },
+    template: { prep: '00:20', work: '05:00', rest: '01:00', rounds: '8', session: '47:20', template: true, narrow: false },
+    hours: { prep: '00:01', work: '60:00', rest: '00:30', rounds: '2', session: '2:00:31', template: false, narrow: false },
+    narrow: { prep: '00:10', work: '01:30', rest: '00:15', rounds: '3', session: '05:10', template: true, narrow: true },
+  };
+
+  let currentState = 'custom';
+  let currentTheme = 'light';
+  let currentLang = 'en';
+
+  function render() {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    document.documentElement.setAttribute('lang', currentLang);
+    const t = i18n[currentLang];
+    const s = stateValues[currentState];
+
+    document.getElementById('app-bar-title').textContent = t.title;
+    document.getElementById('btn-menu').setAttribute('aria-label', t.menuTooltip);
+    document.getElementById('btn-avatar').setAttribute('aria-label', t.avatarTooltip);
+    document.getElementById('template-chip').textContent = t.templateChip;
+    document.getElementById('template-chip-row').classList.toggle('visible', s.template);
+
+    document.getElementById('lbl-prep').textContent = t.prep;
+    document.getElementById('lbl-work').textContent = t.work;
+    document.getElementById('lbl-rest').textContent = t.rest;
+    document.getElementById('lbl-rounds').textContent = t.rounds;
+
+    document.getElementById('val-prep').textContent = s.prep;
+    document.getElementById('val-work').textContent = s.work;
+    document.getElementById('val-rest').textContent = s.rest;
+    document.getElementById('val-rounds').textContent = s.rounds;
+
+    document.getElementById('lbl-session').textContent = t.session;
+    document.getElementById('val-session').textContent = s.session;
+    document.getElementById('lbl-start').textContent = t.start;
+    document.getElementById('session-overview').setAttribute('aria-label', `${t.start}, ${t.session}: ${s.session}`);
+
+    document.getElementById('nav-timer').textContent = t.navTimer;
+    document.getElementById('nav-stats').textContent = t.navStats;
+
+    document.getElementById('phone').classList.toggle('narrow-large', s.narrow);
+
+    document.querySelectorAll('[data-state]').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.state === currentState));
+    });
+    document.querySelectorAll('[data-theme]').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.theme === currentTheme));
+    });
+    document.querySelectorAll('[data-lang]').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.lang === currentLang));
+    });
+  }
+
+  document.querySelectorAll('[data-state]').forEach(b => {
+    b.addEventListener('click', () => {
+      currentState = b.dataset.state;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-theme]').forEach(b => {
+    b.addEventListener('click', () => {
+      currentTheme = b.dataset.theme;
+      render();
+    });
+  });
+  document.querySelectorAll('[data-lang]').forEach(b => {
+    b.addEventListener('click', () => {
+      currentLang = b.dataset.lang;
+      render();
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>
