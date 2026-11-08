@@ -56,7 +56,7 @@ Create the self-contained `tool/plan_dispatcher/` Python package with its offlin
 - No Python package exists today. Reference behavior for task parsing: `tool/dispatcher/task.dart` and `tool/dispatcher/extensions/front_matter_text.dart` (read-only). Copy their behavior, not Flutter structure.
 - Local interpreter is Python 3.9.6 (`/usr/bin/python3`), so the vendored tomli fallback is the path the required tests exercise.
 - Exact shapes: [contracts — Package layout](../../../contracts.md#package-layout-pld-01-02), [Front matter subset](../../../contracts.md#front-matter-subset-pld-01-02-taskspy), [Task model](../../../contracts.md#task-model-pld-01-02-taskspy), [Command runner](../../../contracts.md#command-runner-pld-01-02-portspy), [CLI](../../../contracts.md#cli-pld-01-02-envelope-each-commands-owner-adds-it), [Configuration schema 1](../../../contracts.md#configuration-schema-1-pld-01-02-loads-and-validates-owners-fill-values), [Stage protocol](../../../contracts.md#stage-protocol-pld-01-02-validates-adapters-pld-03-0204) and [Runner boundary](../../../contracts.md#runner-boundary-for-this-epic).
-- Shared requirements: R1, R7, R15, R16. Prerequisite: [PLD-01-01](../01-route-task-executors/index.md).
+- Shared requirements: R1, R7, R15, R16. Prerequisite: [PLD-01-01](../done/01-route-task-executors/index.md).
 
 ## Contract
 
