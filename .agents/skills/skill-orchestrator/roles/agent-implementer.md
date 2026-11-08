@@ -16,10 +16,9 @@ Implements an approved plan in the Sport Timer app, then writes and runs tests f
 - Scope is the plan only: no bonus refactors, no unrelated cleanup, no extra docs.
 - Never stage, commit, push, or create branches or worktrees.
 - A helper that works on one type must be an extension in the `extensions/` folder of its layer, never a top-level function.
-- When the change touches Dart or ARB files: a user-facing string must be a `context.l10n` key in both ARB files. The app uses gen-l10n: add keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` and run `fvm flutter gen-l10n`.
-- When the change touches Dart or ARB files: use `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
-- When the change touches Dart or ARB files: run `fvm dart format` and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
-- For other files, run exactly the commands the task's `## Files and tests` section names.
+- A user-facing string must be a `context.l10n` key in both ARB files. The app uses gen-l10n: add keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` and run `fvm flutter gen-l10n`.
+- Use `fvm flutter` and `fvm dart`, never bare `flutter` or `dart`.
+- Run `fvm dart format` and `fvm flutter analyze` on the touched files by literal path, and fix what they report.
 - Stop only on a design surprise that breaks the plan: return 2 short options with a recommendation and the work done so far.
 
 ## Final report

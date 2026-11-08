@@ -11,7 +11,6 @@ class Task {
   final List<String> dependsOn;
   final List<String> touches;
   final List<String> skills;
-  final String executor;
   final String directory;
   final String title;
   final String text;
@@ -24,17 +23,10 @@ class Task {
     required this.dependsOn,
     required this.touches,
     required this.skills,
-    required this.executor,
     required this.directory,
     required this.title,
     required this.text,
   });
-
-  /// Why the legacy dispatcher cannot run this task, or null when it can.
-  String? get executorBlockReason {
-    if (executor == 'legacy') return null;
-    return 'executor ${executor.isEmpty ? '(empty)' : executor} is not supported by the legacy dispatcher';
-  }
 
   bool get isDone => directory.contains('/done/');
 
@@ -74,20 +66,10 @@ class Task {
       dependsOn: _list(front['depends-on']),
       touches: _list(front['touches']),
       skills: _list(front['skills']),
-      executor: _executor(front),
       directory: path.substring(0, path.length - '/index.md'.length),
       title: text.firstHeading,
       text: text,
     );
-  }
-
-  /// Absent means `legacy`; an empty or list value is unsupported and becomes `''`.
-  static String _executor(Map<String, Object> front) {
-    if (!front.containsKey('executor')) return 'legacy';
-    return switch (front['executor']) {
-      final String value => value,
-      _ => '',
-    };
   }
 
   static String? _scalar(Object? value) => value is String && value.isNotEmpty ? value : null;

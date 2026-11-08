@@ -138,15 +138,7 @@ Future<int> _launch(List<String> args) async {
 
   final tasks = await _tasksOnMaster();
   final task = tasks.where((candidate) => candidate.id == ids.first).firstOrNull;
-  if (task == null) {
-    stderr.writeln('${ids.first} is not a ready task on origin/master.');
-    return 1;
-  }
-  if (TaskSelector.launchRefusal(task) case final refusal?) {
-    stderr.writeln(refusal);
-    return 1;
-  }
-  if (!task.isReady) {
+  if (task == null || !task.isReady) {
     stderr.writeln('${ids.first} is not a ready task on origin/master.');
     return 1;
   }
