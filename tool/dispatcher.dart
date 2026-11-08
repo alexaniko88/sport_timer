@@ -104,14 +104,16 @@ Future<int> _next(List<String> args) async {
 
 Future<int> _models() async {
   final catalogs = {
-    Tool.codex: ModelCatalog.parseCodex(await _output('codex', ['debug', 'models'])),
-    Tool.antigravity: ModelCatalog.parseAntigravity(await _output('agy', ['models'])),
+    Tool.codex: ModelCatalog.parseCodex(await ModelCatalog.output('codex', ['debug', 'models'])),
+    Tool.antigravity: ModelCatalog.parseAntigravity(await ModelCatalog.output('agy', ['models'])),
   };
   for (final tool in Tool.values) {
     stdout.writeln('\n${tool.label}');
     final models = catalogs[tool];
     if (models == null) {
       stdout.writeln('  aliases: sonnet, opus (always the newest model of that family)');
+    } else if (models.isEmpty) {
+      stdout.writeln('  WARNING: could not retrieve available models');
     } else {
       for (final model in ModelCatalog.latestPerFamily(models)) {
         stdout.writeln('  newest: ${model.id}');

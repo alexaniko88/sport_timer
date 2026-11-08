@@ -23,10 +23,30 @@ Future<CommandResult> runSystemCommand(
   List<String> args, {
   String? workingDirectory,
 }) async {
-  final result = await Process.run(executable, args, workingDirectory: workingDirectory);
+  final result = await Process.run(resolveExecutable(executable), args, workingDirectory: workingDirectory);
   return CommandResult(
     exitCode: result.exitCode,
     stdout: result.stdout as String,
     stderr: result.stderr as String,
   );
+}
+
+/// Finds user-installed tools when a non-interactive shell has a reduced PATH.
+String resolveExecutable(String executable, {Map<String, String>? environment}) {
+  final env = environment ?? Platform.environment;
+  if (executable.contains('/') || executable.contains(r'\')) return executable;
+  bool usable(String path) {
+    final stat = File(path).statSync();
+    return stat.type == FileSystemEntityType.file && (Platform.isWindows || stat.mode & 73 != 0);
+  }
+
+  for (final directory in (env['PATH'] ?? '').split(Platform.isWindows ? ';' : ':')) {
+    if (directory.isNotEmpty && usable('$directory/$executable')) return executable;
+  }
+  final home = env['HOME'];
+  if (home != null) {
+    final candidate = '$home/.local/bin/$executable';
+    if (usable(candidate)) return candidate;
+  }
+  return executable;
 }

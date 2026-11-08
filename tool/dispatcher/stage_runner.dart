@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'command_runner.dart';
 import 'role_models.dart';
 import 'tool_command.dart';
 
@@ -33,7 +34,7 @@ Future<ProcessOutcome> runToolProcess(
   required Duration timeout,
 }) async {
   final process = await Process.start(
-    invocation.executable,
+    resolveExecutable(invocation.executable),
     invocation.args,
     workingDirectory: workingDirectory,
   );
