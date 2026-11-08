@@ -322,5 +322,16 @@ void main() {
         }
       });
     }
+
+    test('the non-legacy executor and task branch rules are documented', () {
+      final skill = File('.agents/skills/skill-orchestrator/SKILL.md').readAsStringSync();
+      final commits = File('.agents/rules/git-commits.md').readAsStringSync();
+      final implementer = File('$_rolesDir/agent-implementer.md').readAsStringSync();
+
+      expect(skill, contains('Local tasks with a non-legacy executor'));
+      expect(skill, contains('`## Files and tests` commands'));
+      expect(commits, contains('<type>/<id-lowercase>-<slug>'));
+      expect(implementer, contains('When the change touches Dart or ARB files:'));
+    });
   });
 }

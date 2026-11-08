@@ -11,8 +11,11 @@ String _task({
   String dependsOn = '[]',
   String touches = '[lib/a/**]',
   String title = 'Do it',
+  String type = 'feat',
+  String? executor,
 }) {
-  return '---\nid: $id\nstatus: $status\ntype: feat\ndepends-on: $dependsOn\ntouches: $touches\n---\n\n# $title\n';
+  final executorLine = executor == null ? '' : 'executor: $executor\n';
+  return '---\nid: $id\nstatus: $status\ntype: $type\ndepends-on: $dependsOn\ntouches: $touches\n$executorLine---\n\n# $title\n';
 }
 
 Future<List<Task>> _load(Map<String, String> files) => TaskLoader(() async => files).load();
@@ -108,6 +111,80 @@ void main() {
 
       expect(busy, {'E-01-01'});
       expect(TaskSelector(tasks: tasks, busyIds: busy).next(), isNull);
+    });
+
+    test('a task without an executor is legacy and can start', () async {
+      final tasks = await _load({'$root/01-a/index.md': _task(id: 'E-01-01')});
+
+      expect(tasks.single.executor, 'legacy');
+      expect(tasks.single.executorBlockReason, isNull);
+      expect(TaskSelector(tasks: tasks).candidates().map((task) => task.id), ['E-01-01']);
+    });
+
+    test('an explicit legacy executor can start', () async {
+      final tasks = await _load({'$root/01-a/index.md': _task(id: 'E-01-01', executor: 'legacy')});
+
+      expect(TaskSelector(tasks: tasks).candidates().map((task) => task.id), ['E-01-01']);
+    });
+
+    final unsupported = {
+      'orchestrator': 'orchestrator',
+      'plan-dispatcher-v1': 'plan-dispatcher-v1',
+      'handoff': 'handoff',
+      'Legacy': 'Legacy',
+      'foo': 'foo',
+      '': '(empty)',
+      '""': '(empty)',
+      '[a]': '(empty)',
+    };
+    for (final entry in unsupported.entries) {
+      test('executor "${entry.key}" is refused as ${entry.value}', () async {
+        final tasks = await _load({'$root/01-a/index.md': _task(id: 'E-01-01', executor: entry.key)});
+        final selector = TaskSelector(tasks: tasks);
+
+        expect(selector.blockReason(tasks.single), 'executor ${entry.value} is not supported by the legacy dispatcher');
+        expect(selector.candidates(), isEmpty);
+      });
+    }
+
+    test('a draft task reports its status before its executor', () async {
+      final tasks = await _load({
+        '$root/01-a/index.md': _task(id: 'E-01-01', status: 'draft', executor: 'orchestrator'),
+      });
+
+      expect(TaskSelector(tasks: tasks).blockReason(tasks.single), 'status is draft');
+    });
+
+    test('launchRefusal is null for legacy and explains a non-legacy executor', () async {
+      final tasks = await _load({
+        '$root/01-a/index.md': _task(id: 'PLD-01-01'),
+        '$root/02-b/index.md': _task(id: 'PLD-01-02', executor: 'orchestrator'),
+      });
+
+      expect(TaskSelector.launchRefusal(tasks[0]), isNull);
+      expect(
+        TaskSelector.launchRefusal(tasks[1]),
+        'PLD-01-02: executor orchestrator is not supported by the legacy dispatcher',
+      );
+    });
+
+    test('canonical task branches mark epic and standalone tasks busy', () async {
+      final tasks = await _load({
+        'project-tasks/e/stories/01-s/02-bootstrap-python-package/index.md': _task(
+          id: 'PLD-01-02',
+          executor: 'orchestrator',
+        ),
+        'project-tasks/bugs/01-crash/index.md': _task(id: 'BUG-01', type: 'fix'),
+      });
+      final epicTask = tasks.firstWhere((task) => task.id == 'PLD-01-02');
+      final bug = tasks.firstWhere((task) => task.id == 'BUG-01');
+
+      expect(epicTask.branch, 'feat/pld-01-02-bootstrap-python-package');
+      expect(bug.branch, 'fix/bug-01-crash');
+      expect(TaskSelector.busyIdsFromBranches(tasks: tasks, branches: [epicTask.branch, bug.branch]), {
+        'PLD-01-02',
+        'BUG-01',
+      });
     });
 
     test('a skipped task is not offered', () async {
