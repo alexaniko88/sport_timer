@@ -10,7 +10,7 @@ As a user, I want clearly readable, tappable settings in a grid that matches Tem
 
 ## Agreed design and scope
 
-- Follow the selected [Centered design reference](../../references/centered-grid.png): icon, label and value stacked vertically and centered in each card. The image describes composition; current theme tokens, localized labels and value formatting take precedence over illustrative details.
+- Use a centered layout: icon, label and value stacked vertically and centered in each card. Current theme tokens, localized labels and value formatting take precedence over any illustrative details.
 - Show the four current options in reading order: preparation, work, rest, rounds. Default to a two-column grid with square cards.
 - Reuse the normal Templates tile surface, corner radius and border treatment, currently a neutral surface, 12px corners and subtle 1px outline. Do not introduce a separate border style for the grid or restyle unrelated screens.
 - Icons retain the existing option icons and semantic phase colors: preparation yellow, work red, rest blue, rounds orange, using the appropriate theme variants. Text uses theme text colors.
