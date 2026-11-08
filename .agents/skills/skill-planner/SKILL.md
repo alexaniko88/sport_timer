@@ -129,6 +129,7 @@ If a requirement or upstream contract changes, mark affected pending tasks `draf
 ## 10. Validate and hand off
 
 - Check unique ids, numbering, paths, relative links, valid dependency ids and no cycles. Follow the whole-plan checks in [references/task-splitting.md](references/task-splitting.md): requirements have owners and checks, contracts fit, every piece has a consumer, wiring is owned, and the delivery order preserves a working app. Compare related tasks together; passing individual cold reads alone does not prove the pieces fit.
+- When every task of the effort is `ready`, delete the planning record and everything else that only served the planning, as the [interview record](../../rules/project-tasks-format.md#interview-record) rule says, and include the deletion in the commit. Check that no file still links to them.
 - Report the counts, which tasks are `ready` and which are `draft` and why, and any decision still open. Keep it short.
 - When nothing else is needed, show the full commit message and the exact files, then ask this once, in its own bold paragraph:
 
