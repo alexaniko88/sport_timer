@@ -15,7 +15,8 @@ skills: []
 
 Improvements: [Improvements](../index.md)
 
-Related: [IMP-07: Adaptive launcher icon](../07-adaptive-launcher-icon/index.md).
+Related: [IMP-07: Adaptive launcher icon](../07-adaptive-launcher-icon/index.md). Planning record: [adaptive-app-icon](../../planning/adaptive-app-icon/planning.md) (historical; this file is authoritative).
+
 ## Goal
 
 Give the Android workout notification its own small icon: a white barbell on a transparent background. Today the notification borrows the launcher icon, and [IMP-07](../07-adaptive-launcher-icon/index.md) turns the launcher icon into an opaque red square, which Android would draw as a plain white square in the status bar. This task must merge before IMP-07.

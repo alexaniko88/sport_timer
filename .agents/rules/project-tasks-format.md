@@ -62,15 +62,12 @@ status: draft          # draft | ready; in done/ it is done
 type: feat             # feat | fix | improve; sets the branch prefix
 complexity: low        # low | medium | high; picks the suggested model
 depends-on: [TPL-03-01]
-executor: legacy       # optional: legacy | orchestrator | plan-dispatcher-v1 | handoff; default legacy
 touches:               # paths or globs the task changes
   - lib/features/templates/data/local_template_store.dart
   - test/snapshots/goldens/templates_custom.png
 skills: []             # optional; project skills the roles read, e.g. [skill-fl-chart]
 ---
 ```
-
-`executor` says who may run the task; absent means `legacy`. `legacy`: the current Dart dispatcher. `orchestrator`: `skill-orchestrator` with the user present. `plan-dispatcher-v1`: the new engine once installed. `handoff`: an agent in the user's session, never a dispatcher.
 
 Sections, in this order. Leave out the ones marked "visual tasks only" when there is no view.
 
