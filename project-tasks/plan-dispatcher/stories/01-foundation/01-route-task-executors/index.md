@@ -1,6 +1,6 @@
 ---
 id: PLD-01-01
-status: draft
+status: ready
 type: feat
 complexity: medium
 executor: legacy
@@ -50,10 +50,10 @@ Let a task declare which executor may run it, make the current Dart dispatcher r
 - Branch rule (`.agents/rules/git-commits.md`, "Branch names"): add that a branch for a task under `project-tasks/` (epic tasks and standalone `BUG-`/`IMP-` tasks alike) is `<type>/<id-lowercase>-<slug>`, where `type` is the task's front-matter `type` and `slug` is the task folder name without its `NN-` prefix, for example `feat/pld-01-02-bootstrap-python-package`. Free-form requests keep `<prefix>/<short-summary>`.
 - Orchestrator (`SKILL.md`), exact edits:
   - Stage 0, after its first sentence, add: `For a task under project-tasks/, use the task branch rule in .agents/rules/git-commits.md instead.`
-  - Insert this paragraph as the last paragraph of Stage 0 (before `## Stage 1`), exactly:
+  - Insert this paragraph directly after the Stage 0 paragraph that ends `Record the feature branch and starting commit for the approval checkpoint.` and before `## Scope changes during an orchestration`, exactly:
 
     ```markdown
-    **Local tasks with a non-legacy executor.** When the task's front matter has an executor other than `legacy`, the checks in Stages 2, 3 and 5 are exactly the task's own `## Files and tests` commands. Run the full Flutter suite only when that section lists it. `tool/agent_check.dart`, `fvm flutter analyze` and the Dart, l10n and `fvm` rules apply only when the change touches `.dart` or ARB files.
+    **Local tasks with a non-legacy executor.** When the task's front matter has an executor other than `legacy`, the checks in Stages 2, 3 and 5 are exactly the task's own `## Files and tests` commands. Run the full Flutter suite only when that section lists it. `tool/agent_check.dart`, `fvm flutter analyze` and the Dart, l10n and `fvm` rules apply only when the change touches `.dart` or ARB files. For these tasks this paragraph replaces every other mention in Stages 2 to 5 of the full suite, `fvm flutter analyze`, the analyze result and `tool/agent_check.dart`, including the Stage 2 report, the paragraph after Stage 2 and the Stage 3 approval checkpoint: report the task's own commands and their results instead. The Stage 5 check that `CLAUDE.md` still describes the real layout still applies.
     ```
   - Prefix exactly these four existing bullets with `For legacy tasks and free-form requests: ` (keep the rest of each bullet unchanged):
     - Stage 2: the bullet that starts `Run \`fvm dart format\` and \`fvm flutter analyze\` on the touched files`.
@@ -61,7 +61,7 @@ Let a task declare which executor may run it, make the current Dart dispatcher r
     - Stage 5: the bullet that starts `` `fvm flutter analyze` reports no issues``.
     - Stage 5: the bullet that starts `` `fvm dart tool/agent_check.dart` passes``.
   - Stage 4, in the bullet that starts `**Fix Critical and General findings**`, replace `then re-run the Stage 3 tests and \`flutter analyze\`` with `then re-run the Stage 3 checks (for a non-legacy task, its own \`## Files and tests\` commands)`.
-  - No other bullet changes. The Stage 3 golden and integration bullets are already conditional and stay as they are.
+  - No other line changes. The remaining mentions of the full suite and analyze (the Stage 2 final-report bullet, the paragraph after Stage 2, the Stage 3 first paragraph and its approval-checkpoint paragraph) stay as they are, because the Stage 0 paragraph above overrides them for non-legacy tasks. The Stage 3 golden and integration bullets are already conditional and stay as they are.
 - `agent-implementer.md`: prefix its three bullets about `context.l10n`/ARB, `fvm` and `fvm dart format`/`fvm flutter analyze` with `When the change touches Dart or ARB files:`, and add this bullet after them, exactly:
 
   ```markdown
@@ -98,7 +98,7 @@ Tests in `test/tool/dispatcher/task_selector_test.dart` (copy the structure of t
 
 1. `executor` absent → `executor == 'legacy'`, `executorBlockReason == null`, task is a candidate.
 2. `executor: legacy` → candidate.
-3. For each of `orchestrator`, `plan-dispatcher-v1`, `handoff`, `Legacy`, `foo`, a bare `executor:` line (helper value `''`), `'""'` (quoted empty) and `'[a]'`: `blockReason` equals `executor <value> is not supported by the legacy dispatcher`, with `(empty)` for the three empty/list forms; not in `candidates()`.
+3. For each of `orchestrator`, `plan-dispatcher-v1`, `handoff`, `Legacy`, `foo`, a bare `executor:` line (helper value `''`), `'""'` (quoted empty) and `'[a]'`: `blockReason` equals `executor <value> is not supported by the legacy dispatcher`, with `(empty)` for the three empty/list forms (a list value such as `[a]` is reported as `(empty)` on purpose, because the parsed value is not a string); not in `candidates()`.
 4. A draft task with `executor: orchestrator` → `blockReason == 'status is draft'` (order check).
 5. `TaskSelector.launchRefusal` returns `null` for a legacy task and `'PLD-01-02: executor orchestrator is not supported by the legacy dispatcher'` for an orchestrator task with ID `PLD-01-02`.
 6. `TaskSelector.busyIdsFromBranches(tasks: tasks, branches: [...])` returns both IDs for: a task at `project-tasks/e/stories/01-s/02-bootstrap-python-package/index.md` with ID `PLD-01-02` and branch `feat/pld-01-02-bootstrap-python-package`; and a task at `project-tasks/bugs/01-crash/index.md` with ID `BUG-01`, `type: fix` and branch `fix/bug-01-crash`. Each branch is asserted equal to that task's `Task.branch` first.
@@ -119,6 +119,6 @@ No app launch, device test, golden or ARB change.
 ## Acceptance
 
 - [ ] When a task declares any executor other than `legacy` (including empty and list values), then `blockReason` returns `executor <value> is not supported by the legacy dispatcher` and the task is never a candidate. Check: `task_selector_test.dart` cases 1–4.
-- [ ] When `launch <ID>` names a non-legacy task, then it prints `<ID>: executor <value> is not supported by the legacy dispatcher` and exits 1 without starting a pipeline. Check: `task_selector_test.dart` case 5, plus `grep -n "launchRefusal" tool/dispatcher.dart` printing the call inside `_launch`.
+- [ ] When `launch <ID>` names a non-legacy task, then `TaskSelector.launchRefusal` returns `<ID>: executor <value> is not supported by the legacy dispatcher`, and `_launch` calls it (writing the text to stderr and returning 1) before its `isReady` check and before any pipeline is created. Check: `task_selector_test.dart` case 5, plus `grep -n "launchRefusal\|!task.isReady" tool/dispatcher.dart` printing the `launchRefusal` call inside `_launch` with a lower line number than the `!task.isReady` check in `_launch` (the `task.isReady &&` line in `_next` does not match this pattern). Running `launch` itself is not a check, because no non-legacy task is on `origin/master`.
 - [ ] When a local task runs through the orchestrator on its canonical branch, then existing busy detection recognizes it. Check: `task_selector_test.dart` case 6.
 - [ ] When a non-legacy task is handed to the orchestrator, then the skill tells it to use the task's own `Files and tests` commands and limits Dart/l10n rules to Dart/ARB changes. Check: new `ai_setup_test.dart` case, plus `grep -n "For legacy tasks and free-form requests" .agents/skills/skill-orchestrator/SKILL.md` printing exactly four lines.
