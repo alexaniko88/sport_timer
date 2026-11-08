@@ -1,0 +1,71 @@
+---
+abbr: PLD
+---
+
+# EPIC: PlanDispatcher
+
+## Goal
+
+Make the planner and dispatcher reusable across projects, independent of Flutter, and simplify task execution so approved, prepared tasks run without routine interruptions. Build and prove the package in Sport Timer, then publish the fresh public MIT project at alexaniko88/plan-dispatcher and adopt its pinned release.
+
+## Agreed behavior and boundaries
+
+The accepted user requirements are mapped below. The authoritative [shared contracts](contracts.md) define data/CLI interfaces, ownership, failure behavior and delivery constraints; every story/task consumes them. [Interview history](../planning/portable-workflows/planning.md) records how decisions were reached and is not a second live specification.
+
+- macOS first; project-local Python package/runtime and integrations only, no global agent changes. Setup clearly defaults to Claude/Codex/Antigravity and permits a subset.
+- All future worker/reviewer stages use installed provider CLIs, including under T3/IDEs. Host providers do not prove CLI availability. No native T3 workspace lifecycle, queues or automatic second task in a thread.
+- The planner settles scope, relevant public contracts, UI approvals, tooling/checks and permissions before readiness. Independent interview/task reviews remain. A runtime service/permission failure is still possible and must be reported honestly.
+- Recommend eligible task/settings, ask before launch unless a specific task was requested, and allow scoped automatic model selection/manual override. Launch authorizes that task's implementation/tests/review/commit/push/PR without routine stops.
+- One worker owns code/tests, fresh independent reviewers check exact candidates and fresh workers may repair within the total two-pass budget. Major unresolved issues retain local work; no ad hoc helper scripts or WIP pushes.
+- Task clones/branches are managed automatically outside repositories; local state is canonical across linked worktrees. Keep blocked work for explicit resume/adoption; delete successful clones. No sweeping unrelated local branches, force pushes, base-branch pushes, merges or GitHub comments.
+- Keep consumer coding/identity/attribution/privacy rules in consumer config/references. The generic package contains none of Sport Timer's architecture/theme/data.
+- Preserve existing backlog content and IDs while moving it to docs/tasks; keep legacy long tasks readable. Generic new tasks use the shorter required sections plus conditional contracts/UI/tooling.
+- GitHub only. Fresh initial target commit/MIT notices; no Sport Timer history export. Framework-neutral proof uses temporary fixtures, not another permanent repository.
+
+## Stories
+
+1. [Foundation and task eligibility](stories/01-foundation/index.md) — Provide a tested package/task contract and route work only to executors that can run it.
+2. [Shared project validation](stories/02-shared-validation/index.md) — Run configured checks through one Python interface and prove Sport Timer parity before retirement.
+3. [CLI execution and reviewed publication](stories/03-cli-execution/index.md) — Own one resumable task lifecycle from isolated preparation through checked publication and cleanup.
+4. [Portable workflows and project installation](stories/04-workflows-and-installation/index.md) — Ship the planner/dispatcher skills and project-only install/restore/update experience.
+5. [Sport Timer cutover](stories/05-sport-timer-cutover/index.md) — Replace live consumers atomically, preserve the backlog and retire the old tools only after proof.
+6. [Independent release and consumer adoption](stories/06-extraction-and-adoption/index.md) — Publish the fresh generic MIT project and adopt its immutable release without losing consumer data.
+
+## Delivery order
+
+Legacy executor gate first; then self-contained Python/config/task interfaces. Selection/checker/adapters can proceed against those fixed interfaces. Runtime and CLI adapters feed lifecycle assembly; planner preparation/reviews do not depend on task publication. Setup and update are distinct deliverables. Cutover replaces live skills/old runner/tests together, moves the backlog through an exclusive orchestrator task, and retires the old validator after parity/live Codex proof. The explicit handoff creates the target release and a source completion PR; its merge unblocks pinned consumer adoption.
+
+Only PLD-01-01 is supported by the legacy dispatcher. No task in this epic is `plan-dispatcher-v1`; at cutover PLD-05-03 moves the existing ready Sport Timer tasks to `plan-dispatcher-v1` (D56) and returns any that fail the readiness check to `draft`. A task that edits `tool/plan_dispatcher/` after PLD-05-01 also runs `pd update --source local` (contracts package-edit rule). Bootstrap tasks are orchestrator-routed with explicit Python checks. Self-replacing/root-moving/adoption work stays orchestrator-routed; extraction uses a non-dispatchable handoff executor. Read each task's executor and prerequisites before launching; do not substitute allowlist exceptions.
+
+## Shared contracts
+
+[contracts.md](contracts.md) is authoritative for planned interfaces, schemas, task/check policies and the full lifecycle. Paths/symbols there are planned outputs except where explicitly identified as current references. Unwired blocks have named downstream consumers; final task-flow assembly belongs to PLD-03-06, consumer cutover to story 5, and release adoption to PLD-06-02.
+
+## Requirement coverage
+
+| Requirement | Contributing tasks | Acceptance/check ownership |
+| --- | --- | --- |
+| R1: Project-local installation | [PLD-01-02](stories/01-foundation/02-bootstrap-python-package/index.md), [PLD-03-01](stories/03-cli-execution/01-prepare-workspaces/index.md), [PLD-04-03](stories/04-workflows-and-installation/03-project-installation/index.md), [PLD-05-01](stories/05-sport-timer-cutover/01-switch-workflow-engine/index.md), [PLD-06-01](stories/06-extraction-and-adoption/01-publish-independent-project/index.md), [PLD-06-02](stories/06-extraction-and-adoption/02-adopt-pinned-release/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R2: Confirmed tooling/no improvised helpers | [PLD-02-01](stories/02-shared-validation/01-configurable-checker/index.md), [PLD-04-01](stories/04-workflows-and-installation/01-portable-planner/index.md), [PLD-04-03](stories/04-workflows-and-installation/03-project-installation/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R3: Pinned restoration/explicit updates | [PLD-03-01](stories/03-cli-execution/01-prepare-workspaces/index.md), [PLD-04-03](stories/04-workflows-and-installation/03-project-installation/index.md), [PLD-04-04](stories/04-workflows-and-installation/04-explicit-updates/index.md), [PLD-06-02](stories/06-extraction-and-adoption/02-adopt-pinned-release/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R4: Safe eligible-task selection | [PLD-01-01](stories/01-foundation/01-route-task-executors/index.md), [PLD-01-03](stories/01-foundation/03-select-and-reserve-tasks/index.md), [PLD-04-02](stories/04-workflows-and-installation/02-portable-dispatcher/index.md), [PLD-05-02](stories/05-sport-timer-cutover/02-move-task-backlog/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R5: Task recommendation/launch approval | [PLD-01-03](stories/01-foundation/03-select-and-reserve-tasks/index.md), [PLD-04-02](stories/04-workflows-and-installation/02-portable-dispatcher/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R6: Scoped model recommendations | [PLD-03-05](stories/03-cli-execution/05-task-lifecycle/index.md), [PLD-04-01](stories/04-workflows-and-installation/01-portable-planner/index.md), [PLD-04-02](stories/04-workflows-and-installation/02-portable-dispatcher/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R7: Shared CLI execution and preflight | [PLD-01-02](stories/01-foundation/02-bootstrap-python-package/index.md), [PLD-03-01](stories/03-cli-execution/01-prepare-workspaces/index.md), [PLD-03-02](stories/03-cli-execution/02-claude-cli-adapter/index.md), [PLD-03-03](stories/03-cli-execution/03-codex-cli-adapter/index.md), [PLD-03-04](stories/03-cli-execution/04-antigravity-cli-adapter/index.md), [PLD-03-05](stories/03-cli-execution/05-task-lifecycle/index.md), [PLD-04-01](stories/04-workflows-and-installation/01-portable-planner/index.md), [PLD-04-02](stories/04-workflows-and-installation/02-portable-dispatcher/index.md), [PLD-04-03](stories/04-workflows-and-installation/03-project-installation/index.md), [PLD-05-01](stories/05-sport-timer-cutover/01-switch-workflow-engine/index.md), [PLD-05-03](stories/05-sport-timer-cutover/03-retire-dart-validator/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R8: Isolated workspace and reservations | [PLD-01-01](stories/01-foundation/01-route-task-executors/index.md), [PLD-01-03](stories/01-foundation/03-select-and-reserve-tasks/index.md), [PLD-03-01](stories/03-cli-execution/01-prepare-workspaces/index.md), [PLD-03-06](stories/03-cli-execution/06-publish-and-cleanup/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R9: Worker/test/review and bounded repairs | [PLD-03-02](stories/03-cli-execution/02-claude-cli-adapter/index.md), [PLD-03-03](stories/03-cli-execution/03-codex-cli-adapter/index.md), [PLD-03-04](stories/03-cli-execution/04-antigravity-cli-adapter/index.md), [PLD-03-05](stories/03-cli-execution/05-task-lifecycle/index.md), [PLD-03-06](stories/03-cli-execution/06-publish-and-cleanup/index.md), [PLD-04-02](stories/04-workflows-and-installation/02-portable-dispatcher/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R10: Configured checker modes and trust | [PLD-02-01](stories/02-shared-validation/01-configurable-checker/index.md), [PLD-02-02](stories/02-shared-validation/02-sport-timer-check-parity/index.md), [PLD-03-02](stories/03-cli-execution/02-claude-cli-adapter/index.md), [PLD-03-03](stories/03-cli-execution/03-codex-cli-adapter/index.md), [PLD-03-04](stories/03-cli-execution/04-antigravity-cli-adapter/index.md), [PLD-05-03](stories/05-sport-timer-cutover/03-retire-dart-validator/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R11: Sport Timer checker parity | [PLD-02-01](stories/02-shared-validation/01-configurable-checker/index.md), [PLD-02-02](stories/02-shared-validation/02-sport-timer-check-parity/index.md), [PLD-05-03](stories/05-sport-timer-cutover/03-retire-dart-validator/index.md) | Named task acceptance plus PLD-02-02 parity and PLD-05-03 retirement gate |
+| R12: Exact-reviewed publication and idempotence | [PLD-03-05](stories/03-cli-execution/05-task-lifecycle/index.md), [PLD-03-06](stories/03-cli-execution/06-publish-and-cleanup/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R13: Blocked retention/resume/adoption | [PLD-01-03](stories/01-foundation/03-select-and-reserve-tasks/index.md), [PLD-03-01](stories/03-cli-execution/01-prepare-workspaces/index.md), [PLD-03-05](stories/03-cli-execution/05-task-lifecycle/index.md), [PLD-03-06](stories/03-cli-execution/06-publish-and-cleanup/index.md), [PLD-04-04](stories/04-workflows-and-installation/04-explicit-updates/index.md), [PLD-05-02](stories/05-sport-timer-cutover/02-move-task-backlog/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R14: Successful cleanup and safe ownership | [PLD-01-03](stories/01-foundation/03-select-and-reserve-tasks/index.md), [PLD-03-06](stories/03-cli-execution/06-publish-and-cleanup/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R15: Portable planner preparation | [PLD-01-02](stories/01-foundation/02-bootstrap-python-package/index.md), [PLD-04-01](stories/04-workflows-and-installation/01-portable-planner/index.md), [PLD-05-01](stories/05-sport-timer-cutover/01-switch-workflow-engine/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R16: Compatible consumer cutover | [PLD-01-01](stories/01-foundation/01-route-task-executors/index.md), [PLD-01-02](stories/01-foundation/02-bootstrap-python-package/index.md), [PLD-02-02](stories/02-shared-validation/02-sport-timer-check-parity/index.md), [PLD-05-01](stories/05-sport-timer-cutover/01-switch-workflow-engine/index.md), [PLD-05-02](stories/05-sport-timer-cutover/02-move-task-backlog/index.md), [PLD-05-03](stories/05-sport-timer-cutover/03-retire-dart-validator/index.md), [PLD-06-01](stories/06-extraction-and-adoption/01-publish-independent-project/index.md), [PLD-06-02](stories/06-extraction-and-adoption/02-adopt-pinned-release/index.md) | Named task acceptance plus PLD-05-01/02/03 assembled cutover checks |
+| R17: Fresh public MIT extraction | [PLD-06-01](stories/06-extraction-and-adoption/01-publish-independent-project/index.md) | Named task acceptance plus the listed tasks' exact test commands |
+| R18: Pinned adoption/framework-neutral proof | [PLD-03-06](stories/03-cli-execution/06-publish-and-cleanup/index.md), [PLD-05-03](stories/05-sport-timer-cutover/03-retire-dart-validator/index.md), [PLD-06-02](stories/06-extraction-and-adoption/02-adopt-pinned-release/index.md) | Named task acceptance plus PLD-03-06 fixture and PLD-06-02 release adoption |
+
+## Verification and exclusions
+
+Every task includes its relevant tests and current repository checks. Independent task cold reads precede ready status; the requested separate Claude Opus 5.5 high-effort whole-plan review follows task writing. Contract fixtures are not claimed live provider evidence. The live Codex fixture is explicitly planned before validator retirement; absent Claude/Antigravity CLIs are reported unverified.
+
+No app feature/UI change, device/integration-test workflow, global installer, non-GitHub host, permanent second consumer, native host-stage execution or historical source migration is included. Public repository creation and first publication remain a concrete agent-operated handoff under the applicable approval policy.
