@@ -14,4 +14,5 @@ Rules for this project only.
 - A new branch starts with `feat/`, `fix/` or `improve/`: `feat/` for new behavior (or planning of it), `fix/` for a bug, `improve/` for a change to something that already works. Never `chore/`, `docs/` or `refactor/`, even when the commit type is `chore` or `docs`.
 - After the prefix, use a short lowercase, hyphen-separated summary, for example `feat/workout-templates`.
 - The PR title starts with the same prefix as its branch: `feat: ...` for `feat/...`, `fix: ...` for `fix/...`, `improve: ...` for `improve/...`. This is separate from commit messages, which keep the types above.
+- A branch for a task under `project-tasks/` (epic tasks and standalone `BUG-`/`IMP-` tasks alike) is `<type>/<id-lowercase>-<slug>`, where `type` is the task's front-matter `type` and `slug` is the task folder name without its `NN-` prefix, for example `feat/pld-01-02-bootstrap-python-package`. Free-form requests keep `<prefix>/<short-summary>`.
 - Existing branches keep their names.

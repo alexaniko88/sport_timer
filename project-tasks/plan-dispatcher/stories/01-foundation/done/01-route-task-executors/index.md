@@ -1,6 +1,6 @@
 ---
 id: PLD-01-01
-status: ready
+status: done
 type: feat
 complexity: medium
 executor: legacy
@@ -20,9 +20,9 @@ skills: []
 
 # Route planned tasks to a compatible executor
 
-Story: [Foundation and task eligibility](../index.md)
+Story: [Foundation and task eligibility](../../index.md)
 
-Epic: [PlanDispatcher](../../../index.md)
+Epic: [PlanDispatcher](../../../../index.md)
 
 ## Goal
 
@@ -34,7 +34,7 @@ Let a task declare which executor may run it, make the current Dart dispatcher r
 - `tool/dispatcher/task_selector.dart` (existing): `TaskSelector.blockReason` checks, in order, done, status, skipped, busy, unknown dependencies, waiting dependencies and overlap. `busyIds` already matches remote branches and open PR heads built like `Task.branch`.
 - `tool/dispatcher.dart` (existing): `_launch` only checks `task.isReady`, so a named task bypasses `blockReason`.
 - `.agents/skills/skill-orchestrator/SKILL.md` Stage 0 names branches `<prefix>/<short-summary>`; Stages 2, 3 and 5 always require `fvm dart format`, `fvm flutter analyze`, the full suite and `tool/agent_check.dart`. `roles/agent-implementer.md` always applies Dart, l10n and `fvm` rules.
-- Shared requirements: R4, R8, R16. Executor values and the runner boundary: [contracts — Runner boundary for this epic](../../../contracts.md#runner-boundary-for-this-epic).
+- Shared requirements: R4, R8, R16. Executor values and the runner boundary: [contracts — Runner boundary for this epic](../../../../contracts.md#runner-boundary-for-this-epic).
 
 ## Contract
 
@@ -118,7 +118,7 @@ No app launch, device test, golden or ARB change.
 
 ## Acceptance
 
-- [ ] When a task declares any executor other than `legacy` (including empty and list values), then `blockReason` returns `executor <value> is not supported by the legacy dispatcher` and the task is never a candidate. Check: `task_selector_test.dart` cases 1–4.
-- [ ] When `launch <ID>` names a non-legacy task, then `TaskSelector.launchRefusal` returns `<ID>: executor <value> is not supported by the legacy dispatcher`, and `_launch` calls it (writing the text to stderr and returning 1) before its `isReady` check and before any pipeline is created. Check: `task_selector_test.dart` case 5, plus `grep -n "launchRefusal\|!task.isReady" tool/dispatcher.dart` printing the `launchRefusal` call inside `_launch` with a lower line number than the `!task.isReady` check in `_launch` (the `task.isReady &&` line in `_next` does not match this pattern). Running `launch` itself is not a check, because no non-legacy task is on `origin/master`.
-- [ ] When a local task runs through the orchestrator on its canonical branch, then existing busy detection recognizes it. Check: `task_selector_test.dart` case 6.
-- [ ] When a non-legacy task is handed to the orchestrator, then the skill tells it to use the task's own `Files and tests` commands and limits Dart/l10n rules to Dart/ARB changes. Check: new `ai_setup_test.dart` case, plus `grep -n "For legacy tasks and free-form requests" .agents/skills/skill-orchestrator/SKILL.md` printing exactly four lines.
+- [x] When a task declares any executor other than `legacy` (including empty and list values), then `blockReason` returns `executor <value> is not supported by the legacy dispatcher` and the task is never a candidate. Check: `task_selector_test.dart` cases 1–4.
+- [x] When `launch <ID>` names a non-legacy task, then `TaskSelector.launchRefusal` returns `<ID>: executor <value> is not supported by the legacy dispatcher`, and `_launch` calls it (writing the text to stderr and returning 1) before its `isReady` check and before any pipeline is created. Check: `task_selector_test.dart` case 5, plus `grep -n "launchRefusal\|!task.isReady" tool/dispatcher.dart` printing the `launchRefusal` call inside `_launch` with a lower line number than the `!task.isReady` check in `_launch` (the `task.isReady &&` line in `_next` does not match this pattern). Running `launch` itself is not a check, because no non-legacy task is on `origin/master`.
+- [x] When a local task runs through the orchestrator on its canonical branch, then existing busy detection recognizes it. Check: `task_selector_test.dart` case 6.
+- [x] When a non-legacy task is handed to the orchestrator, then the skill tells it to use the task's own `Files and tests` commands and limits Dart/l10n rules to Dart/ARB changes. Check: new `ai_setup_test.dart` case, plus `grep -n "For legacy tasks and free-form requests" .agents/skills/skill-orchestrator/SKILL.md` printing exactly four lines.

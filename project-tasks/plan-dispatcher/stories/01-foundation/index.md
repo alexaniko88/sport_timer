@@ -28,7 +28,7 @@ Each task owns one implementation responsibility and its tests. No application f
 
 ## Tasks
 
-1. [PLD-01-01: Route planned tasks to a compatible executor](01-route-task-executors/index.md).
+1. [PLD-01-01: Route planned tasks to a compatible executor](done/01-route-task-executors/index.md).
 2. [PLD-01-02: Bootstrap the independent Python package and contracts](02-bootstrap-python-package/index.md).
 3. [PLD-01-03: Select eligible tasks and reserve their scope atomically](03-select-and-reserve-tasks/index.md).
 
@@ -45,9 +45,9 @@ Consume [the epic contracts](../../contracts.md), especially the fixed public pa
 
 | Requirement | Owning task | Check |
 | --- | --- | --- |
-| R4: Safe eligible-task selection | [PLD-01-01](01-route-task-executors/index.md) | Its acceptance cases and literal commands in Files and tests |
-| R8: Isolated workspace and reservations | [PLD-01-01](01-route-task-executors/index.md) | Its acceptance cases and literal commands in Files and tests |
-| R16: Compatible consumer cutover | [PLD-01-01](01-route-task-executors/index.md) | Its acceptance cases and literal commands in Files and tests |
+| R4: Safe eligible-task selection | [PLD-01-01](done/01-route-task-executors/index.md) | Its acceptance cases and literal commands in Files and tests |
+| R8: Isolated workspace and reservations | [PLD-01-01](done/01-route-task-executors/index.md) | Its acceptance cases and literal commands in Files and tests |
+| R16: Compatible consumer cutover | [PLD-01-01](done/01-route-task-executors/index.md) | Its acceptance cases and literal commands in Files and tests |
 | R1: Project-local installation | [PLD-01-02](02-bootstrap-python-package/index.md) | Its acceptance cases and literal commands in Files and tests |
 | R7: Shared CLI execution and preflight | [PLD-01-02](02-bootstrap-python-package/index.md) | Its acceptance cases and literal commands in Files and tests |
 | R15: Portable planner preparation | [PLD-01-02](02-bootstrap-python-package/index.md) | Its acceptance cases and literal commands in Files and tests |

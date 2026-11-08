@@ -25,10 +25,17 @@ class TaskSelector {
           if (task.isDone) task.id,
       };
 
+  /// Why `launch` must refuse [task] because of its executor, or null.
+  static String? launchRefusal(Task task) {
+    if (task.executorBlockReason case final reason?) return '${task.id}: $reason';
+    return null;
+  }
+
   /// Why [task] cannot start now, or null when it can.
   String? blockReason(Task task, {Set<String> skipped = const {}}) {
     if (task.isDone) return 'already done';
     if (task.status != 'ready') return 'status is ${task.status}';
+    if (task.executorBlockReason case final reason?) return reason;
     if (skipped.contains(task.id)) return 'skipped';
     if (busyIds.contains(task.id)) return 'already has a branch or an open PR';
 
