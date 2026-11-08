@@ -20,8 +20,7 @@ skills: []
 
 Improvements: [Improvements](../index.md)
 
-Related: [IMP-06: Notification icon](../06-add-notification-icon/index.md). Planning record: [adaptive-app-icon](../../planning/adaptive-app-icon/planning.md) (historical; this file is authoritative).
-
+Related: [IMP-06: Notification icon](../06-add-notification-icon/index.md).
 > **Run this task with `skill-orchestrator` in an interactive session, not with `skill-dispatcher`.** It needs `rsvg-convert` (Homebrew `librsvg`) and `fvm dart run icons_launcher:create`, which dispatcher runners may not run. That is why it stays `draft`: the dispatcher only picks `ready` tasks. Ask the user before installing `librsvg` if `rsvg-convert` is missing.
 
 ## Goal
