@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
+
+import 'command_runner.dart';
 
 import 'role_models.dart';
 
@@ -31,6 +34,16 @@ class CatalogModel {
 /// Reads what `codex debug models` and `agy models` print, and keeps only the
 /// newest model of each family.
 class ModelCatalog {
+  /// A missing model CLI should not prevent reporting the other tools.
+  static Future<String> output(String executable, List<String> args, {RunCommand run = runSystemCommand}) async {
+    try {
+      final result = await run(executable, args);
+      return result.ok ? result.stdout.trim() : '';
+    } on ProcessException {
+      return '';
+    }
+  }
+
   static final _vendorVersionFamily = RegExp(r'^([a-z]+)-(\d+(?:\.\d+)*)-([a-z]+)$');
   static final _vendorFamilyVersion = RegExp(r'^([a-z]+)-([a-z]+)-(\d+(?:-\d+)*)$');
   static final _effortSuffix = RegExp(r'-(low|medium|high|xhigh|max)$');
