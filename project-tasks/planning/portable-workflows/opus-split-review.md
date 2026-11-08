@@ -16,6 +16,8 @@ Separate fresh Claude Opus 5.5 subagent, high effort, completed under D45. Verdi
 
 These are findings to reconcile with repository evidence and the design, not automatic user approval of changed product scope. No extra review is required merely to apply a small factual correction; the requested final whole-plan review remains outstanding.
 
+The technical corrections above are now incorporated in design.md and the revised six-story/20-task proposed-split.md. User choices U1-U4 are resolved below. Revised split/acceptance agreement and detailed task cold reads are still required before readiness; final Opus validation remains outstanding.
+
 ## User decisions still needed
 
 - U1: resolved by D46: omit merged-local-branch sweeping; task-clone cleanup remains automatic. Assign portable planning workspace preparation before retiring the synchronizer.
