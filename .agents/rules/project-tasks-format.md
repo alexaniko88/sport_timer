@@ -41,9 +41,11 @@ project-tasks/
 
 `project-tasks/planning/<topic>/planning.md` holds one planning effort, including efforts that span stories. It is not a task: give it no task front matter or `index.md`, and never list it as a dispatcher dependency. This location lets interviewing begin before the user agrees to a backlog structure. Reuse its path when resuming the same effort.
 
-Commit it with the planning files and link it from the owning epic, story or standalone task once those exist. It holds the original request, evidence, coverage, decisions, open questions and interview review results; its working format is in [the planner's question reference](../skills/skill-planner/references/questions.md).
+It holds the original request, evidence, coverage, decisions, open questions and interview review results; its working format is in [the planner's question reference](../skills/skill-planner/references/questions.md).
 
-During the interview it is the working source of truth. At handoff, transfer current requirements, decisions and exclusions into the epic/story/task files and verify nothing was lost. Freeze the record with a notice that the linked backlog files are authoritative afterward. Runners need only their task, parents and repository; the record is historical context, not a second live specification. A follow-up planning effort gets a new record linked to the earlier one. Do not track implementation progress in either record.
+During the interview it is the working source of truth. It may be committed on the planning branch, so a paused effort can resume in a later session. Never link to it from backlog files. Do not track implementation progress in it.
+
+**At handoff, delete it.** Once every task of the effort is `ready`, transfer the current requirements, decisions and exclusions into the epic/story/task files and verify nothing was lost. Then delete the record, its `planning/<topic>/` folder, and anything else that only served the planning (drafts, scratch files, links to them), in the same planning PR. Runners need only their task, parents and repository. While a task of the effort is still `draft`, keep the record so its open questions are not lost, and delete it in the session that makes the last task `ready`. A follow-up planning effort starts a new record.
 
 ## IDs
 
