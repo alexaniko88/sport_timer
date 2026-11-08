@@ -10,8 +10,7 @@ Make the planner and dispatcher reusable across projects, independent of Flutter
 
 ## Agreed behavior and boundaries
 
-The accepted user requirements are mapped below. The authoritative [shared contracts](contracts.md) define data/CLI interfaces, ownership, failure behavior and delivery constraints; every story/task consumes them. [Interview history](../planning/portable-workflows/planning.md) records how decisions were reached and is not a second live specification.
-
+The accepted user requirements are mapped below. The authoritative [shared contracts](contracts.md) define data/CLI interfaces, ownership, failure behavior and delivery constraints; every story/task consumes them.
 - macOS first; project-local Python package/runtime and integrations only, no global agent changes. Setup clearly defaults to Claude/Codex/Antigravity and permits a subset.
 - All future worker/reviewer stages use installed provider CLIs, including under T3/IDEs. Host providers do not prove CLI availability. No native T3 workspace lifecycle, queues or automatic second task in a thread.
 - The planner settles scope, relevant public contracts, UI approvals, tooling/checks and permissions before readiness. Independent interview/task reviews remain. A runtime service/permission failure is still possible and must be reported honestly.
