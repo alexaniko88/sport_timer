@@ -74,7 +74,7 @@ Read [references/ui-questions.md](references/ui-questions.md). Look at what exis
 
 ## 5. Mockup (tasks with a view)
 
-Read [references/mockup.md](references/mockup.md). Build `mockup.html` in the task folder and show it to the user: publish it as a private Artifact when you have the Artifact tool, otherwise open the local file. The user answers "ok" or "no". On "no", change it and show it again. A task with a view is not `ready` until the user has approved the mockup.
+Read [references/mockup.md](references/mockup.md). Build the mockup beside the planning record before the task split exists. Show it to the user: publish it as a private Artifact when available, otherwise open the local file. Revise until approved. After the split, keep one approved reference in its owning story (or standalone task) and link visual tasks to it. A ViewModel/state-only task has no view and needs no mockup.
 
 ## 5a. Interview completeness review
 
@@ -84,11 +84,11 @@ The reviewer checks the whole request for omissions before they can disappear be
 
 ## 6. Split into tasks
 
-- A task is one PR and one runner run. Split it when it touches more than about 8 files or two separate concerns. One task can span several files.
-- Choose stories around useful outcomes and tasks around cohesive deliverables. Keep necessary setup inside its story. Do not make one task per file.
-- An unresolved technical choice becomes a prerequisite task (a decision or an investigation). Never invent the answer.
-- Tests belong inside the task that changes the code. Add a separate verification task only when it checks behavior across tasks.
-- State dependencies with `depends-on`. Check there is no cycle.
+Read [references/task-splitting.md](references/task-splitting.md). Plan small building blocks first, then explicit feature assembly tasks. Each task is one complete responsibility plus its relevant tests, one PR and one runner run; it need not expose a user-visible feature. File count is a sizing signal, not a split rule.
+
+- Define contracts, consumers, wiring ownership, exact affected paths and checks before dispatch. Keep each block's failures and boundary behavior with that block.
+- Resolve investigations during planning. Unknown-dependent tasks stay `draft`; no findings-only investigation goes to the implementation dispatcher.
+- Keep implementation tests with their block. Plan device integration tests independently, outside this dispatcher's tasks. Read the runner boundaries in [project-overrides.md](../skill-dispatcher/references/project-overrides.md) when choosing checks; do not add app launches or custom helper tooling as acceptance checks.
 - For a new backlog, show the epic, story and task split and get the user's agreement before you write it. Reuse agreement already given.
 
 ## 7. Acceptance criteria
@@ -103,18 +103,18 @@ You propose the criteria from the interview and the user confirms them. Do not a
 
 Read [references/templates.md](references/templates.md) and write the task folders.
 
-- Fill every field of the front matter. `complexity` picks the suggested effort: **low** is one concern in an existing pattern with a few files; **medium** is new logic, or a view with several states; **high** is a new architecture, timer, audio, auth or build setup, or six or more files.
-- `touches` lists paths or globs. Name the exact golden files, and list `lib/l10n/**` when strings are added. Do not list `test/snapshots/README.md` or the indexes.
-- `skills` lists project skills a runner must read, for example `skill-fl-chart` for a chart or `skill-integration-tests` for an integration test.
+- Fill every field of the front matter. Size `complexity` by reasoning and risk: **low** follows an established contract/pattern; **medium** introduces bounded logic or several interacting states; **high** involves difficult lifecycle, concurrency, migration or architecture decisions already settled in the plan. A small timer change is not automatically high; file count alone never makes it high. Split multiple responsibilities instead of labeling an oversized task high.
+- `touches` prefers exact paths, including tests and golden files. Use a narrow glob only when necessary, and `lib/l10n/**` when strings are added. Shared snapshot harness edits count as overlap. Do not list `test/snapshots/README.md` or the indexes.
+- `skills` lists project skills a runner must read, for example `skill-fl-chart`. Do not add the integration-test skill to ordinary implementation tasks.
 - Fill `## Decisions` with what the user decided and why, and `## Out of scope` with what the task does not do. `## Files and tests` says what is created or changed and which tests are written.
-- Name only code you checked in the repo. Never invent file names or APIs. Use relative Markdown links and repository-relative paths; no local usernames, absolute paths or secrets.
+- Verify every existing code name/path in the repo. Explicitly mark planned new symbols and locations in the Contract; never present them as existing APIs. Use relative Markdown links and repository-relative paths; no local usernames, absolute paths or secrets.
 - Transfer the current requirements and decisions from the planning record into the files below, following its lifecycle in the format rule. Runners must not need the interview record.
 - Keep shared decisions in the epic or story and link to them. Each task still needs enough context to stand alone, because a runner sees only the task, its parents and the repo.
 - A new epic gets an `abbr` that no other epic uses. Number stories and tasks with the next unused number. Do not mix the old and new layouts.
 
 ## 9. Cold read
 
-For each task, run a fresh agent that has never seen this conversation. It reads only the task and the repo and lists what it would have to ask. That is the check that the task needs nobody.
+For each fully specified task being considered for `ready`, run a fresh agent that has never seen this conversation. It reads the task, its parents, dependency contracts and repo, and lists what it would have to ask. Skip known-blocked drafts until their decisions are settled. A task can be fully specified before its fixed-contract prerequisites merge; the dispatcher waits for those merges.
 
 1. Dispatch the `cold-reader` role with a read-only run. Give it only the task path: `Read .agents/skills/skill-planner/roles/cold-reader.md and follow it. The task is <path>.` Never give it the conversation, your notes or the interview.
    - **Claude:** the Agent tool as a general-purpose agent, with `model: sonnet`.
@@ -124,9 +124,11 @@ For each task, run a fresh agent that has never seen this conversation. It reads
 3. Do at most three rounds. A bug, refactor or tooling task gets one light pass.
 4. Set `status: ready` only when the cold reader has no question left (and, for a view, the mockup is approved). Otherwise leave the task `draft` and say exactly what is open.
 
+If a requirement or upstream contract changes, mark affected pending tasks `draft`, reconcile their contracts, coverage, paths and checks, and cold-read them again before restoring `ready`. Resolve a completed experiment in the same way. Never treat a changed implementation as silent approval of a changed contract.
+
 ## 10. Validate and hand off
 
-- Check the ids are unique, the numbering and the paths follow the rule, every relative link resolves, each `depends-on` id exists and there is no cycle, and the tasks together cover the story's acceptance criteria.
+- Check unique ids, numbering, paths, relative links, valid dependency ids and no cycles. Follow the whole-plan checks in [references/task-splitting.md](references/task-splitting.md): requirements have owners and checks, contracts fit, every piece has a consumer, wiring is owned, and the delivery order preserves a working app. Compare related tasks together; passing individual cold reads alone does not prove the pieces fit.
 - Report the counts, which tasks are `ready` and which are `draft` and why, and any decision still open. Keep it short.
 - When nothing else is needed, show the full commit message and the exact files, then ask this once, in its own bold paragraph:
 

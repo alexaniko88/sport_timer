@@ -1,6 +1,6 @@
 # Mockup
 
-A mockup is one self-contained HTML file, `mockup.html`, in the task folder. It shows the approved view before any code exists, so the user can say "ok" or "no". The runner uses it as the visual reference, and the golden images confirm the result after.
+A mockup is one self-contained HTML file, `mockup.html`. Before task splitting, keep it beside the planning record. Once the split is agreed, move it to the owning story (or standalone visual task) and update links. Visual block and assembly tasks link to its relevant states; do not make copies. ViewModel/state-only tasks need no mockup. The user approves the view before implementation, and goldens verify appearance afterward.
 
 ## How to build it
 
@@ -12,10 +12,10 @@ A mockup is one self-contained HTML file, `mockup.html`, in the task folder. It 
 - **Both languages.** An English and Spanish switch with the real strings of the view spec.
 - **Behave like the app.** Taps change what they change in the real flow, for example selecting a tile shows its selected state (thicker border, same size). Fake only what is needed to show the states.
 - **Accessible.** Tap targets of at least 48 by 48, readable contrast in both themes, and a label on every icon-only button.
-- **Comment the source.** Start the file with a short HTML comment: the task id, and the golden images it was based on.
+- **Comment the source.** Start the file with a short HTML comment: the planning topic (later its owning story/task), and the golden images it was based on.
 
 ## Showing it
 
 Show it to the user so they can click through the states and the two switches. With the Artifact tool, publish it as a private Artifact and share the link. Without it, open the local file in the browser. Ask for "ok" or "no", and change it until the answer is "ok".
 
-The file is committed with the task, moves to `done/` with it and is never kept up to date after. The goldens are the record of how the app looks.
+The file is committed with its owner; a story's reference stays with that story, and a standalone task's moves to `done/` with it. It is an approved historical reference, not a live design to maintain after implementation. The goldens record how the app looks.

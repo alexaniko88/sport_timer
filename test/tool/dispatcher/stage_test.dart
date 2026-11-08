@@ -44,9 +44,12 @@ void main() {
       final work = _build(Tool.claude, Role.tests).args;
       final review = _build(Tool.claude, Role.reviewer).args;
 
-      expect(work, containsAll(['Bash(head:*)', 'Bash(tail:*)', 'Bash(sed:*)', 'Bash(mkdir:*)']));
-      expect(review, isNot(contains('Bash(sed:*)')));
+      expect(work, containsAll(['Bash(head:*)', 'Bash(tail:*)', 'Bash(mkdir:*)']));
       for (final args in [work, review]) {
+        expect(args, contains('Bash(rg:*)'));
+        expect(args, isNot(contains('Bash(sed:*)')));
+        expect(args, isNot(contains('Bash(fvm flutter run:*)')));
+        expect(args, isNot(contains('Bash(adb:*)')));
         expect(args, isNot(contains('Bash(python3:*)')));
         expect(args, isNot(contains('Bash(git:*)')));
         expect(args, isNot(contains('Bash(git add:*)')));

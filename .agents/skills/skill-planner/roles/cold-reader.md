@@ -10,8 +10,10 @@ You are an engineer who must implement one task of this repository and cannot as
 
 ## Read first
 
-- The task `index.md` named in your brief, all of it, and `mockup.html` next to it when there is one.
+- The task `index.md` named in your brief, all of it, and its linked mockup when visual.
 - Its story and epic indexes.
+- Its upstream task contracts, and named consumer/assembly contracts where needed to check the pieces fit. Proposed fixed contracts may precede implementation; report missing decisions, not the mere absence of code explicitly planned in a dependency.
+- `.agents/skills/skill-dispatcher/references/project-overrides.md`, sections Common and Tests, for executable validation boundaries.
 - `CLAUDE.md`, `.agents/rules/dart-style.md` and `.agents/rules/project-tasks-format.md`.
 - Every file, folder and golden image the task names, and the code around what it changes.
 
@@ -25,6 +27,10 @@ You are an engineer who must implement one task of this repository and cannot as
 - **Missing `depends-on`.** A task or code the work needs that is not listed.
 - **Contradictions.** Between the task and the code, the rules, its parents or another task, or between the view spec and the mockup.
 - **Strings.** User-facing text missing in English or Spanish.
+- **Contract mismatches.** Inputs, outputs, errors, symbols or lifecycle rules that disagree between producers, consumers and shared agreements. Check planned new symbols are distinguished from existing code.
+- **Unowned assembly.** An unwired block with no named consumer, or DI/routes/parent ownership and assembled checks that no task owns.
+- **Unrunnable validation.** A required app/device launch, integration test, unplanned script or missing harness/fake that would block the tests stage. Check behavioral widget tests have a reason and relevant visual states have a golden plan.
+- **Coverage gaps.** Parent requirements with no owning task/check, or scope in this task that serves no agreed requirement. Do not assume a whole feature must be delivered by this single block.
 
 Only report what you would really have to guess. If you would follow an existing pattern in the code, it is not a question. Do not invent doubts to look thorough.
 

@@ -35,6 +35,7 @@ project-tasks/
 - **Only tasks are archived.** A finished task moves into the `done/` folder of its parent (story, `bugs/` or `improvements/`). Epics and stories never move, so new work can always be added to them.
 - Standalone bugs and improvements have no epic or story. Use them for a broken behavior (`bugs/`) or a change to something that already works (`improvements/`).
 - Indexes link to their children and carry no status, counts or progress. State is deduced (see below).
+- A story may own one approved `mockup.html` shared by its visual tasks. Tasks link to the relevant states instead of copying the design. A standalone visual task owns its mockup itself.
 
 ## Interview record
 
@@ -62,24 +63,31 @@ type: feat             # feat | fix | improve; sets the branch prefix
 complexity: low        # low | medium | high; picks the suggested model
 depends-on: [TPL-03-01]
 touches:               # paths or globs the task changes
-  - lib/features/templates/**
+  - lib/features/templates/data/local_template_store.dart
   - test/snapshots/goldens/templates_custom.png
 skills: []             # optional; project skills the roles read, e.g. [skill-fl-chart]
 ---
 ```
 
-Sections, in this order. Leave out the ones marked "UI only" when there is no view.
+Sections, in this order. Leave out the ones marked "visual tasks only" when there is no view.
 
 1. `# <Title>`
 2. `## Goal`: what is achieved, in 2 or 3 sentences.
 3. `## Context`: links to the story and epic, and the code and goldens that matter.
-4. `## Behavior`: exact behavior and edge cases.
-5. `## View spec` (UI only): layout, every state (empty, loading, error, partial data, long text), dark and light theme, English and Spanish strings, shared widgets reused, tap targets and accessibility, navigation in and out.
-6. `## Mockup` (UI only): link to `mockup.html`. It is a reference the user approved.
-7. `## Decisions`: what the user decided while planning, each with its reason.
-8. `## Out of scope`
-9. `## Files and tests`: what is created or changed, and which tests are written.
-10. `## Acceptance`: one checkbox per criterion, written as `When <situation>, then <result>.` followed by `Check: <test, golden or command>`. Every criterion must be checkable.
+4. `## Contract`: exact symbols/paths provided and consumed, marked `existing`, `new here` or `provided by <task-id>`. Specify inputs, outputs, signatures, failure semantics and relevant lifecycle/ownership. Link shared agreements in the parent rather than duplicating them. Name consumer task ids for an unwired block, and the task owning final assembly. New planned names are explicitly proposals fixed by this plan, not claims about existing code.
+5. `## Behavior`: exact behavior and edge cases within this task's responsibility.
+6. `## View spec` (visual tasks only): the applicable widget/screen states, themes, strings, accessibility and navigation. A ViewModel/state-only task omits it. An isolated widget covers its own states and callbacks; assembly covers wiring and the full screen behavior.
+7. `## Mockup` (visual tasks only): link to the approved task or parent `mockup.html` and the states this task implements.
+8. `## Decisions`: what the user decided while planning, each with its reason.
+9. `## Out of scope`
+10. `## Files and tests`: exact created/changed paths, tests and cases, runnable commands, required fakes/harness changes and golden outputs. State why a behavioral widget test is necessary, or why no new test is useful. Follow the dispatcher overrides' test/tool boundaries; do not copy their policies into every task. Include applicable existing regression/architecture checks, not only new tests.
+11. `## Acceptance`: one checkbox per criterion, written as `When <situation>, then <result>.` followed by `Check: <test, golden or command>`. Every criterion must be checkable.
+
+New and refined plans use these sections. Existing tasks keep their ids and layout; before dispatching a task that lacks these guarantees, refine it rather than asking a runner to invent the missing contract or checks.
+
+## Shared agreements and coverage
+
+The parent story holds contracts shared by its tasks and a requirement-to-task-to-check table. Use the epic for cross-story agreements. State each requirement once with a stable local reference, its contributing task ids and the owning acceptance checks. Name the task that verifies the combined result. This is scope/verification mapping, not implementation progress. Standalone tasks carry their own mapping when needed.
 
 `notes.md` is written by the worker: decisions it took, the evidence for each criterion, the PR link, and, when blocked, the exact question under `## Blocked`.
 
@@ -89,10 +97,12 @@ All of these are true:
 
 - No open decision is left, and the task reads clearly to an agent that has not seen the planning conversation (cold read passed).
 - Every criterion has a `Check`.
-- A UI task has its view spec and a mockup the user approved.
+- A visual widget/assembly task has its view spec and a linked mockup the user approved. ViewModel/state-only tasks omit them.
 - `complexity`, `depends-on` and `touches` are filled in. `depends-on` ids exist.
+- Its contract, consumer/assembly ownership and exact validation plan are settled, consistent with its dependencies and executable within runner boundaries. No required test infrastructure or technical decision is left for a runner to discover.
+- The whole split has complete requirement coverage and compatible contracts. Each PR preserves a buildable, usable app with its completed prerequisites.
 
-Anything else stays `draft`. Tasks that cannot be decided yet get a prerequisite task.
+Anything else stays `draft`. Resolve unknowns in planning. A code/test prerequisite may unblock a draft, but findings-only investigations do not go to the implementation dispatcher. `ready` tasks may depend on unmerged fixed-contract tasks; they cannot be picked until those prerequisites are done. If an upstream contract changes, return affected pending tasks to `draft` and reconcile/cold-read them before restoring readiness.
 
 ## State is deduced
 
@@ -112,6 +122,7 @@ The task branch is `<type>/<id-lowercase>-<slug>`, for example `feat/tpl-03-02-s
 Two tasks overlap when their `touches` overlap. They never run at the same time.
 
 - List specific golden files, never `test/snapshots/**`.
+- Prefer exact code/test paths to feature-wide globs. If several tasks edit the snapshot harness, list that file in each; overlap is intentional serialization, not a semantic dependency.
 - `lib/l10n/**` counts as a path like any other. Two tasks that add strings overlap.
 - Do not list `test/snapshots/README.md` or the `project-tasks/` indexes. A merge conflict there is small and the user resolves it.
 

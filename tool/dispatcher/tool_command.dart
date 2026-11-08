@@ -24,6 +24,7 @@ class ToolCommand {
     'Bash(ls:*)',
     'Bash(cat:*)',
     'Bash(grep:*)',
+    'Bash(rg:*)',
   ];
 
   /// Harmless helpers that only touch files inside the clone. `git` writes and
@@ -35,7 +36,6 @@ class ToolCommand {
     'Bash(wc:*)',
     'Bash(sort:*)',
     'Bash(diff:*)',
-    'Bash(sed:*)',
     'Bash(mkdir:*)',
   ];
 
