@@ -15,7 +15,7 @@ skills: []
 
 Improvements: [Improvements](../index.md)
 
-Related: [IMP-07: Adaptive launcher icon](../07-adaptive-launcher-icon/index.md). Planning record: [adaptive-app-icon](../../planning/adaptive-app-icon/planning.md) (historical; this file is authoritative).
+Related: [IMP-07: Adaptive launcher icon](../07-adaptive-launcher-icon/index.md).
 
 ## Goal
 
