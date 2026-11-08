@@ -1,0 +1,164 @@
+<!--
+  Approved mockup for IMP-07 (project-tasks/improvements/07-adaptive-launcher-icon/index.md),
+  planned in project-tasks/planning/adaptive-app-icon/planning.md.
+  Based on assets/icons/app_icon.png (current barbell), the generated
+  ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png and
+  android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png, and AppPalette.brand (#FF5252).
+  The barbell geometry in BARBELL below is the drawing the SVG sources must use.
+-->
+<title>Sport Timer Icon Variants</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  /* Layout: a wallpaper switch on top, then one band per platform with icon tiles in a wrapping grid. */
+  :root {
+    --brand: #FF5252;          /* AppPalette.brand */
+    --white: #FFFFFF;          /* AppPalette.white */
+    --dark-on-accent: #1B1B1B; /* AppPalette.darkOnAccent */
+    --page: #F6F4F4;
+    --ink: #1D1B1B;
+    --muted: #625B5B;
+    --line: #DDD6D6;
+    --panel: #FFFFFF;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #141212; --ink: #F1ECEC; --muted: #B3AAAA; --line: #3A3434; --panel: #1E1B1B; color-scheme: dark; }
+  }
+  :root[data-theme="dark"] { --page: #141212; --ink: #F1ECEC; --muted: #B3AAAA; --line: #3A3434; --panel: #1E1B1B; color-scheme: dark; }
+
+  body { background: var(--page); color: var(--ink); font-family: var(--font); }
+  .wrap { max-width: 960px; margin: 0 auto; padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 24px; }
+  h1 { font-size: 22px; margin: 0; text-wrap: balance; }
+  h2 { font-size: 16px; margin: 0; }
+  p { margin: 0; color: var(--muted); line-height: 1.5; max-width: 65ch; }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .seg button { min-height: 44px; padding: 0 16px; border: 0; background: var(--panel); color: var(--ink); font: inherit; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--brand); color: var(--white); }
+  .seg button:focus-visible, .tints button:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .tints { display: flex; gap: 8px; align-items: center; }
+  .tints button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--line); cursor: pointer; }
+  .tints button[aria-pressed="true"] { border-color: var(--ink); }
+  .band { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 16px; display: grid; gap: 12px; }
+  .screen { border-radius: 12px; padding: 20px 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 20px 8px; transition: background .2s; }
+  .screen.light { background: linear-gradient(160deg, #F3E9E4, #DCE6F0); }
+  .screen.dark { background: linear-gradient(160deg, #20242C, #0D0F13); }
+  .cell { display: grid; justify-items: center; gap: 8px; text-align: center; min-width: 0; }
+  .cell span { font-size: 12px; line-height: 1.3; }
+  .screen.light .cell span { color: #1D1B1B; }
+  .screen.dark .cell span { color: #F1ECEC; }
+  .icon { width: 64px; height: 64px; display: block; }
+  .ios { border-radius: 22.5%; overflow: hidden; }
+  .old { opacity: 1; }
+  .tag { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) { .screen { transition: none; } }
+</style>
+
+<div class="wrap">
+  <div style="display:grid;gap:8px">
+    <h1>Sport Timer app icon: light, dark and tinted</h1>
+    <p>White barbell on brand red by default. iOS 18 gets a dark and a tinted variant, Android gets an adaptive icon with a themed (monochrome) layer. Switch the wallpaper and the tint to see each case. The first two tiles in each band show today's icon for comparison.</p>
+  </div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Wallpaper">
+      <button id="wp-light" aria-pressed="false">Light wallpaper</button>
+      <button id="wp-dark" aria-pressed="true">Dark wallpaper</button>
+    </div>
+    <div class="tints" role="group" aria-label="Tint or wallpaper color">
+      <span class="tag">Tint</span>
+      <button data-tint="#7FB2FF" style="background:#7FB2FF" aria-label="Blue tint" aria-pressed="true"></button>
+      <button data-tint="#9AD27A" style="background:#9AD27A" aria-label="Green tint" aria-pressed="false"></button>
+      <button data-tint="#E7B86A" style="background:#E7B86A" aria-label="Amber tint" aria-pressed="false"></button>
+    </div>
+  </div>
+
+  <section class="band">
+    <h2>iPhone home screen (iOS 18+)</h2>
+    <div class="screen dark" id="ios"></div>
+    <p>Light: white on red, opaque. Dark: red barbell, transparent background (iOS draws the dark fill). Tinted: white barbell on black, opaque grayscale; iOS recolors it with the user's tint. The tint control picks that tint.</p>
+  </section>
+
+  <section class="band">
+    <h2>Android launcher (adaptive icon, Android 8+)</h2>
+    <div class="screen dark" id="android"></div>
+    <p>Background layer: solid red. Foreground layer: white barbell inside the 66 dp safe zone, so every launcher shape crops it cleanly. Themed (Android 13+): the launcher draws the monochrome barbell in a color taken from the wallpaper. The tint control stands for that wallpaper color.</p>
+  </section>
+</div>
+
+<script>
+  // Barbell drawn on a 100 x 100 canvas. Round caps and joins, stroke 4.5, no fill.
+  const BARBELL = '<rect x="17" y="30" width="11" height="22" rx="3.5"/><rect x="72" y="30" width="11" height="22" rx="3.5"/>' +
+    '<path d="M28 41H72M41 41V72M59 41V72M41 57H59"/>';
+  const bar = (color, scale = 1) =>
+    `<g transform="translate(50 50) scale(${scale}) translate(-50 -50)" fill="none" stroke="${color}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">${BARBELL}</g>`;
+
+  const shapes = {
+    squircle: '<rect x="0" y="0" width="100" height="100" rx="22.5"/>',
+    circle: '<circle cx="50" cy="50" r="50"/>',
+    rounded: '<rect x="0" y="0" width="100" height="100" rx="12"/>',
+    teardrop: '<path d="M50 0H100V50A50 50 0 1 1 50 0Z"/>',
+  };
+
+  let wallpaper = 'dark';
+  let tint = '#7FB2FF';
+  let uid = 0;
+
+  const svg = (inner, cls = '') => `<svg class="icon ${cls}" viewBox="0 0 100 100" aria-hidden="true">${inner}</svg>`;
+  const masked = (shape, bg, fg) => {
+    const id = 'm' + (uid++);
+    return svg(`<defs><clipPath id="${id}">${shapes[shape]}</clipPath></defs><g clip-path="url(#${id})"><rect width="100" height="100" fill="${bg}"/>${fg}</g>`);
+  };
+  const cell = (icon, label) => `<div class="cell">${icon}<span>${label}</span></div>`;
+
+  // Mix the tint with black or white to imitate the system's tinted rendering.
+  const mix = (hex, other, t) => {
+    const a = parseInt(hex.slice(1), 16), b = parseInt(other.slice(1), 16);
+    const ch = (s) => Math.round(((a >> s) & 255) * (1 - t) + ((b >> s) & 255) * t);
+    return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
+  };
+
+  function render() {
+    const darkBg = '#1B1B1B';
+    const ios = [
+      cell(svg('<rect width="100" height="100" fill="#000"/>', 'ios'), 'Today (iOS)'),
+      cell(svg('<rect width="100" height="100" fill="#000"/>' + bar('#000', 0.9), 'ios'), 'Today: barbell hidden'),
+      cell(svg('<rect width="100" height="100" fill="#FF5252"/>' + bar('#FFFFFF', 0.9), 'ios'), 'Light'),
+      cell(svg(`<rect width="100" height="100" fill="url(#iosdark)"/><defs><linearGradient id="iosdark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#313131"/><stop offset="1" stop-color="#141414"/></linearGradient></defs>` + bar('#FF5252', 0.9), 'ios'), 'Dark'),
+      cell(svg(`<rect width="100" height="100" fill="${mix(tint, '#000000', 0.82)}"/>` + bar(tint, 0.9), 'ios'), 'Tinted'),
+    ];
+    document.getElementById('ios').innerHTML = ios.join('');
+
+    const fg = bar('#FFFFFF', 0.75);
+    const themedBg = wallpaper === 'dark' ? mix(tint, '#000000', 0.72) : mix(tint, '#FFFFFF', 0.75);
+    const themedFg = wallpaper === 'dark' ? mix(tint, '#FFFFFF', 0.45) : mix(tint, '#000000', 0.55);
+    const android = [
+      cell(svg(bar('#000', 0.9)), 'Today (Android)'),
+      cell(masked('circle', '#FFFFFF', bar('#000', 0.75)), 'Today, forced shape'),
+      cell(masked('circle', '#FF5252', fg), 'Circle'),
+      cell(masked('squircle', '#FF5252', fg), 'Squircle'),
+      cell(masked('rounded', '#FF5252', fg), 'Rounded square'),
+      cell(masked('teardrop', '#FF5252', fg), 'Teardrop'),
+      cell(masked('circle', themedBg, bar(themedFg, 0.75)), 'Themed'),
+    ];
+    document.getElementById('android').innerHTML = android.join('');
+
+    for (const el of document.querySelectorAll('.screen')) {
+      el.classList.toggle('dark', wallpaper === 'dark');
+      el.classList.toggle('light', wallpaper === 'light');
+    }
+    document.getElementById('wp-light').setAttribute('aria-pressed', String(wallpaper === 'light'));
+    document.getElementById('wp-dark').setAttribute('aria-pressed', String(wallpaper === 'dark'));
+  }
+
+  document.getElementById('wp-light').addEventListener('click', () => { wallpaper = 'light'; render(); });
+  document.getElementById('wp-dark').addEventListener('click', () => { wallpaper = 'dark'; render(); });
+  for (const b of document.querySelectorAll('.tints button')) {
+    b.addEventListener('click', () => {
+      tint = b.dataset.tint;
+      for (const o of document.querySelectorAll('.tints button')) o.setAttribute('aria-pressed', String(o === b));
+      render();
+    });
+  }
+  render();
+</script>

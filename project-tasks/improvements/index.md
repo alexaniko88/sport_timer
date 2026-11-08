@@ -18,5 +18,7 @@ An improvement task does not authorize implementation. Plan and agree the change
 3. [IMP-03: Capture a UI snapshot reference](done/03-capture-ui-snapshot-reference/index.md)
 4. [IMP-04: Align timer setup summary and Start styling](done/04-align-timer-setup-summary-and-start/index.md)
 5. [IMP-05: Add a shared AppTag widget and use it on Timer Setup](05-add-shared-app-tag/index.md)
+6. [IMP-06: Add a barbell notification icon on Android](06-add-notification-icon/index.md)
+7. [IMP-07: Adaptive launcher icon for iOS and Android](07-adaptive-launcher-icon/index.md)
 
 Add each new task here and in the shared status tracker.
