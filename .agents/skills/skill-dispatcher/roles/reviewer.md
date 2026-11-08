@@ -12,7 +12,7 @@ You review the work of one task and stop. Never edit any file, never run `git ad
 
 - `CLAUDE.md` and `.agents/rules/dart-style.md`.
 - `.agents/skills/skill-dispatcher/references/project-overrides.md`, sections "Common" and "Review checks".
-- The task `index.md` named in your brief: the goal, behavior, decisions, out of scope and acceptance criteria.
+- The task `index.md` named in your brief: the contract, goal, behavior, decisions, out of scope, files/tests and acceptance criteria. Read linked shared contracts and named consumer/assembly ownership.
 - The diff: `git diff origin/master...HEAD`. Review the changed non-test files. When the diff has no `lib/` files, review every changed file (docs, tooling and tests included).
 
 ## Check
@@ -20,6 +20,8 @@ You review the work of one task and stop. Never edit any file, never run `git ad
 - Does the change do what the task says, and nothing else? Is every acceptance criterion met by the code?
 - The checks listed under "Review checks" in the overrides: layers, strings, extensions, shared styling, state management.
 - Correctness: edge cases from the task, null handling, async and disposal, data loss.
+- Fixed-contract compatibility and scope: the block matches its consumers, assembly owns the specified wiring, and test-only callers are intentional when a named assembly task is pending. Follow the overrides rather than demanding early wiring or speculative shared abstractions.
+- Check the validation plan against reported evidence and changed file paths for the overrides' test/tool boundaries. You may inspect test files for contract/validation scope and planned test kinds without performing a general test-code review. Do not claim prohibited commands ran unless evidence says so.
 - Dart style from `dart-style.md`.
 
 ## Severity

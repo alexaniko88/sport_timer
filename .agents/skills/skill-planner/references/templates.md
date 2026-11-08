@@ -66,6 +66,16 @@ As <user>, I want <behavior> so that <benefit>.
 ## Dependencies and open decisions
 
 <Links to prerequisites and decisions that still need discussion. A story with a decision still open says what requires confirmation before its tasks can be `ready`.>
+
+## Shared contracts
+
+<Agreed symbols, paths, signatures, data and failure/lifecycle rules shared by tasks. Clearly label planned new symbols. Link cross-story agreements in the epic instead of copying them. Name the assembly owner.>
+
+## Requirement coverage
+
+| Requirement | Contributing tasks | Acceptance checks and assembled verification owner |
+| --- | --- | --- |
+| R1: <agreed behavior> | <task ids> | <task acceptance references and exact check> |
 ```
 
 ## Task
@@ -98,6 +108,10 @@ Epic: [<Capability>](../../../index.md)
 
 <Relative links to the story, epic, related code and goldens. Verified repository-relative code entry points. Name the feature and layer (`domain`, `data`, `presentation`, `shared`) that new code belongs in, following `CLAUDE.md`. A helper on one type is an extension in that layer's `extensions/` folder.>
 
+## Contract
+
+<Exact provided/consumed symbols and locations, marked existing, new here or provided by a dependency task id. Link shared agreements in the parent. Specify inputs, outputs, failures and relevant ownership/disposal. Name the consumer and assembly task ids for an unwired piece; for assembly, name the pieces and wiring this task owns.>
+
 ## Behavior
 
 <Exact behavior and edge cases.>
@@ -112,14 +126,14 @@ Epic: [<Capability>](../../../index.md)
 
 ## Files and tests
 
-<What is created or changed, and which tests are written, following the repository's test conventions.>
+<Exact files, tests/cases, golden outputs, literal check commands, and any planned fakes or harness edits. Explain a behavioral widget test's necessity or why no new test adds value. Include applicable existing checks. Reuse the dispatcher overrides' boundaries instead of copying them here.>
 
 ## Acceptance
 
 - [ ] When <situation>, then <result>. Check: <test, golden or command>.
 ```
 
-For a UI task, add `## View spec` (after `## Behavior`) and `## Mockup` (after it), as listed in the rule file. Pure logic tasks omit both.
+For a visual widget or assembly task, add `## View spec` (after `## Behavior`) and `## Mockup` (after it), as listed in the rule file. Link the parent's approved design when shared. Pure logic and ViewModel/state-only tasks omit both.
 
 ## Standalone bug or improvement task
 

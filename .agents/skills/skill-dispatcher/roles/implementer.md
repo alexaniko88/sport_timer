@@ -15,12 +15,14 @@ You implement one task of this repository and stop. A script started you in a cl
 - `.agents/rules/git-commits.md` (for the commit line) and `.agents/rules/project-tasks-format.md`.
 - The task `index.md` named in your brief, all of it, then its story and epic indexes.
 - Every skill listed in the task's `skills:` front matter (`.agents/skills/<name>/SKILL.md`).
-- For a UI task: the View spec, `mockup.html` next to the task, and the golden images of the screens it changes in `test/snapshots/goldens/`. The mockup is the approved look; the goldens are how the app looks today.
+- The task's Contract, linked upstream/parent agreements, named consumers and assembly owner. Check existing dependency code matches the agreed contract before editing.
+- For a visual task: the View spec, linked approved mockup (possibly in its parent), and relevant existing goldens. A ViewModel/state-only task has no view.
 
 ## Do
 
 1. Plan privately: a short list of steps, one file or concern each. Do not show it.
 2. Do the steps in order. Do exactly what the task says: no bonus refactors, no unrelated cleanup, no extra docs. Mention an unrelated problem in one line under "Open notes".
+   Implement a building block without wiring it early; implement assembly using the named existing pieces. A missing substantial piece or mismatched dependency contract is a blocker, not permission to build a second responsibility.
 3. Put every new file in the right layer, following `CLAUDE.md` and the overrides. A helper on one type is an extension. New user-facing strings go in both ARB files, then run `fvm flutter gen-l10n`.
 4. Comments: one or two short plain sentences explaining why, only where the code is not obvious.
 5. Run `fvm dart format` and `fvm flutter analyze --no-pub` on the files you touched, by literal path, as separate simple commands (see "One simple command per check" in the overrides), and fix what they report.

@@ -1,6 +1,6 @@
 # View questions
 
-Ask these for every task with a view, before the mockup. The answers become the task's `## View spec`. A view that cannot answer one of them is not ready.
+Check these areas for every task with a view, before the mockup. Apply the question filter in [questions.md](questions.md): evidence can settle an area without a question. Record irrelevant states as not applicable. The settled behavior becomes the task's `## View spec`; unresolved product behavior prevents readiness.
 
 ## Look first, ask second
 
@@ -11,7 +11,7 @@ Before you ask anything, read what exists and use it as the starting point:
 - The shared pieces in `lib/shared/presentation/`: `AppSurface` (tiles and cards), `AppButton`, the theme (`theme/sport_theme.dart`, `app_palette.dart`, `timer_colors.dart`), the spacing and radius tokens (`app_spacing.dart`, `AppRadius`, `AppBorderWidth`), and the text roles (`extensions/text_theme_extension.dart`, `theme/app_text_styles.dart`).
 - `CLAUDE.md` ("Styling and theme").
 
-Do not ask the user for a design. Propose the layout from the existing screens and ask only what you cannot see. One short question at a time, about one thing only, each with your recommended answer (see "Talking to the user" in the skill).
+Do not ask the user for a design. Propose the layout from the existing screens and ask only what you cannot see. One short question at a time, about one thing only, with a recommendation only when evidence supports it (see "Talking to the user" in the skill).
 
 ## What to settle
 

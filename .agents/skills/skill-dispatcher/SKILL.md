@@ -54,6 +54,7 @@ Always use `fvm dart tool/dispatcher.dart ...`, never bare `dart`.
 
 - **Always allow a typed answer.** When you ask the user something (which tool, another task, a relaunch with a permission), they must be able to answer in their own words when none of your options fits. With a question dialog, keep a last choice such as "Something else (I will type it)", and never remove the tool's own "Other" choice. If the dialog cannot take typed text, ask as plain chat text instead.
 - Launch only a task that `next` returned or that the user named and the script accepts (`ready`, on `origin/master`). Never edit a task, its status or its indexes.
+- Runner scope, allowed tools and validation are defined once in `references/project-overrides.md`. Tasks requiring app/device validation, integration tests or unplanned tooling need planner refinement or a separate workflow, not a broader `--allow` as a workaround. Task contracts are fixed; a reported upstream mismatch requires planner reconciliation of affected pending tasks before relaunch.
 - Do not run the stages yourself, even if the script fails. Report the failure.
 - Nothing stays on the local disk after a run: the script deletes the clone when the task ends. `status` shows the runs in progress.
 - Rules for the runners are in `.agents/skills/skill-dispatcher/roles/` and `references/project-overrides.md`. The task format is in `.agents/rules/project-tasks-format.md`.
