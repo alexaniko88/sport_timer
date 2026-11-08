@@ -22,9 +22,11 @@ The layout, ids, task fields and sections, the ready checklist and the done rule
 
 These rules apply to every step below.
 
-- **Only questions.** Work quietly. Do not tell the user what you read, search, write or check, and do not show plans, findings or progress. A message to the user is a question, a blocker that stops you, or the final summary in step 10. Nothing else.
+- **Work quietly.** Do not narrate reads, searches, writes or checks. Messages are questions, blockers, or the final summary in step 10. A question may include the short decision checkpoint below, the proposed split in step 6, or the criteria in step 7. Show the mockup when step 5 requires it.
 - **One question per message.** Never show two questions at once, not even as a numbered list. With a question dialog, put exactly one question in each call. Wait for the answer before the next.
-- **Atomic questions.** Each question asks about one thing only, in short plain words. Split a question that has "and", "or" or several parts into separate questions. Give only the context needed to answer it, in one or two short lines, and your recommended answer, worded so that "yes" accepts it.
+- **Atomic questions.** Ask for one decision in short, plain words, with at most two short lines of context. Split independent decisions; alternatives for the same decision can stay together. Never hide several decisions inside one yes/no question.
+- **Recommendations.** Recommend only when repository evidence, an agreed constraint or official documentation supports it; give the reason in one line. Let "yes" accept that recommendation. Present genuinely open product preferences neutrally. A proposal is not a decision until the user accepts it.
+- **Checkpoints.** At a natural boundary or when the interview becomes long, briefly state the settled decisions and remaining topics, then ask one question about continuing. No fixed question limit. A pause preserves open questions; it does not accept defaults or complete the interview.
 - **Always allow a typed answer.** The user must be able to answer in their own words when none of your options fits. With a question dialog, keep a last choice such as "Something else (I will type it)", and never remove the tool's own "Other" choice. If the dialog cannot take typed text, or the answer is open (a name, a number, a description), ask as plain chat text instead of a dialog.
 - **Final summary.** When everything is settled, show the summary from step 10. That is the only long message.
 
@@ -62,12 +64,9 @@ Find the facts yourself; ask the user only for decisions.
 
 ## 3. Interview
 
-Ask **one atomic question at a time**, as described in "Talking to the user". Put a concrete example in a question when it helps.
+Read [references/questions.md](references/questions.md) before interviewing. It defines the saved record, coverage checks, question filter, reconciliation and stopping rule. Keep one simple decision per question; do not reduce question count by bundling decisions.
 
-- Settle: the user outcome, what counts toward it, what is excluded, edge cases, error cases, where data lives and for how long, and what is in the first version versus later.
-- Keep asking until nothing is left open. "Good enough" is not the goal; a task that makes a runner guess is not done.
-- Treat future ideas as provisional: write them as "later" in the story, never as tasks to implement now.
-- Keep facts, user decisions, your recommendations and open questions apart. Never present a recommendation as a decision.
+Research first, activate only relevant coverage, and record each answer immediately. Resolve contradictions and blocking decisions first. Routine implementation details follow verified repository patterns; unconfirmed product assumptions remain open. Future ideas stay provisional and outside the current scope.
 
 ## 4. View questions (tasks with a view)
 
@@ -76,6 +75,12 @@ Read [references/ui-questions.md](references/ui-questions.md). Look at what exis
 ## 5. Mockup (tasks with a view)
 
 Read [references/mockup.md](references/mockup.md). Build `mockup.html` in the task folder and show it to the user: publish it as a private Artifact when you have the Artifact tool, otherwise open the local file. The user answers "ok" or "no". On "no", change it and show it again. A task with a view is not `ready` until the user has approved the mockup.
+
+## 5a. Interview completeness review
+
+Before splitting, run one fresh read-only agent using [roles/interview-reviewer.md](roles/interview-reviewer.md). Give it only the role path and the `planning.md` path, not the conversation or the planner's conclusions. Use the same provider/model selection as the cold reader in step 9, with this brief: `Read .agents/skills/skill-planner/roles/interview-reviewer.md and follow it. The planning record is <path>.`
+
+The reviewer checks the whole request for omissions before they can disappear between tasks. Investigate factual findings yourself; ask only unresolved user decisions through the question filter. Record the findings and their resolution. If scope or behavior changes later, reopen the affected coverage and review outcome; rerun the independent check when the change invalidates it. An unresolved material finding keeps affected work `draft`. This review does not replace the per-task cold read.
 
 ## 6. Split into tasks
 
@@ -91,7 +96,7 @@ Read [references/mockup.md](references/mockup.md). Build `mockup.html` in the ta
 You propose the criteria from the interview and the user confirms them. Do not ask the user to write them. Show the list with one yes or no question ("Are these criteria right?") and nothing else in that message.
 
 - One line each: `- [ ] When <situation>, then <result>. Check: <test, golden or command>.`
-- Cover the main result, each edge case and error case from the interview, and empty or partial states.
+- Cover the main result, each edge case and error case from the interview, and empty or partial states. Make every proposed product behavior visible in this review; never bury an unconfirmed assumption in the criteria as though it were agreed.
 - Every criterion must be checkable by a test, a golden image or a command a runner can run. If you cannot say how it is checked, it is not a criterion yet.
 
 ## 8. Write the files
@@ -103,6 +108,7 @@ Read [references/templates.md](references/templates.md) and write the task folde
 - `skills` lists project skills a runner must read, for example `skill-fl-chart` for a chart or `skill-integration-tests` for an integration test.
 - Fill `## Decisions` with what the user decided and why, and `## Out of scope` with what the task does not do. `## Files and tests` says what is created or changed and which tests are written.
 - Name only code you checked in the repo. Never invent file names or APIs. Use relative Markdown links and repository-relative paths; no local usernames, absolute paths or secrets.
+- Transfer the current requirements and decisions from the planning record into the files below, following its lifecycle in the format rule. Runners must not need the interview record.
 - Keep shared decisions in the epic or story and link to them. Each task still needs enough context to stand alone, because a runner sees only the task, its parents and the repo.
 - A new epic gets an `abbr` that no other epic uses. Number stories and tasks with the next unused number. Do not mix the old and new layouts.
 

@@ -11,6 +11,9 @@ Single source for how `project-tasks/` is laid out and how a task is written. Sk
 
 ```text
 project-tasks/
+├── planning/
+│   └── <topic>/
+│       └── planning.md
 ├── bugs/
 │   ├── index.md
 │   └── 01-<slug>/
@@ -32,6 +35,14 @@ project-tasks/
 - **Only tasks are archived.** A finished task moves into the `done/` folder of its parent (story, `bugs/` or `improvements/`). Epics and stories never move, so new work can always be added to them.
 - Standalone bugs and improvements have no epic or story. Use them for a broken behavior (`bugs/`) or a change to something that already works (`improvements/`).
 - Indexes link to their children and carry no status, counts or progress. State is deduced (see below).
+
+## Interview record
+
+`project-tasks/planning/<topic>/planning.md` holds one planning effort, including efforts that span stories. It is not a task: give it no task front matter or `index.md`, and never list it as a dispatcher dependency. This location lets interviewing begin before the user agrees to a backlog structure. Reuse its path when resuming the same effort.
+
+Commit it with the planning files and link it from the owning epic, story or standalone task once those exist. It holds the original request, evidence, coverage, decisions, open questions and interview review results; its working format is in [the planner's question reference](../skills/skill-planner/references/questions.md).
+
+During the interview it is the working source of truth. At handoff, transfer current requirements, decisions and exclusions into the epic/story/task files and verify nothing was lost. Freeze the record with a notice that the linked backlog files are authoritative afterward. Runners need only their task, parents and repository; the record is historical context, not a second live specification. A follow-up planning effort gets a new record linked to the earlier one. Do not track implementation progress in either record.
 
 ## IDs
 
