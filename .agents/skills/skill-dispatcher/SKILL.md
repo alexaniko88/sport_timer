@@ -1,10 +1,10 @@
 ---
 name: skill-dispatcher
 description: >
-  Picks the next ready task from project-tasks/, asks which AI tool runs it, and starts a runner for it in
-  the background. Several runners can work at once, each on its own task and clean clone, and each ends as an
-  open PR. Use when the user says "dispatch", "run the next task", "launch a task", "work on the backlog" or
-  "what can we run now". For a free-form request with no task, use skill-orchestrator instead.
+  Runs one ready task of the backlog folder (`tasks_dir`, default docs/backlog) from start to an open PR, in
+  the thread or CLI it is opened in. It suggests a model for the implementer, tests and reviewer stages, then
+  coordinates one subagent per stage in the task's own worktree, and ends with a pushed branch and a PR. Use
+  when the user says "dispatch", "run task <id>", "work on <id>", "launch a task" or names `skill-dispatcher <id>`.
 argument-hint: "[task id]"
 model: claude-sonnet-5-5
 effort: medium
@@ -12,49 +12,75 @@ effort: medium
 
 # Dispatcher
 
-You pick tasks and start runners. You do not implement anything yourself. The script `tool/dispatcher.dart` does the mechanical work (which task can start, the models, the clone, every stage, the commits, the push and the PR). You talk to the user, call the script and report what comes back.
+You run one task and coordinate it. You never write code, tests or reviews yourself: a fresh subagent does each stage. The dispatcher commands do the mechanical work: the worktree, the commits, the guard, the push and the PR. You call them, hand the work from one stage to the next and report the end.
 
-This skill's `model` and `effort` are a recommendation and only last for the current turn. It does not matter much: the model of every stage is fixed by the script, not by this session.
+`<dart>` below is the `dart` value of `planner_dispatcher.yaml`, `<base_branch>` its `base_branch` and `<tasks_dir>` its `tasks_dir` (default `docs/backlog`). Run every dispatcher command from the project root.
 
 ## Standing authorization
 
-For tasks from `project-tasks/` started through this skill, the runner commits, pushes its own task branch and opens the PR without asking each time. The script enforces the limits: it never pushes to `master` or `main`, never merges, never touches another branch, checks the commit format and adds the `Co-Authored-By: <tool> <model>` line, scans the diff for private data and uses the repo-local noreply email. You never run `git push`, `git commit` or `gh pr` yourself.
+Opening this skill authorizes the whole run: the commits, the push of the task's own branch and the PR, without asking again. Only when `planner_dispatcher.yaml` sets `publish: ask`, ask once before `finish` or `block`: "The task is ready to push. Push the branch and open the PR?" (for a block: "…and push the blocked work?"). With a no, stop and leave the worktree. The commands enforce the limits: they never push to `<base_branch>`, `main` or `master`, never merge and never force-push, and the guard checks the commit subjects, the git email and the diff for private data before every push. You never run `git commit`, `git push` or `gh pr` yourself.
 
-## Sync master and clean merged branches
+## Questions
 
-Run `fvm dart tool/sync_master.dart` once before the first step of the loop, and before the planner starts (`skill-planner` uses it too). It stops with no change when there are uncommitted changes. Otherwise it fetches, switches to `master`, runs `git pull --ff-only` and deletes the local branches that are already merged.
+A well planned task needs no question. You ask the models (step 3), and the publish question when `publish: ask` is set. Then you work without asking, except when the run cannot go on without the user (step 9): you ask right away, in the thread, and go on with the answer. Never end the run to have it launched again for something one quick answer solves.
 
-A branch is deleted only when GitHub shows a merged pull request into `master` with the same branch name and the same last commit. A branch with no pull request, new commits after the merge, an open pull request or a checkout in another worktree is kept. If GitHub cannot be read, nothing is deleted. It never touches remote branches. Report its output in one line. If it fails, show the error and stop; do not delete branches by hand.
+Stop and show the error only when something is serious: a command of steps 4 or 10 fails, or your tool cannot start subagents. The worktree then stays with the work.
 
-## The loop
+## Steps
 
-Always use `fvm dart tool/dispatcher.dart ...`, never bare `dart`.
+1. **The task.** Use the task id the user gave. Without one, run `<dart> run planner_dispatcher:dispatcher check` and take the first task of `ready`; when it is empty, say why in one line from `waiting` and stop. Name every task by its label, the title followed by the id (`Save template (TPL-03-02)`).
+2. **Your tool.** You know which tool you run in: `claude` (Claude Code), `codex` (Codex) or `antigravity` (Antigravity, `agy`). For any other tool, use its short lowercase name, for example `kimi`.
+3. **The models.** Run `<dart> run planner_dispatcher:dispatcher models <ID> --tool=<tool>`. Show the task label, its complexity and one line per stage, then ask once:
+   - With `"suggested": true`: "These are the models for the implementer, tests and reviewer. Accept, or type the ones to change (for example `reviewer: opus:high`)."
+   - With `"suggested": false`: "There is no suggestion for <tool>. Type the model of the implementer, tests and reviewer (`model` or `model:effort`)."
 
-1. **Find a task.** Run `fvm dart tool/dispatcher.dart next` (add `--skip=ID,ID` for tasks the user already declined or that you started in this session). It prints JSON: `next` (the first task that can start, or `null`), `alsoReady`, and `waiting` (why each other ready task cannot start). When `next` is `null`, say why in one or two lines from `waiting` and stop.
-2. **Offer it.** Show the task id, title, `complexity`, what it touches, and its dependencies, in plain English. Ask which tool runs it: Claude, Codex or Antigravity (recommend Claude). The user can also say "skip" (go back to step 1 with `--skip`) or "stop".
-   The models are not a question. Each tool has fixed models per stage, in `tool/dispatcher/role_models.dart`:
+   Antigravity can only pick Flash for a subagent; an Argon stage inherits the model of this session, so with Antigravity the session must run Gemini 4 Argon. If it does not, say so with the question.
+4. **Start.** Run `<dart> run planner_dispatcher:dispatcher start <ID> --tool=<tool>`, adding `--implementer=`, `--tests=` or `--reviewer=` (as `model` or `model:effort`) for each stage the user changed, and all three when there was no suggestion. It creates the worktree in `.worktrees/<ID>`, runs the project setup, claims the task and prints JSON: the task (`label`, `path`), `worktree`, `runnerDirectory`, and `stages` (per stage its `name` and the `call` parameters of the subagent). If it fails, show the error and stop.
+5. **Implementer.** Start the implementer subagent (see "Subagents") with the brief below. Read its report:
+   - "Blocked" is not "None": ask the user that question (step 9), send the answer to the same subagent and read its new report.
+   - Otherwise run `<dart> run planner_dispatcher:dispatcher commit <ID> --role=implementer --message='<the report's Commit line>'`, always in single quotes and with any `'` of the line removed, so the shell never runs part of it. If the command refuses the subject, fix only its form (type, lowercase, no final period, at most 72 characters) and run it again.
+6. **Tests.** The same with the tests subagent, and `--role=tests`.
+7. **Checks.** Run `<dart> run planner_dispatcher:dispatcher checks <ID>`. It runs the project's `check` commands in the worktree and prints only `passed`, the `commands`, and for a failure the `failed` command and the `tail` of its output. When one fails, send the implementer the extra line "The project checks failed. Fix them without changing what the task asks:" with `failed` and `tail`, commit its fix and run `checks` again. When they still fail, ask the user (step 9) with the failing command and its last lines, and the choices: one more fix, finish anyway (the failure goes to "Points to review") or stop.
+8. **Review.** Start the reviewer subagent with the extra line "Review the diff of this branch against origin/<base_branch>." Its report ends with a `json` block `{"findings": [...]}`; if there is none, ask it once for the block.
+   - No `critical` or `general` finding: the review passed.
+   - Otherwise, in round 1: start the implementer with the extra line "Fix only these review findings:" and one line per critical or general finding (`<file>:<line>: <summary> Fix: <fix>`), commit its fix, run the checks again (step 7) and review again.
+   - Still `critical` or `general` findings in round 2: ask the user (step 9) with the list of them, and the choices: one more fix round, finish anyway (they go to "Points to review") or stop.
+9. **Ask the user** (when a step says so). Show the question in a few lines: what is needed and why, the options with your recommendation first, and that they can type their own answer. Wait for the answer, note it for the report, and go on where the step left off. A permission dialog of the tool is answered in the tool itself; the subagent then goes on.
+   Only when the user says to stop, or the answer needs the task to be planned again: write the question to `<runnerDirectory>/question.md` and run `<dart> run planner_dispatcher:dispatcher block <ID>`. It reads only that file, writes the question to the task's `notes.md`, pushes a `wip:` commit and removes the worktree. Then go to step 11.
+10. **Finish.** Write `<runnerDirectory>/report.md` with these sections and run `<dart> run planner_dispatcher:dispatcher finish <ID>`:
+    - `## Summary`: the implementer's summary, in a few bullets.
+    - `## Evidence`: the tests' evidence, one line per acceptance criterion.
+    - `## Checks`: "All checks passed (<each of `commands` in backticks>)", adding "after one fix" when the implementer fixed them.
+    - `## Points to review`: the review's `minor` findings (`<file>:<line>: <summary>`), the stages' open notes, any check failure or finding the user chose to finish with, and under "Decisions during the run" each question of step 9 with the user's answer. Or "None".
 
-   | Tool | Implementer | Tests | Reviewer |
-   | --- | --- | --- | --- |
-   | Claude | Sonnet 5.5, medium | Sonnet 5.5, medium | Opus 5.5, medium |
-   | Codex | GPT-6.1 Terra, medium | GPT-6.1 Terra, medium | GPT-6.1 Sol, medium |
-   | Antigravity | Gemini 4 Argon, medium | Gemini 4 Argon, medium | Gemini 4 Argon, high |
+    It moves the task to `done/`, runs the guard, pushes, opens the PR, removes the worktree and prints `RESULT {json}` with `prUrl`. If it fails, show the error: the worktree stays with the work. Once the cause is fixed (for example `gh auth login`), run `finish` again: it does not close the task twice and reuses a PR already open.
+11. **Report** in a few lines: the PR link, or that the task is blocked and the exact question. Add the models each stage used, and any points to review. A blocked task goes back to `skill-planner` when it must be planned again, then runs again with `skill-dispatcher <ID>`: `start` continues its branch on its own.
 
-   Run `fvm dart tool/dispatcher.dart models` once per session. If it prints a `WARNING` (a fixed model is missing or no longer the newest), tell the user before launching. Pass `--implementer=`, `--tests=` or `--reviewer=` only when the user asks for another model.
-3. **Check the limit.** At most 3 runners at once. Run `fvm dart tool/dispatcher.dart status` first. If 3 are `running`, tell the user to wait for one to finish.
-4. **Launch.** Start `fvm dart tool/dispatcher.dart launch <ID> --tool=<tool>` as a background command (it runs until the task ends, which can take a long time). Tell the user it started.
-5. **Ask once:** "Do you want another task?" If yes, go back to step 1 (skip every task you launched in this session). If no, do not ask again. Wait quietly for the runners.
-6. **When a runner ends,** read the last line of its output, `RESULT {json}`, and tell the user:
-   - `pullRequest`: the PR link. The task is theirs to review. If its description has a "Commands denied" section, mention it: those commands did not run.
-   - `blocked`: the exact question or the permission it needs. The branch has a `wip:` commit with the reason in the task's `notes.md`. The task needs to be refined (the `skill-planner` skill) or relaunched. A denied command alone no longer blocks a task. If the message lists "Commands the tool was not allowed to run", say which ones and offer to relaunch with `--allow="Bash(<program>:*)"` (Claude only) only when one of them was needed.
-   - `failed`: the message and the last lines of output. If `keptWorkspace` is set, the work could not be pushed and the clone was kept there; say so.
-   When a run ends and more tasks can start, remind the user, but do not launch anything on your own.
+## Subagents
+
+Start every stage as a new subagent with a clean context, never one that saw this conversation, with the `call` parameters of that stage from step 4. Wait for it to end and read its final message: that is its report.
+
+An answer of the user goes to the subagent that asked, and a check fix or a review fix to the implementer that already did the task, when the tool can continue it, so it does not read everything again: Claude Code `SendMessage` to its agent id, Codex `send_input` to its agent. When the tool cannot continue a subagent, start a new one of the same stage with the same brief and the extra lines. The reviewer is always new.
+
+- **Claude Code:** the Agent tool, `subagent_type: "general-purpose"`, in the foreground, with `model` and `effort` from `call`.
+- **Codex:** `spawn_agent` with `model`, `reasoning_effort` and `fork_turns` from `call`, then wait for it.
+- **Antigravity:** `define_subagent` once per stage (write tools on for the implementer and tests, off for the reviewer), then `invoke_subagent` with `Model` from `call` and the brief as `Prompt`.
+- **Another tool:** its own subagent tool, with the model from `call`. If it has none, stop and tell the user: this skill needs subagents.
+
+The brief of every stage, with the values of step 4:
+
+```text
+You are the <stage> of the task <label>.
+Work only inside <worktree>: every path below is relative to it. Run every shell command as `cd <worktree> && <command>`.
+Read .agents/skills/skill-dispatcher/roles/<stage>.md and follow it exactly.
+The task is <path>. The base branch is origin/<base_branch>.
+<extra lines, if the step names any>
+```
 
 ## Rules
 
-- **Always allow a typed answer.** When you ask the user something (which tool, another task, a relaunch with a permission), they must be able to answer in their own words when none of your options fits. With a question dialog, keep a last choice such as "Something else (I will type it)", and never remove the tool's own "Other" choice. If the dialog cannot take typed text, ask as plain chat text instead.
-- Launch only a task that `next` returned or that the user named and the script accepts (`ready`, on `origin/master`). Never edit a task, its status or its indexes.
-- Runner scope, allowed tools and validation are defined once in `references/project-overrides.md`. Tasks requiring app/device validation, integration tests or unplanned tooling need planner refinement or a separate workflow, not a broader `--allow` as a workaround. Task contracts are fixed; a reported upstream mismatch requires planner reconciliation of affected pending tasks before relaunch.
-- Do not run the stages yourself, even if the script fails. Report the failure.
-- Nothing stays on the local disk after a run: the script deletes the clone when the task ends. `status` shows the runs in progress.
-- Rules for the runners are in `.agents/skills/skill-dispatcher/roles/` and `references/project-overrides.md`. The task format is in `.agents/rules/project-tasks-format.md`.
+- One task per thread. Several threads can run at once, each on its own task: `start` claims the task, so `check` shows it as busy elsewhere.
+- Never edit a task, its status or its indexes, and never edit the work of a stage yourself. Do not run the stages yourself, even when a subagent fails: start it again once, then ask the user (step 9).
+- Never run `git commit`, `git push`, `git checkout` or `gh pr` yourself: use the dispatcher commands.
+- The roles and their limits are in `.agents/skills/skill-dispatcher/roles/`, `references/runner-rules.md`, the stack rules in `.agents/rules/stacks/` and `.agents/planner-dispatcher/project-overrides.md`. You do not need to read them: the subagents do.
+- The suggested models come only from the `models` command; a project changes them under `models` in `planner_dispatcher.yaml`.

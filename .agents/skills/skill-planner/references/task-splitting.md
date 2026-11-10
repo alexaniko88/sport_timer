@@ -1,47 +1,54 @@
-# Atomic tasks and assembly
+# Simple tasks and assembly
 
-Use this after the interview completeness review. The task format owns the required fields and sections; this reference explains how to choose the split.
+Use this when you split the agreed work. The task format owns the fields and sections; this reference explains how to choose the split.
 
-## Choose complete building blocks
+## The runner's job
 
-Start from the agreed feature and existing pieces. Identify only the missing blocks it needs, then the assembly that connects them. A block can be a widget, service, ViewModel with its state, or a database operation. One responsibility may span several files. Do not create speculative abstractions or split a trivial supporting type into a separate PR merely because it is another file.
+A runner gets one task and does only this: write the code, add the tests, run the config's `check` commands and open the PR. It cannot ask anything. So every task must be simple and short to read:
 
-Each task has a precise contract, relevant failures and boundaries, and tests that can pass after its prerequisites merge. Keep existing behavior usable and the app buildable after every PR. Do not split an operation's happy path from its required failures, a migration from compatibility with existing readers, or a state type from the behavior needed to handle its values.
+- One responsibility, its code and its tests, one PR, one short run. Aim for 2 to 5 tasks per story.
+- It needs no script, no Python, no new tool, no app or device launch, and no command outside the config's `check` list. Its only checks are the allowed `Check` kinds in the format rule.
+
+This is the one place for these limits on the planner side; the runner side is in [runner-rules.md](../../skill-dispatcher/references/runner-rules.md).
+- It says exactly what to do. If you are unsure, the runner will be too: settle it now.
+
+## Choose the pieces
+
+Start from the agreed feature and what already exists. Plan only the missing pieces, then the task that wires them together. A piece can be a component, a service, a state or logic unit with its state, or a database operation. One responsibility may span several files.
+
+Do not split for its own sake:
+
+- Keep a contract with its implementation, an operation's happy path with its failures, a migration with compatibility for existing readers, and a state type with the behavior that handles its values.
+- Do not give a trivial supporting type its own task, and do not add speculative abstractions.
+- Keep the app buildable and existing behavior working after every PR.
 
 Typical shapes:
 
-- **Logic/data block:** one bounded capability with unit tests, using hand-written fakes where appropriate. Include its contract and implementation together when separating them adds no useful independence.
-- **ViewModel/state block:** state transitions, async/disposal behavior and unit tests. No view spec or mockup merely because its files are in presentation.
-- **Visual widget:** constructor, inputs, callbacks and visual states. Link to the approved design; plan component goldens in the existing snapshot harness when appearance needs verification. Add a behavioral widget test only for a specified interaction that unit tests and goldens cannot establish.
-- **Assembly:** consume completed blocks and own the named dependency registrations, page ownership/disposal, routes and parent wiring. Test assembled behavior using the smallest relevant unit/golden or justified widget checks. Material new business logic indicates a missing block. Assembly can itself be split by independent wiring responsibilities, with an explicit owner for the final combined checks.
-- **Bug/refactor:** a bounded cause fix plus regression checks, or a behavior-preserving step with green checks after each merge. Do not fragment a cohesive fix or mechanical change solely by file count.
+- **Logic or data:** one capability with unit tests and hand-written fakes where needed.
+- **State:** state transitions, async and disposal behavior, unit tests. No view spec or mockup.
+- **Visual component:** constructor, inputs, callbacks and visual states, linked to the approved design. When `goldens_dir` is set, plan snapshot images in the project's snapshot test named in the planner notes. Add a behavioral component test only for an interaction unit tests and snapshots cannot check, and say why.
+- **Assembly:** wires finished pieces: dependency registration, page ownership and disposal, routes and parent wiring. New business logic here means a missing piece.
+- **Bug or refactor:** the fix plus its regression test, or one behavior-preserving step with green checks. Do not cut a cohesive fix into parts.
 
-A prerequisite may have only test callers until assembly. Name its consumer task and planned location before dispatch. Keep one-feature pieces in that feature. Shared UI still needs two actual users under `CLAUDE.md`; if consumers are not built yet, keep the piece feature-local and assign any later promotion and reuse to an explicit task.
+A piece used only by tests until assembly names its consumer task and planned location. Keep one-feature pieces in that feature; shared UI needs two real users under the project rules.
 
-## Fix the contracts and graph
+## Fix the contracts and order
 
-Specify new APIs deliberately, rather than pretending they already exist. In each task's Contract, label symbols `existing`, `new here`, or `provided by <task-id>`. Include exact repository-relative locations, signatures/data shapes and relevant error, ownership and lifecycle rules. Existing names must be checked in the repo. Proposed symbols must follow existing patterns.
+- Fill each task's `## Contract` as the format rule says. Check existing names in the repo; new names follow existing patterns.
+- Write a shared agreement once in the story (or the epic, across stories) and link to it. Never let a runner choose between conflicting specs. A contract change goes back to planning.
+- `depends-on` lists real code dependencies only. Do not chain independent tasks for convenience. `touches` follows the Overlap rules in the format rule; overlap serializes runs but is not a dependency. Give localization keys, snapshot images and shared test harness edits a clear owner.
+- Answer code and documentation questions during planning. Tasks that depend on an unknown result stay `draft`. Never send a findings-only task to the dispatcher.
 
-Define a shared agreement once in the parent story (epic for cross-story use). Tasks link to that agreement and list the exact subset they provide or consume. Standalone tasks carry their own contract. No downstream runner chooses between conflicting specifications; reconcile conflicts during planning. Contracts freeze for implementation. A necessary contract change returns to planning, not a runner's private redesign.
+## Tests and checks
 
-List real code dependencies in `depends-on`. Do not serialize independent pieces for convenience. Dependencies become runnable only when prerequisites are done on master, so avoid unnecessary merge chains. `ready` means specified, not immediately runnable. Exact `touches` paths expose shared-file collisions; overlap serializes execution but does not replace a semantic dependency. Give localization keys and golden outputs clear owners, including edits to a shared snapshot harness.
+Read the Common and Tests sections of [runner-rules.md](../../skill-dispatcher/references/runner-rules.md), then the Common, Tests and Planning sections of the stack rules (`.agents/rules/stacks/<name>/rules.md`, one per name in the config's `stacks` list; skip this when the list is missing or empty), then the Common and Tests sections of `.agents/planner-dispatcher/project-overrides.md`. Name the exact test files, the cases and any small fake or harness change. Reuse existing test infrastructure; if new infrastructure is really needed, plan it as its own task.
 
-Resolve code/documentation questions during planning. If a fact requires an experiment outside runner boundaries, keep it in planning and record its evidence. A dispatcher prerequisite is allowed only for a useful code/test deliverable within its normal boundaries, with known acceptance checks. Tasks whose contracts depend on an unknown experiment result stay draft until a planner follow-up incorporates the result and passes their cold reads. Do not invent a research task type or send findings-only work to the three-stage code pipeline.
+Unit tests cover logic. When `goldens_dir` is unset, skip snapshots; otherwise snapshot images check appearance, not callbacks. A task that adds or changes a snapshot image needs the per-file snapshot update command named in the planner notes' `## Checks` or the project overrides; when neither names it, the task stays `draft` and you tell the user. Do not write tests that add nothing. The config's `check` commands always run. When the project rules or planner notes mention integration tests, plan them outside dispatcher tasks and never use them as a check. A known gap in tooling or test infrastructure keeps the task `draft`.
 
-## Settle validation before readiness
+## Check the whole split
 
-Read the dispatcher overrides' Common and Tests sections. Specify literal test paths, the relevant cases, exact check commands, golden outputs, and any small task-specific fakes or harness changes. Reuse existing infrastructure; if genuinely new infrastructure is needed, plan it explicitly rather than making the tests runner discover and build it.
+The story's `## Requirements` list each agreed behavior once (R1, R2…) with the tasks that deliver it. Copy every confirmed requirement and exclusion from the planning record; the backlog files are the specification after handoff.
 
-Unit tests cover logic by default. Goldens check relevant appearance, not callbacks or lifecycle. Each behavioral widget test needs a short reason stating what unit/golden checks cannot prove. Pure wiring can need a focused widget test; do not manufacture logic unit tests for it. Do not write redundant tests just to give every stage work.
+Check both ways: every requirement has a task with an acceptance criterion that checks it, and no task adds scope nobody agreed. Compare related tasks for matching contracts, complete wiring, hidden dependencies, clashing `touches` and a safe merge order. Each task must still be clear from its own file, its parents and its upstream contracts.
 
-Existing architecture checks and `tool/agent_check.dart --skip-build` remain mandatory; its regression snapshot run may be broader than the task's new tests. Do not remove those checks to achieve smaller tasks. Device integration tests are planned separately, not included in ordinary dispatcher tasks or their skills. No app launch, device session, browser validation or unplanned helper script may be required for acceptance. A known tooling or test-infrastructure gap prevents readiness.
-
-## Validate the whole split
-
-Keep a concise requirement-to-task-to-acceptance-check table in the story index (epic for shared requirements; standalone task for standalone work). Give requirements stable local references such as R1, without creating another task status system. Transfer every confirmed requirement and exclusion from the interview record; preserve the parent files as the authoritative specification after handoff.
-
-Check both directions: no agreed requirement lacks implementation/verification ownership, and no task adds unagreed scope. A technical prerequisite traces to the requirement and consumer it supports. When several tasks share a requirement, distinguish their contributions and name who verifies the assembled result.
-
-Compare related tasks together for matching producer/consumer contracts, complete wiring, hidden dependencies, conflicting `touches`, and safe merge order. Each task must still be understandable from its own file, parents, upstream contracts and repo. Use per-task cold reads to challenge that; do not replace them with a batch review that hides missing context in a sibling task.
-
-When upstream requirements/contracts change, reopen affected pending tasks, update the authoritative agreements and coverage, and repeat their cold reads. Unknowns must be eliminated during planning. A runtime blocker is a fallback for an unforeseen problem, not the normal completion of a draft plan.
+When a requirement or contract changes, reopen the affected pending tasks, update the agreements and the table, and cold-read them again.

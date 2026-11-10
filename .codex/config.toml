@@ -1,3 +1,0 @@
-# Conductor model for the orchestrator skill. gpt-6.1-terra is chosen on purpose (Claude's conductor is Opus).
-model = "gpt-6.1-terra"
-model_reasoning_effort = "medium"

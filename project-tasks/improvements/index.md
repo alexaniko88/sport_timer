@@ -20,6 +20,5 @@ An improvement task does not authorize implementation. Plan and agree the change
 5. [IMP-05: Add a shared AppTag widget and use it on Timer Setup](05-add-shared-app-tag/index.md)
 6. [IMP-06: Add a barbell notification icon on Android](06-add-notification-icon/index.md)
 7. [IMP-07: Adaptive launcher icon for iOS and Android](07-adaptive-launcher-icon/index.md)
-8. [IMP-08: Use the planner-dispatcher library](08-use-planner-dispatcher/index.md)
 
 Add each new task here and in the shared status tracker.

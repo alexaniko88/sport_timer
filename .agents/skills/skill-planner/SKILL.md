@@ -1,7 +1,7 @@
 ---
 name: skill-planner
 description: >
-  Plans a feature, improvement, bug or refactor into tasks under project-tasks/ that are so concrete a runner
+  Plans a feature, improvement, bug or refactor into tasks under the backlog folder (`tasks_dir`, default docs/backlog) that are so concrete a runner
   can implement each one without asking anything. Interviews the user one question at a time, asks the view
   questions for UI work, builds an HTML mockup the user approves, proposes the acceptance criteria, and checks
   every task with a fresh agent that has not seen the conversation. Use when the user says "plan", "create
@@ -14,129 +14,112 @@ effort: medium
 
 # Planner
 
-Turn the user's idea into tasks that a runner can implement without asking anyone. This is where the time goes: every question left open in a task becomes a blocked run later. The runners follow `.agents/skills/skill-dispatcher/` and read only what is in the repo, so a task must carry everything it needs.
+Turn the user's idea into simple tasks that a runner can implement without asking anyone. Every question left open in a task becomes a blocked run later, and every extra line costs the runner time, so tasks are complete and short.
 
-The layout, ids, task fields and sections, the ready checklist and the done rules are in `.agents/rules/project-tasks-format.md`. Follow that file and do not copy it into tasks. Running the tasks is `skill-dispatcher`'s job, not yours.
+Project facts come only from these files: `planner_dispatcher.yaml` (the commands and settings), the files in its `rules` list, `.agents/planner-dispatcher/planner-notes.md` (branches, pull requests, UI sources, project skills, checks and coverage checks), and, for what runners may do, the Common and Tests sections of `.agents/skills/skill-dispatcher/references/runner-rules.md`, then the Common, Tests and Planning sections of `.agents/rules/stacks/<name>/rules.md` for each name in the config's `stacks` list (skip this when the list is missing or empty), then the Common and Tests sections of `.agents/planner-dispatcher/project-overrides.md`. Read them before you plan. `<dart>` below is the config's `dart` value and `<tasks_dir>` is its `tasks_dir` value (default `docs/backlog`).
+
+The layout, ids, task fields and sections, the acceptance format, `touches`, the ready checklist and the planning record's lifecycle are in `.agents/rules/backlog-format.md`. Follow that file and do not copy it into tasks. How to split the work and what a runner can do are in [references/task-splitting.md](references/task-splitting.md). Running the tasks is `skill-dispatcher`'s job, not yours.
 
 ## Talking to the user
 
-These rules apply to every step below.
+These rules apply to every step below and own the question format; the references only link here.
 
-- **Work quietly.** Do not narrate reads, searches, writes or checks. Messages are questions, blockers, or the final summary in step 10. A question may include the short decision checkpoint below, the proposed split in step 6, or the criteria in step 7. Show the mockup when step 5 requires it.
+- **Tasks by name.** Refer to a task as its title followed by its id, for example `Save template (TPL-03-02)`, never by the id alone. The same goes for stories and epics: their title, not their folder or number.
+- **Work quietly.** Do not narrate reads, searches, writes or checks. Messages are questions, blockers, the mockup, the split in step 6, the criteria in step 9 or the final summary in step 10.
 - **One question per message.** Never show two questions at once, not even as a numbered list. With a question dialog, put exactly one question in each call. Wait for the answer before the next.
-- **Atomic questions.** Ask for one decision in short, plain words, with at most two short lines of context. Split independent decisions; alternatives for the same decision can stay together. Never hide several decisions inside one yes/no question.
-- **Recommendations.** Recommend only when repository evidence, an agreed constraint or official documentation supports it; give the reason in one line. Let "yes" accept that recommendation. Present genuinely open product preferences neutrally. A proposal is not a decision until the user accepts it.
-- **Checkpoints.** At a natural boundary or when the interview becomes long, briefly state the settled decisions and remaining topics, then ask one question about continuing. No fixed question limit. A pause preserves open questions; it does not accept defaults or complete the interview.
-- **Always allow a typed answer.** The user must be able to answer in their own words when none of your options fits. With a question dialog, keep a last choice such as "Something else (I will type it)", and never remove the tool's own "Other" choice. If the dialog cannot take typed text, or the answer is open (a name, a number, a description), ask as plain chat text instead of a dialog.
-- **Final summary.** When everything is settled, show the summary from step 10. That is the only long message.
+- **Atomic questions.** Ask for one decision. Keep the question short, clear and in plain words, so the user understands it on the first read: one line when you can, plus at most one short line of context. Split independent decisions; alternatives for the same decision stay together. Never hide several decisions inside one yes/no question.
+- **At most three options.** Offer up to three answers to choose from. Three is the goal; offer fewer only when there are fewer real alternatives. Each option is a few words, with at most one short line of explanation.
+- **Always recommend.** Every question has one recommended answer, listed first and marked "(Recommended)", with its reason in one line. Base it on repository evidence, an agreed constraint or official documentation when there is any. For an open product preference, recommend the option that best fits the request and the app as it is today, and say it is your preference. Let "yes" accept the recommendation. A recommendation becomes a decision when the user accepts it, or when you record it as an assumption and the user confirms it in step 6.
+- **Always allow a typed answer.** Besides the options, the user can always answer in their own words when none of them fits. This choice does not count toward the three. With a question dialog, use the tool's own "Other" choice and never remove it; if the tool has none, add a last choice "Something else (I will type it)". If the dialog cannot take typed text, or the answer is open (a name, a number, a description), ask as plain chat text: list up to three numbered suggestions, the recommended one first, and say the user can also type their own answer.
+- **Checkpoints.** When you reach the question budget of step 2, first record the remaining low-impact gaps as assumptions. Then state the settled decisions and the remaining high-impact topics in a few lines, and ask one question: go on with those topics, or split now and leave them open (their tasks stay `draft`). A checkpoint accepts nothing by itself.
 
 ## Before you start
 
-- **Check your model.** A skill's `model` only lasts one turn and this is a long conversation, so check which model you are running on. The planner needs a strong one:
-
-  | Tool | Planner model |
-  | --- | --- |
-  | Claude | Opus 5.5, medium effort |
-  | Codex | GPT-6.1 Sol, medium effort |
-  | Antigravity | Gemini 4 Argon, medium effort |
-
-  If you run on another model, say so in one line and ask the user to switch (`/model` in Claude Code) before you start. Go on only if they say to.
+- **Model.** The planner needs a strong model: Opus 5.5 (Claude), GPT-6.1 Sol (Codex) or Gemini 4 Argon (Antigravity), at medium effort. When you know you run on another one, say so in one line in your first message and go on.
 - **Language.** Talk with the user in the language they use. Every file you write is in plain, simple English.
-- **Sync master.** Run `fvm dart tool/sync_master.dart` first. It switches to `master`, pulls it and deletes merged local branches (rules in `.agents/skills/skill-dispatcher/SKILL.md`). Do not ask; report its result in one line with the final summary. If it fails (for example uncommitted changes), stop and explain.
-- **Branch.** Check `git status -sb` and read `.agents/rules/git-commits.md`. Then, from the updated `master`, run `git switch -c feat/plan-<short-topic>`. Do not carry unrelated uncommitted work onto the branch and never discard or stash it. If the checkout cannot be switched safely or the pull fails, stop and explain. Continue an existing planning branch for follow-up messages.
+- **Sync the base branch.** Run `<dart> run planner_dispatcher:sync` first. It switches to the configured `base_branch`, pulls it and deletes only the local branches GitHub shows as merged into it with the same last commit. Do not ask; report its result in one line with the final summary. If it fails (for example uncommitted changes), stop and explain.
+- **Branch.** Check `git status -sb` and read the planner notes' `## Branches and pull requests`. Then, from the updated base branch, run `git switch -c feat/plan-<short-topic>` (use another prefix only when the planner notes give one). Do not carry unrelated uncommitted work onto the branch and never discard or stash it. If the checkout cannot be switched safely or the pull fails, stop and explain. Continue an existing planning branch for follow-up messages.
 
 ## 1. Understand
 
 Find the facts yourself; ask the user only for decisions.
 
-- Read `CLAUDE.md`, the format rule and the code the idea touches. For UI, read the matching images in `test/snapshots/goldens/` and `test/snapshots/README.md`; they show how the app looks today. Check a library's official documentation when a choice depends on what it can do.
-- Search all of `project-tasks/`, including `done/` folders, for the same or overlapping work (search related terms, not only the title). If it exists, extend it, and name it in your next question when the user needs to know. For a finished task, decide whether the new work is a duplicate, a regression or a follow-up, and link it. If that is unclear, ask.
-- Find the epic and story each new task belongs to by outcome and acceptance criteria, not by title. Epics and stories never move, so add to them freely. Use `bugs/` or `improvements/` for a standalone report. Ask the user only if two parents fit equally well.
+- Read the project files above, the format rule and the code the idea touches. When the Implementation or Tests section of `project-overrides.md` still holds only its template text, tell the user in one line that runners will rely on your guess of where code and tests go, and suggest filling it in. For UI, read what the planner notes' `## UI sources` names and, when `goldens_dir` is set, the matching images there. Check a library's official documentation when a choice depends on what it can do.
+- Run `<dart> run planner_dispatcher:backlog close-finished` so finished stories and epics are in `done/`; its moves go into the planning commit.
+- Search all of `<tasks_dir>/`, including `done/` folders, for the same or overlapping work (search related terms, not only the title). If it exists, extend it, and name it in your next question when the user needs to know. For a finished task, decide whether the new work is a duplicate, a regression or a follow-up, and link it. If that is unclear, ask.
+- Find the epic and story each new task belongs to by outcome and requirements, not by title. Use `bugs/` or `improvements/` for a standalone report. When the parent is closed, run `<dart> run planner_dispatcher:backlog reopen <path>` before you add to it; never move backlog folders by hand. Ask the user only if two parents fit equally well. When you extend a story, bring its pending tasks that still use an older layout (for example a `## Behavior` section) to the current format.
 
 ## 2. Pick the depth
 
-| Work | What you do |
-| --- | --- |
-| Feature or improvement with a view | Everything below: interview, view questions, mockup, criteria, cold read |
-| Feature or improvement with no view | Interview, criteria, cold read |
-| Bug | Diagnose first: read the code, reproduce when you can, and confirm the cause with evidence. The task carries the cause, the evidence and the decided fix. It is not `ready` until the cause is confirmed. A mockup only if the view changes |
-| Refactor, tests or tooling | A short interview about scope and boundaries, criteria, and a light cold read |
+| Work | What you do | Question budget |
+| --- | --- | --- |
+| Feature or improvement with a view | Everything below: interview, view questions, mockup (only for a new screen or layout), criteria, cold read | About 12 |
+| Feature or improvement with no view | Interview, criteria, cold read | About 8 |
+| Bug | Diagnose first: read the code, reproduce when you can, and confirm the cause with evidence. The task carries the cause, the evidence and the decided fix. It is not `ready` until the cause is confirmed. A mockup only if the view changes | About 3 |
+| Refactor, tests or tooling | A short interview about scope and boundaries, criteria, and a light cold read | About 5 |
+
+The budget is the number of questions before a checkpoint (see "Checkpoints"). Never bundle questions to stay under it.
 
 ## 3. Interview
 
-Read [references/questions.md](references/questions.md) before interviewing. It defines the saved record, coverage checks, question filter, reconciliation and stopping rule. Keep one simple decision per question; do not reduce question count by bundling decisions.
+Read [references/questions.md](references/questions.md) before interviewing. It defines the planning record, which gaps to look for, which ones deserve a question, and when to stop.
 
-Research first, activate only relevant coverage, and record each answer immediately. Resolve contradictions and blocking decisions first. Routine implementation details follow verified repository patterns; unconfirmed product assumptions remain open. Future ideas stay provisional and outside the current scope.
+Ask only high-impact decisions: scope, visible behavior, data that is kept or lost, and how success is checked. For a low-impact decision, record your recommended answer as an assumption; the user confirms all assumptions at once in step 6. Routine implementation details follow verified repository patterns. Future ideas stay outside the current scope.
 
 ## 4. View questions (tasks with a view)
 
-Read [references/ui-questions.md](references/ui-questions.md). Look at what exists first and fit the design to the app as it is today. The user does not give you a design: you propose from the existing screens, and ask only what you cannot see.
+When the first line of the planner notes' `## UI sources` is `No UI`, skip steps 4 and 5. Otherwise read [references/ui-questions.md](references/ui-questions.md). Look at what exists first and fit the design to the app as it is today. The user does not give you a design: you propose from the existing screens, and ask only what you cannot see.
 
 ## 5. Mockup (tasks with a view)
 
-Read [references/mockup.md](references/mockup.md). Build the mockup beside the planning record before the task split exists. Show it to the user: publish it as a private Artifact when available, otherwise open the local file. Revise until approved. After the split, keep one approved reference in its owning story (or standalone task) and link visual tasks to it. A ViewModel/state-only task has no view and needs no mockup.
-
-## 5a. Interview completeness review
-
-Before splitting, run one fresh read-only agent using [roles/interview-reviewer.md](roles/interview-reviewer.md). Give it only the role path and the `planning.md` path, not the conversation or the planner's conclusions. Use the same provider/model selection as the cold reader in step 9, with this brief: `Read .agents/skills/skill-planner/roles/interview-reviewer.md and follow it. The planning record is <path>.`
-
-The reviewer checks the whole request for omissions before they can disappear between tasks. Investigate factual findings yourself; ask only unresolved user decisions through the question filter. Record the findings and their resolution. If scope or behavior changes later, reopen the affected coverage and review outcome; rerun the independent check when the change invalidates it. An unresolved material finding keeps affected work `draft`. This review does not replace the per-task cold read.
+Build a mockup only for a new screen, a new sheet or dialog, or a new layout of an existing screen. A smaller change to an existing screen (a field, a text, a state) needs no mockup: its view spec and the current snapshot images or screens are enough. When a mockup is needed, read [references/mockup.md](references/mockup.md), build it and revise it until the user approves it. A state-only task has no view and needs no mockup.
 
 ## 6. Split into tasks
 
-Read [references/task-splitting.md](references/task-splitting.md). Plan small building blocks first, then explicit feature assembly tasks. Each task is one complete responsibility plus its relevant tests, one PR and one runner run; it need not expose a user-visible feature. File count is a sizing signal, not a split rule.
+Read [references/task-splitting.md](references/task-splitting.md) and plan the split. Then show it in one message: the epic, stories and tasks (one line each, by name), and below them under "Assumptions" every low-impact decision you took without asking (one line each, with its D reference). Ask one yes or no question ("Are this split and these assumptions right?"). A rejected assumption becomes a normal question; reuse agreement already given.
 
-- Define contracts, consumers, wiring ownership, exact affected paths and checks before dispatch. Keep each block's failures and boundary behavior with that block.
-- Resolve investigations during planning. Unknown-dependent tasks stay `draft`; no findings-only investigation goes to the implementation dispatcher.
-- Keep implementation tests with their block. Plan device integration tests independently, outside this dispatcher's tasks. Read the runner boundaries in [project-overrides.md](../skill-dispatcher/references/project-overrides.md) when choosing checks; do not add app launches or custom helper tooling as acceptance checks.
-- For a new backlog, show the epic, story and task split and get the user's agreement before you write it. Reuse agreement already given.
+## 7. Write the files
 
-## 7. Acceptance criteria
+Read [references/templates.md](references/templates.md) and write the backlog files. Keep every file short and concrete: bullets, no background story, and no section that does not apply.
 
-You propose the criteria from the interview and the user confirms them. Do not ask the user to write them. Show the list with one yes or no question ("Are these criteria right?") and nothing else in that message.
+- Write each task's `## Acceptance` as the format rule says. The criteria are the task's behavior: the main result, each edge and error case from the interview, and empty or partial states. Every criterion has a `Check` of an allowed kind; if you cannot say how it is checked, it is not a criterion yet.
+- Size `complexity` from 1 to 10 by reasoning and risk: **1 to 3** follows an established contract or pattern; **4 to 6** adds bounded logic or several interacting states; **7 to 10** involves hard lifecycle, concurrency, migration or architecture decisions already settled in the plan. File count alone never makes a task harder; split multiple responsibilities instead. Turn an older `low`, `medium` or `high` into a number when you refine the task.
+- `skills` lists project skills a runner must read, chosen from the planner notes' `## Project skills`.
+- Verify every existing code name and path in the repo. Mark planned new symbols as new; never present them as existing APIs.
+- Move the current requirements, decisions and exclusions from the planning record into the backlog files. Runners never see the record.
+- Name folders and ids as the format rule says. A new epic gets an `abbr` that no other epic uses. Number stories and tasks with the next unused number, counting the `done/` folders too.
 
-- One line each: `- [ ] When <situation>, then <result>. Check: <test, golden or command>.`
-- Cover the main result, each edge case and error case from the interview, and empty or partial states. Make every proposed product behavior visible in this review; never bury an unconfirmed assumption in the criteria as though it were agreed.
-- Every criterion must be checkable by a test, a golden image or a command a runner can run. If you cannot say how it is checked, it is not a criterion yet.
+## 8. Cold read
 
-## 8. Write the files
+Run one fresh agent per story, not per task. A standalone bug or improvement gets its own run. Skip known-blocked drafts until their decisions are settled. A task can be fully specified before its prerequisites merge; the dispatcher waits for them.
 
-Read [references/templates.md](references/templates.md) and write the task folders.
-
-- Fill every field of the front matter. Size `complexity` by reasoning and risk: **low** follows an established contract/pattern; **medium** introduces bounded logic or several interacting states; **high** involves difficult lifecycle, concurrency, migration or architecture decisions already settled in the plan. A small timer change is not automatically high; file count alone never makes it high. Split multiple responsibilities instead of labeling an oversized task high.
-- `touches` prefers exact paths, including tests and golden files. Use a narrow glob only when necessary, and `lib/l10n/**` when strings are added. Shared snapshot harness edits count as overlap. Do not list `test/snapshots/README.md` or the indexes.
-- `skills` lists project skills a runner must read, for example `skill-fl-chart`. Do not add the integration-test skill to ordinary implementation tasks.
-- Fill `## Decisions` with what the user decided and why, and `## Out of scope` with what the task does not do. `## Files and tests` says what is created or changed and which tests are written.
-- Verify every existing code name/path in the repo. Explicitly mark planned new symbols and locations in the Contract; never present them as existing APIs. Use relative Markdown links and repository-relative paths; no local usernames, absolute paths or secrets.
-- Transfer the current requirements and decisions from the planning record into the files below, following its lifecycle in the format rule. Runners must not need the interview record.
-- Keep shared decisions in the epic or story and link to them. Each task still needs enough context to stand alone, because a runner sees only the task, its parents and the repo.
-- A new epic gets an `abbr` that no other epic uses. Number stories and tasks with the next unused number. Do not mix the old and new layouts.
-
-## 9. Cold read
-
-For each fully specified task being considered for `ready`, run a fresh agent that has never seen this conversation. It reads the task, its parents, dependency contracts and repo, and lists what it would have to ask. Skip known-blocked drafts until their decisions are settled. A task can be fully specified before its fixed-contract prerequisites merge; the dispatcher waits for those merges.
-
-1. Dispatch the `cold-reader` role with a read-only run. Give it only the task path: `Read .agents/skills/skill-planner/roles/cold-reader.md and follow it. The task is <path>.` Never give it the conversation, your notes or the interview.
+1. Dispatch the `cold-reader` role with a read-only run and only the paths: `Read .agents/skills/skill-planner/roles/cold-reader.md and follow it. The story is <story index path>; check the tasks <task paths>.` (for a standalone task: `The task is <path>.`). Never give it the conversation, your notes or the planning record. Start the runs for all stories at once, in one message.
    - **Claude:** the Agent tool as a general-purpose agent, with `model: sonnet`.
    - **Codex:** `codex exec --ignore-user-config -s read-only -m gpt-6.1-terra -c 'model_reasoning_effort="medium"' "<brief>"`.
    - **Antigravity:** `agy --sandbox --mode plan --model gemini-4-argon-medium -p="<brief>"`.
-2. For each question it returns, either fix the task or, if it is a decision, ask the user. Then run it again on the changed task.
-3. Do at most three rounds. A bug, refactor or tooling task gets one light pass.
-4. Set `status: ready` only when the cold reader has no question left (and, for a view, the mockup is approved). Otherwise leave the task `draft` and say exactly what is open.
+2. For each question it returns, either fix the task or, if it is a decision, ask the user.
+3. One round is the default. Run a second round only for a task whose fix added a user decision or changed its contract, and give it only those tasks. Never run a third.
 
-If a requirement or upstream contract changes, mark affected pending tasks `draft`, reconcile their contracts, coverage, paths and checks, and cold-read them again before restoring `ready`. Resolve a completed experiment in the same way. Never treat a changed implementation as silent approval of a changed contract.
+If a requirement or upstream contract changes later, mark the affected pending tasks `draft`, update them, and cold-read them again. Never treat a changed implementation as silent approval of a changed contract.
+
+## 9. Confirm the criteria
+
+Show the final acceptance criteria of every task in one message, grouped by task name, and ask one yes or no question ("Are these criteria right?"). These are the criteria as written after the cold read, so the user approves what runners will get. When the user changes a criterion, update the task; cold-read it again only when the change adds behavior.
+
+Then set `status: ready` on each task that meets the [ready checklist](../../rules/backlog-format.md#when-a-task-is-ready) of the format rule. Leave the others `draft` and say exactly what is open.
 
 ## 10. Validate and hand off
 
-- Check unique ids, numbering, paths, relative links, valid dependency ids and no cycles. Follow the whole-plan checks in [references/task-splitting.md](references/task-splitting.md): requirements have owners and checks, contracts fit, every piece has a consumer, wiring is owned, and the delivery order preserves a working app. Compare related tasks together; passing individual cold reads alone does not prove the pieces fit.
-- When every task of the effort is `ready`, delete the planning record and everything else that only served the planning, as the [interview record](../../rules/project-tasks-format.md#interview-record) rule says, and include the deletion in the commit. Check that no file still links to them.
+- Check unique ids, numbering, paths, relative links, valid dependency ids and no cycles.
+- Run the whole-split checks in [references/task-splitting.md](references/task-splitting.md). The cold reader judges tasks one by one; how the tasks fit together is your check.
+- Check that every point of the original request in the planning record maps to a requirement or a stated exclusion in the backlog files.
+- When every task of the effort is `ready`, delete the planning record as the [planning record](../../rules/backlog-format.md#planning-record) rule says, and include the deletion in the commit.
 - Report the counts, which tasks are `ready` and which are `draft` and why, and any decision still open. Keep it short.
-- When nothing else is needed, show the full commit message and the exact files, then ask this once, in its own bold paragraph:
-
-  **Are you done with this task? If yes, I will commit these files, push the branch, and open a PR.**
-
-- An affirmative answer with no further change authorizes the commit, the push and the PR. Do not ask again for each. If the user asks for changes, make them, show the message and files again and ask again. Silence is not approval.
-- Before the commit: check the repo-local noreply email (`git config user.email`), stage only the approved files, and scan the staged diff for local paths, secrets and keys. Commit messages follow `.agents/rules/git-commits.md`, including the `Co-Authored-By: <tool> <model>` line. The PR title starts with `feat:` for a `feat/` branch. Report the PR link.
+- **Publish.** Opening this skill authorizes the commit, the push of the planning branch and the PR. The user already approved the content in step 9.
+  - With `publish: auto` in `planner_dispatcher.yaml` (the default), commit, push and open the PR without asking.
+  - With `publish: ask`, show the full commit message and the exact files first and ask once, in its own bold paragraph: **Are you done with this plan? If yes, I will commit these files, push the branch, and open a PR.** A yes authorizes all three; if the user asks for changes, make them and ask again. Silence is not approval.
+- Stage only the files of this plan. Commit messages follow the config's `rules` and the attribution rule in the planner notes; planning commits use the type the planner notes name.
+- Before the push, run `<dart> run planner_dispatcher:dispatcher guard` on the planning branch. It checks the branch is not the base branch, the git email, the commit subjects and the diff for private data. If it lists a problem, fix it (amend the commit) and run it again; never push while it fails. Then push the branch and open the PR, with the title the planner notes give. Never push to `base_branch`, never merge and never force-push. Report the PR link.
 - Tell the user the tasks become visible to `skill-dispatcher` only after this PR is merged.
 
 ## Never
