@@ -121,7 +121,7 @@ class _SilentAudioHandler extends BaseAudioHandler {
           AudioContext(
             iOS: AudioContextIOS(
               category: AVAudioSessionCategory.playback,
-              options: {AVAudioSessionOptions.mixWithOthers},
+              options: const {AVAudioSessionOptions.mixWithOthers},
             ),
             android: const AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
           ),

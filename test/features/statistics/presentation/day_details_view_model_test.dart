@@ -17,6 +17,8 @@ class _Repository implements ActivityRepository {
   @override
   Stream<void> get changes => controller.stream;
 
+  Future<void> closeChanges() => controller.close();
+
   @override
   Future<Result<List<RunActivitySummary>>> readDayActivity(String localDate) {
     dates.add(localDate);
@@ -64,7 +66,7 @@ void main() {
   });
   tearDown(() async {
     viewModel.dispose();
-    await repository.controller.close();
+    await repository.closeChanges();
   });
 
   test('loads selected date and derives summary from the displayed runs', () async {
@@ -107,7 +109,7 @@ void main() {
     final disposed = DayDetailsViewModel(other, date)..dispose();
     other.reads.single.complete(const Success([first]));
     await Future<void>.delayed(Duration.zero);
-    await other.controller.close();
+    await other.closeChanges();
     expect(disposed, isNotNull);
   });
 }

@@ -10,7 +10,7 @@ class DefaultAudioManager extends AudioManager {
     // the silent keep-alive loop from stopping the user's music or the beeps.
     final ios = AudioContextIOS(
       category: AVAudioSessionCategory.playback,
-      options: {AVAudioSessionOptions.mixWithOthers},
+      options: const {AVAudioSessionOptions.mixWithOthers},
     );
     audioPlayer
         .setAudioContext(

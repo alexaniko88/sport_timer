@@ -18,6 +18,8 @@ class FakeActivityAccountSource implements ActivityAccountSource {
 
   @override
   Stream<void> get changes => controller.stream;
+
+  Future<void> closeChanges() => controller.close();
 }
 
 void main() {
@@ -40,7 +42,7 @@ void main() {
     expect(accounts.cancelled, isTrue);
     expect(() => database.connection, throwsStateError);
     await expectLater(access.readSessions(), throwsStateError);
-    await accounts.controller.close();
+    await accounts.closeChanges();
   });
 
   test('configuration and database lookup do not initialize Firebase or SQLite', () async {

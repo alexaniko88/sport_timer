@@ -15,6 +15,8 @@ class FakeActivityRepository implements ActivityRepository {
   @override
   Stream<void> get changes => controller.stream;
 
+  Future<void> closeChanges() => controller.close();
+
   @override
   Future<Result<List<DailyActivity>>> readDailyActivity() {
     final completer = Completer<Result<List<DailyActivity>>>();
@@ -39,7 +41,7 @@ void main() {
 
   tearDown(() async {
     viewModel.dispose();
-    await repository.controller.close();
+    await repository.closeChanges();
   });
 
   test('loads content, then refreshes to empty', () async {
@@ -118,14 +120,14 @@ void main() {
     separateViewModel.dispose();
     separateRepository.reads[0].complete(const Success([first]));
     await Future<void>.delayed(Duration.zero);
-    await separateRepository.controller.close();
+    await separateRepository.closeChanges();
   });
   test('chart controls default, navigate, and keep selection across refresh', () async {
     final repo = FakeActivityRepository();
     final vm = StatisticsViewModel(repo, clock: () => DateTime(2026, 11, 4));
     addTearDown(() async {
       vm.dispose();
-      await repo.controller.close();
+      await repo.closeChanges();
     });
     repo.reads.single.complete(const Success([first]));
     await Future<void>.delayed(Duration.zero);
@@ -163,7 +165,7 @@ void main() {
     final vm = StatisticsViewModel(repo, clock: () => DateTime(2026, 11, 4));
     addTearDown(() async {
       vm.dispose();
-      await repo.controller.close();
+      await repo.closeChanges();
     });
     repo.reads.single.complete(const Success([second]));
     await Future<void>.delayed(Duration.zero);
@@ -191,7 +193,7 @@ void main() {
     final vm = StatisticsViewModel(repo, clock: () => DateTime(2026, 10, 31));
     addTearDown(() async {
       vm.dispose();
-      await repo.controller.close();
+      await repo.closeChanges();
     });
     repo.reads.single.complete(const Success([first]));
     await Future<void>.delayed(Duration.zero);
@@ -214,7 +216,7 @@ void main() {
     final vm = StatisticsViewModel(repo, clock: () => DateTime(2024, 3, 1));
     addTearDown(() async {
       vm.dispose();
-      await repo.controller.close();
+      await repo.closeChanges();
     });
     repo.reads.single.complete(const Success([]));
     await Future<void>.delayed(Duration.zero);

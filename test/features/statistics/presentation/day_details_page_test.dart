@@ -30,6 +30,8 @@ class _Repository implements ActivityRepository {
   final requestedDates = <String>[];
   @override
   Stream<void> get changes => changesController.stream;
+
+  Future<void> closeChanges() => changesController.close();
   @override
   Future<Result<List<DailyActivity>>> readDailyActivity() async => const Success([
         DailyActivity(localDate: '2026-11-02', roundCount: 2, workDurationMs: 75000, restDurationMs: 10000),
@@ -92,7 +94,7 @@ void main() {
     router.dispose();
     account.dispose();
     await getIt.reset();
-    await repository.changesController.close();
+    await repository.closeChanges();
   });
 
   testWidgets('opens the selected day, displays distinct runs and returns to the list', (tester) async {
