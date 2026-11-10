@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(fvm dart run planner_dispatcher:*)",
+      "Bash(fvm flutter analyze --no-pub:*)",
+      "Bash(fvm flutter test:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(fvm dart tool/agent_check.dart --skip-build:*)"
+    ]
+  }
+}

@@ -16,7 +16,9 @@ analyzer:
   errors:
     parameter_assignments: error
     prefer_const_constructors: warning
-include: package:flutter_lints/flutter.yaml
+include:
+  - package:flutter_lints/flutter.yaml
+  - package:planner_dispatcher/analysis/flutter.yaml
 
 formatter:
   trailing_commas: preserve

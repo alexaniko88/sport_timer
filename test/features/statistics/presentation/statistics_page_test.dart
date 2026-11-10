@@ -35,6 +35,8 @@ class _FakeActivityRepository implements ActivityRepository {
   @override
   Stream<void> get changes => changesController.stream;
 
+  Future<void> closeChanges() => changesController.close();
+
   @override
   Future<Result<List<DailyActivity>>> readDailyActivity() {
     final read = Completer<Result<List<DailyActivity>>>();
@@ -61,7 +63,7 @@ void main() {
   tearDown(() async {
     account.dispose();
     await getIt.reset();
-    await repository.changesController.close();
+    await repository.closeChanges();
   });
 
   Future<void> showPage(WidgetTester tester) async {

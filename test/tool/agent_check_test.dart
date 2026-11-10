@@ -23,7 +23,7 @@ void main() {
     });
 
     test('a documentation change needs no check', () {
-      expect(_changes(['README.md', 'project-tasks/x.md']).plan(), isEmpty);
+      expect(_changes(['README.md', 'docs/backlog/x.md']).plan(), isEmpty);
     });
 
     test('a presentation file gets format, analyze and the matching tests', () {
@@ -90,7 +90,7 @@ void main() {
     });
 
     test('a change in the AI setup runs the setup test', () {
-      for (final file in ['CLAUDE.md', '.agents/rules/dart-style.md', '.codex/agents/x.toml']) {
+      for (final file in ['CLAUDE.md', '.agents/rules/dart-style.md', 'planner_dispatcher.yaml']) {
         expect(
           _changes([file]).testFiles,
           ['test/architecture/ai_setup_test.dart'],

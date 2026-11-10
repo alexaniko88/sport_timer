@@ -85,7 +85,7 @@ class ChangeSet {
   }
 
   bool _changesAiSetup(String file) {
-    return file == 'CLAUDE.md' || ['.agents/', '.claude/', '.codex/'].any(file.startsWith);
+    return ['CLAUDE.md', 'planner_dispatcher.yaml'].contains(file) || ['.agents/', '.claude/'].any(file.startsWith);
   }
 
   /// The commands to run, in order.
