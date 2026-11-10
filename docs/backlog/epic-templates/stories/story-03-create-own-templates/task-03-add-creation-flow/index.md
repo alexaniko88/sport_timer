@@ -36,7 +36,7 @@ Widget and ViewModel tests, plus a manual check on a device, to be defined with 
 
 ## Implementation context
 
-`lib/features/templates/presentation/templates_page.dart` and the templates view model from Story 2. Read the parent indexes and follow `.agents/skills/skill-orchestrator/SKILL.md`.
+`lib/features/templates/presentation/templates_page.dart` and the templates view model from Story 2. Read the parent indexes.
 
 ## UI snapshot reference
 

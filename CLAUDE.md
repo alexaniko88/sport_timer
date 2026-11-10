@@ -17,10 +17,10 @@ fvm flutter test                     # all tests
 fvm flutter test test/features/timer # one folder or file
 fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart # refresh UI snapshots
 fvm dart tool/agent_check.dart       # only the checks the changed files need (see below)
-fvm dart tool/dispatcher.dart next   # which project task can start now (also: models, launch <ID> --tool=<tool>, status)
+fvm dart run planner_dispatcher:dispatcher check   # which backlog tasks can start now (see "Workflow")
 ```
 
-`tool/agent_check.dart` compares the working tree with `master` (`--base=<branch>` changes it, `--skip-build` skips the debug builds, or pass file paths to check only those). From the changed paths it picks: `dart format` (check only), `flutter analyze` on those files, the mirrored tests plus the layer boundary test, the golden snapshots when a presentation file, `navigation.dart` or an ARB file changed, `gen-l10n` when an ARB file changed, `test/architecture/ai_setup_test.dart` when `CLAUDE.md`, `.agents/`, `.claude/` or `.codex/` changed, the debug builds when `android/`, `ios/` or `pubspec.yaml` changed, and a scan of the added lines for local absolute paths (a failure) and open notes (only listed). With file paths, every line of each file counts as added. The rules are in `ChangeSet` and are tested in `test/tool/agent_check_test.dart`. It adds to the full `fvm flutter test` run, it does not replace it. A change to domain, data or built-in template code can still alter a screen, so run the snapshot test by hand then.
+`tool/agent_check.dart` compares the working tree with `master` (`--base=<branch>` changes it, `--skip-build` skips the debug builds, or pass file paths to check only those). From the changed paths it picks: `dart format` (check only), `flutter analyze` on those files, the mirrored tests plus the layer boundary test, the golden snapshots when a presentation file, `navigation.dart` or an ARB file changed, `gen-l10n` when an ARB file changed, `test/architecture/ai_setup_test.dart` when `CLAUDE.md`, `.agents/`, `.claude/` or `planner_dispatcher.yaml` changed, the debug builds when `android/`, `ios/` or `pubspec.yaml` changed, and a scan of the added lines for local absolute paths (a failure) and open notes (only listed). With file paths, every line of each file counts as added. The rules are in `ChangeSet` and are tested in `test/tool/agent_check_test.dart`. It adds to the full `fvm flutter test` run, it does not replace it. A change to domain, data or built-in template code can still alter a screen, so run the snapshot test by hand then.
 
 `.zed/tasks.json` (tracked in git; the other `.zed/` files are local symlinks and stay excluded) wraps run, pub get, rebuild and test as Zed tasks.
 
@@ -127,29 +127,29 @@ State is held with `ValueNotifier`. There is no state management package.
 
 ## Workflow
 
-To plan work into tasks that runners can implement without asking anything, use `.agents/skills/skill-planner/SKILL.md`. It interviews the user, asks the view questions for UI work, builds an HTML mockup the user approves, proposes the acceptance criteria, and checks each task with a fresh reader. The task format is in `.agents/rules/project-tasks-format.md`.
+Planning and running tasks come from the `planner_dispatcher` library (a git dev dependency in `pubspec.yaml`, pinned to a release tag). There are two process skills:
 
-For an end-to-end change (bug, feature, improvement, refactor), read and follow `.agents/skills/skill-orchestrator/SKILL.md`. This is the single repo-local skill folder shared by Claude, Codex and Antigravity. Never use `skill-ticket-orchestrator` here: this project has no tickets and no Linear. Follow the skill's approval cadence for implementation, review, commit and PR.
+- `.agents/skills/skill-planner/SKILL.md` plans a feature, improvement, bug or refactor into tasks under `docs/backlog/` that a runner can implement without asking anything. It interviews the user, asks the view questions for UI work, builds an HTML mockup the user approves, proposes the acceptance criteria and checks each task with a fresh reader.
+- `.agents/skills/skill-dispatcher/SKILL.md` runs one ready task from start to an open PR, with one subagent per stage (implementer, tests, reviewer) in the task's own worktree. `.agents/skills/skill-dispatcher-check/SKILL.md` (`fvm dart run planner_dispatcher:dispatcher check`) shows which tasks can start now. The dispatcher commits, pushes the task branch and opens the PR without asking; it never pushes to `master` and never merges.
 
-To run tasks that are already planned in `docs/backlog`, with no questions asked while they run, use `.agents/skills/skill-dispatcher/SKILL.md`. It starts one runner per task (implementer, tests, review, each with its own model) in a clean clone through `tool/dispatcher.dart`. Under that skill the script (not the runners) commits, pushes the task branch and opens the PR without asking; the script never pushes to `master` and never merges.
+The task format is in `.agents/rules/backlog-format.md`. The library owns those three skill folders, that rule and `.agents/rules/stacks/flutter/`: never edit them here. Install or update them with `fvm dart run planner_dispatcher:install` after changing the `ref` in `pubspec.yaml`. Sport Timer's own settings live in `planner_dispatcher.yaml`, `.agents/planner-dispatcher/project-overrides.md` (runner rules) and `.agents/planner-dispatcher/planner-notes.md` (planner facts). `fvm dart run planner_dispatcher:sync` switches to `master`, pulls it and deletes merged local branches.
 
-To handle the review comments the user left on their own PR, use `.agents/skills/skill-pr-feedback/SKILL.md`. The comments are discussed in chat, then the skill reviews the fixes, commits, pushes the PR branch and posts a short status reply in each comment thread. It commits, pushes and posts without asking again, because the user starts it for that.
+Work that is not a planned task (a quick fix, a question, a task marked "run by hand") is done in a normal session, following the rules below. This project has no tickets and no Linear: never use `skill-ticket-orchestrator` here.
 
 ## AI tools setup (Claude, Codex, Antigravity)
 
-All three tools must behave the same. Every rule and role is defined once; each tool only gets a thin file that points to it.
+All three tools must behave the same. Every rule and skill is defined once; each tool only gets a thin link that points to it.
 
 | What | Single source | Tool files |
 | --- | --- | --- |
 | Instructions | `CLAUDE.md` (real file) | `AGENTS.md` (Codex) and `GEMINI.md` (Antigravity) are symlinks to it |
 | Rules | `.agents/rules/` | `.claude/rules` is a symlink to it; Antigravity reads it directly |
 | Skills | `.agents/skills/` | `.claude/skills/*` are symlinks; Codex and Antigravity read the folder directly |
-| Agent roles | `.agents/skills/skill-orchestrator/roles/<name>.md` (model, effort and access in its frontmatter) | none |
-| Codex model carrier | `.codex/agents/*.toml` | only name, description, model, effort and one line that points to the role file |
+| Planner and dispatcher | the `planner_dispatcher` library, installed into `.agents/skills/` and `.agents/rules/` | none; configured in `planner_dispatcher.yaml` and `.agents/planner-dispatcher/` |
 
-Claude and Antigravity need no agent files: Claude passes the role file's model and effort to a general-purpose agent, and Antigravity runs the role in the main thread by reading the role file. Edit the single source, never copy a rule into a shim or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title, and `.agents/rules/project-tasks-format.md` before you read, create or change a task under `docs/backlog`.
+Besides the planner and the dispatcher, the project keeps two helper skills: `.agents/skills/skill-fl-chart/SKILL.md` (charts) and `.agents/skills/skill-integration-tests/SKILL.md` (integration tests, run outside dispatcher tasks). Edit the single source, never copy a rule into a link or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title, and `.agents/rules/backlog-format.md` before you read, create or change a task under `docs/backlog/`.
 
-What stays tool-specific: Claude hooks and auto memory, and how a skill is started (Claude `/skill-orchestrator`, Codex `$skill-orchestrator`, Antigravity by naming the skill). `test/architecture/ai_setup_test.dart` guards this setup.
+What stays tool-specific: Claude hooks and auto memory, and how a skill is started (Claude `/skill-planner`, Codex `$skill-planner`, Antigravity by naming the skill). `test/architecture/ai_setup_test.dart` guards this setup.
 
 ## Shared dev environment (my-dev-env)
 

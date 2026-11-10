@@ -90,7 +90,7 @@ void main() {
     });
 
     test('a change in the AI setup runs the setup test', () {
-      for (final file in ['CLAUDE.md', '.agents/rules/dart-style.md', '.codex/agents/x.toml']) {
+      for (final file in ['CLAUDE.md', '.agents/rules/dart-style.md', 'planner_dispatcher.yaml']) {
         expect(
           _changes([file]).testFiles,
           ['test/architecture/ai_setup_test.dart'],

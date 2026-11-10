@@ -1,34 +1,58 @@
-// Checks that the AI tool setup described in CLAUDE.md ("AI tools setup") is
-// in place: instruction and skill symlinks, role files with frontmatter, one
-// Codex model carrier per role, and that every rule or role path mentioned in
-// the docs exists.
+// Checks that the AI tool setup described in CLAUDE.md ("Workflow" and "AI
+// tools setup") is in place: instruction, rule and skill symlinks, only the
+// planner and dispatcher skills plus the helper skills, the planner_dispatcher
+// config and project files, and that every rule or skill path mentioned in the
+// docs exists.
 //
-// Scope: files and links only. It does not judge what a rule or role says.
+// Scope: files and links only. It does not judge what a rule or skill says.
+// The library tests its own skills; this file only checks how they are wired.
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../tool/dispatcher/role_models.dart';
+const _skills = [
+  'skill-dispatcher',
+  'skill-dispatcher-check',
+  'skill-fl-chart',
+  'skill-integration-tests',
+  'skill-planner',
+];
 
-const _modelPairs = {'gpt-6.1-sol': 'opus', 'gpt-6.1-terra': 'sonnet'};
+const _config = 'planner_dispatcher.yaml';
 
-const _rolesDir = '.agents/skills/skill-orchestrator/roles';
+const _projectFiles = {
+  '.agents/planner-dispatcher/project-overrides.md': ['## Common', '## Implementation', '## Tests', '## Review checks'],
+  '.agents/planner-dispatcher/planner-notes.md': [
+    '## Branches and pull requests',
+    '## UI sources',
+    '## Project skills',
+    '## Checks',
+    '## Coverage checks',
+  ],
+};
 
-const _efforts = {'high', 'medium'};
+const _removedPaths = [
+  '.codex',
+  '.claude/agents',
+  '.agents/roles',
+  'project-tasks',
+  'tool/dispatcher.dart',
+  'tool/dispatcher',
+  'tool/sync_master.dart',
+];
 
-const _accessModes = {'read-only', 'edit'};
-
-const _sandboxByAccess = {'read-only': 'read-only', 'edit': 'workspace-write'};
-
-const _forbiddenMentions = ['.claude/agents', '.agents/roles', '~/.claude/agents'];
+const _removedMentions = [
+  'skill-orchestrator',
+  'skill-project-tasks',
+  'skill-pr-feedback',
+  '.codex/',
+  'project-tasks/',
+];
 
 final _referencedPath = RegExp(
-  r'\.agents/(?:rules|skills/skill-orchestrator/roles)/[A-Za-z0-9_.\-]+\.md'
-  r'|\.agents/skills/[A-Za-z0-9_\-]+/SKILL\.md'
-  r'|\.codex/agents/[A-Za-z0-9_\-]+\.toml',
+  r'\.agents/(?:rules|planner-dispatcher)/[A-Za-z0-9_./\-]+\.md'
+  r'|\.agents/skills/[A-Za-z0-9_\-]+/SKILL\.md',
 );
-
-final _relativeSkillLink = RegExp(r'\.\./(skill-[A-Za-z0-9_\-]+)/SKILL\.md');
 
 bool _isLink(String path) => FileSystemEntity.isLinkSync(path);
 
@@ -49,27 +73,21 @@ List<FileSystemEntity> _entries(String dir) {
   }
 }
 
-List<String> _names(String dir, String extension) {
-  return _entries(dir)
-      .whereType<File>()
-      .map(_lastSegment)
-      .where((name) => name.endsWith(extension))
-      .map((name) => name.substring(0, name.length - extension.length))
-      .toList()
-    ..sort();
+/// Returns the items of the top-level YAML list [key] of [source], written
+/// either inline (`key: [a, b]`) or as one `  - item` per line.
+List<String> _yamlList(String source, String key) {
+  final inline = RegExp('^$key: \\[(.*)\\]\\s*\$', multiLine: true).firstMatch(source)?.group(1);
+  if (inline != null) {
+    return inline.split(',').map((item) => item.trim()).where((item) => item.isNotEmpty).toList();
+  }
+  final block = RegExp('^$key:\\s*\\r?\\n((?:  - .*\\r?\\n?)*)', multiLine: true).firstMatch(source)?.group(1);
+  if (block == null) return [];
+  return RegExp(r'^  - (.*)$', multiLine: true).allMatches(block).map((match) => match.group(1)!.trim()).toList();
 }
 
-/// Returns the value of [key] in a TOML file of one `key = "value"` per line.
-String? _tomlValue(String source, String key) {
-  return RegExp('^$key = "(.*)"\$', multiLine: true).firstMatch(source)?.group(1);
-}
-
-/// Returns the value of [key] in the YAML frontmatter of a Markdown file.
-String? _frontmatterValue(String source, String key) {
-  final block = RegExp(r'^---\r?\n(.*?)\r?\n---', dotAll: true).firstMatch(source)?.group(1);
-  if (block == null) return null;
-  final match = RegExp('^$key: (.*)\$', multiLine: true).firstMatch(block);
-  return match?.group(1)?.trim();
+/// Returns the value of the top-level YAML scalar [key] of [source].
+String? _yamlValue(String source, String key) {
+  return RegExp('^$key: (.*)\$', multiLine: true).firstMatch(source)?.group(1)?.trim();
 }
 
 void main() {
@@ -92,9 +110,8 @@ void main() {
   group('skills', () {
     final skills = _entries('.agents/skills').whereType<Directory>().map(_lastSegment).toList()..sort();
 
-    test('.agents/skills exists and has skills', () {
-      expect(Directory('.agents/skills').existsSync(), isTrue, reason: '.agents/skills is missing');
-      expect(skills, isNotEmpty, reason: '.agents/skills has no skill folders');
+    test('.agents/skills has only the planner, the dispatcher and the helper skills', () {
+      expect(skills, _skills);
     });
 
     for (final skill in skills) {
@@ -115,106 +132,50 @@ void main() {
     });
   });
 
-  group('agent roles', () {
-    final roles = _names(_rolesDir, '.md');
-
-    test('there is at least one role', () {
-      expect(roles, isNotEmpty);
-    });
-
-    test('Claude and the old role folder have no agent files', () {
-      expect(Directory('.claude/agents').existsSync(), isFalse, reason: '.claude/agents must not exist');
-      expect(Directory('.agents/roles').existsSync(), isFalse, reason: '.agents/roles must not exist');
-    });
-
-    test('a Codex model carrier exists for every role and for no other name', () {
-      expect(_names('.codex/agents', '.toml'), roles);
-    });
-
-    for (final role in roles) {
-      final rolePath = '$_rolesDir/$role.md';
-
-      test('$role has valid frontmatter', () {
-        final markdown = File(rolePath).readAsStringSync();
-
-        expect(_frontmatterValue(markdown, 'name'), role);
-        expect(_modelPairs.values, contains(_frontmatterValue(markdown, 'model')));
-        expect(_efforts, contains(_frontmatterValue(markdown, 'effort')));
-        expect(_accessModes, contains(_frontmatterValue(markdown, 'access')));
-      });
-
-      test('$role read-only access is stated in the role file', () {
-        final markdown = File(rolePath).readAsStringSync();
-
-        if (_frontmatterValue(markdown, 'access') == 'read-only') {
-          expect(markdown, contains('Never edit'), reason: '$rolePath is read-only but does not say "Never edit"');
-        }
-      });
-
-      test('$role matches its Codex model carrier', () {
-        final markdown = File(rolePath).readAsStringSync();
-        final toml = File('.codex/agents/$role.toml').readAsStringSync();
-
-        expect(_tomlValue(toml, 'name'), role);
-        expect(toml, contains(rolePath), reason: 'the Codex file must point to $rolePath');
-        expect(_tomlValue(toml, 'model_reasoning_effort'), _frontmatterValue(markdown, 'effort'));
-
-        final codexModel = _tomlValue(toml, 'model');
-        expect(_modelPairs, contains(codexModel), reason: 'unknown Codex model $codexModel');
-        expect(_modelPairs[codexModel], _frontmatterValue(markdown, 'model'));
-
-        final access = _frontmatterValue(markdown, 'access');
-        expect(
-          _tomlValue(toml, 'sandbox_mode'),
-          _sandboxByAccess[access],
-          reason: 'sandbox_mode must match access $access',
-        );
+  group('old setup', () {
+    for (final path in _removedPaths) {
+      test('$path is gone', () {
+        expect(FileSystemEntity.typeSync(path), FileSystemEntityType.notFound, reason: '$path must not exist');
       });
     }
   });
 
-  group('dispatcher', () {
-    const folder = '.agents/skills/skill-dispatcher';
+  group('planner-dispatcher', () {
+    final config = File(_config).existsSync() ? File(_config).readAsStringSync() : '';
 
-    for (final role in Role.values) {
-      test('${role.name} has a role file that the runner can read', () {
-        final markdown = File('$folder/roles/${role.name}.md').readAsStringSync();
+    test('$_config exists', () {
+      expect(File(_config).existsSync(), isTrue, reason: '$_config is missing');
+    });
 
-        expect(_frontmatterValue(markdown, 'name'), role.name);
-        expect(_accessModes, contains(_frontmatterValue(markdown, 'access')));
+    test('every rules entry of $_config exists', () {
+      final rules = _yamlList(config, 'rules');
+      expect(rules, isNotEmpty, reason: '$_config has no rules');
+      for (final rule in rules) {
+        expect(File(rule).existsSync(), isTrue, reason: '$_config lists $rule, which does not exist');
+      }
+    });
+
+    test('the flutter stack is configured and installed', () {
+      expect(_yamlList(config, 'stacks'), ['flutter']);
+      expect(File('.agents/rules/stacks/flutter/rules.md').existsSync(), isTrue, reason: 'run the install command');
+    });
+
+    test('the backlog folder of $_config exists', () {
+      final tasksDir = _yamlValue(config, 'tasks_dir');
+      expect(tasksDir, 'docs/backlog');
+      expect(Directory(tasksDir ?? '').existsSync(), isTrue, reason: '$tasksDir is missing');
+    });
+
+    for (final MapEntry(key: path, value: headings) in _projectFiles.entries) {
+      test('$path has its sections in order', () {
+        expect(File(path).existsSync(), isTrue, reason: '$path is missing');
+        final found = RegExp(r'^## .*$', multiLine: true)
+            .allMatches(File(path).readAsStringSync())
+            .map((match) => match.group(0)!.trim())
+            .toList();
+        expect(found, headings);
       });
     }
-
-    test('the reviewer role is read-only and says so', () {
-      final markdown = File('$folder/roles/reviewer.md').readAsStringSync();
-
-      expect(_frontmatterValue(markdown, 'access'), 'read-only');
-      expect(markdown, contains('Never edit'));
-    });
-
-    test('there is no role file without a Role value', () {
-      expect(_names('$folder/roles', '.md'), (Role.values.map((role) => role.name).toList()..sort()));
-    });
-
-    test('SKILL.md names every fixed model of the script', () {
-      final text = File('$folder/SKILL.md').readAsStringSync();
-
-      for (final models in RoleModels.table.values) {
-        for (final model in models.values) {
-          expect(text, contains(model.displayName), reason: 'SKILL.md does not mention ${model.displayName}');
-        }
-      }
-    });
-
-    test('every file the roles tell to read exists', () {
-      for (final role in Role.values) {
-        final text = File('$folder/roles/${role.name}.md').readAsStringSync();
-        for (final match in RegExp(r'\.agents/(?:rules|skills)/[A-Za-z0-9_./\-]+\.md').allMatches(text)) {
-          final path = match.group(0) ?? '';
-          expect(File(path).existsSync(), isTrue, reason: '${role.name}.md mentions $path, which does not exist');
-        }
-      }
-    });
   });
 
   group('project layout', () {
@@ -239,64 +200,16 @@ void main() {
     });
   });
 
-  group('planner', () {
-    const folder = '.agents/skills/skill-planner';
-
-    test('the cold-reader role is read-only and says so', () {
-      final markdown = File('$folder/roles/cold-reader.md').readAsStringSync();
-
-      expect(_frontmatterValue(markdown, 'name'), 'cold-reader');
-      expect(_frontmatterValue(markdown, 'access'), 'read-only');
-      expect(markdown, contains('Never edit'));
-    });
-
-    test('SKILL.md names the planner model of every tool', () {
-      final text = File('$folder/SKILL.md').readAsStringSync();
-
-      for (final model in ['Opus 5.5', 'GPT-6.1 Sol', 'Gemini 4 Argon']) {
-        expect(text, contains(model), reason: 'SKILL.md does not mention $model');
-      }
-    });
-
-    test('every reference and role that SKILL.md links to exists', () {
-      final text = File('$folder/SKILL.md').readAsStringSync();
-      final links = RegExp(r'\]\(((?:references|roles)/[A-Za-z0-9_./\-]+)\)').allMatches(text);
-
-      expect(links, isNotEmpty);
-      for (final match in links) {
-        final path = '$folder/${match.group(1)}';
-        expect(File(path).existsSync(), isTrue, reason: 'SKILL.md links to $path, which does not exist');
-      }
-    });
-
-    test('every file the planner files mention exists', () {
-      for (final path in ['$folder/SKILL.md', '$folder/roles/cold-reader.md']) {
-        final text = File(path).readAsStringSync();
-        for (final match in RegExp(r'\.agents/(?:rules|skills)/[A-Za-z0-9_./\-]+\.md').allMatches(text)) {
-          final mentioned = match.group(0) ?? '';
-          expect(File(mentioned).existsSync(), isTrue, reason: '$path mentions $mentioned, which does not exist');
-        }
-      }
-    });
-  });
-
   group('documented paths', () {
-    const skillFiles = [
-      '.agents/skills/skill-dispatcher/SKILL.md',
-      '.agents/skills/skill-orchestrator/SKILL.md',
-      '.agents/skills/skill-planner/SKILL.md',
-      '.agents/skills/skill-pr-feedback/SKILL.md',
-      '.agents/skills/skill-project-tasks/SKILL.md',
-    ];
     final sources = [
       'CLAUDE.md',
-      ...skillFiles,
-      ..._names(_rolesDir, '.md').map((name) => '$_rolesDir/$name.md'),
-      ..._names('.codex/agents', '.toml').map((name) => '.codex/agents/$name.toml'),
+      ..._projectFiles.keys,
+      '.agents/skills/skill-fl-chart/SKILL.md',
+      '.agents/skills/skill-integration-tests/SKILL.md',
     ];
 
     for (final source in sources) {
-      test('every rule, skill, role or Codex path in $source exists', () {
+      test('every rule, project file or skill path in $source exists', () {
         final text = File(source).readAsStringSync();
         for (final match in _referencedPath.allMatches(text)) {
           final path = match.group(0)!;
@@ -304,21 +217,10 @@ void main() {
         }
       });
 
-      test('$source does not mention the removed agent folders', () {
+      test('$source does not mention the removed setup', () {
         final text = File(source).readAsStringSync();
-        for (final mention in _forbiddenMentions) {
+        for (final mention in _removedMentions) {
           expect(text, isNot(contains(mention)), reason: '$source must not mention $mention');
-        }
-      });
-    }
-
-    for (final source in skillFiles) {
-      test('every relative skill link in $source exists', () {
-        final text = File(source).readAsStringSync();
-        final folder = File(source).parent.path;
-        for (final match in _relativeSkillLink.allMatches(text)) {
-          final path = '$folder/${match.group(0)!}';
-          expect(File(path).existsSync(), isTrue, reason: '$source links to ${match.group(0)}, which does not exist');
         }
       });
     }
