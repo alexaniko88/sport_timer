@@ -1,0 +1,41 @@
+---
+id: STAT-02-02
+status: done
+type: feat
+depends-on: [STAT-02-01]
+---
+
+# Replace placeholder content with daily tiles
+
+Story: [Story 2 overview](../../index.md)
+
+Epic: [Statistics](../../../../../index.md)
+
+Completion: implementation commit `d6cfce9`; full analysis, 319 tests, snapshot verification and review passed. Daily tiles show account-scoped completed activity with loading, empty and retry states.
+
+## Dependencies
+
+[Previous task](../task-01-add-daily-statistics-state/index.md).
+
+## Goal
+
+Replace placeholder content with daily tiles. Read the parent story for the shared behavior, exclusions, and acceptance criteria.
+
+## Work and acceptance criteria
+
+Each item below is a completion requirement for this task:
+
+- Render one tile for each date with completed activity across all its runs.
+- Show the five agreed fields using accessible labels, readable date/duration formatting, and existing styling/localization conventions.
+- Do not show individual timestamps, session counts, runs with no completed activity, or days without activity.
+- Provide understandable empty and error messages and a retry action where appropriate.
+- Keep the tiles non-navigating until Story 3 is approved and implemented.
+- Support a long history using a lazy list and appropriate query behavior; do not add date filters or charts.
+
+## Orchestration
+
+Read the story and epic before starting. Inspect current code and propose small substeps for approval. Complete one approved file or concern per turn and wait for user validation before continuing. Include relevant tests and scoped checks with implementation; a later verification task does not defer required validation.
+
+## UI snapshot reference
+
+Before planning, inspect the relevant current UI snapshots: [statistics](../../../../../../../../test/snapshots/goldens/statistics.png), [templates_selected](../../../../../../../../test/snapshots/goldens/templates_selected.png). See the [snapshot index](../../../../../../../../test/snapshots/README.md) for captured states, navigation and coverage limits. These are a baseline of the captured checkout, not an approved design for this task; check the implementation checkout and parent decisions for newer or intended behavior. The Statistics snapshot shows placeholder content, not the intended daily list. For visible changes, refresh affected snapshots and the index as described there, including new meaningful states or navigation changes.

@@ -10,7 +10,7 @@ description: >-
 
 # Integration tests in Sport Timer
 
-The plan and decisions are in `project-tasks/integration-tests/index.md`. Read it first, and read the story or task you are working on. This skill describes the target setup. Several parts may not exist yet, so check which files are really in `integration_test/` and `lib/main.dart` before relying on them. Never assume a helper exists.
+The plan and decisions are in `docs/backlog/epic-integration-tests/index.md`. Read it first, and read the story or task you are working on. This skill describes the target setup. Several parts may not exist yet, so check which files are really in `integration_test/` and `lib/main.dart` before relying on them. Never assume a helper exists.
 
 ## What these tests are for
 
@@ -21,7 +21,7 @@ The plan and decisions are in `project-tasks/integration-tests/index.md`. Read i
 ## Tool and platform
 
 - Flutter `integration_test` only. No Maestro, no Patrol, unless the user opens a new decision.
-- **Android only.** Default target is the emulator `sport-timer-emulator`. A connected real device is also allowed and wins. iOS and macOS are out of scope (see `project-tasks/bugs/01-ios-auth-dependency-conflict.md`).
+- **Android only.** Default target is the emulator `sport-timer-emulator`. A connected real device is also allowed and wins. iOS and macOS are out of scope (see `docs/backlog/bugs/task-01-ios-auth-dependency-conflict/index.md`).
 - Local only. No CI job unless a story adds one.
 - Always `fvm flutter`, never bare `flutter`.
 

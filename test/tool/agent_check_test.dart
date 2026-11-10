@@ -23,7 +23,7 @@ void main() {
     });
 
     test('a documentation change needs no check', () {
-      expect(_changes(['README.md', 'project-tasks/x.md']).plan(), isEmpty);
+      expect(_changes(['README.md', 'docs/backlog/x.md']).plan(), isEmpty);
     });
 
     test('a presentation file gets format, analyze and the matching tests', () {

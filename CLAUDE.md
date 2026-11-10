@@ -131,7 +131,7 @@ To plan work into tasks that runners can implement without asking anything, use 
 
 For an end-to-end change (bug, feature, improvement, refactor), read and follow `.agents/skills/skill-orchestrator/SKILL.md`. This is the single repo-local skill folder shared by Claude, Codex and Antigravity. Never use `skill-ticket-orchestrator` here: this project has no tickets and no Linear. Follow the skill's approval cadence for implementation, review, commit and PR.
 
-To run tasks that are already planned in `project-tasks/`, with no questions asked while they run, use `.agents/skills/skill-dispatcher/SKILL.md`. It starts one runner per task (implementer, tests, review, each with its own model) in a clean clone through `tool/dispatcher.dart`. Under that skill the script (not the runners) commits, pushes the task branch and opens the PR without asking; the script never pushes to `master` and never merges.
+To run tasks that are already planned in `docs/backlog`, with no questions asked while they run, use `.agents/skills/skill-dispatcher/SKILL.md`. It starts one runner per task (implementer, tests, review, each with its own model) in a clean clone through `tool/dispatcher.dart`. Under that skill the script (not the runners) commits, pushes the task branch and opens the PR without asking; the script never pushes to `master` and never merges.
 
 To handle the review comments the user left on their own PR, use `.agents/skills/skill-pr-feedback/SKILL.md`. The comments are discussed in chat, then the skill reviews the fixes, commits, pushes the PR branch and posts a short status reply in each comment thread. It commits, pushes and posts without asking again, because the user starts it for that.
 
@@ -147,7 +147,7 @@ All three tools must behave the same. Every rule and role is defined once; each 
 | Agent roles | `.agents/skills/skill-orchestrator/roles/<name>.md` (model, effort and access in its frontmatter) | none |
 | Codex model carrier | `.codex/agents/*.toml` | only name, description, model, effort and one line that points to the role file |
 
-Claude and Antigravity need no agent files: Claude passes the role file's model and effort to a general-purpose agent, and Antigravity runs the role in the main thread by reading the role file. Edit the single source, never copy a rule into a shim or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title, and `.agents/rules/project-tasks-format.md` before you read, create or change a task under `project-tasks/`.
+Claude and Antigravity need no agent files: Claude passes the role file's model and effort to a general-purpose agent, and Antigravity runs the role in the main thread by reading the role file. Edit the single source, never copy a rule into a shim or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title, and `.agents/rules/project-tasks-format.md` before you read, create or change a task under `docs/backlog`.
 
 What stays tool-specific: Claude hooks and auto memory, and how a skill is started (Claude `/skill-orchestrator`, Codex `$skill-orchestrator`, Antigravity by naming the skill). `test/architecture/ai_setup_test.dart` guards this setup.
 
