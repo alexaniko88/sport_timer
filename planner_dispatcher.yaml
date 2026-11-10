@@ -4,51 +4,41 @@
 dart: fvm dart
 
 # Task worktrees start from origin/<base_branch>; pull requests target it; it is never pushed to.
-base_branch: main
+base_branch: master
 
 # Run in order in a new task worktree. A failure stops the start.
 setup:
   - fvm install --skip-pub-get
   - fvm flutter pub get
+  - fvm flutter analyze --no-pub
 
 # Run in order after implementation. All must exit 0.
 check:
-  - fvm flutter analyze --no-pub
-  - fvm flutter test
+  - fvm dart tool/agent_check.dart --skip-build
 
 # Project files every role and the planner read first.
 rules:
   - CLAUDE.md
+  - .agents/rules/dart-style.md
+  - .agents/rules/git-commits.md
 
-# Rule packs of the library that every role and the planner read, for example flutter.
+# Rule packs of the library that every role and the planner read.
 # The project files still win where they differ.
-# stacks: [flutter]
+stacks: [flutter]
 
 # Where the planner writes the epics, stories and tasks, relative to the project root.
-# tasks_dir: docs/backlog
+tasks_dir: docs/backlog
 
 # Changed .png files in this folder get before/after images in the pull request.
-# goldens_dir: test/snapshots/goldens
+goldens_dir: test/snapshots/goldens
 
-# When set, start and the guard refuse another git email.
-# git_email_suffix: "@users.noreply.github.com"
-
-# auto (default): the planner and the dispatcher commit, push their own branch and open the PR
-# without asking. ask: they ask once first.
-# publish: auto
+# Start and the guard refuse another git email.
+git_email_suffix: "@users.noreply.github.com"
 
 # Label -> regex, added to the built-in private data scan.
-# private_patterns:
-#   a company email: "@example\\.com"
+# The bracket keeps the plain domain out of this file and out of its own scan.
+private_patterns:
+  a company email: "@vent[r]ata\\.com"
 
 # Commit types allowed in commit subjects.
 commit_types: [feat, fix, refactor, chore, docs, style, perf, test, build]
-
-# The suggested model per tool and stage, instead of the built-in one: model, name
-# (used in Co-Authored-By) and an optional effort. Any tool name works, so a team
-# can add suggestions for a tool with none built in.
-# models:
-#   claude:
-#     reviewer: {model: opus, effort: high, name: Opus 5.5}
-#   kimi:
-#     implementer: {model: kimi-k3, name: Kimi K3}
