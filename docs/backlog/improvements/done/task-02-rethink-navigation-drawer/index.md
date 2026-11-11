@@ -25,7 +25,7 @@ Replace the bare `NavigationDrawer` on `HomePage` with a styled `Drawer` that ha
 
 ## Context
 
-- Improvements index: [Improvements](../../index.md). Related completed story: [UI refactor Story 2](../../../epic-ui-refactor/stories/done/story-02-templates-in-drawer/index.md) (moved `Templates` into the drawer). Related downstream task: [DEV-01-02](../../../epic-developer-tools/stories/story-01-purge-local-activity/task-02-add-developer-page/index.md) (adds a debug-only `Developer tools` footer tile to this drawer).
+- Improvements index: [Improvements](../../index.md). Related completed story: [UI refactor Story 2](../../../epic-ui-refactor/stories/done/story-02-templates-in-drawer/index.md) (moved `Templates` into the drawer). Related downstream task: [DEV-01-03](../../../epic-developer-tools/stories/story-01-purge-local-activity/task-03-add-developer-page/index.md) (adds a debug-only `Developer tools` footer tile to this drawer).
 - Current behavior and limitation: `lib/features/home/presentation/home_page.dart` builds a Material `NavigationDrawer` with a plain text title and two `NavigationDrawerDestination` rows (`Templates` and `Timer styles`). Because `NavigationDrawer.selectedIndex` defaults to `0`, `Templates` always renders with a selected pill highlight even though the user is on Home (`Timer` or `Statistics`) and both drawer items push separate routes. In addition, the Spanish label `"Estilos del temporizador"` wraps onto two lines, making the two items uneven, and the drawer hides the currently active template and timer style until the user opens each page.
 - Desired change and benefit: replace `NavigationDrawer` with a `Drawer` (which keeps the 20px trailing-edge radius from `SportTheme.drawerTheme`) containing a header row (`Icons.timer_outlined` badge + `Sport Timer` title), a `Divider`, and a `ValueListenableBuilder<SettingsState>` over `_viewModel.state` that renders two equal-height `AppSurface` tiles with single-line titles (`"Templates"` / `"Plantillas"`, `"Styles"` / `"Estilos"`), single-line subtitles showing the active template (`"Custom"` or the selected template name) and active timer style (`"Ring"`, `"Full color"`, or `"Rounds strip"`), and a trailing `Icons.chevron_right`.
 - Existing code to reuse:
@@ -107,7 +107,7 @@ Replace the bare `NavigationDrawer` on `HomePage` with a styled `Drawer` that ha
 
 - Adding new settings pages (theme switcher, language switcher, about page).
 - Changing how `TemplatesPage` or `TimerStylesPage` work internally (beyond reusing the `TimerStyleNames` extension in `TimerStylesPage`).
-- The debug-only `Developer tools` footer and page (owned by [DEV-01-02](../../../epic-developer-tools/stories/story-01-purge-local-activity/task-02-add-developer-page/index.md)).
+- The debug-only `Developer tools` footer and page (owned by [DEV-01-03](../../../epic-developer-tools/stories/story-01-purge-local-activity/task-03-add-developer-page/index.md)).
 
 ## Files and tests
 

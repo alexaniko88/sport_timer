@@ -2,30 +2,33 @@
 
 Epic: [Developer tools](../../index.md)
 
-## User outcome
-
 As a developer, I can clear local activity for all accounts from a debug-only page so I can start testing with an empty history.
 
 ## Scope
 
-Add a debug-only entry at the bottom of the navigation drawer and a developer page with a single purge action. Explain the scope in a confirmation dialog. Preserve settings and authentication; do not add other tools in this version. Texts are English only, with no localization.
+- In: a debug-only entry at the bottom of the navigation drawer and a developer page with a single purge action. A confirmation dialog explains the scope. Texts are English only, with no localization.
+- Out: other tools in this version; any change to settings or authentication. The story does not depend on the [Delete statistics story](../../../epic-statistics/stories/story-05-delete-statistics/index.md), which is account-specific.
 
-## Acceptance criteria
+## Requirements
 
-- The entry and page work in debug builds and cannot be opened or used in profile or release builds, including through direct navigation.
-- Canceling or dismissing the confirmation leaves activity unchanged. Confirming removes all local activity for all accounts on the device, including sessions and their recorded phases.
-- An empty database can be purged safely. Success or failure is communicated accurately, and statistics views reflect a successful purge.
-- Pending activity writes cannot restore purged history after success; future workouts can still be recorded. Settings and sign-in remain unchanged.
-- A purge cannot be started twice at the same time.
-- The page and confirmation are usable in both themes and at larger text sizes.
+- R1: The entry and page work in debug builds and cannot be opened or used in profile or release builds, including through direct navigation — DEV-01-03.
+- R2: Cancelling or dismissing the confirmation leaves activity unchanged. Confirming removes all local activity for all accounts on the device, including sessions and their recorded phases — DEV-01-01, DEV-01-02, DEV-01-03.
+- R3: An empty database can be purged safely. Success or failure is reported accurately, and statistics views reflect a successful purge — DEV-01-01, DEV-01-02, DEV-01-03.
+- R4: Pending activity writes cannot restore purged history after success; future workouts can still be recorded. Settings and sign-in remain unchanged — DEV-01-01.
+- R5: A purge cannot be started twice at the same time — DEV-01-02, DEV-01-03.
+- R6: The page and confirmation are usable in both themes and at larger text sizes — DEV-01-03.
 
 ## Tasks
 
-1. [Purge activity storage](task-01-purge-activity-storage/index.md).
-2. [Add the developer page](task-02-add-developer-page/index.md).
+1. [Purge activity storage](task-01-purge-activity-storage/index.md)
+2. [Add the developer tools view model](task-02-add-developer-tools-view-model/index.md)
+3. [Add the developer page](task-03-add-developer-page/index.md)
 
-## Dependencies and open decisions
+## Shared contracts
 
-No open decisions. DEV-01-02 depends on DEV-01-01. The story does not depend on the [account-specific deletion story](../../../epic-statistics/stories/story-05-delete-statistics/index.md).
+- `ActivityRepository.deleteAllActivity()` (new): `Future<Result<void>> deleteAllActivity()` in `lib/features/statistics/domain/activity_repository.dart`. It deletes every account's local activity and drops writes prepared before the call. Purge activity storage (DEV-01-01) adds it; Add the developer tools view model (DEV-01-02) calls it.
+- `DeveloperToolsState` and `DeveloperToolsViewModel` (new) in `lib/features/developer/presentation/`: `state`, `Future<bool> purge()` (blocks a second call while pending), `dispose()`. Add the developer tools view model (DEV-01-02) adds them unwired; Add the developer page (DEV-01-03) creates the ViewModel in `DeveloperToolsPage` and wires the page, drawer entry and `/developer` route together.
 
-Visual references: the [drawer golden](../../../../../test/snapshots/goldens/home_drawer.png) and the [snapshot flow index](../../../../../test/snapshots/README.md). The approved [mockup](task-02-add-developer-page/mockup.html) shows the new page and dialog.
+## References
+
+Visual references: the [drawer golden](../../../../../test/snapshots/goldens/home_drawer.png) and the [snapshot flow index](../../../../../test/snapshots/README.md). The approved [mockup](mockup.html) shows the new page and dialog.

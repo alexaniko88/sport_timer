@@ -9,7 +9,7 @@ Facts every stage needs.
 - **Per-file commands.** Format with `fvm dart format <path>`, analyze with `fvm flutter analyze --no-pub <path>` and test with `fvm flutter test <path>`, always with a literal path, never a directory. Regenerate strings with `fvm flutter gen-l10n`. To run every check the change needs in one command, run `fvm dart tool/agent_check.dart --skip-build`.
 - **Layers.** Feature-first: `lib/features/<name>/{domain,data,presentation}` (only the layers a feature needs), shared UI in `lib/shared/presentation/`, pure helpers in `lib/core/`, composition in `lib/di/di.dart`, `main.dart` and `navigation.dart`. Domain imports only platform-free `dart:*`, `core/` and other domain files; presentation never imports `data/` or platform packages; data never imports presentation; contracts return app types, never platform types. Follow `CLAUDE.md` ("Project layout", "Architecture (MVVM and layers)", "Boundary check").
 - **State management.** MVVM with `ValueNotifier` state, one ViewModel per screen or feature, created and disposed by its page. Repositories return the sealed `Result`; the ViewModel turns it into state. No Bloc, no state management package, no `freezed`. `go_router` and `get_it` (registered by hand) stay.
-- **Strings.** `gen-l10n` (`l10n.yaml`, `lib/l10n/`). Every user-facing string comes from `context.l10n`. Add each new key to both `app_en.arb` and `app_es.arb` (with a `description` in the English one, ICU plural messages for counts) and run `fvm flutter gen-l10n`. Never hardcode English text and never add `FIXME-ALEX` blocks: the global rule that does so is for another codebase.
+- **Strings.** `gen-l10n` (`l10n.yaml`, `lib/l10n/`). Every user-facing string comes from `context.l10n`. Add each new key to both `app_en.arb` and `app_es.arb` (with a `description` in the English one, ICU plural messages for counts) and run `fvm flutter gen-l10n`. Never hardcode English text and never add `FIXME-ALEX` blocks: the global rule that does so is for another codebase. Exception: the debug-only Developer tools page in `lib/features/developer/` and its drawer entry label in `lib/features/home/presentation/home_page.dart` use hardcoded English text and no ARB keys; they never ship in release builds.
 - **Generated code.** Only the localization output in `lib/l10n/` (`fvm flutter gen-l10n`). No other code generation, no `part` files, no barrel libraries.
 - **No style guide file.** `docs/CodeStyleGuide.md` does not exist. The Dart rules that matter are in `.agents/rules/dart-style.md`, which wins over the stack where they differ (for example: a two-case `Result` uses `if-case` or `fold`, never a `switch`).
 
@@ -38,7 +38,7 @@ Where tests go, how they are named and which fakes to use.
 What the reviewer flags in this project, each with a severity.
 
 - A file in the wrong layer, a platform type in a domain contract, or a use case that only forwards a call (general).
-- A new user-facing string that is not a `context.l10n` key in both ARB files (general).
+- A new user-facing string that is not a `context.l10n` key in both ARB files, outside the Developer tools exception in Common (general).
 - A new top-level helper that should be an extension, or an extension outside an `extensions/` folder (general).
 - A hand-built bordered tile, raw radius, border width, alpha or color, a per-button shape or a repeated text style that a shared piece replaces, unless `CLAUDE.md` documents the exception (general).
 - Bloc, `freezed`, a state management package or generated code other than `gen-l10n` (critical).
