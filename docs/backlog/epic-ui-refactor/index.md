@@ -21,16 +21,15 @@ Make the app feel consistent and clear across its screens while allowing layouts
 
 ## Stories
 
-1. [Timer setup refactor](stories/done/story-01-timer-setup-refactor/index.md) — all tasks archived; Timer tab update pending PR and merge.
-
-2. [Access Templates from the drawer](stories/done/story-02-templates-in-drawer/index.md) — all tasks archived; Templates drawer navigation pending PR and merge.
-3. [Refactor the Start button](stories/done/story-03-start-button-refactor/index.md) — Done; archived after the Start action and session overview were implemented.
-4. [Unify borders and corner radii across the app](stories/done/story-04-unify-borders-and-corners/index.md) — Done; shared rules and drawer treatment completed.
-5. [Rethink statistics cards and day details](stories/story-05-statistics-ui-refactor/index.md) — expandable daily cards with session rows; replaces the day details page.
+1. [Timer setup refactor](stories/done/story-01-timer-setup-refactor/index.md)
+2. [Access Templates from the drawer](stories/done/story-02-templates-in-drawer/index.md)
+3. [Refactor the Start button](stories/done/story-03-start-button-refactor/index.md)
+4. [Unify borders and corner radii across the app](stories/done/story-04-unify-borders-and-corners/index.md)
+5. [Rethink statistics cards and day details](stories/story-05-statistics-ui-refactor/index.md)
 
 ## Delivery order
 
-Deliver Story 1 Task 1.1 as a usable grid connected to existing selectors. Task 1.2 has been completed and archived. Backlog agreement does not approve application code changes.
+Deliver Story 1 Task 1.1 as a usable grid connected to existing selectors.
 
 Story 2 is independent of Story 1 and the provisional wheel task. Its Start visibility change applies when Story 2 is delivered; Story 1 alone preserves the current shared Start.
 
@@ -40,4 +39,4 @@ Story 4 documented the shared values and exceptions delivered in IMP-01 and comp
 
 Story 5 can be discussed and planned independently, taking the current statistics checkout and the separately planned visualization story into account.
 
-UI 1.3 replaces the Home house icon with outlined/filled timer icons and renames its label, tooltip and accessible name to Timer / Temporizador. Implemented after UI 3.1 changed Start to play; pending PR and merge. This does not change navigation behavior or require wheel styling or the Templates drawer move.
+UI 1.3 replaces the Home house icon with outlined/filled timer icons and renames its label, tooltip and accessible name to Timer / Temporizador. This does not change navigation behavior or require wheel styling or the Templates drawer move.

@@ -27,4 +27,4 @@ Give developers a place in debug builds to perform useful local maintenance whil
 
 ## Delivery order
 
-[DEV-01-01](stories/story-01-purge-local-activity/task-01-purge-activity-storage/index.md) (storage purge) first, then [DEV-01-02](stories/story-01-purge-local-activity/task-02-add-developer-page/index.md) (developer page).
+[Purge activity storage (DEV-01-01)](stories/story-01-purge-local-activity/task-01-purge-activity-storage/index.md) first, then [Add the developer tools view model (DEV-01-02)](stories/story-01-purge-local-activity/task-02-add-developer-tools-view-model/index.md), then [Add the developer page (DEV-01-03)](stories/story-01-purge-local-activity/task-03-add-developer-page/index.md).

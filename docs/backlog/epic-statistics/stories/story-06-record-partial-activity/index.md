@@ -31,22 +31,30 @@ Included: counting partial time and rounds, a single final write on leaving the 
 
 Excluded: restoring the timer itself after a forced close, marking partial rounds in the UI, changing preparation or pause rules, backup or sync, integration tests (the integration test setup does not exist yet).
 
-## Acceptance criteria
+## Requirements
 
-- Leaving partway through a work or rest phase saves the whole seconds that phase actually ran. Completed phases before it keep their full durations.
-- A partial work phase of 5 s or more adds one round. One shorter than 5 s adds its seconds but no round. A work phase that runs to its end always adds a round.
-- Preparation and paused time never count. Leaving during preparation saves nothing, and the run does not appear in statistics.
-- Final records are written once per run, when the user leaves the page, whether the timer finished, is running or is paused. Retrying a failed write cannot double-count.
-- After a forced close while training, the next app start saves the run up to its last draft, under the account that started it. Recovery runs only once per draft.
-- Deleted or purged statistics cannot come back through recovery.
-- Activity keeps its logical local date, including a partial phase that crosses midnight.
-- Daily totals, round counts, chart data and day details include partial time and follow the round rule. Existing history is unchanged.
+- R1: Leaving partway through a work or rest phase saves the whole seconds that phase actually ran. Completed phases before it keep their full durations. — STAT-06-01, STAT-06-02.
+- R2: A partial work phase of 5 s or more adds one round. One shorter than 5 s adds its seconds but no round. A work phase that runs to its end always adds a round. — STAT-06-02.
+- R3: Preparation and paused time never count. Leaving during preparation saves nothing, and the run does not appear in statistics. — STAT-06-01, STAT-06-02.
+- R4: Final records are written once per run, when the user leaves the page, whether the timer finished, is running or is paused. Retrying a failed write cannot double-count. — STAT-06-02.
+- R5: After a forced close while training, the next app start saves the run up to its last draft, under the account that started it. Recovery runs only once per draft. — STAT-06-03, STAT-06-05.
+- R6: Deleted or purged statistics cannot come back through recovery. — STAT-06-03.
+- R7: Activity keeps its logical local date, including a partial phase that crosses midnight. — STAT-06-01, STAT-06-03.
+- R8: Daily totals, round counts, chart data and day details include partial time and follow the round rule. Existing history is unchanged. — STAT-06-02.
 
 ## Tasks
 
 1. [Count partial progress in whole seconds](task-01-count-partial-progress/index.md).
 2. [Save the run once when leaving the timer](task-02-save-on-leaving-timer/index.md).
-3. [Save drafts and recover a run after a forced close](task-03-checkpoint-and-recover/index.md).
+3. [Store drafts and recover unfinished runs](task-03-store-drafts-and-recover/index.md).
+4. [Save drafts while the timer runs](task-05-save-drafts-while-running/index.md).
+
+## Shared contracts
+
+- `ActivityRunTracker` in `lib/features/timer/data/activity_run_tracker.dart` — new in Count partial progress in whole seconds (STAT-06-01): `snapshot()` (completed phases plus the current partial phase in whole seconds, with stable IDs), `endInstant`, `isFinished`, `lastElapsed`. Used by STAT-06-02 and STAT-06-05.
+- `ActivityRepository.finishRun({session, phases, endedAtUtcMs})` — new in Save the run once when leaving the timer (STAT-06-02): one transaction for the run's phases and end, replacing `recordPhases` and `endSession` on the repository. Store drafts and recover unfinished runs (STAT-06-03) makes it also delete the session's drafts.
+- `ActivityRepository.saveDraft({session, phases, checkpointAtUtcMs})` — new in Store drafts and recover unfinished runs (STAT-06-03): replaces a session's hidden draft in `draft_phases`. Used by the recorder in Save drafts while the timer runs (STAT-06-05).
+- Purge epoch, `deleteAllActivity()` and the real-SQLite test file `test/features/statistics/data/activity_access_test.dart` — provided by Purge activity storage (DEV-01-01). Every new write in this story treats a handle from before a purge as stale: it writes nothing and returns success.
 
 ## Decisions
 
@@ -55,8 +63,8 @@ Excluded: restoring the timer itself after a forced close, marking partial round
 - **Short rounds:** a work phase that runs to its end always counts as a round. The 5 s rule only applies to a partial work phase.
 - **Draft storage:** a separate `draft_phases` table linked to `timer_sessions` with `ON DELETE CASCADE`. Statistics never read it, and deleting a session deletes its draft, so deleted history cannot come back.
 - **Round rule in SQL, no new phase column (planner choice):** a work row counts as a round when `duration_ms >= 5000` or `duration_ms >= timer_sessions.work_duration_ms`. Full phases always match the second condition, so old rows keep their meaning and `completed_phases` needs no migration.
-- **No end-to-end task:** the old task 6.4 was dropped, because the integration test setup does not exist yet. Each task carries its own real-SQLite tests.
+- **No end-to-end task:** the integration test setup does not exist yet, so each task carries its own real-SQLite tests.
 
 ## Dependencies
 
-Builds on the completed [recording story](../done/story-01-record-activity/index.md). Tasks 6.2 and 6.3 build on the purge in [developer tools](../../../epic-developer-tools/index.md) (`DEV-01-01`), which adds the real-SQLite test setup and the purge epoch that stale writes must respect. [Delete statistics](../story-05-delete-statistics/index.md) deletes sessions, so the cascade removes their drafts too.
+Builds on the completed [recording story](../done/story-01-record-activity/index.md). Save the run once when leaving the timer (STAT-06-02) and Store drafts and recover unfinished runs (STAT-06-03) build on [Purge activity storage (DEV-01-01)](../../../epic-developer-tools/stories/story-01-purge-local-activity/task-01-purge-activity-storage/index.md), which adds the real-SQLite test setup and the purge epoch that stale writes must respect. [Delete statistics](../story-05-delete-statistics/index.md) deletes sessions, so the cascade removes their drafts too.
