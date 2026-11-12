@@ -17,7 +17,12 @@ class _ActivitySessionHandle implements ActivitySessionHandle {
   @override
   final String sessionId;
 
-  _ActivitySessionHandle(this.issuer, this.accountId, this.sessionId, this.purgeEpoch);
+  _ActivitySessionHandle(
+    this.issuer,
+    this.accountId,
+    this.sessionId,
+    this.purgeEpoch,
+  );
 }
 
 class _ActivitySessionCreation implements ActivitySessionCreation {
@@ -25,7 +30,11 @@ class _ActivitySessionCreation implements ActivitySessionCreation {
   final TimerSession session;
   final int purgeEpoch;
 
-  _ActivitySessionCreation(this.issuer, this.session, this.purgeEpoch);
+  _ActivitySessionCreation(
+    this.issuer,
+    this.session,
+    this.purgeEpoch,
+  );
 }
 
 class ActivityAccess {
