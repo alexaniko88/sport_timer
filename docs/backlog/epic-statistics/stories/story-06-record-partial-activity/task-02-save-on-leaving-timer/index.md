@@ -41,7 +41,7 @@ Stop writing each phase as it completes. Keep the run in memory and write it onc
 ## Contract
 
 - `ActivityRunTracker` (`snapshot()`, `endInstant`, `lastElapsed`) — provided by [Count partial progress in whole seconds (STAT-06-01)](../done/task-01-count-partial-progress/index.md).
-- Purge epoch in `ActivityAccess`, `deleteAllActivity()`, `sqflite_common_ffi` dev dependency and the real-SQLite test file `test/features/statistics/data/activity_access_test.dart` (in-memory database, `setUp`/`tearDown`) — provided by [Purge activity storage (DEV-01-01)](../../../../epic-developer-tools/stories/story-01-purge-local-activity/task-01-purge-activity-storage/index.md). A handle issued before a purge is stale: its writes write nothing, return normally and do not emit.
+- Purge epoch in `ActivityAccess`, `deleteAllActivity()`, `sqflite_common_ffi` dev dependency and the real-SQLite test file `test/features/statistics/data/activity_access_test.dart` (in-memory database, `setUp`/`tearDown`) — provided by [Purge activity storage (DEV-01-01)](../../../../epic-developer-tools/stories/story-01-purge-local-activity/done/task-01-purge-activity-storage/index.md). A handle issued before a purge is stale: its writes write nothing, return normally and do not emit.
 - `ActivityRepository.finishRun` — new here, replaces `recordPhases` and `endSession` on `ActivityRepository` and `SqfliteActivityRepository` (both removed). STAT-06-03 extends it to delete drafts.
   `Future<Result<void>> finishRun({required ActivitySessionHandle session, required List<CompletedPhase> phases, required int endedAtUtcMs})`.
 - `ActivityAccess.finishRun` with the same named parameters, returning `Future<void>` — new here:

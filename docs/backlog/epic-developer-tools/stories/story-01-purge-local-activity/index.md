@@ -20,7 +20,7 @@ As a developer, I can clear local activity for all accounts from a debug-only pa
 
 ## Tasks
 
-1. [Purge activity storage](task-01-purge-activity-storage/index.md)
+1. [Purge activity storage](done/task-01-purge-activity-storage/index.md)
 2. [Add the developer tools view model](task-02-add-developer-tools-view-model/index.md)
 3. [Add the developer page](task-03-add-developer-page/index.md)
 

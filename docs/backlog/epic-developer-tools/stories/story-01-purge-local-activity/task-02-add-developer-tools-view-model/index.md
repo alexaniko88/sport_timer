@@ -24,7 +24,7 @@ Add the Developer tools state and ViewModel that run the purge, report success o
 
 ## Context
 
-- `ActivityRepository` (`lib/features/statistics/domain/activity_repository.dart`) is registered in `getIt` in `lib/di/di.dart`. Its `deleteAllActivity()` is added by [Purge activity storage (DEV-01-01)](../task-01-purge-activity-storage/index.md). Statistics screens refresh on `changes`, which the purge emits, so the ViewModel does nothing extra to refresh them.
+- `ActivityRepository` (`lib/features/statistics/domain/activity_repository.dart`) is registered in `getIt` in `lib/di/di.dart`. Its `deleteAllActivity()` is added by [Purge activity storage (DEV-01-01)](../done/task-01-purge-activity-storage/index.md). Statistics screens refresh on `changes`, which the purge emits, so the ViewModel does nothing extra to refresh them.
 - ViewModel pattern to copy: `lib/features/login/presentation/login_view_model.dart` and `login_state.dart` (`ValueNotifier` state exposed as `ValueListenable`, `Future<bool>` for a one-time result, `_disposed` flag, `Result.fold`).
 - `lib/features/developer/` does not exist yet; this task creates it with a `presentation/` folder only.
 - `CLAUDE.md` "Project layout" lists every feature folder ("Features: `user` (domain, data), …, `timer` and `statistics`." plus one bullet per feature). `test/architecture/ai_setup_test.dart` "every folder under lib/features is named in the "Project layout" section of CLAUDE.md" fails once `lib/features/developer/` exists and is not named, and CI runs the full `flutter test`, so this task adds the feature to `CLAUDE.md`. DEV-01-03 later extends the bullet and the routes.
@@ -46,7 +46,7 @@ Add the Developer tools state and ViewModel that run the purge, report success o
 ## Out of scope
 
 - The page, dialog, snackbars, drawer entry, route, the `/developer` route in `CLAUDE.md`, goldens and snapshot README (that is [Add the developer page (DEV-01-03)](../task-03-add-developer-page/index.md)).
-- The storage purge itself (that is [Purge activity storage (DEV-01-01)](../task-01-purge-activity-storage/index.md)).
+- The storage purge itself (that is [Purge activity storage (DEV-01-01)](../done/task-01-purge-activity-storage/index.md)).
 
 ## Files and tests
 

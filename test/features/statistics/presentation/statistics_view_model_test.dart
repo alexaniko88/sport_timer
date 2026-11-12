@@ -13,6 +13,9 @@ class FakeActivityRepository implements ActivityRepository {
   final reads = <Completer<Result<List<DailyActivity>>>>[];
 
   @override
+  Future<Result<void>> deleteAllActivity() async => const Success(null);
+
+  @override
   Stream<void> get changes => controller.stream;
 
   Future<void> closeChanges() => controller.close();

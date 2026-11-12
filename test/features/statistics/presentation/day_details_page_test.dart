@@ -28,6 +28,10 @@ class _Repository implements ActivityRepository {
   final changesController = StreamController<void>.broadcast(sync: true);
   final dayReads = <Completer<Result<List<RunActivitySummary>>>>[];
   final requestedDates = <String>[];
+
+  @override
+  Future<Result<void>> deleteAllActivity() async => const Success(null);
+
   @override
   Stream<void> get changes => changesController.stream;
 

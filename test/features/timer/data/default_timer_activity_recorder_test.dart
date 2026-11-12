@@ -44,6 +44,9 @@ class _Repository implements ActivityRepository {
   Completer<void>? createGate;
 
   @override
+  Future<Result<void>> deleteAllActivity() async => const Success(null);
+
+  @override
   Result<ActivitySessionCreation> prepareSession(TimerSession session) {
     prepared = session;
     return Success(creation);

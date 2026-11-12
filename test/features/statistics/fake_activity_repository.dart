@@ -4,6 +4,9 @@ import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 
 class FakeEmptyActivityRepository implements ActivityRepository {
   @override
+  Future<Result<void>> deleteAllActivity() async => const Success(null);
+
+  @override
   Stream<void> get changes => const Stream.empty();
 
   @override
