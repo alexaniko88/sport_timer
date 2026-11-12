@@ -44,7 +44,7 @@ Excluded: restoring the timer itself after a forced close, marking partial round
 
 ## Tasks
 
-1. [Count partial progress in whole seconds](task-01-count-partial-progress/index.md).
+1. [Count partial progress in whole seconds](done/task-01-count-partial-progress/index.md).
 2. [Save the run once when leaving the timer](task-02-save-on-leaving-timer/index.md).
 3. [Store drafts and recover unfinished runs](task-03-store-drafts-and-recover/index.md).
 4. [Save drafts while the timer runs](task-05-save-drafts-while-running/index.md).

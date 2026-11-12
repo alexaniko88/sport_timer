@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:sport_timer/core/extensions/date_time_extension.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
@@ -10,14 +9,12 @@ import 'package:sport_timer/features/statistics/domain/activity_session_creation
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
+import 'package:sport_timer/features/timer/data/activity_run_tracker.dart';
 import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/timer/domain/timer_schedule.dart';
-import 'package:sport_timer/features/timer/domain/timer_status.dart';
 import 'package:uuid/uuid.dart';
 
-typedef ActivityWallClock = DateTime Function();
-typedef ActivityIdGenerator = String Function();
 typedef _PendingWrite = Future<Result<void>> Function();
 typedef _FailureCallback = void Function(Exception error);
 typedef _DrainedCallback = void Function(_RecordingRun run);
@@ -114,25 +111,14 @@ class DefaultTimerActivityRecorder implements TimerActivityRecorder {
 class _RecordingRun implements TimerActivityRun {
   static const _retryDelay = Duration(seconds: 5);
   static const _maxAutoRetries = 5;
-  static const _clockTolerance = Duration(seconds: 1);
 
   final ActivityRepository _repository;
   final ActivitySessionCreation _creation;
-  final String _sessionId;
-  final TimerSchedule _schedule;
-  final ActivityWallClock _clock;
-  final ActivityIdGenerator _newId;
+  final ActivityRunTracker _tracker;
   final _FailureCallback _onFailure;
   final _DrainedCallback _onDrained;
   final _pending = Queue<_PendingWrite>();
   ActivitySessionHandle? _session;
-  DateTime _segmentStart;
-  DateTime _lastInstant;
-  Duration _segmentElapsed = Duration.zero;
-  Duration _lastElapsed = Duration.zero;
-  DateTime? _finishedAt;
-  int _nextStage = 0;
-  bool _paused = false;
   bool _ended = false;
   bool _draining = false;
   bool _blocked = false;
@@ -152,12 +138,13 @@ class _RecordingRun implements TimerActivityRun {
     required _DrainedCallback onDrained,
   })  : _repository = repository,
         _creation = creation,
-        _sessionId = sessionId,
-        _schedule = schedule,
-        _segmentStart = startedAt.toUtc(),
-        _lastInstant = startedAt.toUtc(),
-        _clock = clock,
-        _newId = newId,
+        _tracker = ActivityRunTracker(
+          schedule: schedule,
+          sessionId: sessionId,
+          startedAt: startedAt,
+          clock: clock,
+          newId: newId,
+        ),
         _onFailure = onFailure,
         _onDrained = onDrained;
 
@@ -176,81 +163,41 @@ class _RecordingRun implements TimerActivityRun {
 
   @override
   void reconcile(Duration elapsed) {
-    if (_ended || elapsed < _lastElapsed) return;
-    _lastElapsed = elapsed;
-    if (_paused) return;
-    final completed = <CompletedPhase>[];
-    while (_nextStage < _schedule.stages.length) {
-      final stage = _schedule.stages[_nextStage];
-      final boundary = Duration(seconds: stage.endSeconds);
-      if (boundary > elapsed) break;
-      final instant = _segmentStart.add(boundary - _segmentElapsed);
-      if (stage.type == TimerStatus.round || stage.type == TimerStatus.rest) {
-        // The device's timezone at reconciliation determines the local date.
-        final local = instant.toLocal();
-        completed.add(
-          CompletedPhase(
-            id: _newId(),
-            runId: _sessionId,
-            schedulePosition: _nextStage,
-            type: stage.type == TimerStatus.round ? CompletedPhaseType.work : CompletedPhaseType.rest,
-            roundNumber: stage.round,
-            durationMs: Duration(seconds: stage.lengthSeconds).inMilliseconds,
-            completedAtUtcMs: instant.millisecondsSinceEpoch,
-            localCompletionDate: local.asIsoDate,
-            utcOffsetMinutes: local.timeZoneOffset.inMinutes,
-          ),
-        );
-      }
-      _nextStage++;
-      if (_nextStage == _schedule.stages.length) _finishedAt = instant;
-    }
-    final projected = _segmentStart.add(elapsed - _segmentElapsed);
-    final observed = _clock().toUtc();
-    // A correction is only known at observation, so earlier boundaries keep
-    // their original projection and future boundaries use the observed clock.
-    if (observed.difference(projected).abs() > _clockTolerance) {
-      _segmentStart = observed;
-      _segmentElapsed = elapsed;
-      _lastInstant = observed;
-    } else {
-      _lastInstant = projected;
-    }
-    if (completed.isNotEmpty) {
-      _enqueue(() async {
-        final session = _session;
-        if (session == null) return Failure(Exception('Activity session is unavailable'));
-        return _repository.recordPhases(session: session, phases: completed);
-      });
-    }
+    if (_ended) return;
+    _recordPhases(_tracker.reconcile(elapsed));
   }
 
   @override
   void pause(Duration elapsed) {
-    if (_ended || _paused || elapsed < _lastElapsed) return;
-    reconcile(elapsed);
-    _paused = true;
+    if (_ended) return;
+    _recordPhases(_tracker.pause(elapsed));
   }
 
   @override
   void resume() {
-    if (_ended || !_paused) return;
-    _segmentStart = _clock().toUtc();
-    _lastInstant = _segmentStart;
-    _segmentElapsed = _lastElapsed;
-    _paused = false;
+    if (_ended) return;
+    _tracker.resume();
   }
 
   @override
   void end(Duration elapsed) {
-    if (_ended || elapsed < _lastElapsed) return;
-    reconcile(elapsed);
-    final end = _finishedAt ?? (_paused ? _clock().toUtc() : _lastInstant);
+    if (_ended || elapsed < _tracker.lastElapsed) return;
+    _recordPhases(_tracker.reconcile(elapsed));
+    final end = _tracker.endInstant;
     _ended = true;
     _enqueue(() async {
       final session = _session;
       if (session == null) return Failure(Exception('Activity session is unavailable'));
       return _repository.endSession(session: session, endedAtUtcMs: end.millisecondsSinceEpoch);
+    });
+  }
+
+  void _recordPhases(List<CompletedPhase> phases) {
+    if (phases.isEmpty) return;
+    _enqueue(() async {
+      final session = _session;
+      if (session == null) return Failure(Exception('Activity session is unavailable'));
+      return _repository.recordPhases(session: session, phases: phases);
     });
   }
 

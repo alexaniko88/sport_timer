@@ -1,6 +1,6 @@
 ---
 id: STAT-06-01
-status: ready
+status: done
 type: feat
 complexity: 6
 depends-on: []
@@ -13,17 +13,17 @@ skills: []
 
 # Count partial progress in whole seconds
 
-Story: [Record partial activity](../index.md)
+Story: [Record partial activity](../../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 ## Goal
 
-Move the phase counting out of the recorder's private run into a small, testable tracker, and teach it to report the phase in progress in whole seconds (R1, R3, R7). What gets written to the database does not change in this task; [Save the run once when leaving the timer (STAT-06-02)](../task-02-save-on-leaving-timer/index.md) and [Save drafts while the timer runs (STAT-06-05)](../task-05-save-drafts-while-running/index.md) use the new snapshot to write.
+Move the phase counting out of the recorder's private run into a small, testable tracker, and teach it to report the phase in progress in whole seconds (R1, R3, R7). What gets written to the database does not change in this task; [Save the run once when leaving the timer (STAT-06-02)](../../task-02-save-on-leaving-timer/index.md) and [Save drafts while the timer runs (STAT-06-05)](../../task-05-save-drafts-while-running/index.md) use the new snapshot to write.
 
 ## Context
 
-- Story rules: [Record partial activity](../index.md) (agreed behavior, decisions and shared contracts).
+- Story rules: [Record partial activity](../../index.md) (agreed behavior, decisions and shared contracts).
 - `lib/features/timer/data/default_timer_activity_recorder.dart`: `_RecordingRun` holds the counting today. `reconcile(elapsed)` walks `_schedule.stages` from `_nextStage`, builds a `CompletedPhase` for each finished `TimerStatus.round` or `TimerStatus.rest` stage (full `lengthSeconds`), and corrects its wall-clock projection when the observed clock differs by more than `_clockTolerance` (1 s). `pause`, `resume` and `end` keep `_segmentStart`, `_segmentElapsed`, `_lastElapsed`, `_lastInstant` and `_finishedAt`. The file also declares the `ActivityWallClock` and `ActivityIdGenerator` typedefs.
 - `lib/features/timer/domain/timer_schedule.dart`: `TimerSchedule.stages` (`TimerStage` with `type`, `round`, `startSeconds`, `lengthSeconds`, `endSeconds`). Stages with length 0 are skipped, so there is no rest after the last round.
 - `lib/features/statistics/domain/completed_phase.dart`: `CompletedPhase` (with value equality) and `CompletedPhaseType`. It is not changed.
@@ -82,17 +82,17 @@ Recorder writes stay exactly as today:
 
 ## Acceptance
 
-- [ ] When 83.8 s of a work phase have passed, then `snapshot()` has that work phase with `durationMs` 83000. Check: `test/features/timer/data/activity_run_tracker_test.dart` "partial work counts whole seconds".
-- [ ] When 12.4 s of a rest phase have passed, then `snapshot()` has that rest phase with `durationMs` 12000 and the rest's `roundNumber`. Check: `test/features/timer/data/activity_run_tracker_test.dart` "partial rest counts whole seconds".
-- [ ] When less than 1 whole second of the current work or rest phase has passed, then `snapshot()` has no partial phase. Check: `test/features/timer/data/activity_run_tracker_test.dart` "no partial phase under one second".
-- [ ] When the run is still in preparation, then `snapshot()` is empty. Check: `test/features/timer/data/activity_run_tracker_test.dart` "snapshot is empty during preparation".
-- [ ] When the run pauses for 30 s in the middle of a phase and then resumes, then the paused time adds nothing to the partial `durationMs`; while paused, `completedAtUtcMs` is the pause instant; right after `resume()` it is the resume wall time, and after reconciling 5 s more it is the resume wall time plus 5 s. Check: `test/features/timer/data/activity_run_tracker_test.dart` "pause excludes paused time from the partial phase".
-- [ ] When `reconcile` is called with a larger elapsed while paused, then `snapshot()` is unchanged. Check: `test/features/timer/data/activity_run_tracker_test.dart` "reconcile while paused does not change the snapshot".
-- [ ] When `pause` crosses a phase end, then it returns that completed phase; when `pause` is called again while paused or with a smaller elapsed, then it returns an empty list. Check: `test/features/timer/data/activity_run_tracker_test.dart` "pause returns the phases it completes".
-- [ ] When one late `reconcile` crosses several phase ends, then it returns those phases and `snapshot()` lists every finished work and rest phase at full length, in schedule order, plus the current partial phase. Check: `test/features/timer/data/activity_run_tracker_test.dart` "late reconcile lists every crossed phase and the partial one".
-- [ ] When a phase is first reported as partial and later completes, then both versions have the same `id`. Check: `test/features/timer/data/activity_run_tracker_test.dart` "a phase keeps its id from partial to completed".
-- [ ] When `snapshot()` is called twice with no new progress, then both results are equal. Check: `test/features/timer/data/activity_run_tracker_test.dart` "snapshots without progress are equal".
-- [ ] When a partial phase's instant falls after local midnight, then its `localCompletionDate` is the new day. Check: `test/features/timer/data/activity_run_tracker_test.dart` "partial phase after midnight belongs to the new day".
-- [ ] When every stage has completed, then `isFinished` is true and `endInstant` is the last stage's end instant; for a schedule with no stages `isFinished` is true from the start. Check: `test/features/timer/data/activity_run_tracker_test.dart` "isFinished and endInstant after the last stage".
-- [ ] When the run is paused or still running, then `endInstant` is the clock while paused and the current projected instant while running. Check: `test/features/timer/data/activity_run_tracker_test.dart` "endInstant while paused and while running".
-- [ ] When the recorder delegates to the tracker, then the existing recorder tests pass unchanged and the whole changed set passes. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When 83.8 s of a work phase have passed, then `snapshot()` has that work phase with `durationMs` 83000. Check: `test/features/timer/data/activity_run_tracker_test.dart` "partial work counts whole seconds".
+- [x] When 12.4 s of a rest phase have passed, then `snapshot()` has that rest phase with `durationMs` 12000 and the rest's `roundNumber`. Check: `test/features/timer/data/activity_run_tracker_test.dart` "partial rest counts whole seconds".
+- [x] When less than 1 whole second of the current work or rest phase has passed, then `snapshot()` has no partial phase. Check: `test/features/timer/data/activity_run_tracker_test.dart` "no partial phase under one second".
+- [x] When the run is still in preparation, then `snapshot()` is empty. Check: `test/features/timer/data/activity_run_tracker_test.dart` "snapshot is empty during preparation".
+- [x] When the run pauses for 30 s in the middle of a phase and then resumes, then the paused time adds nothing to the partial `durationMs`; while paused, `completedAtUtcMs` is the pause instant; right after `resume()` it is the resume wall time, and after reconciling 5 s more it is the resume wall time plus 5 s. Check: `test/features/timer/data/activity_run_tracker_test.dart` "pause excludes paused time from the partial phase".
+- [x] When `reconcile` is called with a larger elapsed while paused, then `snapshot()` is unchanged. Check: `test/features/timer/data/activity_run_tracker_test.dart` "reconcile while paused does not change the snapshot".
+- [x] When `pause` crosses a phase end, then it returns that completed phase; when `pause` is called again while paused or with a smaller elapsed, then it returns an empty list. Check: `test/features/timer/data/activity_run_tracker_test.dart` "pause returns the phases it completes".
+- [x] When one late `reconcile` crosses several phase ends, then it returns those phases and `snapshot()` lists every finished work and rest phase at full length, in schedule order, plus the current partial phase. Check: `test/features/timer/data/activity_run_tracker_test.dart` "late reconcile lists every crossed phase and the partial one".
+- [x] When a phase is first reported as partial and later completes, then both versions have the same `id`. Check: `test/features/timer/data/activity_run_tracker_test.dart` "a phase keeps its id from partial to completed".
+- [x] When `snapshot()` is called twice with no new progress, then both results are equal. Check: `test/features/timer/data/activity_run_tracker_test.dart` "snapshots without progress are equal".
+- [x] When a partial phase's instant falls after local midnight, then its `localCompletionDate` is the new day. Check: `test/features/timer/data/activity_run_tracker_test.dart` "partial phase after midnight belongs to the new day".
+- [x] When every stage has completed, then `isFinished` is true and `endInstant` is the last stage's end instant; for a schedule with no stages `isFinished` is true from the start. Check: `test/features/timer/data/activity_run_tracker_test.dart` "isFinished and endInstant after the last stage".
+- [x] When the run is paused or still running, then `endInstant` is the clock while paused and the current projected instant while running. Check: `test/features/timer/data/activity_run_tracker_test.dart` "endInstant while paused and while running".
+- [x] When the recorder delegates to the tracker, then the existing recorder tests pass unchanged and the whole changed set passes. Check: `fvm dart tool/agent_check.dart --skip-build`.

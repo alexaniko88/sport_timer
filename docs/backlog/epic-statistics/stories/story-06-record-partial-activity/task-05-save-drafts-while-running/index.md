@@ -30,7 +30,7 @@ While a workout runs, make the recorder keep a hidden draft of the run in the da
 
 ## Contract
 
-- `ActivityRunTracker` (`snapshot()`, `endInstant`, `isFinished`, `lastElapsed`, `pause`, `resume`) — provided by [Count partial progress in whole seconds (STAT-06-01)](../task-01-count-partial-progress/index.md). Not changed here.
+- `ActivityRunTracker` (`snapshot()`, `endInstant`, `isFinished`, `lastElapsed`, `pause`, `resume`) — provided by [Count partial progress in whole seconds (STAT-06-01)](../done/task-01-count-partial-progress/index.md). Not changed here.
 - `ActivityRepository.finishRun` and the write-once `end` — provided by [Save the run once when leaving the timer (STAT-06-02)](../task-02-save-on-leaving-timer/index.md).
 - `ActivityRepository.saveDraft({session, phases, checkpointAtUtcMs})` — provided by [Store drafts and recover unfinished runs (STAT-06-03)](../task-03-store-drafts-and-recover/index.md): replaces the session's draft; writes nothing for a stale handle or an ended session; returns `Failure` on errors.
 
