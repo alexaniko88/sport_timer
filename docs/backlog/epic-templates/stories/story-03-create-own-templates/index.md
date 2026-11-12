@@ -26,7 +26,7 @@ A user can save their own workout setups as templates, then apply, edit and dele
 
 Order: 2, 4, 5, then 3 and 6 (6 also waits for IMP-05), then 7.
 
-2. [Store custom templates](task-02-store-custom-templates/index.md)
+2. [Store custom templates](done/task-02-store-custom-templates/index.md)
 3. [Add the template form](task-03-add-template-form/index.md)
 4. [Track own templates in settings](task-04-track-own-templates-in-settings/index.md)
 5. [Show own templates in the list](task-05-show-own-templates-in-list/index.md)

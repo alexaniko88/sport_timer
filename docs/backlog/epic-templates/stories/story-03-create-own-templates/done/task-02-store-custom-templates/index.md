@@ -1,6 +1,6 @@
 ---
 id: TPL-03-02
-status: ready
+status: done
 type: feat
 complexity: 3
 depends-on: []
@@ -20,9 +20,9 @@ skills: []
 
 # Store custom templates
 
-Story: [Create your own templates](../index.md)
+Story: [Create your own templates](../../index.md)
 
-Epic: [Templates](../../../index.md)
+Epic: [Templates](../../../../index.md)
 
 ## Goal
 
@@ -38,7 +38,7 @@ Add the own template model, its id helper and a repository that saves and loads 
 
 ## Contract
 
-- `CustomTemplateIcon`, `CustomTemplate`, `CustomTemplateListIds` and `CustomTemplateRepository` — new here, exactly as in the story's [Shared contracts](../index.md#shared-contracts).
+- `CustomTemplateIcon`, `CustomTemplate`, `CustomTemplateListIds` and `CustomTemplateRepository` — new here, exactly as in the story's [Shared contracts](../../index.md#shared-contracts).
 - `SharedPreferencesCustomTemplateRepository implements CustomTemplateRepository` — new here, in `lib/features/templates/data/`.
   - Key `custom_templates`, a JSON list of `{"id": String, "name": String, "icon": String (enum name), "preparation": int seconds, "round": int seconds, "rest": int seconds, "rounds": int}`.
   - `getTemplates()`: missing key → `Success([])`. An entry with an unknown icon name gets `CustomTemplateIcon.weights`; `rounds` is clamped to `1..TimerSettings.maxRounds`. Malformed JSON or a wrong type → `Failure`.
@@ -58,12 +58,12 @@ Add the own template model, its id helper and a repository that saves and loads 
 
 ## Acceptance
 
-- [ ] When two `CustomTemplate` values have the same fields, then they are equal and have the same hash; a different field makes them unequal. Check: `test/features/templates/domain/custom_template_test.dart` "equality uses every field".
-- [ ] When `totalTime` is read, then it is preparation + round × rounds + rest × (rounds − 1). Check: `test/features/templates/domain/custom_template_test.dart` "totalTime skips the last rest".
-- [ ] When `nextId` is read on an empty list, then it is `custom-1`; on `custom-1`, `custom-7`, then `custom-8`; ids that do not parse are ignored. Check: `test/features/templates/domain/extensions/custom_template_list_ids_extension_test.dart` "nextId follows the highest number".
-- [ ] Given nothing is stored, when `getTemplates()` runs, then it returns an empty list. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "empty storage gives an empty list".
-- [ ] When a list of two templates is saved and read again with a new repository instance, then the same list comes back in the same order. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "saved templates survive a restart".
-- [ ] When the stored value is not valid JSON, then `getTemplates()` returns `Failure` and does not throw. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "malformed data is a failure".
-- [ ] When a stored entry has an unknown icon name, then it loads with `weights`. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "unknown icon falls back to weights".
-- [ ] When the platform write fails or throws, then `saveTemplates` returns `Failure`. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "failed write is a failure".
-- [ ] When the checks run, then format, analyze, the boundary test and the tests above pass. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When two `CustomTemplate` values have the same fields, then they are equal and have the same hash; a different field makes them unequal. Check: `test/features/templates/domain/custom_template_test.dart` "equality uses every field".
+- [x] When `totalTime` is read, then it is preparation + round × rounds + rest × (rounds − 1). Check: `test/features/templates/domain/custom_template_test.dart` "totalTime skips the last rest".
+- [x] When `nextId` is read on an empty list, then it is `custom-1`; on `custom-1`, `custom-7`, then `custom-8`; ids that do not parse are ignored. Check: `test/features/templates/domain/extensions/custom_template_list_ids_extension_test.dart` "nextId follows the highest number".
+- [x] Given nothing is stored, when `getTemplates()` runs, then it returns an empty list. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "empty storage gives an empty list".
+- [x] When a list of two templates is saved and read again with a new repository instance, then the same list comes back in the same order. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "saved templates survive a restart".
+- [x] When the stored value is not valid JSON, then `getTemplates()` returns `Failure` and does not throw. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "malformed data is a failure".
+- [x] When a stored entry has an unknown icon name, then it loads with `weights`. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "unknown icon falls back to weights".
+- [x] When the platform write fails or throws, then `saveTemplates` returns `Failure`. Check: `test/features/templates/data/shared_preferences_custom_template_repository_test.dart` "failed write is a failure".
+- [x] When the checks run, then format, analyze, the boundary test and the tests above pass. Check: `fvm dart tool/agent_check.dart --skip-build`.
