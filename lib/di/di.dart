@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:sport_timer/features/settings/domain/settings_repository.dart';
 import 'package:sport_timer/features/settings/data/shared_preferences_settings_repository.dart';
+import 'package:sport_timer/features/templates/data/shared_preferences_custom_template_repository.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
 import 'package:sport_timer/features/statistics/data/activity_access.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
 import 'package:sport_timer/features/statistics/data/activity_database.dart';
@@ -27,6 +29,7 @@ void configureDependencies() {
     ..registerLazySingleton<SettingsRepository>(
       SharedPreferencesSettingsRepository.new,
     )
+    ..registerLazySingleton<CustomTemplateRepository>(SharedPreferencesCustomTemplateRepository.new)
     ..registerLazySingleton<ActivityDatabase>(ActivityDatabase.new, dispose: (database) => database.close())
     ..registerLazySingleton<ActivityAccountSource>(() => FirebaseActivityAccountSource(FirebaseAuth.instance))
     ..registerLazySingleton<ActivityAccess>(
