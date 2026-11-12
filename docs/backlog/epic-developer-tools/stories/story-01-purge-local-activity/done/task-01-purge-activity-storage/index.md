@@ -1,6 +1,6 @@
 ---
 id: DEV-01-01
-status: ready
+status: done
 type: feat
 complexity: 9
 depends-on: []
@@ -24,13 +24,13 @@ skills: []
 
 # Purge activity storage
 
-Story: [Purge local activity](../index.md)
+Story: [Purge local activity](../../index.md)
 
-Epic: [Developer tools](../../../index.md)
+Epic: [Developer tools](../../../../index.md)
 
 ## Goal
 
-Add a storage operation that deletes all local activity (sessions and their phases) for every account on the device. Writes prepared before the purge never bring purged history back, and workouts after the purge record normally. Serves R2, R3 and R4. This task has no UI; the ViewModel in [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md) calls the operation.
+Add a storage operation that deletes all local activity (sessions and their phases) for every account on the device. Writes prepared before the purge never bring purged history back, and workouts after the purge record normally. Serves R2, R3 and R4. This task has no UI; the ViewModel in [Add the developer tools view model (DEV-01-02)](../../task-02-add-developer-tools-view-model/index.md) calls the operation.
 
 ## Context
 
@@ -64,13 +64,13 @@ Add a storage operation that deletes all local activity (sessions and their phas
 
 - **Purge means purge:** anything queued before the purge is dropped silently and returns success, so nothing comes back and the recorder shows no failure. Chosen by the user.
 - **Overlapping writes:** a creation or write issued while the purge call is still running (after the epoch bump, before the transaction) carries the new epoch and may still be removed by the purge transaction. This is accepted, because the purge is a developer action. Tests create post-purge data only after awaiting `deleteAllActivity()`, and no test relies on the overlapping case.
-- **Not dependent on the delete statistics story:** this purge covers all accounts and is independent of the user-facing [Delete statistics story](../../../../epic-statistics/stories/story-05-delete-statistics/index.md). Chosen by the user.
+- **Not dependent on the delete statistics story:** this purge covers all accounts and is independent of the user-facing [Delete statistics story](../../../../../epic-statistics/stories/story-05-delete-statistics/index.md). Chosen by the user.
 - **Real-SQLite unit tests with `sqflite_common_ffi`:** add it as a dev dependency, so the purge is tested against a real database with plain `flutter test`, locally and in CI, with no emulator and no integration tests. Chosen by the user.
 - **In-memory test database:** every test opens `ActivityDatabase(databasePath: inMemoryDatabasePath)`, so nothing is written to disk, no test data is left behind and the tests stay fast. Chosen by the user over a temporary file.
 
 ## Out of scope
 
-- The developer tools ViewModel (that is [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md)) and any UI, route or drawer change (that is [Add the developer page (DEV-01-03)](../task-03-add-developer-page/index.md)).
+- The developer tools ViewModel (that is [Add the developer tools view model (DEV-01-02)](../../task-02-add-developer-tools-view-model/index.md)) and any UI, route or drawer change (that is [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md)).
 - Account-scoped deletion (the delete statistics story), deleting single days or runs, deleting settings or signing out.
 - Changing `DefaultTimerActivityRecorder`, the schema or the schema version.
 - Adding an Android `integration_test/` suite.
@@ -89,12 +89,12 @@ Add a storage operation that deletes all local activity (sessions and their phas
 
 ## Acceptance
 
-- [ ] Given sessions and phases exist for two accounts, when `SqfliteActivityRepository.deleteAllActivity()` runs, then `timer_sessions` and `completed_phases` are both empty and it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "deletes sessions and phases of every account".
-- [ ] When a test starts, then its database is empty even if an earlier test inserted rows. Check: `test/features/statistics/data/activity_access_test.dart` "deletes sessions and phases of every account".
-- [ ] When the database is already empty and `deleteAllActivity()` runs, then it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "purges an empty database".
-- [ ] When `deleteAllActivity()` succeeds, then `changes` emits. Check: `test/features/statistics/data/activity_access_test.dart` "emits a change after a purge".
-- [ ] When the access is closed and `SqfliteActivityRepository.deleteAllActivity()` runs, then it returns `Failure` and the existing rows are still in the database. Check: `test/features/statistics/data/activity_access_test.dart` "returns a failure when the access is closed".
-- [ ] Given a creation from `prepareSession` was issued before the purge, when `createPreparedSession` runs after it, then no session row is inserted and the call succeeds, and `addPhases` and `endSession` with the returned handle also succeed and insert nothing. Check: `test/features/statistics/data/activity_access_test.dart` "drops a session prepared before the purge".
-- [ ] Given a handle was created before the purge, when `addPhases` or `endSession` runs after it, then nothing is inserted or updated, the call succeeds and `changes` does not emit. Check: `test/features/statistics/data/activity_access_test.dart` "drops writes through a handle from before the purge".
-- [ ] When a new session is created after the purge and phases are added, then they are stored and appear in `readDailyActivity()` for that account. Check: `test/features/statistics/data/activity_access_test.dart` "records new activity after the purge".
-- [ ] When the checks run, then they pass with the new fakes and the new dev dependency. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] Given sessions and phases exist for two accounts, when `SqfliteActivityRepository.deleteAllActivity()` runs, then `timer_sessions` and `completed_phases` are both empty and it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "deletes sessions and phases of every account".
+- [x] When a test starts, then its database is empty even if an earlier test inserted rows. Check: `test/features/statistics/data/activity_access_test.dart` "deletes sessions and phases of every account".
+- [x] When the database is already empty and `deleteAllActivity()` runs, then it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "purges an empty database".
+- [x] When `deleteAllActivity()` succeeds, then `changes` emits. Check: `test/features/statistics/data/activity_access_test.dart` "emits a change after a purge".
+- [x] When the access is closed and `SqfliteActivityRepository.deleteAllActivity()` runs, then it returns `Failure` and the existing rows are still in the database. Check: `test/features/statistics/data/activity_access_test.dart` "returns a failure when the access is closed".
+- [x] Given a creation from `prepareSession` was issued before the purge, when `createPreparedSession` runs after it, then no session row is inserted and the call succeeds, and `addPhases` and `endSession` with the returned handle also succeed and insert nothing. Check: `test/features/statistics/data/activity_access_test.dart` "drops a session prepared before the purge".
+- [x] Given a handle was created before the purge, when `addPhases` or `endSession` runs after it, then nothing is inserted or updated, the call succeeds and `changes` does not emit. Check: `test/features/statistics/data/activity_access_test.dart` "drops writes through a handle from before the purge".
+- [x] When a new session is created after the purge and phases are added, then they are stored and appear in `readDailyActivity()` for that account. Check: `test/features/statistics/data/activity_access_test.dart` "records new activity after the purge".
+- [x] When the checks run, then they pass with the new fakes and the new dev dependency. Check: `fvm dart tool/agent_check.dart --skip-build`.
