@@ -18,4 +18,5 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: flutter analyze
+      - run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
       - run: flutter test

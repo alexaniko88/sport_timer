@@ -15,6 +15,9 @@ class _Repository implements ActivityRepository {
   final dates = <String>[];
 
   @override
+  Future<Result<void>> deleteAllActivity() async => const Success(null);
+
+  @override
   Stream<void> get changes => controller.stream;
 
   Future<void> closeChanges() => controller.close();

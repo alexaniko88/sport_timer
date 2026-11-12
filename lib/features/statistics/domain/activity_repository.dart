@@ -29,6 +29,9 @@ abstract interface class ActivityRepository {
     required int endedAtUtcMs,
   });
 
+  // Deletes every account's local activity. Writes prepared before the call are dropped.
+  Future<Result<void>> deleteAllActivity();
+
   Future<Result<List<TimerSession>>> readSessions();
   Future<Result<List<CompletedPhase>>> readPhases(String sessionId);
   Future<Result<List<DailyActivity>>> readDailyActivity();
