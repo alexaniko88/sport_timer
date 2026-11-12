@@ -14,7 +14,6 @@ const _skills = [
   'skill-dispatcher',
   'skill-dispatcher-check',
   'skill-fl-chart',
-  'skill-integration-tests',
   'skill-planner',
 ];
 
@@ -205,7 +204,6 @@ void main() {
       'CLAUDE.md',
       ..._projectFiles.keys,
       '.agents/skills/skill-fl-chart/SKILL.md',
-      '.agents/skills/skill-integration-tests/SKILL.md',
     ];
 
     for (final source in sources) {

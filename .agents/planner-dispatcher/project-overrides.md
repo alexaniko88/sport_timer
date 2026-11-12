@@ -31,7 +31,7 @@ Where tests go, how they are named and which fakes to use.
 - **Test kinds.** Unit tests are the default for logic. Goldens verify appearance, not interaction or lifecycle. A behavioral widget test needs a written reason in the task.
 - **Boundary test.** `test/architecture/layer_boundaries_test.dart` enforces the layer rules. Fix the code instead of loosening it, and add a named exception there only with a written reason.
 - **Visual snapshots.** `alchemist` platform goldens on macOS in `test/snapshots/ui_snapshots_test.dart`, images in `test/snapshots/goldens/*.png`, flow index `test/snapshots/README.md`. Update with `fvm flutter test --update-goldens test/snapshots/ui_snapshots_test.dart` and keep only the images the task lists; update the flow links when a screen or route changes. An isolated visual widget gets its component scenarios in the existing harness; screen assembly owns its screen and flow snapshots.
-- **Integration tests.** Planned and run separately through `.agents/skills/skill-integration-tests/SKILL.md`, outside dispatcher tasks. Do not read that skill, change `integration_test/` or run device tests in a dispatcher task.
+- **Integration tests.** The project has none. Do not add `integration_test/` or run device tests in a dispatcher task.
 
 ## Review checks
 
