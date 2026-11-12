@@ -147,7 +147,7 @@ All three tools must behave the same. Every rule and skill is defined once; each
 | Skills | `.agents/skills/` | `.claude/skills/*` are symlinks; Codex and Antigravity read the folder directly |
 | Planner and dispatcher | the `planner_dispatcher` library, installed into `.agents/skills/` and `.agents/rules/` | none; configured in `planner_dispatcher.yaml` and `.agents/planner-dispatcher/` |
 
-Besides the planner and the dispatcher, the project keeps two helper skills: `.agents/skills/skill-fl-chart/SKILL.md` (charts) and `.agents/skills/skill-integration-tests/SKILL.md` (integration tests, run outside dispatcher tasks). Edit the single source, never copy a rule into a link or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title, and `.agents/rules/backlog-format.md` before you read, create or change a task under `docs/backlog/`.
+Besides the planner and the dispatcher, the project keeps one helper skill: `.agents/skills/skill-fl-chart/SKILL.md` (charts). Edit the single source, never copy a rule into a link or a skill. Read `.agents/rules/dart-style.md` before you read, write or review any Dart code (it wins over the shared Dart rules), `.agents/rules/git-commits.md` before you create a branch, write a commit message or write a PR title, and `.agents/rules/backlog-format.md` before you read, create or change a task under `docs/backlog/`.
 
 What stays tool-specific: Claude hooks and auto memory, and how a skill is started (Claude `/skill-planner`, Codex `$skill-planner`, Antigravity by naming the skill). `test/architecture/ai_setup_test.dart` guards this setup.
 

@@ -1,0 +1,106 @@
+<!doctype html>
+<!--
+  Story: Delete statistics (STAT-05).
+  Based on test/snapshots/goldens/statistics.png and statistics_empty.png.
+  Icons are text stand-ins for the Material 3 Icons.* named in the tasks (more_vert, menu).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delete statistics mockup</title>
+<style>
+  :root {
+    --page-bg: #2a4f9a; --surface: #fff8f6; --app-bar: #ffb4a8; --tile: #fceae7; --outline-variant: #d8c2be;
+    --primary: #904a42; --on-surface: #231918; --on-surface-variant: #534341; --error: #ba1a1a;
+    --menu: #f6e3df; --scrim: rgba(0,0,0,.4); --snack: #392e2c; --on-snack: #ffede9; --r12: 12px; --r20: 20px;
+  }
+  [data-theme="dark"] {
+    --surface: #1a1110; --app-bar: #271d1c; --tile: #271d1c; --outline-variant: #534341; --primary: #ffb4a8;
+    --on-surface: #f1dedc; --on-surface-variant: #d8c2be; --error: #ffb4ab; --menu: #322826; --snack: #f1dedc; --on-snack: #392e2c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page-bg); font-family: Roboto, system-ui, sans-serif; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 16px; }
+  .controls select, .controls button { font: inherit; padding: 6px 10px; border-radius: 8px; border: 0; }
+  .frame { width: 390px; max-width: calc(100vw - 32px); height: 844px; margin: 0 auto 32px; position: relative; overflow: hidden;
+    background: var(--surface); color: var(--on-surface); display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
+  .bar { height: 56px; background: var(--app-bar); display: flex; align-items: center; padding: 0 4px; flex: none; }
+  .bar h1 { font-size: 22px; font-weight: 400; margin: 0 0 0 8px; flex: 1; }
+  .iconbtn { width: 48px; height: 48px; border: 0; background: none; color: var(--on-surface); font-size: 22px; border-radius: 24px; cursor: pointer; }
+  .avatar { width: 32px; height: 32px; border-radius: 16px; background: var(--surface); color: var(--primary); display: grid; place-items: center; font-weight: 700; margin: 0 16px 0 4px; }
+  .body { flex: 1; padding: 16px; overflow: auto; }
+  .seg { display: flex; justify-content: center; margin-bottom: 16px; }
+  .seg span { border: 1px solid var(--on-surface-variant); padding: 8px 16px; font-size: 14px; font-weight: 500; }
+  .seg span:first-child { border-radius: 20px 0 0 20px; background: var(--menu); }
+  .seg span:last-child { border-radius: 0 20px 20px 0; border-left: 0; }
+  .card { background: var(--tile); border: 1px solid var(--outline-variant); border-radius: var(--r12); padding: 12px; margin-bottom: 8px; }
+  .card b { display: block; font-size: 17px; margin-bottom: 6px; }
+  .card div { font-size: 13px; color: var(--on-surface-variant); line-height: 1.35; }
+  .empty { text-align: center; color: var(--on-surface-variant); margin-top: 120px; }
+  .menu { position: absolute; top: 48px; right: 56px; background: var(--menu); border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,.3); min-width: 200px; padding: 8px 0; }
+  .menu button { display: block; width: 100%; text-align: left; background: none; border: 0; font: inherit; font-size: 16px; color: var(--on-surface); padding: 0 16px; height: 48px; cursor: pointer; }
+  .menu button:disabled { opacity: .38; cursor: default; }
+  .scrim { position: absolute; inset: 0; background: var(--scrim); display: flex; align-items: center; justify-content: center; }
+  .dialog { background: var(--surface); border-radius: var(--r20); padding: 24px; width: 312px; }
+  .dialog h2 { margin: 0 0 16px; font-size: 24px; font-weight: 400; }
+  .dialog p { margin: 0 0 24px; color: var(--on-surface-variant); line-height: 1.4; }
+  .acts { display: flex; justify-content: flex-end; gap: 8px; }
+  .acts button { font: inherit; font-weight: 500; background: none; border: 0; padding: 10px 12px; min-height: 48px; color: var(--primary); cursor: pointer; }
+  .acts .danger { color: var(--error); }
+  .snack { position: absolute; left: 16px; right: 16px; bottom: 16px; background: var(--snack); color: var(--on-snack); border-radius: 4px; padding: 14px 16px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="controls">
+  <select id="state" aria-label="State"></select>
+  <button id="theme">Dark theme</button>
+  <button id="lang">Español</button>
+</div>
+<div class="frame" id="frame"></div>
+<script>
+const S = {
+  en: { title: 'Your statistics', list: 'List', charts: 'Charts', menu: 'Show menu', action: 'Delete statistics',
+    dTitle: 'Delete statistics?', dBody: "All statistics of this account on this device will be deleted. This can't be undone.",
+    cancel: 'Cancel', del: 'Delete', ok: 'Statistics deleted', err: "Couldn't delete statistics. Try again.", empty: 'No completed activity yet.',
+    days: [['October 31, 2026', '12 rounds', 'Work: 20 minutes', 'Rest: 6 minutes', 'Total: 26 minutes'], ['October 30, 2026', '3 rounds', 'Work: 3 minutes 5 seconds', 'Rest: 30 seconds', 'Total: 3 minutes 35 seconds']] },
+  es: { title: 'Tus estadísticas', list: 'Lista', charts: 'Gráficos', menu: 'Mostrar menú', action: 'Eliminar estadísticas',
+    dTitle: '¿Eliminar las estadísticas?', dBody: 'Se eliminarán todas las estadísticas de esta cuenta en este dispositivo. No se puede deshacer.',
+    cancel: 'Cancelar', del: 'Eliminar', ok: 'Estadísticas eliminadas', err: 'No se pudieron eliminar las estadísticas. Inténtalo de nuevo.', empty: 'Aún no hay actividad completada.',
+    days: [['31 de octubre de 2026', '12 rondas', 'Trabajo: 20 minutos', 'Descanso: 6 minutos', 'Total: 26 minutos'], ['30 de octubre de 2026', '3 rondas', 'Trabajo: 3 minutos 5 segundos', 'Descanso: 30 segundos', 'Total: 3 minutos 35 segundos']] },
+};
+const STATES = { data: 'Statistics with data', menu: 'Menu open', menuBusy: 'Menu open while deleting (item disabled)',
+  dialog: 'Confirmation dialog', deleted: 'After delete: empty, no menu + snackbar', error: 'Delete failed: snackbar', empty: 'Empty history (no menu)' };
+const sel = document.getElementById('state');
+for (const [k, v] of Object.entries(STATES)) sel.add(new Option(v, k));
+let lang = 'en', theme = 'light', st = 'data';
+
+function render() {
+  const t = S[lang], empty = st === 'deleted' || st === 'empty';
+  let h = `<div class="bar"><button class="iconbtn" aria-label="menu">☰</button><h1>${t.title}</h1>
+    ${empty ? '' : `<button class="iconbtn" id="more" aria-label="${t.menu}" title="${t.menu}">⋮</button>`}<span class="avatar">A</span></div>
+    <div class="body" ${empty ? 'style="display:flex;align-items:center;justify-content:center"' : ''}>`;
+  h += empty ? `<div class="empty" style="margin:0">${t.empty}</div>`
+    : `<div class="seg"><span>✓ ${t.list}</span><span>${t.charts}</span></div>` + t.days.map(d => `<div class="card"><b>${d[0]}</b><div>${d.slice(1).join('<br>')}</div></div>`).join('');
+  h += '</div>';
+  if (st === 'menu' || st === 'menuBusy')
+    h += `<div class="menu" role="menu"><button id="item" role="menuitem" ${st === 'menuBusy' ? 'disabled' : ''}>${t.action}</button></div>`;
+  if (st === 'dialog') h += `<div class="scrim"><div class="dialog" role="dialog"><h2>${t.dTitle}</h2><p>${t.dBody}</p>
+    <div class="acts"><button id="cancel">${t.cancel}</button><button class="danger" id="confirm">${t.del}</button></div></div></div>`;
+  if (st === 'deleted') h += `<div class="snack" role="status">${t.ok}</div>`;
+  if (st === 'error') h += `<div class="snack" role="status">${t.err}</div>`;
+  document.getElementById('frame').innerHTML = h;
+  const $ = id => document.getElementById(id);
+  if ($('more')) $('more').onclick = () => go(st === 'menu' ? 'data' : 'menu');
+  if ($('item')) $('item').onclick = () => go('dialog');
+  if ($('cancel')) $('cancel').onclick = () => go('data');
+  if ($('confirm')) $('confirm').onclick = () => go('deleted');
+}
+function go(k) { st = k; sel.value = k; render(); }
+sel.onchange = () => go(sel.value);
+document.getElementById('theme').onclick = e => { theme = theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = theme; e.target.textContent = theme === 'light' ? 'Dark theme' : 'Light theme'; };
+document.getElementById('lang').onclick = e => { lang = lang === 'en' ? 'es' : 'en'; e.target.textContent = lang === 'en' ? 'Español' : 'English'; render(); };
+render();
+</script>
+</body>
+</html>

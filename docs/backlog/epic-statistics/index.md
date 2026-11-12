@@ -15,7 +15,7 @@ Automatically preserve completed training activity and show daily totals in the 
 2. [Show daily statistics](stories/done/story-02-daily-list/index.md): replace the Statistics placeholder with daily totals.
 3. [Explore a day's activity](stories/done/story-03-day-details/index.md): completed on the day-details branch; merge pending.
 4. [Visualize activity](stories/done/story-04-visualize-activity/index.md): completed on the consistency calendar branch; merge pending.
-5. [Delete statistics](stories/story-05-delete-statistics/index.md): clear the signed-in account's local history; ready for planning.
+5. [Delete statistics](stories/story-05-delete-statistics/index.md): clear the signed-in account's local history on this device.
 6. [Record partial activity](stories/story-06-record-partial-activity/index.md): count the seconds actually trained, save once when leaving the timer, and recover after a forced close.
 
 Stories 1 and 2 provide the foundation for Stories 3 and 4. Story 4 does not depend on the day-details story.

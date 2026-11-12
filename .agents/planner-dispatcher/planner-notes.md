@@ -20,7 +20,6 @@ Project facts the planner reads besides `planner_dispatcher.yaml` and its `rules
 ## Project skills
 
 - `skill-fl-chart`: for tasks that build or change an `fl_chart` chart.
-- `skill-integration-tests` is never listed on a dispatcher task: integration tests are planned and run separately.
 
 ## Checks
 
