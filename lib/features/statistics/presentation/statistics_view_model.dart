@@ -7,6 +7,7 @@ import 'package:sport_timer/features/statistics/domain/activity_chart_data.dart'
 import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/extensions/daily_activity_list_extension.dart';
+import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 
 typedef StatisticsClock = DateTime Function();
@@ -16,7 +17,9 @@ class StatisticsViewModel {
   final StatisticsClock _clock;
   final ValueNotifier<StatisticsState> _state = ValueNotifier(StatisticsState());
   late final StreamSubscription<void> _changes;
+  final Map<String, List<RunActivitySummary>> _dayRuns = {};
   int _generation = 0;
+  int _dayGeneration = 0;
   bool _disposed = false;
 
   StatisticsViewModel(this._repository, {StatisticsClock? clock}) : _clock = clock ?? DateTime.now {
@@ -114,7 +117,14 @@ class StatisticsViewModel {
   Future<void> refresh() async {
     if (_disposed) return;
     final generation = ++_generation;
-    _state.value = _state.value.copyWith(status: StatisticsStatus.loading, dailyActivity: [], clearError: true);
+    _dayRuns.clear();
+    _dayGeneration++;
+    _state.value = _state.value.copyWith(
+      status: StatisticsStatus.loading,
+      dailyActivity: [],
+      clearError: true,
+      clearExpanded: true,
+    );
     final result = await _repository.readDailyActivity();
     if (_disposed || generation != _generation) return;
     if (result case Success(:final value)) {
@@ -125,9 +135,55 @@ class StatisticsViewModel {
     }
   }
 
+  void toggleDay(String localDate) {
+    if (_state.value.expandedDate == localDate) {
+      _state.value = _state.value.copyWith(clearExpanded: true);
+      return;
+    }
+    final cached = _dayRuns[localDate];
+    if (cached != null) {
+      _state.value = _state.value.copyWith(
+        expandedDate: localDate,
+        dayStatus: cached.isEmpty ? StatisticsStatus.empty : StatisticsStatus.content,
+        dayRuns: cached,
+      );
+      return;
+    }
+    _state.value = _state.value.copyWith(
+      expandedDate: localDate,
+      dayStatus: StatisticsStatus.loading,
+      dayRuns: [],
+    );
+    unawaited(_loadDay(localDate));
+  }
+
+  Future<void> retryDay() async {
+    final localDate = _state.value.expandedDate;
+    if (localDate == null) return;
+    _state.value = _state.value.copyWith(dayStatus: StatisticsStatus.loading, dayRuns: []);
+    await _loadDay(localDate);
+  }
+
+  Future<void> _loadDay(String localDate) async {
+    final generation = ++_dayGeneration;
+    final result = await _repository.readDayActivity(localDate);
+    if (_disposed || generation != _dayGeneration || _state.value.expandedDate != localDate) return;
+    result.fold(
+      onSuccess: (value) {
+        _dayRuns[localDate] = value;
+        _state.value = _state.value.copyWith(
+          dayStatus: value.isEmpty ? StatisticsStatus.empty : StatisticsStatus.content,
+          dayRuns: value,
+        );
+      },
+      onFailure: (_) => _state.value = _state.value.copyWith(dayStatus: StatisticsStatus.error),
+    );
+  }
+
   void dispose() {
     _disposed = true;
     _generation++;
+    _dayGeneration++;
     unawaited(_changes.cancel());
     _state.dispose();
   }
