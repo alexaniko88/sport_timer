@@ -86,6 +86,9 @@ class SqfliteActivityRepository implements ActivityRepository {
   Future<Result<void>> deleteAllActivity() => _run(_access.deleteAllActivity);
 
   @override
+  Future<Result<void>> deleteAccountActivity() => _run(_access.deleteAccountActivity);
+
+  @override
   Future<Result<List<TimerSession>>> readSessions() => _run(_access.readSessions, checkAccount: true);
 
   @override
