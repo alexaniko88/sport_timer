@@ -25,6 +25,18 @@ abstract interface class ActivityRepository {
     required int endedAtUtcMs,
   });
 
+  // Replaces the hidden draft of a running session. Statistics never read it.
+  // Writes nothing for an ended session or a handle from before a purge.
+  Future<Result<void>> saveDraft({
+    required ActivitySessionHandle session,
+    required List<CompletedPhase> phases,
+    required int checkpointAtUtcMs,
+  });
+
+  // Turns the drafts of sessions started before the given time into final records,
+  // for every account. A failed session keeps its draft for the next start.
+  Future<Result<void>> recoverUnfinishedRuns({required int startedBeforeUtcMs});
+
   // Deletes every account's local activity. Writes prepared before the call are dropped.
   Future<Result<void>> deleteAllActivity();
 

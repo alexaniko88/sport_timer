@@ -70,7 +70,7 @@ Stop writing each phase as it completes. Keep the run in memory and write it onc
 
 ## Out of scope
 
-- Drafts and recovery after a forced close ([Store drafts and recover unfinished runs (STAT-06-03)](../../task-03-store-drafts-and-recover/index.md) and [Save drafts while the timer runs (STAT-06-05)](../../task-05-save-drafts-while-running/index.md)).
+- Drafts and recovery after a forced close ([Store drafts and recover unfinished runs (STAT-06-03)](../task-03-store-drafts-and-recover/index.md) and [Save drafts while the timer runs (STAT-06-05)](../../task-05-save-drafts-while-running/index.md)).
 - Any Statistics UI change or golden refresh.
 - Changing session creation at start.
 
