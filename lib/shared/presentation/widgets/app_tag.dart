@@ -38,7 +38,11 @@ class AppTag extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: _iconSize, color: colorScheme.primary),
+            Icon(
+              icon,
+              size: _iconSize,
+              color: colorScheme.primary,
+            ),
             const Gap(AppSpacing.s8),
             Flexible(
               child: Text(
@@ -54,7 +58,12 @@ class AppTag extends StatelessWidget {
     );
 
     if (onTap == null) {
-      return semanticLabel == null ? box : Semantics(label: semanticLabel, excludeSemantics: true, child: box);
+      if (semanticLabel == null) return box;
+      return Semantics(
+        label: semanticLabel,
+        excludeSemantics: true,
+        child: box,
+      );
     }
 
     return Semantics(
