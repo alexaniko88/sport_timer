@@ -32,15 +32,21 @@ class _Handle implements ActivitySessionHandle {
   _Handle(this.sessionId);
 }
 
+class _Finish {
+  final ActivitySessionHandle session;
+  final List<CompletedPhase> phases;
+  final int endedAtUtcMs;
+
+  _Finish(this.session, this.phases, this.endedAtUtcMs);
+}
+
 class _Repository implements ActivityRepository {
   TimerSession? prepared;
   final creation = _Creation();
-  final batches = <List<CompletedPhase>>[];
-  final ends = <int>[];
+  final finishes = <_Finish>[];
   int createAttempts = 0;
-  int phaseAttempts = 0;
   bool failCreate = false;
-  bool failPhases = false;
+  bool failFinish = false;
   Completer<void>? createGate;
 
   @override
@@ -62,19 +68,13 @@ class _Repository implements ActivityRepository {
   }
 
   @override
-  Future<Result<void>> recordPhases({
+  Future<Result<void>> finishRun({
     required ActivitySessionHandle session,
     required List<CompletedPhase> phases,
+    required int endedAtUtcMs,
   }) async {
-    phaseAttempts++;
-    batches.add(List.of(phases));
-    if (failPhases) return Failure(Exception('write failed'));
-    return const Success(null);
-  }
-
-  @override
-  Future<Result<void>> endSession({required ActivitySessionHandle session, required int endedAtUtcMs}) async {
-    ends.add(endedAtUtcMs);
+    finishes.add(_Finish(session, List.of(phases), endedAtUtcMs));
+    if (failFinish) return Failure(Exception('write failed'));
     return const Success(null);
   }
 
@@ -118,7 +118,7 @@ void main() {
     run.end(const Duration(seconds: 30));
     await Future<void>.delayed(Duration.zero);
 
-    final phases = repository.batches.single;
+    final phases = repository.finishes.single.phases;
     expect(phases.map((phase) => phase.schedulePosition), [1, 2, 3]);
     expect(
       phases.map((phase) => phase.type),
@@ -135,10 +135,10 @@ void main() {
       phases.first.localCompletionDate,
       '${local.year.toString().padLeft(4, '0')}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')}',
     );
-    expect(repository.ends.single, DateTime.utc(2026, 11, 2, 0, 0, 17).millisecondsSinceEpoch);
+    expect(repository.finishes.single.endedAtUtcMs, DateTime.utc(2026, 11, 2, 0, 0, 17).millisecondsSinceEpoch);
   });
 
-  test('pause excludes paused time and stop excludes incomplete work', () async {
+  test('pause excludes paused time and leaving saves the partial rest in whole seconds', () async {
     final run = (recorder.start(params) as Success<TimerActivityRun>).value;
     now = now.add(const Duration(milliseconds: 7500));
     run.pause(const Duration(milliseconds: 7500));
@@ -148,13 +148,16 @@ void main() {
     run.end(const Duration(milliseconds: 13500));
     await Future<void>.delayed(Duration.zero);
 
-    final phase = repository.batches.single.single;
-    expect(phase.completedAtUtcMs, DateTime.utc(2026, 11, 2, 0, 2, 2).millisecondsSinceEpoch);
-    expect(phase.durationMs, 10000);
-    expect(repository.ends.single, DateTime.utc(2026, 11, 2, 0, 2, 3, 500).millisecondsSinceEpoch);
+    final finish = repository.finishes.single;
+    final work = finish.phases.first;
+    expect(work.completedAtUtcMs, DateTime.utc(2026, 11, 2, 0, 2, 2).millisecondsSinceEpoch);
+    expect(work.durationMs, 10000);
+    expect(finish.phases.last.type, CompletedPhaseType.rest);
+    expect(finish.phases.last.durationMs, 1000);
+    expect(finish.endedAtUtcMs, DateTime.utc(2026, 11, 2, 0, 2, 3, 500).millisecondsSinceEpoch);
   });
 
-  test('retries a failed batch with identical phase data and keeps the original owner', () async {
+  test('retries a failed finishRun with identical values and keeps the original owner', () async {
     repository.failCreate = true;
     final failures = <Exception>[];
     final subscription = recorder.failures.listen(failures.add);
@@ -162,22 +165,23 @@ void main() {
     run.end(const Duration(seconds: 12));
     await Future<void>.delayed(Duration.zero);
     expect(repository.createAttempts, 1);
-    expect(repository.batches, isEmpty);
+    expect(repository.finishes, isEmpty);
     accounts.account = 'other';
     repository.failCreate = false;
-    repository.failPhases = true;
+    repository.failFinish = true;
     recorder.retryPendingWrites();
     await Future<void>.delayed(Duration.zero);
     expect(repository.prepared?.accountId, 'owner');
-    expect(repository.batches, hasLength(1));
-    expect(repository.ends, isEmpty);
-    repository.failPhases = false;
+    expect(repository.finishes, hasLength(1));
+    repository.failFinish = false;
     recorder.retryPendingWrites();
     await Future<void>.delayed(Duration.zero);
     expect(repository.createAttempts, 2);
-    expect(repository.batches, hasLength(2));
-    expect(repository.batches.first, repository.batches.last);
-    expect(repository.ends, hasLength(1));
+    expect(repository.finishes, hasLength(2));
+    final first = repository.finishes.first;
+    final last = repository.finishes.last;
+    expect(last.phases, first.phases);
+    expect(last.endedAtUtcMs, first.endedAtUtcMs);
     expect(failures, hasLength(2));
     await subscription.cancel();
   });
@@ -193,11 +197,10 @@ void main() {
     final run = (recorder.start(params) as Success<TimerActivityRun>).value;
     run.end(const Duration(seconds: 12));
     await Future<void>.delayed(Duration.zero);
-    expect(repository.batches, isEmpty);
+    expect(repository.finishes, isEmpty);
     repository.createGate?.complete();
     await Future<void>.delayed(Duration.zero);
-    expect(repository.batches.single.single.schedulePosition, 1);
-    expect(repository.ends, hasLength(1));
+    expect(repository.finishes.single.phases.single.schedulePosition, 1);
   });
 
   test('omits zero-duration stages and preparation from activity', () async {
@@ -211,8 +214,9 @@ void main() {
     final run = (recorder.start(omitted) as Success<TimerActivityRun>).value;
     run.end(const Duration(seconds: 22));
     await Future<void>.delayed(Duration.zero);
-    expect(repository.batches.single.map((phase) => phase.schedulePosition), [1, 2]);
-    expect(repository.batches.single.map((phase) => phase.type), [CompletedPhaseType.work, CompletedPhaseType.work]);
+    final phases = repository.finishes.single.phases;
+    expect(phases.map((phase) => phase.schedulePosition), [1, 2]);
+    expect(phases.map((phase) => phase.type), [CompletedPhaseType.work, CompletedPhaseType.work]);
   });
 
   test('applies a forward clock correction after observed boundaries across midnight', () async {
@@ -225,7 +229,7 @@ void main() {
     run.end(const Duration(seconds: 27));
     await Future<void>.delayed(Duration.zero);
 
-    final phases = repository.batches.expand((batch) => batch).toList();
+    final phases = repository.finishes.single.phases;
     expect(phases.map((phase) => phase.schedulePosition), [1, 2, 3]);
     expect(phases[0].completedAtUtcMs, start.add(const Duration(seconds: 12)).millisecondsSinceEpoch);
     expect(phases[1].completedAtUtcMs, start.add(const Duration(seconds: 17)).millisecondsSinceEpoch);
@@ -246,7 +250,7 @@ void main() {
     run.end(const Duration(seconds: 27));
     await Future<void>.delayed(Duration.zero);
 
-    final phases = repository.batches.expand((batch) => batch).toList();
+    final phases = repository.finishes.single.phases;
     expect(phases.map((phase) => phase.schedulePosition), [1, 2, 3]);
     expect(phases.map((phase) => phase.completedAtUtcMs), [
       start.add(const Duration(seconds: 12)).millisecondsSinceEpoch,
@@ -254,7 +258,7 @@ void main() {
       start.subtract(const Duration(hours: 2)).add(const Duration(seconds: 87)).millisecondsSinceEpoch,
     ]);
     expect(phases.map((phase) => phase.localCompletionDate), ['2026-11-02', '2026-11-01', '2026-11-01']);
-    expect(repository.ends.single, phases.last.completedAtUtcMs);
+    expect(repository.finishes.single.endedAtUtcMs, phases.last.completedAtUtcMs);
   });
 
   test('keeps delayed boundaries immutable when a backward correction is first observed', () async {
@@ -267,7 +271,7 @@ void main() {
     run.end(const Duration(seconds: 27));
     await Future<void>.delayed(Duration.zero);
 
-    final phases = repository.batches.expand((batch) => batch).toList();
+    final phases = repository.finishes.single.phases;
     expect(phases.map((phase) => phase.schedulePosition), [1, 2, 3]);
     expect(phases.map((phase) => phase.completedAtUtcMs), [
       start.add(const Duration(seconds: 12)).millisecondsSinceEpoch,
@@ -285,7 +289,7 @@ void main() {
     run.end(const Duration(seconds: 30));
     await Future<void>.delayed(Duration.zero);
 
-    final phases = repository.batches.single;
+    final phases = repository.finishes.single.phases;
     expect(phases.map((phase) => phase.localCompletionDate), ['2026-11-01', '2026-11-01', '2026-11-02']);
     expect(phases.first.completedAtUtcMs, start.add(const Duration(seconds: 12)).millisecondsSinceEpoch);
   });
@@ -301,21 +305,103 @@ void main() {
     run.end(const Duration(seconds: 12));
     await Future<void>.delayed(Duration.zero);
 
-    final phase = repository.batches.single.single;
+    final phase = repository.finishes.single.phases.single;
     expect(phase.localCompletionDate, '2026-11-02');
     expect(phase.completedAtUtcMs, now.millisecondsSinceEpoch);
     expect(phase.durationMs, 10000);
   });
 
   for (final elapsed in [11999, 12000, 12001]) {
-    test('ending at ${elapsed}ms records only completed phases', () async {
+    test('ending at ${elapsed}ms saves the finished and partial phases in whole seconds', () async {
       final run = (recorder.start(params) as Success<TimerActivityRun>).value;
       now = now.add(Duration(milliseconds: elapsed));
       run.end(Duration(milliseconds: elapsed));
       await Future<void>.delayed(Duration.zero);
 
-      expect(repository.batches.expand((batch) => batch).length, elapsed < 12000 ? 0 : 1);
-      expect(repository.ends, hasLength(1));
+      final phases = repository.finishes.single.phases;
+      expect(phases.map((phase) => phase.durationMs), [elapsed < 12000 ? 9000 : 10000]);
     });
   }
+
+  test('leaving mid-round finishes the run with the partial work', () async {
+    const long = TimerParams(
+      preparationTime: Duration(seconds: 5),
+      roundTime: Duration(seconds: 180),
+      restTime: Duration(seconds: 60),
+      rounds: 3,
+      style: TimerStyle.ring,
+    );
+    final start = now;
+    final run = (recorder.start(long) as Success<TimerActivityRun>).value;
+    now = start.add(const Duration(seconds: 395));
+    run.end(const Duration(seconds: 395));
+    await Future<void>.delayed(Duration.zero);
+
+    final finish = repository.finishes.single;
+    expect(finish.phases.map((phase) => phase.type), [
+      CompletedPhaseType.work,
+      CompletedPhaseType.rest,
+      CompletedPhaseType.work,
+    ]);
+    expect(finish.phases.map((phase) => phase.roundNumber), [1, 1, 2]);
+    expect(finish.phases.map((phase) => phase.durationMs), [180000, 60000, 150000]);
+    expect(finish.endedAtUtcMs, now.millisecondsSinceEpoch);
+  });
+
+  test('leaving while paused saves the time up to the pause', () async {
+    final start = now;
+    final run = (recorder.start(params) as Success<TimerActivityRun>).value;
+    now = start.add(const Duration(seconds: 5));
+    run.pause(const Duration(seconds: 5));
+    now = now.add(const Duration(minutes: 2));
+    run.end(const Duration(seconds: 5));
+    await Future<void>.delayed(Duration.zero);
+
+    final phase = repository.finishes.single.phases.single;
+    expect(phase.type, CompletedPhaseType.work);
+    expect(phase.durationMs, 3000);
+    expect(phase.completedAtUtcMs, start.add(const Duration(seconds: 5)).millisecondsSinceEpoch);
+  });
+
+  test('leaving after the finish saves every phase', () async {
+    final start = now;
+    final run = (recorder.start(params) as Success<TimerActivityRun>).value;
+    now = start.add(const Duration(seconds: 27));
+    run.reconcile(const Duration(seconds: 27));
+    now = now.add(const Duration(minutes: 1));
+    run.end(const Duration(seconds: 27));
+    await Future<void>.delayed(Duration.zero);
+
+    final finish = repository.finishes.single;
+    expect(finish.phases.map((phase) => phase.durationMs), [10000, 5000, 10000]);
+    expect(finish.endedAtUtcMs, start.add(const Duration(seconds: 27)).millisecondsSinceEpoch);
+  });
+
+  test('leaving during preparation finishes the run with no phases', () async {
+    final run = (recorder.start(params) as Success<TimerActivityRun>).value;
+    now = now.add(const Duration(seconds: 1));
+    run.end(const Duration(seconds: 1));
+    await Future<void>.delayed(Duration.zero);
+
+    final finish = repository.finishes.single;
+    expect(finish.phases, isEmpty);
+    expect(finish.endedAtUtcMs, now.millisecondsSinceEpoch);
+  });
+
+  test('writes the run only once at end', () async {
+    final run = (recorder.start(params) as Success<TimerActivityRun>).value;
+    now = now.add(const Duration(seconds: 13));
+    run.reconcile(const Duration(seconds: 13));
+    run.pause(const Duration(seconds: 13));
+    run.resume();
+    await Future<void>.delayed(Duration.zero);
+    expect(repository.createAttempts, 1);
+    expect(repository.finishes, isEmpty);
+
+    now = now.add(const Duration(seconds: 1));
+    run.end(const Duration(seconds: 14));
+    run.end(const Duration(seconds: 15));
+    await Future<void>.delayed(Duration.zero);
+    expect(repository.finishes, hasLength(1));
+  });
 }

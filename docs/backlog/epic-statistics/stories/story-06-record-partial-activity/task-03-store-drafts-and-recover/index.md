@@ -34,7 +34,7 @@ Add hidden draft storage for a running workout and turn unfinished drafts into f
 
 ## Contract
 
-- `ActivityRepository.finishRun` and `ActivityAccess.finishRun` — provided by [Save the run once when leaving the timer (STAT-06-02)](../task-02-save-on-leaving-timer/index.md). Changed here: its transaction also deletes the session's `draft_phases`.
+- `ActivityRepository.finishRun` and `ActivityAccess.finishRun` — provided by [Save the run once when leaving the timer (STAT-06-02)](../done/task-02-save-on-leaving-timer/index.md). Changed here: its transaction also deletes the session's `draft_phases`.
 - Purge epoch, `deleteAllActivity()` and the real-SQLite test setup in `test/features/statistics/data/activity_access_test.dart` — provided by [Purge activity storage (DEV-01-01)](../../../../epic-developer-tools/stories/story-01-purge-local-activity/done/task-01-purge-activity-storage/index.md).
 - `saveDraft` — new here; its consumer is the recorder in STAT-06-05. Nothing in `lib/` calls it after this task.
 

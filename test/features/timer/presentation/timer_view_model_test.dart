@@ -176,7 +176,7 @@ void main() {
       });
     });
 
-    test('reconciles a delayed lifecycle update and finishes a run only once', () {
+    test('reconciles a delayed lifecycle update and ends the run only on dispose', () {
       fakeAsync((fake) {
         final recorder = _FakeActivityRecorder();
         var skew = Duration.zero;
@@ -190,11 +190,11 @@ void main() {
         skew = const Duration(seconds: 40);
         viewModel.reconcileProgress();
         expect(recorder.run.reconciled.last, const Duration(seconds: 40));
-        expect(recorder.run.ends, [const Duration(seconds: 40)]);
+        expect(recorder.run.ends, isEmpty);
         expect(viewModel.state.value.timerStatus, TimerStatus.finished);
         expect(fake.nonPeriodicTimerCount, 0);
         viewModel.dispose();
-        expect(recorder.run.ends, hasLength(1));
+        expect(recorder.run.ends, [const Duration(seconds: 40)]);
       });
     });
 

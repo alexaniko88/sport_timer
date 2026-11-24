@@ -11,11 +11,13 @@ abstract interface class TimerActivityRecorder {
 }
 
 abstract interface class TimerActivityRun {
-  // Elapsed time includes active time only and must not decrease.
+  // Elapsed time includes active time only and must not decrease. These only
+  // update the run in memory; nothing is written until end.
   void reconcile(Duration elapsed);
   void pause(Duration elapsed);
   void resume();
 
-  // Queues final reconciliation and the known end without waiting for storage.
+  // Queues the one write of the whole run, with its partial phase and end time,
+  // without waiting for storage.
   void end(Duration elapsed);
 }

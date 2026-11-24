@@ -9,6 +9,7 @@ import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
+import 'package:sqflite/sqflite.dart';
 
 class _ActivitySessionHandle implements ActivitySessionHandle {
   final Object issuer;
@@ -179,30 +180,7 @@ class ActivityAccess {
         whereArgs: [handle.sessionId, handle.accountId],
       );
       if (sessions.isEmpty) throw StateError('Session not found');
-      for (final phase in batch) {
-        final existing = await txn.query(
-          'completed_phases',
-          where: 'id = ? OR (session_id = ? AND schedule_position = ?)',
-          whereArgs: [phase.id, phase.runId, phase.schedulePosition],
-        );
-        if (existing.isNotEmpty) {
-          if (existing.length != 1 || existing.single.toCompletedPhase() != phase) {
-            throw StateError('Conflicting completed phase');
-          }
-          continue;
-        }
-        await txn.insert('completed_phases', {
-          'id': phase.id,
-          'session_id': phase.runId,
-          'schedule_position': phase.schedulePosition,
-          'type': phase.type.name,
-          'round_number': phase.roundNumber,
-          'duration_ms': phase.durationMs,
-          'completed_at_utc_ms': phase.completedAtUtcMs,
-          'local_completion_date': phase.localCompletionDate,
-          'utc_offset_minutes': phase.utcOffsetMinutes,
-        });
-      }
+      await _insertPhases(txn, batch);
     });
     if (batch.isNotEmpty && !isStale) _notifyChange();
   }
@@ -219,25 +197,97 @@ class ActivityAccess {
         isStale = true;
         return;
       }
-      final rows = await txn.query(
+      await _setEnd(txn, handle, endedAtUtcMs);
+    });
+    if (!isStale) _notifyChange();
+  }
+
+  // Stores the phases and the end time in one transaction, so a failure keeps nothing.
+  Future<void> finishRun({
+    required ActivitySessionHandle session,
+    required List<CompletedPhase> phases,
+    required int endedAtUtcMs,
+  }) async {
+    final handle = _verifyHandle(session);
+    final batch = List<CompletedPhase>.of(phases);
+    if (batch.any((phase) => phase.runId != handle.sessionId)) {
+      throw StateError('Phase belongs to another session');
+    }
+    var isStale = false;
+    final db = await _database.connection;
+    await db.transaction((txn) async {
+      if (handle.purgeEpoch != _purgeEpoch) {
+        isStale = true;
+        return;
+      }
+      // The end helper checks the session exists before any phase is inserted.
+      await _insertPhasesAndEnd(txn, handle, batch, endedAtUtcMs);
+    });
+    if (!isStale) _notifyChange();
+  }
+
+  Future<void> _insertPhasesAndEnd(
+    Transaction txn,
+    _ActivitySessionHandle handle,
+    List<CompletedPhase> batch,
+    int endedAtUtcMs,
+  ) async {
+    final rows = await txn.query(
+      'timer_sessions',
+      columns: ['id'],
+      where: 'id = ? AND account_id = ?',
+      whereArgs: [handle.sessionId, handle.accountId],
+    );
+    if (rows.isEmpty) throw StateError('Session not found');
+    await _insertPhases(txn, batch);
+    await _setEnd(txn, handle, endedAtUtcMs);
+  }
+
+  Future<void> _insertPhases(Transaction txn, List<CompletedPhase> batch) async {
+    for (final phase in batch) {
+      final existing = await txn.query(
+        'completed_phases',
+        where: 'id = ? OR (session_id = ? AND schedule_position = ?)',
+        whereArgs: [phase.id, phase.runId, phase.schedulePosition],
+      );
+      if (existing.isNotEmpty) {
+        if (existing.length != 1 || existing.single.toCompletedPhase() != phase) {
+          throw StateError('Conflicting completed phase');
+        }
+        continue;
+      }
+      await txn.insert('completed_phases', {
+        'id': phase.id,
+        'session_id': phase.runId,
+        'schedule_position': phase.schedulePosition,
+        'type': phase.type.name,
+        'round_number': phase.roundNumber,
+        'duration_ms': phase.durationMs,
+        'completed_at_utc_ms': phase.completedAtUtcMs,
+        'local_completion_date': phase.localCompletionDate,
+        'utc_offset_minutes': phase.utcOffsetMinutes,
+      });
+    }
+  }
+
+  Future<void> _setEnd(Transaction txn, _ActivitySessionHandle handle, int endedAtUtcMs) async {
+    final rows = await txn.query(
+      'timer_sessions',
+      columns: ['ended_at_utc_ms'],
+      where: 'id = ? AND account_id = ?',
+      whereArgs: [handle.sessionId, handle.accountId],
+    );
+    if (rows.isEmpty) throw StateError('Session not found');
+    final existing = rows.single['ended_at_utc_ms'] as int?;
+    if (existing != null && existing != endedAtUtcMs) throw StateError('Conflicting session end');
+    if (existing == null) {
+      await txn.update(
         'timer_sessions',
-        columns: ['ended_at_utc_ms'],
+        {'ended_at_utc_ms': endedAtUtcMs},
         where: 'id = ? AND account_id = ?',
         whereArgs: [handle.sessionId, handle.accountId],
       );
-      if (rows.isEmpty) throw StateError('Session not found');
-      final existing = rows.single['ended_at_utc_ms'] as int?;
-      if (existing != null && existing != endedAtUtcMs) throw StateError('Conflicting session end');
-      if (existing == null) {
-        await txn.update(
-          'timer_sessions',
-          {'ended_at_utc_ms': endedAtUtcMs},
-          where: 'id = ? AND account_id = ?',
-          whereArgs: [handle.sessionId, handle.accountId],
-        );
-      }
-    });
-    if (!isStale) _notifyChange();
+    }
   }
 
   Future<void> deleteAllActivity() async {
@@ -271,7 +321,7 @@ class ActivityAccess {
     final rows = await db.rawQuery(
       '''
       SELECT p.local_completion_date,
-        SUM(CASE WHEN p.type = 'work' THEN 1 ELSE 0 END) AS round_count,
+        SUM(CASE WHEN p.type = 'work' AND (p.duration_ms >= 5000 OR p.duration_ms >= s.work_duration_ms) THEN 1 ELSE 0 END) AS round_count,
         SUM(CASE WHEN p.type = 'work' THEN p.duration_ms ELSE 0 END) AS work_duration_ms,
         SUM(CASE WHEN p.type = 'rest' THEN p.duration_ms ELSE 0 END) AS rest_duration_ms
       FROM completed_phases p JOIN timer_sessions s ON s.id = p.session_id
@@ -292,7 +342,7 @@ class ActivityAccess {
     final rows = await db.rawQuery(
       '''
       SELECT s.*, p.local_completion_date,
-        SUM(CASE WHEN p.type = 'work' THEN 1 ELSE 0 END) AS day_round_count,
+        SUM(CASE WHEN p.type = 'work' AND (p.duration_ms >= 5000 OR p.duration_ms >= s.work_duration_ms) THEN 1 ELSE 0 END) AS day_round_count,
         SUM(CASE WHEN p.type = 'work' THEN p.duration_ms ELSE 0 END) AS day_work_duration_ms,
         SUM(CASE WHEN p.type = 'rest' THEN p.duration_ms ELSE 0 END) AS day_rest_duration_ms
       FROM completed_phases p JOIN timer_sessions s ON s.id = p.session_id
