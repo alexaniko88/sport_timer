@@ -266,6 +266,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get statisticsEmpty => 'Aún no hay actividad completada.';
 
   @override
+  String get statisticsDeleteAction => 'Eliminar estadísticas';
+
+  @override
+  String get statisticsDeleteDialogTitle => '¿Eliminar las estadísticas?';
+
+  @override
+  String get statisticsDeleteDialogBody =>
+      'Se eliminarán todas las estadísticas de esta cuenta en este dispositivo. No se puede deshacer.';
+
+  @override
+  String get statisticsDeleteDialogConfirm => 'Eliminar';
+
+  @override
+  String get statisticsDeleted => 'Estadísticas eliminadas';
+
+  @override
+  String get statisticsDeleteError => 'No se pudieron eliminar las estadísticas. Inténtalo de nuevo.';
+
+  @override
   String get statisticsError => 'No se pudieron cargar tus estadísticas.';
 
   @override

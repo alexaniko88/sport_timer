@@ -28,6 +28,7 @@ class StatisticsState {
   final String? expandedDate;
   final StatisticsStatus dayStatus;
   final List<RunActivitySummary> dayRuns;
+  final bool isDeleting;
 
   StatisticsState({
     this.status = StatisticsStatus.initial,
@@ -42,6 +43,7 @@ class StatisticsState {
     this.expandedDate,
     this.dayStatus = StatisticsStatus.initial,
     List<RunActivitySummary> dayRuns = const [],
+    this.isDeleting = false,
   })  : dailyActivity = List.unmodifiable(dailyActivity),
         dayRuns = List.unmodifiable(dayRuns);
 
@@ -61,6 +63,7 @@ class StatisticsState {
     StatisticsStatus? dayStatus,
     List<RunActivitySummary>? dayRuns,
     bool clearExpanded = false,
+    bool? isDeleting,
   }) =>
       StatisticsState(
         status: status ?? this.status,
@@ -75,6 +78,7 @@ class StatisticsState {
         expandedDate: clearExpanded ? null : expandedDate ?? this.expandedDate,
         dayStatus: clearExpanded ? StatisticsStatus.initial : dayStatus ?? this.dayStatus,
         dayRuns: clearExpanded ? const [] : dayRuns ?? this.dayRuns,
+        isDeleting: isDeleting ?? this.isDeleting,
       );
 
   @override
@@ -92,7 +96,8 @@ class StatisticsState {
           other.selectedBucket == selectedBucket &&
           other.expandedDate == expandedDate &&
           other.dayStatus == dayStatus &&
-          listEquals(other.dayRuns, dayRuns);
+          listEquals(other.dayRuns, dayRuns) &&
+          other.isDeleting == isDeleting;
 
   @override
   int get hashCode => Object.hash(
@@ -108,5 +113,6 @@ class StatisticsState {
         expandedDate,
         dayStatus,
         Object.hashAll(dayRuns),
+        isDeleting,
       );
 }

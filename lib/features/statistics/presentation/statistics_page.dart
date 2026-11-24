@@ -18,6 +18,8 @@ import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_button.dart';
 
+enum _StatisticsMenuAction { delete }
+
 class StatisticPage extends StatefulWidget {
   final AccountViewModel accountViewModel;
   final VoidCallback onMenuPressed;
@@ -53,12 +55,33 @@ class _StatisticPageState extends State<StatisticPage> {
         leading:
             IconButton(tooltip: l10n.homeMenuTooltip, onPressed: widget.onMenuPressed, icon: const Icon(Icons.menu)),
         title: Text(l10n.statisticsTitle),
-        actions: [AccountAvatarButton(viewModel: widget.accountViewModel), const SizedBox(width: AppSpacing.s8)],
+        actions: [
+          ValueListenableBuilder<StatisticsState>(
+            valueListenable: _viewModel.state,
+            builder: (context, state, _) {
+              if (state.status != StatisticsStatus.content) return const SizedBox.shrink();
+              return PopupMenuButton<_StatisticsMenuAction>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (_) => _confirmDelete(),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: _StatisticsMenuAction.delete,
+                    enabled: !state.isDeleting,
+                    child: Text(l10n.statisticsDeleteAction),
+                  ),
+                ],
+              );
+            },
+          ),
+          AccountAvatarButton(viewModel: widget.accountViewModel),
+          const SizedBox(width: AppSpacing.s8),
+        ],
       ),
       body: ValueListenableBuilder<StatisticsState>(
         valueListenable: _viewModel.state,
         builder: (context, state, _) => LayoutBuilder(
           builder: (context, constraints) {
+            if (state.status == StatisticsStatus.empty) return Center(child: Text(l10n.statisticsEmpty));
             final switcher = Padding(
               padding: const EdgeInsets.all(AppSpacing.s16),
               child: SegmentedButton<StatisticsView>(
@@ -94,6 +117,36 @@ class _StatisticPageState extends State<StatisticPage> {
     );
   }
 
+  Future<void> _confirmDelete() async {
+    final l10n = context.l10n;
+    final errorColor = Theme.of(context).colorScheme.error;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.statisticsDeleteDialogTitle),
+        content: Text(l10n.statisticsDeleteDialogBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: errorColor),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.statisticsDeleteDialogConfirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final isDeleted = await _viewModel.deleteStatistics();
+    if (!mounted) return;
+    messenger.showSnackBar(
+      SnackBar(content: Text(isDeleted ? l10n.statisticsDeleted : l10n.statisticsDeleteError)),
+    );
+  }
+
   Widget _content(BuildContext context, StatisticsState state) {
     final l10n = context.l10n;
     if (state.status == StatisticsStatus.initial || state.status == StatisticsStatus.loading) {
@@ -112,7 +165,6 @@ class _StatisticPageState extends State<StatisticPage> {
       );
     }
     if (state.view == StatisticsView.charts) return _chart(context, state);
-    if (state.status == StatisticsStatus.empty) return Center(child: Text(l10n.statisticsEmpty));
     return ListView.separated(
       padding:
           EdgeInsets.fromLTRB(AppSpacing.s16, 0, AppSpacing.s16, AppSpacing.s16 + MediaQuery.paddingOf(context).bottom),

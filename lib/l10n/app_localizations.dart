@@ -494,6 +494,42 @@ abstract class AppLocalizations {
   /// **'No completed activity yet.'**
   String get statisticsEmpty;
 
+  /// Statistics: app bar menu item that deletes all statistics of the account on this device.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete statistics'**
+  String get statisticsDeleteAction;
+
+  /// Statistics: title of the dialog that confirms deleting the statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete statistics?'**
+  String get statisticsDeleteDialogTitle;
+
+  /// Statistics: body of the delete confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'All statistics of this account on this device will be deleted. This can\'t be undone.'**
+  String get statisticsDeleteDialogBody;
+
+  /// Statistics: confirm button of the delete dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get statisticsDeleteDialogConfirm;
+
+  /// Statistics: snackbar shown after the statistics were deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics deleted'**
+  String get statisticsDeleted;
+
+  /// Statistics: snackbar shown when deleting the statistics failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete statistics. Try again.'**
+  String get statisticsDeleteError;
+
   /// Statistics: statisticsError.
   ///
   /// In en, this message translates to:
