@@ -7,7 +7,7 @@ As a developer, I can clear local activity for all accounts from a debug-only pa
 ## Scope
 
 - In: a debug-only entry at the bottom of the navigation drawer and a developer page with a single purge action. A confirmation dialog explains the scope. Texts are English only, with no localization.
-- Out: other tools in this version; any change to settings or authentication. The story does not depend on the [Delete statistics story](../../../../../epic-statistics/stories/done/story-05-delete-statistics/index.md), which is account-specific.
+- Out: other tools in this version; any change to settings or authentication. The story does not depend on the [Delete statistics story](../../../../epic-statistics/stories/done/story-05-delete-statistics/index.md), which is account-specific.
 
 ## Requirements
 
