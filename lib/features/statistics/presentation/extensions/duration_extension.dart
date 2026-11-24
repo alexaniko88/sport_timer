@@ -13,4 +13,17 @@ extension StatisticsDurationExtension on Duration {
       if (milliseconds > 0) l10n.statisticsMilliseconds(milliseconds),
     ].join(' ');
   }
+
+  String get compactStatisticsDuration {
+    final totalSeconds = inSeconds;
+    final hours = totalSeconds ~/ 3600;
+    final minutes = totalSeconds % 3600 ~/ 60;
+    final seconds = totalSeconds % 60;
+    final parts = [
+      if (hours > 0) '${hours}h',
+      if (minutes > 0) '${minutes}m',
+      if (seconds > 0) '${seconds}s',
+    ];
+    return parts.isEmpty ? '0s' : parts.join(' ');
+  }
 }

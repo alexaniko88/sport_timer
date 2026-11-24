@@ -1,6 +1,6 @@
 ---
 id: UI-05-01
-status: ready
+status: done
 type: feat
 complexity: 5
 depends-on: []
@@ -18,9 +18,9 @@ skills: []
 
 # Prepare the statistics card state
 
-Story: [Rethink statistics cards and day details](../index.md)
+Story: [Rethink statistics cards and day details](../../index.md)
 
-Epic: [UI refactor](../../../index.md)
+Epic: [UI refactor](../../../../index.md)
 
 ## Goal
 
@@ -66,17 +66,17 @@ Add the logic the redesigned statistics cards need: compact durations, the templ
 
 ## Acceptance
 
-- [ ] When a duration has hours, minutes or seconds, then `compactStatisticsDuration` joins the non-zero parts (`26m`, `3m 35s`, `1h 2m 5s`, `30s`, `37h 2m 12s`) and drops milliseconds. Check: `test/features/statistics/presentation/extensions/duration_extension_test.dart` "compact duration joins the non-zero hours, minutes and seconds".
-- [ ] When a duration is zero or under one second, then `compactStatisticsDuration` gives `0s`. Check: `test/features/statistics/presentation/extensions/duration_extension_test.dart` "compact duration of zero or under a second is 0s".
-- [ ] When a session's configuration equals a built-in template, then `matchingTemplateId` returns that template's id, for every built-in template. Check: `test/features/statistics/domain/extensions/timer_session_template_extension_test.dart` "every built-in template matches its id".
-- [ ] When exactly one of preparation, work, rest or rounds differs from every template, then `matchingTemplateId` is `null`. Check: `test/features/statistics/domain/extensions/timer_session_template_extension_test.dart` "a change in preparation, work, rest or rounds gives null".
-- [ ] When two states differ only in `expandedDate`, `dayStatus` or `dayRuns`, then they are not equal, and `copyWith(clearExpanded: true)` resets all three. Check: `test/features/statistics/presentation/statistics_state_test.dart` "compares the open day fields and clears them".
-- [ ] When `toggleDay` opens a day that is not cached, then `dayStatus` is `loading`, `readDayActivity(localDate)` is called once, and on success `dayStatus` is `content` with the runs. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay opens a day and loads its runs".
-- [ ] When `toggleDay` is called for the open day, then it closes. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay on the open day closes it".
-- [ ] When `toggleDay` opens another day, then the first one closes. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay on another day closes the first".
-- [ ] When a cached day is opened again, then its runs show at once and the repository is not called again. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay shows a cached day without reading again".
-- [ ] When a day loads an empty list, then `dayStatus` is `empty`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "a day with no runs is empty".
-- [ ] When loading a day fails, then `dayStatus` is `error` and nothing is cached, and `retryDay` loads it again to `content`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "a failed day shows an error and retryDay loads it again".
-- [ ] When a day result arrives after that day closed, after another day opened, or after `dispose`, then it is ignored. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "ignores a day result after it closed, another opened or disposal".
-- [ ] When the repository emits `changes` or `refresh` runs, then the open day closes and the cache is cleared (the next open reads again). Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "changes and refresh close the open day and clear the cache".
-- [ ] When the change is checked, then format, analyze, the mirrored tests and the boundary test pass. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When a duration has hours, minutes or seconds, then `compactStatisticsDuration` joins the non-zero parts (`26m`, `3m 35s`, `1h 2m 5s`, `30s`, `37h 2m 12s`) and drops milliseconds. Check: `test/features/statistics/presentation/extensions/duration_extension_test.dart` "compact duration joins the non-zero hours, minutes and seconds".
+- [x] When a duration is zero or under one second, then `compactStatisticsDuration` gives `0s`. Check: `test/features/statistics/presentation/extensions/duration_extension_test.dart` "compact duration of zero or under a second is 0s".
+- [x] When a session's configuration equals a built-in template, then `matchingTemplateId` returns that template's id, for every built-in template. Check: `test/features/statistics/domain/extensions/timer_session_template_extension_test.dart` "every built-in template matches its id".
+- [x] When exactly one of preparation, work, rest or rounds differs from every template, then `matchingTemplateId` is `null`. Check: `test/features/statistics/domain/extensions/timer_session_template_extension_test.dart` "a change in preparation, work, rest or rounds gives null".
+- [x] When two states differ only in `expandedDate`, `dayStatus` or `dayRuns`, then they are not equal, and `copyWith(clearExpanded: true)` resets all three. Check: `test/features/statistics/presentation/statistics_state_test.dart` "compares the open day fields and clears them".
+- [x] When `toggleDay` opens a day that is not cached, then `dayStatus` is `loading`, `readDayActivity(localDate)` is called once, and on success `dayStatus` is `content` with the runs. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay opens a day and loads its runs".
+- [x] When `toggleDay` is called for the open day, then it closes. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay on the open day closes it".
+- [x] When `toggleDay` opens another day, then the first one closes. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay on another day closes the first".
+- [x] When a cached day is opened again, then its runs show at once and the repository is not called again. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "toggleDay shows a cached day without reading again".
+- [x] When a day loads an empty list, then `dayStatus` is `empty`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "a day with no runs is empty".
+- [x] When loading a day fails, then `dayStatus` is `error` and nothing is cached, and `retryDay` loads it again to `content`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "a failed day shows an error and retryDay loads it again".
+- [x] When a day result arrives after that day closed, after another day opened, or after `dispose`, then it is ignored. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "ignores a day result after it closed, another opened or disposal".
+- [x] When the repository emits `changes` or `refresh` runs, then the open day closes and the cache is cleared (the next open reads again). Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "changes and refresh close the open day and clear the cache".
+- [x] When the change is checked, then format, analyze, the mirrored tests and the boundary test pass. Check: `fvm dart tool/agent_check.dart --skip-build`.
