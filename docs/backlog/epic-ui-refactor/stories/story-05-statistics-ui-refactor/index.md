@@ -19,7 +19,7 @@ As a user reviewing my training, I want each day's card to show its totals at a 
 
 ## Tasks
 
-1. [Prepare the statistics card state](task-01-prepare-statistics-card-state/index.md)
+1. [Prepare the statistics card state](done/task-01-prepare-statistics-card-state/index.md)
 2. [Rethink statistics cards and details](task-02-rethink-statistics-cards-and-details/index.md)
 
 ## Shared contracts
