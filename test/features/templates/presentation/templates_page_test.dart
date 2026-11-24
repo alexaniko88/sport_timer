@@ -14,6 +14,7 @@ import 'package:sport_timer/features/settings/presentation/settings_view_model.d
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
 import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/user/domain/app_user.dart';
@@ -153,6 +154,13 @@ const _cases = [
 ];
 
 Finder _tagNamed(String name) => find.descendant(of: find.byType(AppTag), matching: find.text(name));
+
+class _ActivityRepositoryWithData extends FakeEmptyActivityRepository {
+  @override
+  Future<Result<List<DailyActivity>>> readDailyActivity() async => const Success([
+        DailyActivity(localDate: '2026-11-01', roundCount: 3, workDurationMs: 180000, restDurationMs: 30000),
+      ]);
+}
 
 void main() {
   late _SettingsRepository repository;
@@ -985,6 +993,8 @@ void main() {
   });
 
   testWidgets('returning to Statistics preserves the chart and period', (tester) async {
+    await getIt.unregister<ActivityRepository>();
+    getIt.registerSingleton<ActivityRepository>(_ActivityRepositoryWithData());
     await tester.pumpWidget(
       MaterialApp.router(
         routerConfig: router,
