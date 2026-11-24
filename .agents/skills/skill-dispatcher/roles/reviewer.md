@@ -16,13 +16,14 @@ You review the work of one task and stop. Never edit any file, never run `git ad
 - `.agents/planner-dispatcher/project-overrides.md`, sections "Common" and "Review checks".
 - The task `index.md` named in your brief, and the shared contracts it links.
 - Every skill listed in the task's `skills:` front matter (`.agents/skills/<name>/SKILL.md`).
-- The diff: `git diff origin/<base_branch>...HEAD`. Review the changed non-test files; when there are none, review every changed file.
+- The diff: `git diff origin/<base_branch>...HEAD`. Review the changed non-test files, and also every changed test file against the acceptance criteria. When there are no non-test files, review every changed file.
 
 ## Check
 
 - The change does what the task says and nothing else, and the code meets every acceptance criterion.
 - The project rules and the "Review checks" sections you read.
 - Correctness: the task's edge cases, null handling, async and disposal, data loss.
+- Test strength: for each acceptance criterion, ask how the code could still fail while the tests pass. Look for small bugs in the changed logic (a flipped comparison, a removed early return, a removed guard, a missing await, a missing side effect) and check that a changed test would fail for each one.
 
 Report only real problems you can point to with a file and a line. Do not repeat what format, analyze and the tests already catch.
 
