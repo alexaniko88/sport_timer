@@ -6,6 +6,7 @@ import 'package:sport_timer/features/account/presentation/account_view_model.dar
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
+import 'package:sport_timer/features/templates/presentation/extensions/template_icon_extension.dart';
 import 'package:sport_timer/features/templates/presentation/extensions/template_names_extension.dart';
 import 'package:sport_timer/features/settings/presentation/widgets/timer_setting_card.dart';
 import 'package:sport_timer/features/settings/presentation/widgets/timer_settings_picker_wheel.dart';
@@ -17,6 +18,7 @@ import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/extensions/theme_context.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_button.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_tag.dart';
 
 class TimerSetupPage extends StatelessWidget {
   final SettingsViewModel viewModel;
@@ -55,6 +57,11 @@ class TimerSetupPage extends StatelessWidget {
           ),
         ).totalDuration;
 
+        final isLoading = state.status == SettingsStatus.initial || state.status == SettingsStatus.loading;
+        final templateId = state.selectedTemplateId;
+        final tagIcon = templateId?.icon ?? Icons.tune;
+        final tagLabel = templateId == null ? l10n.templateCustomName : l10n.templateName(templateId);
+
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -79,22 +86,15 @@ class TimerSetupPage extends StatelessWidget {
                     AppSpacing.s16,
                   ),
                   children: [
-                    if (state.selectedTemplateId case final id?) ...[
+                    if (!isLoading) ...[
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Semantics(
-                          button: true,
-                          child: AppSurface(
-                            onTap: onTemplatesPressed,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.s16,
-                              vertical: AppSpacing.s16,
-                            ),
-                            child: Text(
-                              l10n.setupTemplateLabel(l10n.templateName(id)),
-                              style: theme.textTheme.labelLarge?.copyWith(color: colorScheme.primary),
-                            ),
-                          ),
+                        child: AppTag(
+                          icon: tagIcon,
+                          label: tagLabel,
+                          color: colorScheme.surfaceContainer,
+                          onTap: onTemplatesPressed,
+                          semanticLabel: l10n.setupTemplateLabel(tagLabel),
                         ),
                       ),
                       const Gap(AppSpacing.s8),
