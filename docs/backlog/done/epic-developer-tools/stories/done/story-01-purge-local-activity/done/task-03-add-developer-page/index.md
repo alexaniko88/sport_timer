@@ -97,7 +97,7 @@ Where the [mockup](../../mockup.html) and this View spec differ, this text wins;
 - **Page, tile and dialog texts as in the mockup:** approved by the user.
 - **No localization:** the page texts in `lib/features/developer/` and the drawer entry label "Developer tools" in `lib/features/home/presentation/home_page.dart` are hardcoded English with no ARB keys, under the Developer tools exception in the "Strings" rule of `.agents/planner-dispatcher/project-overrides.md` (debug-only, never shipped in release builds). Chosen by the user.
 - **Double taps blocked in the ViewModel and in the UI:** the ViewModel guard is in DEV-01-02; this task disables the tile while purging. Chosen by the user.
-- **Not dependent on the [Delete statistics story](../../../../../../../epic-statistics/stories/story-05-delete-statistics/index.md):** chosen by the user.
+- **Not dependent on the [Delete statistics story](../../../../../../../epic-statistics/stories/done/story-05-delete-statistics/index.md):** chosen by the user.
 
 ## Out of scope
 

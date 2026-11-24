@@ -1,6 +1,6 @@
 # STORY 5: Delete statistics
 
-Epic: [Statistics](../../index.md)
+Epic: [Statistics](../../../index.md)
 
 A signed-in user can delete all their recorded statistics on this device and keep recording new workouts.
 
@@ -27,7 +27,7 @@ A signed-in user can delete all their recorded statistics on this device and kee
 ## Tasks
 
 1. [Delete local statistics](done/task-01-delete-local-statistics/index.md)
-2. [Add the delete action to Statistics](task-02-add-delete-action/index.md)
+2. [Add the delete action to Statistics](done/task-02-add-delete-action/index.md)
 
 ## Shared contracts
 
@@ -35,4 +35,4 @@ A signed-in user can delete all their recorded statistics on this device and kee
 
 ## Dependencies
 
-Runs after [Purge activity storage (DEV-01-01)](../../../done/epic-developer-tools/stories/done/story-01-purge-local-activity/done/task-01-purge-activity-storage/index.md) (global purge epoch, real-SQLite tests) and [Store drafts and recover unfinished runs (STAT-06-03)](../story-06-record-partial-activity/done/task-03-store-drafts-and-recover/index.md) (`finishRun`, `saveDraft`, `draft_phases` with cascade, recovery). Views refresh through `ActivityRepository.changes`. Visual references: [statistics](../../../../../test/snapshots/goldens/statistics.png), [empty](../../../../../test/snapshots/goldens/statistics_empty.png), [error](../../../../../test/snapshots/goldens/statistics_error.png).
+Runs after [Purge activity storage (DEV-01-01)](../../../../done/epic-developer-tools/stories/done/story-01-purge-local-activity/done/task-01-purge-activity-storage/index.md) (global purge epoch, real-SQLite tests) and [Store drafts and recover unfinished runs (STAT-06-03)](../../story-06-record-partial-activity/done/task-03-store-drafts-and-recover/index.md) (`finishRun`, `saveDraft`, `draft_phases` with cascade, recovery). Views refresh through `ActivityRepository.changes`. Visual references: [statistics](../../../../../../test/snapshots/goldens/statistics.png), [empty](../../../../../../test/snapshots/goldens/statistics_empty.png), [error](../../../../../../test/snapshots/goldens/statistics_error.png).

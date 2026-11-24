@@ -16,7 +16,7 @@ skills: []
 
 Story: [Delete statistics](../../index.md)
 
-Epic: [Statistics](../../../../index.md)
+Epic: [Statistics](../../../../../index.md)
 
 ## Goal
 
