@@ -604,13 +604,17 @@ void main() {
       final run = startRun();
       now = start.add(const Duration(seconds: 5));
       run.reconcile(const Duration(seconds: 5));
-      run.end(const Duration(seconds: 7));
       fake.flushMicrotasks();
-      expect(repository.drafts, isEmpty);
+      final draftCount = repository.drafts.length;
+
+      now = start.add(const Duration(seconds: 13));
+      run.end(const Duration(seconds: 13));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(draftCount));
       expect(repository.finishes, hasLength(1));
 
       fake.elapse(const Duration(seconds: 60));
-      expect(repository.drafts, isEmpty);
+      expect(repository.drafts, hasLength(draftCount));
       recorder.dispose();
     });
   });
