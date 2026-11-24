@@ -35,6 +35,7 @@ TemplateTile _tile(
   bool isSelected = false,
   bool isCustom = false,
   VoidCallback? onTap,
+  VoidCallback? onLongPress,
 }) {
   return TemplateTile(
     name: name,
@@ -44,6 +45,7 @@ TemplateTile _tile(
     isSelected: isSelected,
     isCustom: isCustom,
     onTap: onTap,
+    onLongPress: onLongPress,
   );
 }
 
@@ -168,6 +170,18 @@ void main() {
           });
         }
       }
+
+      testWidgets('long press is announced as edit', (tester) async {
+        _setScreenSize(tester);
+        await tester.pumpWidget(
+          _app(_tile(_template(TemplateId.standard), onTap: () {}, onLongPress: () {})),
+        );
+
+        final node = tester.getSemantics(find.byType(TemplateTile));
+
+        expect(node.getSemanticsData().hasAction(SemanticsAction.longPress), isTrue);
+        expect(node.hintOverrides?.onLongPressHint, 'Edit template');
+      });
 
       testWidgets('reads name and values in Spanish', (tester) async {
         _setScreenSize(tester);

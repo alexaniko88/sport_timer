@@ -164,6 +164,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get templateDefaultName => 'Por defecto';
 
   @override
+  String get templateEditHint => 'Editar plantilla';
+
+  @override
   String get templateHyroxName => 'Hyrox';
 
   @override

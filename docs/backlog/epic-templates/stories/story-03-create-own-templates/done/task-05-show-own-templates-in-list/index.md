@@ -1,6 +1,6 @@
 ---
 id: TPL-03-05
-status: ready
+status: done
 type: feat
 complexity: 5
 depends-on: [TPL-03-04, IMP-05]
@@ -22,9 +22,9 @@ skills: []
 
 # Show own templates in the list
 
-Story: [Create your own templates](../index.md)
+Story: [Create your own templates](../../index.md)
 
-Epic: [Templates](../../../index.md)
+Epic: [Templates](../../../../index.md)
 
 ## Goal
 
@@ -36,7 +36,7 @@ The Templates page lists own templates after the built-in ones; a tap applies on
 - `lib/features/templates/presentation/widgets/template_tile.dart`: `TemplateTile` wraps `AppSurface` in a `Semantics(container, button, selected, onTap, excludeSemantics, label: templateTileSemantics(...))`.
 - `lib/shared/presentation/widgets/app_surface.dart`: `InkWell` only when `onTap` is set.
 - Runs after Add a shared AppTag widget and use it on Timer Setup (IMP-05), which moves the built-in icon `switch` of `templates_page.dart` into `template.id.icon` (`TemplateIcon` extension).
-- References: [templates_selected.png](../../../../../../test/snapshots/goldens/templates_selected.png), [templates_custom.png](../../../../../../test/snapshots/goldens/templates_custom.png); approved [mockup](../mockup.html), states "Templates list" and "Own template with a long name".
+- References: [templates_selected.png](../../../../../../../test/snapshots/goldens/templates_selected.png), [templates_custom.png](../../../../../../../test/snapshots/goldens/templates_custom.png); approved [mockup](../../mockup.html), states "Templates list" and "Own template with a long name".
 
 ## Contract
 
@@ -60,7 +60,7 @@ The Templates page lists own templates after the built-in ones; a tap applies on
 
 ## Mockup
 
-[mockup.html](../mockup.html): "Templates list with one own template (selected)" and "Own template with a long name". The "+" in the app bar belongs to TPL-03-03.
+[mockup.html](../../mockup.html): "Templates list with one own template (selected)" and "Own template with a long name". The "+" in the app bar belongs to TPL-03-03.
 
 ## Out of scope
 
@@ -76,12 +76,12 @@ The Templates page lists own templates after the built-in ones; a tap applies on
 
 ## Acceptance
 
-- [ ] Given two own templates, when the state is built, then `customTemplates` lists them in stored order, and it updates when the settings state changes. Check: `test/features/templates/presentation/templates_view_model_test.dart` "own templates follow the settings state".
-- [ ] Given an own template is the explicit selection, when the state is built, then `selectedCustomTemplateId` is its id even if a built-in template has the same values. Check: `test/features/templates/presentation/templates_view_model_test.dart` "explicit own selection wins".
-- [ ] Given an explicit built-in selection, when the state is built, then `selectedTemplateId` is that id and `selectedCustomTemplateId` is null, even if an own template has the same values. Check: `test/features/templates/presentation/templates_view_model_test.dart` "explicit built-in selection wins".
-- [ ] Given no explicit selection and settings equal to an own template and to no built-in, when the state is built, then that own template is highlighted; equal to both, the built-in wins. Check: `test/features/templates/presentation/templates_view_model_test.dart` "matching prefers built-in templates".
-- [ ] Given settings that match nothing, when the state is built, then both ids are null (Custom card). Check: `test/features/templates/presentation/templates_view_model_test.dart` "no match shows Custom".
-- [ ] When `applyCustomTemplate` runs, then the settings view model selects that template. Check: `test/features/templates/presentation/templates_view_model_test.dart` "applying an own template selects it".
-- [ ] When a tile has `onLongPress`, then its semantics expose a long-press action with the hint "Edit template". Check: `test/features/templates/presentation/widgets/template_tile_test.dart` "long press is announced as edit".
-- [ ] When the page shows own templates with one selected, then they appear after the built-ins with their icons, the 30-character name ends with an ellipsis on one line and the selected one has the selected border, in both themes. Check: `test/snapshots/goldens/templates_own.png`.
-- [ ] When the checks run, then everything passes and `templates_selected.png` and `templates_custom.png` are unchanged. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] Given two own templates, when the state is built, then `customTemplates` lists them in stored order, and it updates when the settings state changes. Check: `test/features/templates/presentation/templates_view_model_test.dart` "own templates follow the settings state".
+- [x] Given an own template is the explicit selection, when the state is built, then `selectedCustomTemplateId` is its id even if a built-in template has the same values. Check: `test/features/templates/presentation/templates_view_model_test.dart` "explicit own selection wins".
+- [x] Given an explicit built-in selection, when the state is built, then `selectedTemplateId` is that id and `selectedCustomTemplateId` is null, even if an own template has the same values. Check: `test/features/templates/presentation/templates_view_model_test.dart` "explicit built-in selection wins".
+- [x] Given no explicit selection and settings equal to an own template and to no built-in, when the state is built, then that own template is highlighted; equal to both, the built-in wins. Check: `test/features/templates/presentation/templates_view_model_test.dart` "matching prefers built-in templates".
+- [x] Given settings that match nothing, when the state is built, then both ids are null (Custom card). Check: `test/features/templates/presentation/templates_view_model_test.dart` "no match shows Custom".
+- [x] When `applyCustomTemplate` runs, then the settings view model selects that template. Check: `test/features/templates/presentation/templates_view_model_test.dart` "applying an own template selects it".
+- [x] When a tile has `onLongPress`, then its semantics expose a long-press action with the hint "Edit template". Check: `test/features/templates/presentation/widgets/template_tile_test.dart` "long press is announced as edit".
+- [x] When the page shows own templates with one selected, then they appear after the built-ins with their icons, the 30-character name ends with an ellipsis on one line and the selected one has the selected border, in both themes. Check: `test/snapshots/goldens/templates_own.png`.
+- [x] When the checks run, then everything passes and `templates_selected.png` and `templates_custom.png` are unchanged. Check: `fvm dart tool/agent_check.dart --skip-build`.
