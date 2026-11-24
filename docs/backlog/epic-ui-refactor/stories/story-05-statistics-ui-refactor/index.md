@@ -7,7 +7,7 @@ As a user reviewing my training, I want each day's card to show its totals at a 
 ## Scope
 
 - In: the daily cards on the Statistics `List` tab and the day details. The cards get a compact total, a colored rounds · work · rest line and a work/rest bar. A card opens in place (one at a time) to list the day's sessions as flat rows, each with a template tag; the separate `/day-details` page is removed.
-- Out: the original run configuration is no longer shown. Recorded data, calculations, the `Charts` view and the consistency calendar do not change; they belong to the separate [visual activity story](../../../epic-statistics/stories/done/story-04-visualize-activity/index.md).
+- Out: the original run configuration is no longer shown. Recorded data, calculations, the `Charts` view and the consistency calendar do not change; they belong to the separate [visual activity story](../../../done/epic-statistics/stories/done/story-04-visualize-activity/index.md).
 
 ## Requirements
 
