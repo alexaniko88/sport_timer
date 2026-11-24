@@ -1,6 +1,6 @@
 ---
 id: IMP-07
-status: draft
+status: done
 type: improve
 complexity: 6
 depends-on: [IMP-06]
@@ -18,9 +18,9 @@ skills: []
 
 # Adaptive launcher icon for iOS and Android
 
-Improvements: [Improvements](../index.md)
+Improvements: [Improvements](../../index.md)
 
-Related: [IMP-06: Notification icon](../done/task-06-add-notification-icon/index.md).
+Related: [IMP-06: Notification icon](../task-06-add-notification-icon/index.md).
 
 > **Run this task by hand in an interactive session, not with `skill-dispatcher`.** It needs `rsvg-convert` (Homebrew `librsvg`) and `fvm dart run icons_launcher:create`, which dispatcher runners may not run. That is why it stays `draft`: the dispatcher only picks `ready` tasks. Ask the user before installing `librsvg` if `rsvg-convert` is missing.
 
@@ -117,7 +117,7 @@ Consumers: the iOS and Android launchers. No Dart code changes.
 
 ## Out of scope
 
-- The Android notification icon ([IMP-06](../done/task-06-add-notification-icon/index.md)).
+- The Android notification icon ([IMP-06](../task-06-add-notification-icon/index.md)).
 - macOS, web and desktop icons.
 - Showing the app icon inside the app UI.
 - The Android 12+ splash screen (it uses the launcher icon automatically; no separate config).
@@ -138,11 +138,11 @@ No Dart test: no Dart code changes, and goldens do not capture launcher icons. `
 
 ## Acceptance
 
-- [ ] When the iOS light icon is generated, then `Icon-App-1024x1024@1x.png` has no alpha and shows the white barbell on `#FF5252`, matching the mockup. Check: `sips -g hasAlpha ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png` shows `no`, and a visual check against `mockup.html`.
-- [ ] When the iOS dark icon is generated, then `Contents.json` has `luminosity` `dark` entries and the dark 1024 PNG has alpha (red barbell, transparent background). Check: `rg -n '"dark"' ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json`, then `sips -g hasAlpha` on the 1024 file that entry names shows `yes`.
-- [ ] When the iOS tinted icon is generated, then `Contents.json` has `luminosity` `tinted` entries pointing to a grayscale image (white barbell on black). Check: `rg -n '"tinted"' ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json` and a visual check of the file it names.
-- [ ] When Android 8+ loads the icon, then `mipmap-anydpi-v26/ic_launcher.xml` has `background`, `foreground` and `monochrome` layers, and the background color is `#FF5252`. Check: `rg -n "monochrome|foreground|background" android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml` and `rg -in "FF5252" android/app/src/main/res/values/colors.xml`.
-- [ ] When Android 7.x or older loads the icon, then `mipmap-*/ic_launcher.png` shows the white barbell on a red square. Check: visual check of `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png`.
-- [ ] When the foreground and monochrome layers are drawn, then the barbell is about 75% of the visible icon and inside the 66 dp safe zone. Check: visual check of `mipmap-xxxhdpi/ic_launcher_foreground.png` and `mipmap-xxxhdpi/ic_launcher_monochrome.png` against the mockup (the barbell spans about half the 432 px width, centered).
-- [ ] When the sources are listed, then the SVGs and their PNGs are in `assets/icons/launcher/`, `pubspec.yaml` points `icons_launcher` at them, and `assets/icons/app_icon.png` is gone. Check: `ls assets/icons assets/icons/launcher` and `rg -n "assets/icons" pubspec.yaml`.
-- [ ] When the change is checked, then the Android and iOS debug builds pass. Check: `fvm dart tool/agent_check.dart`.
+- [x] When the iOS light icon is generated, then `Icon-App-1024x1024@1x.png` has no alpha and shows the white barbell on `#FF5252`, matching the mockup. Check: `sips -g hasAlpha ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png` shows `no`, and a visual check against `mockup.html`.
+- [x] When the iOS dark icon is generated, then `Contents.json` has `luminosity` `dark` entries and the dark 1024 PNG has alpha (red barbell, transparent background). Check: `rg -n '"dark"' ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json`, then `sips -g hasAlpha` on the 1024 file that entry names shows `yes`.
+- [x] When the iOS tinted icon is generated, then `Contents.json` has `luminosity` `tinted` entries pointing to a grayscale image (white barbell on black). Check: `rg -n '"tinted"' ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json` and a visual check of the file it names.
+- [x] When Android 8+ loads the icon, then `mipmap-anydpi-v26/ic_launcher.xml` has `background`, `foreground` and `monochrome` layers, and the background color is `#FF5252`. Check: `rg -n "monochrome|foreground|background" android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml` and `rg -in "FF5252" android/app/src/main/res/values/colors.xml`.
+- [x] When Android 7.x or older loads the icon, then `mipmap-*/ic_launcher.png` shows the white barbell on a red square. Check: visual check of `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png`.
+- [x] When the foreground and monochrome layers are drawn, then the barbell is about 75% of the visible icon and inside the 66 dp safe zone. Check: visual check of `mipmap-xxxhdpi/ic_launcher_foreground.png` and `mipmap-xxxhdpi/ic_launcher_monochrome.png` against the mockup (the barbell spans about half the 432 px width, centered).
+- [x] When the sources are listed, then the SVGs and their PNGs are in `assets/icons/launcher/`, `pubspec.yaml` points `icons_launcher` at them, and `assets/icons/app_icon.png` is gone. Check: `ls assets/icons assets/icons/launcher` and `rg -n "assets/icons" pubspec.yaml`.
+- [x] When the change is checked, then the Android and iOS debug builds pass. Check: `fvm dart tool/agent_check.dart`.
