@@ -26,7 +26,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  final SettingsViewModel _viewModel = SettingsViewModel(getIt());
+  final SettingsViewModel _viewModel = SettingsViewModel(getIt(), getIt());
   final AccountViewModel _accountViewModel = AccountViewModel(getIt());
   final StatisticsViewModel _statisticsViewModel = StatisticsViewModel(getIt());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

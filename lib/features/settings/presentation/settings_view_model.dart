@@ -8,6 +8,8 @@ import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/domain/custom_template.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 
 typedef TimerSettingsUpdate = TimerSettings Function(TimerSettings settings);
@@ -22,6 +24,7 @@ class SettingsViewModel {
   );
 
   final SettingsRepository _settingsRepository;
+  final CustomTemplateRepository _customTemplateRepository;
   final ValueNotifier<SettingsState> _state = ValueNotifier(
     const SettingsState(
       status: SettingsStatus.initial,
@@ -31,7 +34,9 @@ class SettingsViewModel {
   );
   final List<ConfigurationUpdate> _editsBeforeLoad = [];
   TimerSettings _currentSettings = _defaults;
-  TemplateId? _selectedTemplateId;
+  String? _selectedTemplateId;
+  List<CustomTemplate> _customTemplates = const [];
+  bool _customTemplatesLoaded = false;
   TimerConfiguration? _lastSavedSettings;
   TimerConfiguration? _pendingSettings;
   Future<void>? _loadFuture;
@@ -41,7 +46,7 @@ class SettingsViewModel {
   bool _disposed = false;
   bool _styleSelected = false;
 
-  SettingsViewModel(this._settingsRepository);
+  SettingsViewModel(this._settingsRepository, this._customTemplateRepository);
 
   ValueListenable<SettingsState> get state => _state;
 
@@ -52,6 +57,7 @@ class SettingsViewModel {
 
   Future<void> _readSettings() async {
     _setStatus(SettingsStatus.loading);
+    await _loadCustomTemplates();
     final result = await _settingsRepository.getTimerConfiguration();
     final styleResult = await _settingsRepository.getTimerStyle();
     if (styleResult case Success(:final value) when !_disposed && !_styleSelected) {
@@ -88,16 +94,90 @@ class SettingsViewModel {
     return flushSettings();
   }
 
+  Future<void> selectCustomTemplate(CustomTemplate template) {
+    if (_disposed) return Future.value();
+    final configuration = TimerConfiguration(template.settings, template.id);
+    if (_lastSavedSettings == null) _editsBeforeLoad.add((_) => configuration);
+    _hasSettingsEdits = true;
+    _setConfiguration(configuration);
+    return flushSettings();
+  }
+
+  Future<bool> saveCustomTemplate(CustomTemplate template) async {
+    if (!await _ensureCustomTemplatesLoaded()) return false;
+    final index = _customTemplates.indexWhere((existing) => existing.id == template.id);
+    if (index == -1 && _customTemplates.length >= CustomTemplate.maxCount) return false;
+    final templates = List.of(_customTemplates);
+    if (index == -1) {
+      templates.add(template);
+    } else {
+      templates[index] = template;
+    }
+    if (!await _writeCustomTemplates(templates)) return false;
+    if (template.id == _selectedTemplateId && template.settings != _currentSettings) {
+      await _clearSelection();
+    }
+    return true;
+  }
+
+  Future<bool> deleteCustomTemplate(String id) async {
+    if (!await _ensureCustomTemplatesLoaded()) return false;
+    if (!_customTemplates.any((template) => template.id == id)) return true;
+    final templates = _customTemplates.where((template) => template.id != id).toList();
+    if (!await _writeCustomTemplates(templates)) return false;
+    if (id == _selectedTemplateId) await _clearSelection();
+    return true;
+  }
+
+  Future<void> _loadCustomTemplates() async {
+    final result = await _customTemplateRepository.getTemplates();
+    if (result case Success(:final value)) {
+      _customTemplates = value;
+      _customTemplatesLoaded = true;
+      if (!_disposed) _state.value = _state.value.copyWith(customTemplates: value);
+    } else if (result case Failure(:final error)) {
+      debugPrint('Could not load own templates: $error');
+    }
+  }
+
+  Future<bool> _ensureCustomTemplatesLoaded() async {
+    if (_disposed) return false;
+    if (!_customTemplatesLoaded) await _loadCustomTemplates();
+    return _customTemplatesLoaded && !_disposed;
+  }
+
+  Future<bool> _writeCustomTemplates(List<CustomTemplate> templates) async {
+    final result = await _customTemplateRepository.saveTemplates(templates);
+    if (result is Failure) return false;
+    _customTemplates = templates;
+    // The selection may point to the old value of an edited template.
+    _setConfiguration(_currentConfiguration);
+    return true;
+  }
+
+  Future<void> _clearSelection() {
+    _selectedTemplateId = null;
+    _hasSettingsEdits = true;
+    _setConfiguration(_currentConfiguration);
+    return flushSettings();
+  }
+
   TimerConfiguration _validated(TimerConfiguration configuration) {
+    final id = configuration.selectedTemplateId;
     for (final template in builtInTemplates) {
-      if (template.id.name == configuration.selectedTemplateId && template.settings == configuration.settings) {
+      if (template.id.name == id && template.settings == configuration.settings) {
+        return configuration;
+      }
+    }
+    for (final template in _customTemplates) {
+      if (template.id == id && template.settings == configuration.settings) {
         return configuration;
       }
     }
     return TimerConfiguration(configuration.settings, null);
   }
 
-  TimerConfiguration get _currentConfiguration => TimerConfiguration(_currentSettings, _selectedTemplateId?.name);
+  TimerConfiguration get _currentConfiguration => TimerConfiguration(_currentSettings, _selectedTemplateId);
 
   Future<void> flushSettings() async {
     if (!_hasSettingsEdits) return;
@@ -148,12 +228,17 @@ class SettingsViewModel {
 
   void _setConfiguration(TimerConfiguration configuration) {
     _currentSettings = configuration.settings;
-    _selectedTemplateId = TemplateId.values.asNameMap()[configuration.selectedTemplateId];
+    _selectedTemplateId = configuration.selectedTemplateId;
+    final builtInId = TemplateId.values.asNameMap()[_selectedTemplateId];
+    final customTemplate = _customTemplates.where((template) => template.id == _selectedTemplateId).firstOrNull;
     if (!_disposed) {
       _state.value = _state.value.copyWith(
         timerSettings: configuration.settings,
-        selectedTemplateId: _selectedTemplateId,
-        clearSelectedTemplate: _selectedTemplateId == null,
+        selectedTemplateId: builtInId,
+        clearSelectedTemplate: builtInId == null,
+        customTemplates: _customTemplates,
+        selectedCustomTemplate: customTemplate,
+        clearSelectedCustomTemplate: customTemplate == null,
       );
     }
   }
