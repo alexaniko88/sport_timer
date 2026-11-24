@@ -28,6 +28,8 @@ import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 import 'package:sport_timer/shared/presentation/theme/timer_colors.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_tag.dart';
+import 'package:sport_timer/features/templates/presentation/extensions/template_icon_extension.dart';
 import '../../statistics/fake_activity_repository.dart';
 import '../fake_custom_template_repository.dart';
 
@@ -149,6 +151,8 @@ const _cases = [
     values: ['00:20', '01:30', '00:30', '8'],
   ),
 ];
+
+Finder _tagNamed(String name) => find.descendant(of: find.byType(AppTag), matching: find.text(name));
 
 void main() {
   late _SettingsRepository repository;
@@ -524,7 +528,6 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        final semantics = tester.ensureSemantics();
         await tester.pumpWidget(
           MaterialApp.router(
             routerConfig: router,
@@ -537,8 +540,26 @@ void main() {
         await tester.pumpAndSettle();
         final tab = locale == 'en' ? 'Templates' : 'Plantillas';
         final name = locale == 'en' ? 'Full Abs' : 'Abdominales completos';
-        final label = locale == 'en' ? 'Template: Full Abs' : 'Plantilla: Abdominales completos';
-        expect(find.textContaining(locale == 'en' ? 'Template:' : 'Plantilla:'), findsNothing);
+        final custom = locale == 'en' ? 'Custom' : 'Personalizado';
+        final prefix = locale == 'en' ? 'Template' : 'Plantilla';
+        const hyrox = 'Hyrox';
+        expect(find.byType(AppTag), findsOneWidget);
+        expect(_tagNamed(custom), findsOneWidget);
+        expect(find.descendant(of: find.byType(AppTag), matching: find.byIcon(Icons.tune)), findsOneWidget);
+        expect(find.textContaining('$prefix:'), findsNothing);
+        expect(
+          tester.getSemantics(find.byType(InkWell).first),
+          matchesSemantics(label: '$prefix: $custom', isButton: true, hasTapAction: true),
+        );
+        expect(
+          tester.getTopLeft(find.byType(AppTag)).dx,
+          lessThan(tester.getTopLeft(find.byType(TimerSettingCard).first).dx + 1),
+        );
+        await tester.tap(find.byType(AppTag));
+        await tester.pumpAndSettle();
+        expect(find.byType(TemplatesPage), findsOneWidget);
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
         await tester.tap(find.byIcon(Icons.menu));
         await tester.pumpAndSettle();
         expect(find.text(tab), findsOneWidget);
@@ -549,11 +570,15 @@ void main() {
         expect(find.byType(TemplatesPage), findsOneWidget);
         await tester.tap(find.byType(BackButton));
         await tester.pumpAndSettle();
-        final shortcut = find.text(label);
+        final shortcut = find.byType(AppTag);
         expect(shortcut, findsOneWidget);
-        final node = tester.getSemantics(shortcut);
-        expect(node.flagsCollection.isButton, isTrue);
-        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        expect(_tagNamed(name), findsOneWidget);
+        expect(find.descendant(of: shortcut, matching: find.byIcon(TemplateId.fullAbs.icon)), findsOneWidget);
+        expect(find.textContaining('$prefix:'), findsNothing);
+        expect(
+          tester.getSemantics(find.byType(InkWell).first),
+          matchesSemantics(label: '$prefix: $name', isButton: true, hasTapAction: true),
+        );
         await tester.tap(shortcut);
         await tester.pumpAndSettle();
         expect(find.byType(TemplatesPage), findsOneWidget);
@@ -563,8 +588,12 @@ void main() {
         expect(find.byType(TemplatesPage), findsOneWidget);
         await tester.tap(find.byType(BackButton));
         await tester.pumpAndSettle();
-        expect(find.text(locale == 'en' ? 'Template: Hyrox' : 'Plantilla: Hyrox'), findsOneWidget);
-        semantics.dispose();
+        expect(_tagNamed(hyrox), findsOneWidget);
+        expect(find.descendant(of: find.byType(AppTag), matching: find.byIcon(TemplateId.hyrox.icon)), findsOneWidget);
+        expect(
+          tester.getSemantics(find.byType(InkWell).first),
+          matchesSemantics(label: '$prefix: $hyrox', isButton: true, hasTapAction: true),
+        );
       });
     }
   }
@@ -591,7 +620,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Template: Default'), findsOneWidget);
+      expect(_tagNamed('Default'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.scrollUntilVisible(
         find.text('Rounds'),
@@ -607,6 +636,68 @@ void main() {
       await tester.tap(find.text('Rounds'));
       await tester.pumpAndSettle();
       expect(find.byType(ListWheelScrollView), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('Timer Setup shows no template tag while settings load', (tester) async {
+    final gate = Completer<void>();
+    repository.readGate = gate;
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        theme: SportTheme.light,
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(TimerSetupPage), findsOneWidget);
+    expect(find.byType(AppTag), findsNothing);
+
+    gate.complete();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AppTag), findsOneWidget);
+    expect(_tagNamed('Custom'), findsOneWidget);
+  });
+
+  for (final (:tag, :templateId) in [
+    (tag: 'Abdominales completos', templateId: TemplateId.fullAbs.name),
+    (tag: 'Personalizado', templateId: null),
+  ]) {
+    testWidgets('Spanish compact setup shows the $tag tag at text scale 1.5', (tester) async {
+      repository.stored = _cases[1].settings;
+      repository.selectedTemplateId = templateId;
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          routerConfig: router,
+          theme: SportTheme.light,
+          locale: const Locale('es'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.5)),
+            child: child!,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(_tagNamed(tag), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.scrollUntilVisible(
+        find.text('Rondas'),
+        120,
+        scrollable: find.descendant(of: find.byType(TimerSetupPage), matching: find.byType(Scrollable)).first,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Rondas'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }
@@ -940,7 +1031,7 @@ void main() {
 
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    expect(find.text('Template: Hyrox'), findsOneWidget);
+    expect(_tagNamed('Hyrox'), findsOneWidget);
 
     // Reopen without choosing
     await tester.tap(find.byIcon(Icons.menu));
@@ -953,7 +1044,7 @@ void main() {
     // Pop back without choosing
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
-    expect(find.text('Template: Hyrox'), findsOneWidget);
+    expect(_tagNamed('Hyrox'), findsOneWidget);
     expect(repository.stored, _cases.firstWhere((c) => c.name == 'Hyrox').settings);
   });
 }
