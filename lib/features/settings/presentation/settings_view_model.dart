@@ -13,6 +13,7 @@ import 'package:sport_timer/features/templates/domain/custom_template_repository
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 
 typedef TimerSettingsUpdate = TimerSettings Function(TimerSettings settings);
+typedef TemplateWrite = Future<bool> Function();
 typedef ConfigurationUpdate = TimerConfiguration Function(TimerConfiguration configuration);
 
 class SettingsViewModel {
@@ -41,6 +42,7 @@ class SettingsViewModel {
   TimerConfiguration? _pendingSettings;
   Future<void>? _loadFuture;
   Future<void>? _saveFuture;
+  Future<void>? _templateWrite;
   bool _hasSettingsEdits = false;
   bool _saveFailed = false;
   bool _disposed = false;
@@ -103,7 +105,19 @@ class SettingsViewModel {
     return flushSettings();
   }
 
-  Future<bool> saveCustomTemplate(CustomTemplate template) async {
+  Future<bool> saveCustomTemplate(CustomTemplate template) =>
+      _enqueueTemplateWrite(() => _saveCustomTemplate(template));
+
+  Future<bool> deleteCustomTemplate(String id) => _enqueueTemplateWrite(() => _deleteCustomTemplate(id));
+
+  // Each write starts from the list the previous one stored, so overlapping calls never drop a change.
+  Future<bool> _enqueueTemplateWrite(TemplateWrite write) {
+    final result = (_templateWrite ?? Future<void>.value()).then((_) => write());
+    _templateWrite = result.then((_) {}, onError: (_) {});
+    return result;
+  }
+
+  Future<bool> _saveCustomTemplate(CustomTemplate template) async {
     if (!await _ensureCustomTemplatesLoaded()) return false;
     final index = _customTemplates.indexWhere((existing) => existing.id == template.id);
     if (index == -1 && _customTemplates.length >= CustomTemplate.maxCount) return false;
@@ -120,7 +134,7 @@ class SettingsViewModel {
     return true;
   }
 
-  Future<bool> deleteCustomTemplate(String id) async {
+  Future<bool> _deleteCustomTemplate(String id) async {
     if (!await _ensureCustomTemplatesLoaded()) return false;
     if (!_customTemplates.any((template) => template.id == id)) return true;
     final templates = _customTemplates.where((template) => template.id != id).toList();

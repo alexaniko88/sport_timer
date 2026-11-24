@@ -518,6 +518,16 @@ void main() {
       expect(repository.selectedTemplateId, isNull);
     });
 
+    test('overlapping saves keep both templates', () async {
+      await viewModel.loadSettings();
+      final first = viewModel.saveCustomTemplate(own('custom-1'));
+      final second = viewModel.saveCustomTemplate(own('custom-2'));
+      expect(await first, isTrue);
+      expect(await second, isTrue);
+      expect(templates.stored.map((template) => template.id), ['custom-1', 'custom-2']);
+      expect(viewModel.state.value.customTemplates, templates.stored);
+    });
+
     test('saving a new template appends it', () async {
       templates.stored = [own('custom-1')];
       await viewModel.loadSettings();
