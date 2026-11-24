@@ -197,6 +197,152 @@ void main() {
     return rows.single['ended_at_utc_ms'] as int?;
   }
 
+  group('deleteAccountActivity', () {
+    test('deletes only the signed-in account', () async {
+      await seed('run-b', 'b');
+      final handleB = await access.createSession(_session('run-b2', 'b'));
+      await access.saveDraft(session: handleB, phases: [_work('db', 'run-b2', 0, 30000)], checkpointAtUtcMs: 3000);
+      await seed('run-a', 'a');
+      final handleA = await access.createSession(_session('run-a2', 'a'));
+      await access.saveDraft(session: handleA, phases: [_work('da', 'run-a2', 0, 30000)], checkpointAtUtcMs: 3000);
+
+      final result = await repository.deleteAccountActivity();
+
+      expect(result, isA<Success<void>>());
+      final db = await database.connection;
+      expect(await db.query('timer_sessions', where: 'account_id = ?', whereArgs: ['a']), isEmpty);
+      expect(await count('timer_sessions'), 2);
+      expect(await count('completed_phases'), 1);
+      expect(await db.query('draft_phases'), hasLength(1));
+      expect((await db.query('draft_phases')).single['id'], 'db');
+    });
+
+    test('deleting an empty account succeeds', () async {
+      var emissions = 0;
+      final subscription = repository.changes.listen((_) => emissions++);
+      addTearDown(subscription.cancel);
+
+      final result = await repository.deleteAccountActivity();
+
+      expect(result, isA<Success<void>>());
+      expect(emissions, 1);
+    });
+
+    test('delete needs an account and an open access', () async {
+      await seed('run-a', 'a');
+      accounts.account = null;
+
+      final withoutAccount = await repository.deleteAccountActivity();
+
+      expect(withoutAccount, isA<Failure<void>>());
+      expect(await count('timer_sessions'), 1);
+
+      accounts.account = 'a';
+      await access.close();
+      final closed = await repository.deleteAccountActivity();
+
+      expect(closed, isA<Failure<void>>());
+      expect(await count('timer_sessions'), 1);
+      expect(await count('completed_phases'), 1);
+    });
+
+    test('account change aborts the delete', () async {
+      await seed('run-b', 'b');
+      await seed('run-a', 'a');
+
+      final pending = repository.deleteAccountActivity();
+      accounts.account = 'b';
+      accounts.controller.add(null);
+      final result = await pending;
+
+      expect(result, isA<Failure<void>>());
+      expect(await count('timer_sessions'), 2);
+      expect(await count('completed_phases'), 2);
+    });
+
+    test('drops the account\'s writes from before the delete', () async {
+      final creation = access.prepareSession(_session('run-new', 'a'));
+      final handle = await access.createSession(_session('run-old', 'a'));
+      await repository.deleteAccountActivity();
+      var emissions = 0;
+      final subscription = repository.changes.listen((_) => emissions++);
+      addTearDown(subscription.cancel);
+
+      final created = await access.createPreparedSession(creation);
+      final finished = await repository.finishRun(
+        session: handle,
+        phases: [_phase('p', 'run-old', 0)],
+        endedAtUtcMs: 5000,
+      );
+      final drafted = await repository.saveDraft(
+        session: handle,
+        phases: [_work('d', 'run-old', 0, 30000)],
+        checkpointAtUtcMs: 3000,
+      );
+
+      expect(created, isNotNull);
+      expect(finished, isA<Success<void>>());
+      expect(drafted, isA<Success<void>>());
+      expect(await count('timer_sessions'), 0);
+      expect(await count('completed_phases'), 0);
+      expect(await count('draft_phases'), 0);
+      expect(emissions, 0);
+    });
+
+    test('other accounts keep their pending writes', () async {
+      accounts.account = 'b';
+      final handleB = await access.createSession(_session('run-b', 'b'));
+      accounts.account = 'a';
+      await repository.deleteAccountActivity();
+      accounts.account = 'b';
+
+      final result = await repository.finishRun(
+        session: handleB,
+        phases: [_phase('p', 'run-b', 0)],
+        endedAtUtcMs: 5000,
+      );
+
+      expect(result, isA<Success<void>>());
+      expect(await count('completed_phases'), 1);
+      expect(await endOf('run-b'), 5000);
+    });
+
+    test('recovery restores nothing after a delete', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      await access.saveDraft(session: handle, phases: [_work('d1', 'run-a', 0, 30000)], checkpointAtUtcMs: 9000);
+
+      await repository.deleteAccountActivity();
+      final result = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+
+      expect(result, isA<Success<void>>());
+      expect(await count('draft_phases'), 0);
+      expect(await count('timer_sessions'), 0);
+      expect(await count('completed_phases'), 0);
+    });
+
+    test('records new activity after a delete', () async {
+      await seed('old', 'a');
+      await repository.deleteAccountActivity();
+
+      await seed('new', 'a');
+
+      final days = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
+      expect(days, hasLength(1));
+      expect(days.single.roundCount, 1);
+      expect(await count('timer_sessions'), 1);
+    });
+
+    test('purge and account delete epochs are independent', () async {
+      await repository.deleteAccountActivity();
+      await repository.deleteAllActivity();
+
+      await seed('new', 'a');
+
+      expect(await count('timer_sessions'), 1);
+      expect(await count('completed_phases'), 1);
+    });
+  });
+
   group('finishRun', () {
     test('finishRun stores the phases and the end time', () async {
       final handle = await access.createSession(_session('run-a', 'a'));
