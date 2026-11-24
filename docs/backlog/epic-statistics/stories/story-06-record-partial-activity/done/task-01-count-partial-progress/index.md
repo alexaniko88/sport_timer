@@ -19,7 +19,7 @@ Epic: [Statistics](../../../../index.md)
 
 ## Goal
 
-Move the phase counting out of the recorder's private run into a small, testable tracker, and teach it to report the phase in progress in whole seconds (R1, R3, R7). What gets written to the database does not change in this task; [Save the run once when leaving the timer (STAT-06-02)](../../task-02-save-on-leaving-timer/index.md) and [Save drafts while the timer runs (STAT-06-05)](../../task-05-save-drafts-while-running/index.md) use the new snapshot to write.
+Move the phase counting out of the recorder's private run into a small, testable tracker, and teach it to report the phase in progress in whole seconds (R1, R3, R7). What gets written to the database does not change in this task; [Save the run once when leaving the timer (STAT-06-02)](../task-02-save-on-leaving-timer/index.md) and [Save drafts while the timer runs (STAT-06-05)](../../task-05-save-drafts-while-running/index.md) use the new snapshot to write.
 
 ## Context
 
