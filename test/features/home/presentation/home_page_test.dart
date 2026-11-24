@@ -5,6 +5,7 @@ import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/home/presentation/home_page.dart';
 import 'package:sport_timer/features/settings/domain/settings_repository.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
 import 'package:sport_timer/features/settings/domain/timer_configuration.dart';
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
@@ -19,6 +20,7 @@ import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 
 import '../../statistics/fake_activity_repository.dart';
+import '../../templates/fake_custom_template_repository.dart';
 
 class _FakeSettingsRepository implements SettingsRepository {
   TimerSettings storedSettings = const TimerSettings(
@@ -90,6 +92,7 @@ void main() {
     await getIt.reset();
     settings = _FakeSettingsRepository();
     getIt.registerSingleton<SettingsRepository>(settings);
+    getIt.registerSingleton<CustomTemplateRepository>(FakeCustomTemplateRepository());
     getIt.registerSingleton<UserRepository>(_FakeUserRepository());
     getIt.registerSingleton<ActivityRepository>(FakeEmptyActivityRepository());
     router = GoRouter(

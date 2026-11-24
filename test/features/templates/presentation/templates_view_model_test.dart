@@ -12,6 +12,7 @@ import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
 import 'package:sport_timer/features/templates/presentation/templates_state.dart';
 import 'package:sport_timer/features/templates/presentation/templates_view_model.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
+import '../fake_custom_template_repository.dart';
 
 class _FakeSettingsRepository implements SettingsRepository {
   String? selectedTemplateId;
@@ -66,7 +67,7 @@ void main() {
 
   setUp(() {
     repository = _FakeSettingsRepository();
-    settings = SettingsViewModel(repository);
+    settings = SettingsViewModel(repository, FakeCustomTemplateRepository());
     templates = TemplatesViewModel(settings);
   });
 

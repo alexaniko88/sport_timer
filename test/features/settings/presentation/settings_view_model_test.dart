@@ -9,7 +9,10 @@ import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/domain/custom_template.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_icon.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
+import '../../templates/fake_custom_template_repository.dart';
 
 class _FakeSettingsRepository implements SettingsRepository {
   String? selectedTemplateId;
@@ -79,11 +82,13 @@ class _FakeSettingsRepository implements SettingsRepository {
 
 void main() {
   late _FakeSettingsRepository repository;
+  late FakeCustomTemplateRepository templates;
   late SettingsViewModel viewModel;
 
   setUp(() {
     repository = _FakeSettingsRepository();
-    viewModel = SettingsViewModel(repository);
+    templates = FakeCustomTemplateRepository();
+    viewModel = SettingsViewModel(repository, templates);
   });
 
   tearDown(() => viewModel.dispose());
@@ -102,7 +107,7 @@ void main() {
       await viewModel.selectTemplate(template);
       expect(viewModel.state.value.selectedTemplateId, template.id);
       expect(repository.selectedTemplateId, template.id.name);
-      final restarted = SettingsViewModel(repository);
+      final restarted = SettingsViewModel(repository, templates);
       await restarted.loadSettings();
       expect(restarted.state.value.selectedTemplateId, template.id);
       restarted.dispose();
@@ -135,7 +140,7 @@ void main() {
         }
         expect(viewModel.state.value.selectedTemplateId, isNull);
         await viewModel.flushSettings();
-        final restarted = SettingsViewModel(repository);
+        final restarted = SettingsViewModel(repository, templates);
         await restarted.loadSettings();
         expect(restarted.state.value.selectedTemplateId, isNull);
         restarted.dispose();
@@ -255,7 +260,7 @@ void main() {
       await viewModel.flushSettings();
 
       expect(repository.savedSettings, [viewModel.state.value.timerSettings]);
-      final nextSession = SettingsViewModel(repository);
+      final nextSession = SettingsViewModel(repository, templates);
       await nextSession.loadSettings();
       expect(nextSession.state.value.timerSettings, viewModel.state.value.timerSettings);
       nextSession.dispose();
@@ -404,7 +409,7 @@ void main() {
     });
 
     test('dispose flushes dirty settings without notifying disposed state', () async {
-      final model = SettingsViewModel(repository);
+      final model = SettingsViewModel(repository, templates);
       await model.loadSettings();
       final gate = Completer<void>();
       repository.settingsSaveGate = gate;
@@ -418,7 +423,7 @@ void main() {
     });
 
     test('dispose during loading preserves edits and untouched stored fields', () async {
-      final model = SettingsViewModel(repository);
+      final model = SettingsViewModel(repository, templates);
       final gate = Completer<void>();
       repository.settingsReadGate = gate;
       final loading = model.loadSettings();
@@ -431,6 +436,180 @@ void main() {
 
       expect(repository.storedSettings.rounds, 8);
       expect(repository.storedSettings.roundTime, const Duration(seconds: 90));
+    });
+  });
+
+  group('own templates', () {
+    CustomTemplate own(String id, {String name = 'Mine', int rounds = 7}) => CustomTemplate(
+          id: id,
+          name: name,
+          icon: CustomTemplateIcon.values.first,
+          settings: repository.storedSettings.copyWith(rounds: rounds),
+        );
+
+    test('loads own templates with the settings', () async {
+      templates.stored = [own('custom-2'), own('custom-1')];
+      await viewModel.loadSettings();
+      expect(viewModel.state.value.customTemplates, templates.stored);
+    });
+
+    test('own template load failure keeps settings', () async {
+      templates.failLoad = true;
+      await viewModel.loadSettings();
+      expect(viewModel.state.value.customTemplates, isEmpty);
+      expect(viewModel.state.value.status, SettingsStatus.loaded);
+      expect(viewModel.state.value.timerSettings, repository.storedSettings);
+    });
+
+    test('restores a valid own selection only', () async {
+      final template = own('custom-1');
+      templates.stored = [template];
+      repository.storedSettings = template.settings;
+      repository.selectedTemplateId = 'custom-1';
+      await viewModel.loadSettings();
+      expect(viewModel.state.value.selectedCustomTemplate, template);
+      expect(viewModel.state.value.selectedTemplateId, isNull);
+
+      final different = SettingsViewModel(repository, templates);
+      repository.storedSettings = template.settings.copyWith(rounds: 2);
+      await different.loadSettings();
+      expect(different.state.value.selectedCustomTemplate, isNull);
+      expect(different.state.value.selectedTemplateId, isNull);
+      different.dispose();
+
+      final unknown = SettingsViewModel(repository, templates);
+      repository.storedSettings = template.settings;
+      repository.selectedTemplateId = 'custom-9';
+      await unknown.loadSettings();
+      expect(unknown.state.value.selectedCustomTemplate, isNull);
+      expect(unknown.state.value.selectedTemplateId, isNull);
+      unknown.dispose();
+    });
+
+    test('built-in selection still restores', () async {
+      final builtIn = builtInTemplates.first;
+      templates.stored = [own('custom-1')];
+      repository.storedSettings = builtIn.settings;
+      repository.selectedTemplateId = builtIn.id.name;
+      await viewModel.loadSettings();
+      expect(viewModel.state.value.selectedTemplateId, builtIn.id);
+      expect(viewModel.state.value.selectedCustomTemplate, isNull);
+    });
+
+    test('selecting an own template saves its id', () async {
+      final template = own('custom-1');
+      templates.stored = [template];
+      await viewModel.loadSettings();
+      await viewModel.selectCustomTemplate(template);
+      expect(viewModel.state.value.timerSettings, template.settings);
+      expect(viewModel.state.value.selectedCustomTemplate, template);
+      expect(repository.selectedTemplateId, 'custom-1');
+      expect(repository.storedSettings, template.settings);
+    });
+
+    test('editing a setting clears the own selection', () async {
+      final template = own('custom-1');
+      templates.stored = [template];
+      await viewModel.loadSettings();
+      await viewModel.selectCustomTemplate(template);
+      viewModel.updateRounds(template.settings.rounds + 1);
+      await viewModel.flushSettings();
+      expect(viewModel.state.value.selectedCustomTemplate, isNull);
+      expect(repository.selectedTemplateId, isNull);
+    });
+
+    test('overlapping saves keep both templates', () async {
+      await viewModel.loadSettings();
+      final first = viewModel.saveCustomTemplate(own('custom-1'));
+      final second = viewModel.saveCustomTemplate(own('custom-2'));
+      expect(await first, isTrue);
+      expect(await second, isTrue);
+      expect(templates.stored.map((template) => template.id), ['custom-1', 'custom-2']);
+      expect(viewModel.state.value.customTemplates, templates.stored);
+    });
+
+    test('saving a new template appends it', () async {
+      templates.stored = [own('custom-1')];
+      await viewModel.loadSettings();
+      final settingsBefore = viewModel.state.value.timerSettings;
+      final added = own('custom-2');
+      expect(await viewModel.saveCustomTemplate(added), isTrue);
+      expect(viewModel.state.value.customTemplates.last, added);
+      expect(viewModel.state.value.customTemplates, hasLength(2));
+      expect(templates.stored, hasLength(2));
+      expect(viewModel.state.value.timerSettings, settingsBefore);
+    });
+
+    test('editing keeps the position', () async {
+      templates.stored = [own('custom-1'), own('custom-2')];
+      await viewModel.loadSettings();
+      final renamed = own('custom-1', name: 'Renamed');
+      expect(await viewModel.saveCustomTemplate(renamed), isTrue);
+      expect(viewModel.state.value.customTemplates, [renamed, templates.stored.last]);
+      expect(templates.stored.first, renamed);
+    });
+
+    test('the 21st template is refused', () async {
+      templates.stored = [for (var i = 0; i < CustomTemplate.maxCount; i++) own('custom-$i')];
+      await viewModel.loadSettings();
+      expect(await viewModel.saveCustomTemplate(own('custom-99')), isFalse);
+      expect(templates.saveCalls, 0);
+      expect(viewModel.state.value.customTemplates, hasLength(CustomTemplate.maxCount));
+    });
+
+    test('editing the selected template updates or clears the selection', () async {
+      final template = own('custom-1');
+      templates.stored = [template];
+      await viewModel.loadSettings();
+      await viewModel.selectCustomTemplate(template);
+
+      final renamed = template.copyWith(name: 'New name');
+      expect(await viewModel.saveCustomTemplate(renamed), isTrue);
+      expect(viewModel.state.value.selectedCustomTemplate, renamed);
+
+      final changed = renamed.copyWith(settings: renamed.settings.copyWith(rounds: 12));
+      expect(await viewModel.saveCustomTemplate(changed), isTrue);
+      expect(viewModel.state.value.selectedCustomTemplate, isNull);
+      expect(viewModel.state.value.timerSettings, template.settings);
+      expect(repository.selectedTemplateId, isNull);
+    });
+
+    test('deleting the selected template clears the selection', () async {
+      final template = own('custom-1');
+      templates.stored = [template];
+      await viewModel.loadSettings();
+      await viewModel.selectCustomTemplate(template);
+      expect(await viewModel.deleteCustomTemplate('custom-1'), isTrue);
+      expect(viewModel.state.value.customTemplates, isEmpty);
+      expect(viewModel.state.value.selectedCustomTemplate, isNull);
+      expect(viewModel.state.value.timerSettings, template.settings);
+      expect(repository.selectedTemplateId, isNull);
+      expect(await viewModel.deleteCustomTemplate('custom-404'), isTrue);
+    });
+
+    test('failed template write keeps the state', () async {
+      final template = own('custom-1');
+      templates.stored = [template];
+      await viewModel.loadSettings();
+      templates.failSave = true;
+      expect(await viewModel.saveCustomTemplate(own('custom-2')), isFalse);
+      expect(await viewModel.deleteCustomTemplate('custom-1'), isFalse);
+      expect(viewModel.state.value.customTemplates, [template]);
+    });
+
+    test('no write after a failed load', () async {
+      final template = own('custom-1');
+      templates.stored = [template];
+      templates.failLoad = true;
+      await viewModel.loadSettings();
+      expect(await viewModel.saveCustomTemplate(own('custom-2')), isFalse);
+      expect(templates.saveCalls, 0);
+
+      templates.failLoad = false;
+      final added = own('custom-2');
+      expect(await viewModel.saveCustomTemplate(added), isTrue);
+      expect(templates.stored, [template, added]);
+      expect(viewModel.state.value.customTemplates, [template, added]);
     });
   });
 
@@ -457,7 +636,7 @@ void main() {
 
     test('changes no state after dispose', () async {
       // A separate model, because tearDown disposes the shared one.
-      final model = SettingsViewModel(repository);
+      final model = SettingsViewModel(repository, templates);
       final future = model.selectTimerStyle(TimerStyle.fullColor);
       model.dispose();
 
