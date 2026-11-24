@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +20,9 @@ import 'package:sport_timer/shared/presentation/theme/app_spacing.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final bool developerToolsEnabled;
+
+  const HomePage({super.key, this.developerToolsEnabled = kDebugMode});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -62,6 +65,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   void _onDrawerTileTapped(RoutePath route) {
     _scaffoldKey.currentState?.closeDrawer();
     context.pushNamed(route.value, extra: _viewModel);
+  }
+
+  void _openDeveloperTools() {
+    _scaffoldKey.currentState?.closeDrawer();
+    context.pushNamed(RoutePath.developer.value);
   }
 
   void _onItemTapped(int index) {
@@ -164,6 +172,39 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                   },
                 ),
               ),
+              if (widget.developerToolsEnabled) ...[
+                const Divider(height: 1, indent: AppSpacing.s16, endIndent: AppSpacing.s16),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s16,
+                    AppSpacing.s12,
+                    AppSpacing.s16,
+                    AppSpacing.s24,
+                  ),
+                  child: Semantics(
+                    button: true,
+                    child: AppSurface(
+                      onTap: _openDeveloperTools,
+                      child: Row(
+                        children: [
+                          Icon(Icons.bug_report_outlined, color: colorScheme.primary),
+                          const Gap(AppSpacing.s12),
+                          Expanded(
+                            child: Text(
+                              'Developer tools',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.tileTitle,
+                            ),
+                          ),
+                          const Gap(AppSpacing.s12),
+                          Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

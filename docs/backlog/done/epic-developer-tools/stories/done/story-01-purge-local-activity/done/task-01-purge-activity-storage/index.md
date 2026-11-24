@@ -26,7 +26,7 @@ skills: []
 
 Story: [Purge local activity](../../index.md)
 
-Epic: [Developer tools](../../../../index.md)
+Epic: [Developer tools](../../../../../index.md)
 
 ## Goal
 
@@ -64,13 +64,13 @@ Add a storage operation that deletes all local activity (sessions and their phas
 
 - **Purge means purge:** anything queued before the purge is dropped silently and returns success, so nothing comes back and the recorder shows no failure. Chosen by the user.
 - **Overlapping writes:** a creation or write issued while the purge call is still running (after the epoch bump, before the transaction) carries the new epoch and may still be removed by the purge transaction. This is accepted, because the purge is a developer action. Tests create post-purge data only after awaiting `deleteAllActivity()`, and no test relies on the overlapping case.
-- **Not dependent on the delete statistics story:** this purge covers all accounts and is independent of the user-facing [Delete statistics story](../../../../../epic-statistics/stories/story-05-delete-statistics/index.md). Chosen by the user.
+- **Not dependent on the delete statistics story:** this purge covers all accounts and is independent of the user-facing [Delete statistics story](../../../../../../../epic-statistics/stories/story-05-delete-statistics/index.md). Chosen by the user.
 - **Real-SQLite unit tests with `sqflite_common_ffi`:** add it as a dev dependency, so the purge is tested against a real database with plain `flutter test`, locally and in CI, with no emulator and no integration tests. Chosen by the user.
 - **In-memory test database:** every test opens `ActivityDatabase(databasePath: inMemoryDatabasePath)`, so nothing is written to disk, no test data is left behind and the tests stay fast. Chosen by the user over a temporary file.
 
 ## Out of scope
 
-- The developer tools ViewModel (that is [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md)) and any UI, route or drawer change (that is [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md)).
+- The developer tools ViewModel (that is [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md)) and any UI, route or drawer change (that is [Add the developer page (DEV-01-03)](../task-03-add-developer-page/index.md)).
 - Account-scoped deletion (the delete statistics story), deleting single days or runs, deleting settings or signing out.
 - Changing `DefaultTimerActivityRecorder`, the schema or the schema version.
 - Adding an Android `integration_test/` suite.

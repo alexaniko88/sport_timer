@@ -33,6 +33,7 @@ import 'package:sport_timer/features/timer/domain/timer_status.dart';
 import 'package:sport_timer/features/user/domain/user_repository.dart';
 import 'package:sport_timer/features/user/domain/app_user.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
+import 'package:sport_timer/features/developer/presentation/developer_tools_page.dart';
 import 'package:sport_timer/features/home/presentation/home_page.dart';
 import 'package:sport_timer/features/login/presentation/login_page.dart';
 import 'package:sport_timer/features/timer/presentation/widgets/full_color_timer_view.dart';
@@ -41,6 +42,7 @@ import 'package:sport_timer/features/timer/presentation/widgets/rounds_strip_tim
 import 'package:sport_timer/features/settings/presentation/timer_styles/timer_styles_page.dart';
 import 'package:sport_timer/features/templates/presentation/templates_page.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
+import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
 import '../features/templates/fake_custom_template_repository.dart';
 
@@ -471,6 +473,39 @@ void main() {
               configureFakeDependencies();
               return _lightAndDarkGroup(
                 builder: () => const HomePage(),
+              );
+            },
+          );
+
+          goldenTest(
+            'developer tools page',
+            fileName: 'developer_tools',
+            constraints: _pairConstraints,
+            builder: () {
+              configureFakeDependencies();
+              return _lightAndDarkGroup(
+                builder: () => const DeveloperToolsPage(),
+              );
+            },
+          );
+
+          goldenTest(
+            'developer tools confirmation dialog open',
+            fileName: 'developer_tools_dialog',
+            constraints: _pairConstraints,
+            whilePerforming: (tester) async {
+              // Both frames share one overlay, so a real tap on the second tile hits the first dialog's barrier.
+              final tiles = tester.widgetList<AppSurface>(find.byType(AppSurface));
+              for (final tile in tiles.toList()) {
+                tile.onTap?.call();
+              }
+              await tester.pumpAndSettle();
+              return null;
+            },
+            builder: () {
+              configureFakeDependencies();
+              return _lightAndDarkGroup(
+                builder: () => const DeveloperToolsPage(),
               );
             },
           );

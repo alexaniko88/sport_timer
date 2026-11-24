@@ -19,12 +19,12 @@ Give developers a place in debug builds to perform useful local maintenance whil
 - **Debug gate:** one `developerToolsEnabled` flag, set from `kDebugMode` by the app and settable by tests, so the release behavior is tested too.
 - **No localization:** the developer page is never seen by end users, so its texts are plain English constants in the code, with no ARB keys.
 - **Purge means purge:** writes queued before a purge (for example by the timer recorder) are dropped silently and can never bring purged history back.
-- The app stores activity in a local SQLite database (`activity.db`). The [delete statistics story](../epic-statistics/stories/story-05-delete-statistics/index.md) is a separate, user-facing, account-specific action; this epic does not depend on it.
+- The app stores activity in a local SQLite database (`activity.db`). The [delete statistics story](../../epic-statistics/stories/story-05-delete-statistics/index.md) is a separate, user-facing, account-specific action; this epic does not depend on it.
 
 ## Stories
 
-1. [Purge local activity](stories/story-01-purge-local-activity/index.md) — debug-only page and purge action.
+1. [Purge local activity](stories/done/story-01-purge-local-activity/index.md) — debug-only page and purge action.
 
 ## Delivery order
 
-[Purge activity storage (DEV-01-01)](stories/story-01-purge-local-activity/done/task-01-purge-activity-storage/index.md) first, then [Add the developer tools view model (DEV-01-02)](stories/story-01-purge-local-activity/done/task-02-add-developer-tools-view-model/index.md), then [Add the developer page (DEV-01-03)](stories/story-01-purge-local-activity/task-03-add-developer-page/index.md).
+[Purge activity storage (DEV-01-01)](stories/done/story-01-purge-local-activity/done/task-01-purge-activity-storage/index.md) first, then [Add the developer tools view model (DEV-01-02)](stories/done/story-01-purge-local-activity/done/task-02-add-developer-tools-view-model/index.md), then [Add the developer page (DEV-01-03)](stories/done/story-01-purge-local-activity/done/task-03-add-developer-page/index.md).
