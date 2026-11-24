@@ -19,7 +19,7 @@ Epic: [Statistics](../../../index.md)
 
 ## Goal
 
-While a workout runs, make the recorder keep a hidden draft of the run in the database, so if the OS kills the app at most the time since the last draft is lost. A failing draft never blocks the final save. This task is the recorder half; [Store drafts and recover unfinished runs (STAT-06-03)](../task-03-store-drafts-and-recover/index.md) stores and recovers the drafts. Serves R5.
+While a workout runs, make the recorder keep a hidden draft of the run in the database, so if the OS kills the app at most the time since the last draft is lost. A failing draft never blocks the final save. This task is the recorder half; [Store drafts and recover unfinished runs (STAT-06-03)](../done/task-03-store-drafts-and-recover/index.md) stores and recovers the drafts. Serves R5.
 
 ## Context
 
@@ -32,7 +32,7 @@ While a workout runs, make the recorder keep a hidden draft of the run in the da
 
 - `ActivityRunTracker` (`snapshot()`, `endInstant`, `isFinished`, `lastElapsed`, `pause`, `resume`) — provided by [Count partial progress in whole seconds (STAT-06-01)](../done/task-01-count-partial-progress/index.md). Not changed here.
 - `ActivityRepository.finishRun` and the write-once `end` — provided by [Save the run once when leaving the timer (STAT-06-02)](../done/task-02-save-on-leaving-timer/index.md).
-- `ActivityRepository.saveDraft({session, phases, checkpointAtUtcMs})` — provided by [Store drafts and recover unfinished runs (STAT-06-03)](../task-03-store-drafts-and-recover/index.md): replaces the session's draft; writes nothing for a stale handle or an ended session; returns `Failure` on errors.
+- `ActivityRepository.saveDraft({session, phases, checkpointAtUtcMs})` — provided by [Store drafts and recover unfinished runs (STAT-06-03)](../done/task-03-store-drafts-and-recover/index.md): replaces the session's draft; writes nothing for a stale handle or an ended session; returns `Failure` on errors.
 
 Recorder (`_RecordingRun`) — changed.
 
