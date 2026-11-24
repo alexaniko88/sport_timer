@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
@@ -40,14 +41,26 @@ class _Finish {
   _Finish(this.session, this.phases, this.endedAtUtcMs);
 }
 
+class _Draft {
+  final ActivitySessionHandle session;
+  final List<CompletedPhase> phases;
+  final int checkpointAtUtcMs;
+
+  _Draft(this.session, this.phases, this.checkpointAtUtcMs);
+}
+
 class _Repository implements ActivityRepository {
   TimerSession? prepared;
   final creation = _Creation();
   final finishes = <_Finish>[];
+  final drafts = <_Draft>[];
+  final events = <String>[];
   int createAttempts = 0;
   bool failCreate = false;
   bool failFinish = false;
+  bool failDraft = false;
   Completer<void>? createGate;
+  Completer<void>? draftGate;
 
   @override
   Future<Result<void>> deleteAllActivity() async => const Success(null);
@@ -64,6 +77,7 @@ class _Repository implements ActivityRepository {
     createAttempts++;
     await createGate?.future;
     if (failCreate) return Failure(Exception('create failed'));
+    events.add('create');
     return Success(_Handle(prepared?.id ?? 'missing'));
   }
 
@@ -74,7 +88,21 @@ class _Repository implements ActivityRepository {
     required int endedAtUtcMs,
   }) async {
     finishes.add(_Finish(session, List.of(phases), endedAtUtcMs));
+    events.add('finish');
     if (failFinish) return Failure(Exception('write failed'));
+    return const Success(null);
+  }
+
+  @override
+  Future<Result<void>> saveDraft({
+    required ActivitySessionHandle session,
+    required List<CompletedPhase> phases,
+    required int checkpointAtUtcMs,
+  }) async {
+    drafts.add(_Draft(session, List.of(phases), checkpointAtUtcMs));
+    events.add('draft');
+    await draftGate?.future;
+    if (failDraft) return Failure(Exception('draft failed'));
     return const Success(null);
   }
 
@@ -109,6 +137,8 @@ void main() {
       newId: () => 'id-${nextId++}',
     );
   });
+
+  TimerActivityRun startRun() => (recorder.start(params) as Success<TimerActivityRun>).value;
 
   test('reconciles every crossed boundary once and stores its logical instant', () async {
     final run = (recorder.start(params) as Success<TimerActivityRun>).value;
@@ -403,5 +433,270 @@ void main() {
     run.end(const Duration(seconds: 15));
     await Future<void>.delayed(Duration.zero);
     expect(repository.finishes, hasLength(1));
+  });
+
+  test('saves a draft every 10 s while running', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      fake.elapse(const Duration(seconds: 5));
+      now = start.add(const Duration(seconds: 5));
+      run.reconcile(const Duration(seconds: 5));
+      fake.flushMicrotasks();
+      expect(repository.drafts, isEmpty);
+
+      fake.elapse(const Duration(seconds: 5));
+      expect(repository.drafts, hasLength(1));
+      expect(repository.drafts.single.phases.single.durationMs, 3000);
+
+      now = start.add(const Duration(seconds: 11));
+      run.reconcile(const Duration(seconds: 11));
+      fake.elapse(const Duration(seconds: 10));
+      expect(repository.drafts, hasLength(2));
+      expect(repository.drafts.last.phases.single.durationMs, 9000);
+      expect(repository.drafts.last.checkpointAtUtcMs, now.millisecondsSinceEpoch);
+      recorder.dispose();
+    });
+  });
+
+  test('saves a draft at each phase change and stops after the finish', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      now = start.add(const Duration(seconds: 13));
+      run.reconcile(const Duration(seconds: 13));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(1));
+      expect(repository.drafts.last.phases.map((phase) => phase.durationMs), [10000, 1000]);
+
+      now = start.add(const Duration(seconds: 27));
+      run.reconcile(const Duration(seconds: 27));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(2));
+      expect(repository.drafts.last.phases.map((phase) => phase.durationMs), [10000, 5000, 10000]);
+
+      fake.elapse(const Duration(seconds: 60));
+      expect(repository.drafts, hasLength(2));
+      recorder.dispose();
+    });
+  });
+
+  test('saves a draft on pause and none while paused', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      fake.elapse(const Duration(seconds: 5));
+      now = start.add(const Duration(seconds: 5));
+      run.pause(const Duration(seconds: 5));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(1));
+      expect(repository.drafts.single.phases.single.durationMs, 3000);
+
+      fake.elapse(const Duration(seconds: 30));
+      expect(repository.drafts, hasLength(1));
+
+      now = now.add(const Duration(seconds: 30));
+      run.resume();
+      fake.elapse(const Duration(seconds: 9));
+      expect(repository.drafts, hasLength(1));
+      fake.elapse(const Duration(seconds: 1));
+      expect(repository.drafts, hasLength(2));
+      recorder.dispose();
+    });
+  });
+
+  test('a second pause saves no draft', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      fake.elapse(const Duration(seconds: 5));
+      now = start.add(const Duration(seconds: 5));
+      run.pause(const Duration(seconds: 5));
+      fake.flushMicrotasks();
+      now = start.add(const Duration(seconds: 6));
+      run.pause(const Duration(seconds: 6));
+      fake.elapse(const Duration(seconds: 30));
+      expect(repository.drafts, hasLength(1));
+      recorder.dispose();
+    });
+  });
+
+  test('a pause with a smaller elapsed saves no draft', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      fake.elapse(const Duration(seconds: 8));
+      now = start.add(const Duration(seconds: 8));
+      run.reconcile(const Duration(seconds: 8));
+      run.pause(const Duration(seconds: 5));
+      fake.flushMicrotasks();
+      expect(repository.drafts, isEmpty);
+
+      fake.elapse(const Duration(seconds: 2));
+      expect(repository.drafts, hasLength(1));
+
+      now = start.add(const Duration(seconds: 11));
+      run.pause(const Duration(seconds: 11));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(2));
+      recorder.dispose();
+    });
+  });
+
+  test('pause and resume after the finish do not restart the draft timer', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      now = start.add(const Duration(seconds: 27));
+      run.reconcile(const Duration(seconds: 27));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(1));
+
+      run.pause(const Duration(seconds: 27));
+      run.resume();
+      fake.elapse(const Duration(seconds: 60));
+      expect(repository.drafts, hasLength(1));
+      recorder.dispose();
+    });
+  });
+
+  test('resume while not paused does not restart the timer', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      fake.elapse(const Duration(seconds: 5));
+      now = start.add(const Duration(seconds: 5));
+      run.reconcile(const Duration(seconds: 5));
+      run.resume();
+      fake.elapse(const Duration(seconds: 5));
+      expect(repository.drafts, hasLength(1));
+      recorder.dispose();
+    });
+  });
+
+  test('skips empty and unchanged drafts', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      fake.elapse(const Duration(seconds: 1));
+      now = start.add(const Duration(seconds: 1));
+      run.reconcile(const Duration(seconds: 1));
+      fake.elapse(const Duration(seconds: 9));
+      expect(repository.drafts, isEmpty);
+
+      now = start.add(const Duration(seconds: 11));
+      run.reconcile(const Duration(seconds: 11));
+      fake.elapse(const Duration(seconds: 10));
+      expect(repository.drafts, hasLength(1));
+
+      fake.elapse(const Duration(seconds: 10));
+      expect(repository.drafts, hasLength(1));
+      recorder.dispose();
+    });
+  });
+
+  test('end writes only finishRun', () {
+    fakeAsync((fake) {
+      final start = now;
+      final run = startRun();
+      now = start.add(const Duration(seconds: 5));
+      run.reconcile(const Duration(seconds: 5));
+      run.end(const Duration(seconds: 7));
+      fake.flushMicrotasks();
+      expect(repository.drafts, isEmpty);
+      expect(repository.finishes, hasLength(1));
+
+      fake.elapse(const Duration(seconds: 60));
+      expect(repository.drafts, isEmpty);
+      recorder.dispose();
+    });
+  });
+
+  test('drafts wait for the session creation', () {
+    fakeAsync((fake) {
+      final start = now;
+      repository.createGate = Completer<void>();
+      final run = startRun();
+      now = start.add(const Duration(seconds: 13));
+      run.reconcile(const Duration(seconds: 13));
+      fake.flushMicrotasks();
+      expect(repository.drafts, isEmpty);
+
+      repository.createGate?.complete();
+      fake.flushMicrotasks();
+      expect(repository.events, ['create', 'draft']);
+      recorder.dispose();
+    });
+  });
+
+  test('a newer write supersedes a waiting draft', () {
+    fakeAsync((fake) {
+      final start = now;
+      repository.createGate = Completer<void>();
+      final first = startRun();
+      now = start.add(const Duration(seconds: 13));
+      first.reconcile(const Duration(seconds: 13));
+      now = start.add(const Duration(seconds: 27));
+      first.reconcile(const Duration(seconds: 27));
+      final second = startRun();
+      second.reconcile(const Duration(seconds: 13));
+      second.end(const Duration(seconds: 15));
+
+      repository.createGate?.complete();
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(1));
+      expect(repository.drafts.single.phases, hasLength(3));
+      expect(repository.finishes, hasLength(1));
+      recorder.dispose();
+    });
+  });
+
+  test('a failed draft does not block a later finishRun', () {
+    fakeAsync((fake) {
+      final start = now;
+      final failures = <Exception>[];
+      recorder.failures.listen(failures.add);
+      repository.failDraft = true;
+      final run = startRun();
+      now = start.add(const Duration(seconds: 13));
+      run.reconcile(const Duration(seconds: 13));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(1));
+      expect(failures, hasLength(1));
+      expect(repository.finishes, isEmpty);
+
+      run.end(const Duration(seconds: 15));
+      fake.flushMicrotasks();
+      expect(repository.finishes, hasLength(1));
+      expect(repository.drafts, hasLength(1));
+      expect(failures, hasLength(1));
+      recorder.dispose();
+    });
+  });
+
+  test('a failed draft in flight is dropped when a write waits behind it', () {
+    fakeAsync((fake) {
+      final start = now;
+      final failures = <Exception>[];
+      recorder.failures.listen(failures.add);
+      repository.failDraft = true;
+      repository.draftGate = Completer<void>();
+      final run = startRun();
+      now = start.add(const Duration(seconds: 13));
+      run.reconcile(const Duration(seconds: 13));
+      fake.flushMicrotasks();
+      expect(repository.drafts, hasLength(1));
+
+      run.end(const Duration(seconds: 15));
+      fake.flushMicrotasks();
+      expect(repository.finishes, isEmpty);
+
+      repository.draftGate?.complete();
+      fake.flushMicrotasks();
+      expect(failures, hasLength(1));
+      expect(repository.finishes, hasLength(1));
+      expect(repository.drafts, hasLength(1));
+      recorder.dispose();
+    });
   });
 }
