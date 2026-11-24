@@ -2,7 +2,7 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 
 class ActivityDatabase {
-  static const int schemaVersion = 2;
+  static const int schemaVersion = 3;
   static const String _databaseName = 'activity.db';
 
   final String? databasePath;
@@ -74,6 +74,23 @@ class ActivityDatabase {
       await database.execute(
         'CREATE INDEX completed_phases_session_date ON completed_phases(session_id, local_completion_date)',
       );
+    }
+    if (oldVersion < 3 && newVersion >= 3) {
+      await database.execute('ALTER TABLE timer_sessions ADD COLUMN checkpoint_at_utc_ms INTEGER');
+      await database.execute('''
+        CREATE TABLE draft_phases (
+          id TEXT PRIMARY KEY NOT NULL,
+          session_id TEXT NOT NULL REFERENCES timer_sessions(id) ON DELETE CASCADE,
+          schedule_position INTEGER NOT NULL CHECK (schedule_position >= 0),
+          type TEXT NOT NULL CHECK (type IN ('work', 'rest')),
+          round_number INTEGER NOT NULL CHECK (round_number > 0),
+          duration_ms INTEGER NOT NULL CHECK (duration_ms > 0),
+          completed_at_utc_ms INTEGER NOT NULL,
+          local_completion_date TEXT NOT NULL,
+          utc_offset_minutes INTEGER NOT NULL,
+          UNIQUE (session_id, schedule_position)
+        )
+      ''');
     }
   }
 

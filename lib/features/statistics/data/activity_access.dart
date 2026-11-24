@@ -241,6 +241,102 @@ class ActivityAccess {
     if (rows.isEmpty) throw StateError('Session not found');
     await _insertPhases(txn, batch);
     await _setEnd(txn, handle, endedAtUtcMs);
+    await txn.delete('draft_phases', where: 'session_id = ?', whereArgs: [handle.sessionId]);
+  }
+
+  // Replaces the hidden draft of a running session. Statistics never read it, so nothing is emitted.
+  Future<void> saveDraft({
+    required ActivitySessionHandle session,
+    required List<CompletedPhase> phases,
+    required int checkpointAtUtcMs,
+  }) async {
+    final handle = _verifyHandle(session);
+    final batch = List<CompletedPhase>.of(phases);
+    if (batch.any((phase) => phase.runId != handle.sessionId)) {
+      throw StateError('Phase belongs to another session');
+    }
+    final db = await _database.connection;
+    await db.transaction((txn) async {
+      if (handle.purgeEpoch != _purgeEpoch) return;
+      final rows = await txn.query(
+        'timer_sessions',
+        columns: ['ended_at_utc_ms'],
+        where: 'id = ? AND account_id = ?',
+        whereArgs: [handle.sessionId, handle.accountId],
+      );
+      if (rows.isEmpty) throw StateError('Session not found');
+      if (rows.single['ended_at_utc_ms'] != null) return;
+      await txn.delete('draft_phases', where: 'session_id = ?', whereArgs: [handle.sessionId]);
+      for (final phase in batch) {
+        await txn.insert('draft_phases', {
+          'id': phase.id,
+          'session_id': phase.runId,
+          'schedule_position': phase.schedulePosition,
+          'type': phase.type.name,
+          'round_number': phase.roundNumber,
+          'duration_ms': phase.durationMs,
+          'completed_at_utc_ms': phase.completedAtUtcMs,
+          'local_completion_date': phase.localCompletionDate,
+          'utc_offset_minutes': phase.utcOffsetMinutes,
+        });
+      }
+      await txn.update(
+        'timer_sessions',
+        {'checkpoint_at_utc_ms': checkpointAtUtcMs},
+        where: 'id = ? AND account_id = ?',
+        whereArgs: [handle.sessionId, handle.accountId],
+      );
+    });
+  }
+
+  // Turns the drafts of earlier runs into final records, each session in its own transaction.
+  Future<void> recoverUnfinishedRuns({required int startedBeforeUtcMs}) async {
+    if (_closed) throw StateError('Activity access is closed');
+    final db = await _database.connection;
+    final sessions = await db.query(
+      'timer_sessions',
+      columns: ['id'],
+      where: 'ended_at_utc_ms IS NULL AND checkpoint_at_utc_ms IS NOT NULL AND started_at_utc_ms < ?',
+      whereArgs: [startedBeforeUtcMs],
+    );
+    Object? firstError;
+    StackTrace? firstStackTrace;
+    var recovered = 0;
+    for (final row in sessions) {
+      try {
+        await db.transaction((txn) => _recoverSession(txn, row['id'] as String));
+        recovered++;
+      } catch (error, stackTrace) {
+        firstError ??= error;
+        firstStackTrace ??= stackTrace;
+      }
+    }
+    if (recovered > 0) _notifyChange();
+    if (firstError case final error?) Error.throwWithStackTrace(error, firstStackTrace ?? StackTrace.current);
+  }
+
+  Future<void> _recoverSession(Transaction txn, String sessionId) async {
+    final sessions = await txn.query(
+      'timer_sessions',
+      columns: ['checkpoint_at_utc_ms'],
+      where: 'id = ? AND ended_at_utc_ms IS NULL AND checkpoint_at_utc_ms IS NOT NULL',
+      whereArgs: [sessionId],
+    );
+    if (sessions.isEmpty) return;
+    final drafts = await txn.query(
+      'draft_phases',
+      where: 'session_id = ?',
+      whereArgs: [sessionId],
+      orderBy: 'schedule_position',
+    );
+    await _insertPhases(txn, drafts.map((row) => row.toCompletedPhase()).toList());
+    await txn.update(
+      'timer_sessions',
+      {'ended_at_utc_ms': sessions.single['checkpoint_at_utc_ms']},
+      where: 'id = ?',
+      whereArgs: [sessionId],
+    );
+    await txn.delete('draft_phases', where: 'session_id = ?', whereArgs: [sessionId]);
   }
 
   Future<void> _insertPhases(Transaction txn, List<CompletedPhase> batch) async {

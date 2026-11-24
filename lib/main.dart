@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sport_timer/shared/presentation/extensions/l10n_context.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/firebase_options.dart';
+import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/l10n/app_localizations.dart';
 import 'package:sport_timer/navigation.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
@@ -11,6 +14,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   configureDependencies();
+  unawaited(
+    getIt<ActivityRepository>()
+        .recoverUnfinishedRuns(startedBeforeUtcMs: DateTime.now().toUtc().millisecondsSinceEpoch)
+        .then(
+          (result) => result.fold(
+            onSuccess: (_) {},
+            onFailure: (error) => debugPrint('Recovering unfinished runs failed: $error'),
+          ),
+        ),
+  );
   runApp(const MyApp());
 }
 

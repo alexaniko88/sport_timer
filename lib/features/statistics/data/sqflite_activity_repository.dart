@@ -69,6 +69,20 @@ class SqfliteActivityRepository implements ActivityRepository {
       _run(() => _access.finishRun(session: session, phases: phases, endedAtUtcMs: endedAtUtcMs));
 
   @override
+  Future<Result<void>> saveDraft({
+    required ActivitySessionHandle session,
+    required List<CompletedPhase> phases,
+    required int checkpointAtUtcMs,
+  }) =>
+      _run(
+        () => _access.saveDraft(session: session, phases: phases, checkpointAtUtcMs: checkpointAtUtcMs),
+      );
+
+  @override
+  Future<Result<void>> recoverUnfinishedRuns({required int startedBeforeUtcMs}) =>
+      _run(() => _access.recoverUnfinishedRuns(startedBeforeUtcMs: startedBeforeUtcMs));
+
+  @override
   Future<Result<void>> deleteAllActivity() => _run(_access.deleteAllActivity);
 
   @override
