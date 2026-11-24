@@ -1,6 +1,6 @@
 ---
 id: IMP-05
-status: ready
+status: done
 type: improve
 complexity: 6
 depends-on: [IMP-04]
@@ -24,7 +24,7 @@ skills: []
 
 # Add a shared AppTag widget and use it on Timer Setup
 
-Improvements: [Improvements](../index.md)
+Improvements: [Improvements](../../index.md)
 
 ## Goal
 
@@ -33,14 +33,14 @@ Add a small shared `AppTag` widget (a bordered label with a leading icon and one
 ## Context
 
 - Current behavior, in `lib/features/settings/presentation/timer_setup_page.dart`: when `state.selectedTemplateId` is not null, the first children of the `ListView` above `TimerSettingGrid` are an `Align(centerLeft)` with a `Semantics(button: true)` around an `AppSurface(onTap: onTemplatesPressed, padding: 16)` that holds `Text(l10n.setupTemplateLabel(l10n.templateName(id)))` in `labelLarge` primary (`"Template: Hyrox"` / `"Plantilla: Hyrox"`), then `Gap(AppSpacing.s8)`. With custom settings nothing is shown. The shortcut has no icon and looks like a tile, not a tag.
-- Desired change and benefit: one reusable tag for template indicators, so the setup page always says what it runs, and the later statistics redesign, Rethink statistics cards and details ([UI-05-02](../../epic-ui-refactor/stories/story-05-statistics-ui-refactor/task-02-rethink-statistics-cards-and-details/index.md)), can reuse it.
+- Desired change and benefit: one reusable tag for template indicators, so the setup page always says what it runs, and the later statistics redesign, Rethink statistics cards and details ([UI-05-02](../../../epic-ui-refactor/stories/story-05-statistics-ui-refactor/task-02-rethink-statistics-cards-and-details/index.md)), can reuse it.
 - Template icons today are a local `switch` inside the `Builder` of `lib/features/templates/presentation/templates_page.dart`: `standard` → `Icons.assignment`, `fullAbs` → `Icons.sports_gymnastics`, `hyrox` → `Icons.directions_run`, `stretching` → `Icons.self_improvement`, `strength` → `Icons.fitness_center`. The Custom tile there uses `Icons.tune` and `l10n.templateCustomName`. `TemplateId` is in `lib/features/templates/domain/workout_template.dart`.
 - Names: `l10n.templateName(id)` from `lib/features/templates/presentation/extensions/template_names_extension.dart`. `TimerSetupPage` already imports it, so settings presentation already uses templates presentation.
 - Loading check to copy: `TemplatesPage` treats `SettingsStatus.initial` and `SettingsStatus.loading` as loading (`isLoading`), so it never shows `Custom` before the saved selection arrives.
 - Editing any setting already clears `selectedTemplateId` (settings view model, unchanged and tested in `test/features/settings/presentation/settings_view_model_test.dart`). The tag reads `selectedTemplateId`, so it switches to `Custom` at once.
 - Tokens: `AppRadius.r8`, `AppBorderWidth.thin`, `AppSpacing.s8` in `lib/shared/presentation/theme/app_spacing.dart`. `AppSurface`'s default fill is `colorScheme.surfaceContainer`. Shared widgets live in `lib/shared/presentation/widgets/` next to `app_surface.dart` and `app_button.dart`; the new test copies the setup of `test/shared/presentation/widgets/app_button_test.dart`.
-- Runs after Align timer setup summary and Start styling ([IMP-04](../done/task-04-align-timer-setup-summary-and-start/index.md), done), which restyled `_SessionOverview` in the same file. This task does not change `_SessionOverview`.
-- Goldens: [setup_custom.png](../../../../test/snapshots/goldens/setup_custom.png) and [setup_template_selected.png](../../../../test/snapshots/goldens/setup_template_selected.png). `setup_time_picker.png` and `setup_rounds_picker.png` show `TimerSetupPage` under a picker sheet, and `home_drawer.png`, `account_sheet.png` and `account_sign_out_dialog.png` show it behind a scrim, so the tag shows there too. `templates_custom.png` and `templates_selected.png` must not change. Flow index: [test/snapshots/README.md](../../../../test/snapshots/README.md).
+- Runs after Align timer setup summary and Start styling ([IMP-04](../task-04-align-timer-setup-summary-and-start/index.md), done), which restyled `_SessionOverview` in the same file. This task does not change `_SessionOverview`.
+- Goldens: [setup_custom.png](../../../../../test/snapshots/goldens/setup_custom.png) and [setup_template_selected.png](../../../../../test/snapshots/goldens/setup_template_selected.png). `setup_time_picker.png` and `setup_rounds_picker.png` show `TimerSetupPage` under a picker sheet, and `home_drawer.png`, `account_sheet.png` and `account_sign_out_dialog.png` show it behind a scrim, so the tag shows there too. `templates_custom.png` and `templates_selected.png` must not change. Flow index: [test/snapshots/README.md](../../../../../test/snapshots/README.md).
 - Tests in `test/features/templates/presentation/templates_page_test.dart` look for the old `"Template: ..."` text: `localized shortcut navigates in $locale, dark: $dark` (the `textContaining('Template:')` / `findsNothing` check for Custom, the `find.text(label)` shortcut with `getSemantics`, and the final `Template: Hyrox` check), `selected setup scrolls at compact size with text scale $scale` (`Template: Default`) and `reopening Templates preserves selected template and settings` (two `Template: Hyrox` checks). The file's fake settings repository has `Completer<void>? readGate`, which holds the settings load.
 
 ## Contract
@@ -68,7 +68,7 @@ Add a small shared `AppTag` widget (a bordered label with a leading icon and one
 
 ## Mockup
 
-[mockup.html](mockup.html), approved by the user: the tag on Timer Setup for a built-in template and for Custom, in light and dark, English and Spanish, and at 320 × 568 with 1.5x text. The same tag without a tap action appears in the statistics day of the [statistics redesign mockup](../../epic-ui-refactor/stories/story-05-statistics-ui-refactor/mockup.html); that use belongs to UI-05-02.
+[mockup.html](mockup.html), approved by the user: the tag on Timer Setup for a built-in template and for Custom, in light and dark, English and Spanish, and at 320 × 568 with 1.5x text. The same tag without a tap action appears in the statistics day of the [statistics redesign mockup](../../../epic-ui-refactor/stories/story-05-statistics-ui-refactor/mockup.html); that use belongs to UI-05-02.
 
 ## Decisions
 
@@ -95,26 +95,26 @@ Add a small shared `AppTag` widget (a bordered label with a leading icon and one
 
 ## Acceptance
 
-- [ ] When `AppTag` is shown without `color` in light or dark theme, then it is a box with no fill, an `AppRadius.r8` radius, an `AppBorderWidth.thin` `outlineVariant` border and `EdgeInsets.symmetric(horizontal: AppSpacing.s8, vertical: 4)` padding. Check: `test/shared/presentation/widgets/app_tag_test.dart` "draws an unfilled bordered box without color".
-- [ ] When `AppTag` is given a `color`, then the box is filled with it. Check: `test/shared/presentation/widgets/app_tag_test.dart` "fills the box with the given color".
-- [ ] When `AppTag` is shown, then it holds a 16 px `primary` icon, `Gap(AppSpacing.s8)` and a `labelMedium` label in `onSurface` with `maxLines: 1` and an ellipsis. Check: `test/shared/presentation/widgets/app_tag_test.dart` "shows a primary icon and a one-line label".
-- [ ] When `AppTag` has no `onTap`, then there is no `InkWell` and no button flag, and a given `semanticLabel` replaces the text for screen readers. Check: `test/shared/presentation/widgets/app_tag_test.dart` "without onTap is plain text with an optional semantic label".
-- [ ] When `AppTag` has `onTap`, then it is one button node labelled `semanticLabel ?? label` and tapping it calls `onTap`. Check: `test/shared/presentation/widgets/app_tag_test.dart` "with onTap is one button that calls onTap".
-- [ ] When `AppTag` has `onTap`, then its tap area is at least 48 dp high (`tester.getSize`) and `meetsGuideline(androidTapTargetGuideline)` passes. Check: `test/shared/presentation/widgets/app_tag_test.dart` "with onTap has a 48 dp tap area".
-- [ ] When the label is longer than a narrow parent, then it ends with an ellipsis on one line and no exception is thrown. Check: `test/shared/presentation/widgets/app_tag_test.dart` "ellipsizes a long label in a narrow parent".
-- [ ] When `TemplatesPage` builds its tiles, then the five built-in icons are unchanged. Check: `test/features/templates/presentation/templates_page_test.dart` "shows Custom first followed by the five templates in order".
-- [ ] When the Templates snapshots are captured, then they do not change. Check: `test/snapshots/goldens/templates_custom.png`.
-- [ ] Given loaded custom settings, when Timer Setup shows in English or Spanish, light or dark, then an `AppTag` with `Icons.tune` and `Custom` / `Personalizado` is left-aligned above the grid, reads `"Template: Custom"` / `"Plantilla: Personalizado"` as a button, and tapping it opens `TemplatesPage`. Check: `test/features/templates/presentation/templates_page_test.dart` "localized shortcut navigates in $locale, dark: $dark".
-- [ ] Given a built-in template is selected (Full Abs, then Hyrox), when the user returns to Timer Setup, then the tag shows that template's `TemplateId.icon` and `l10n.templateName(id)` with no `Template:` prefix, reads `l10n.setupTemplateLabel(name)` as a button, and tapping it opens `TemplatesPage`, in English and Spanish, light and dark. Check: `test/features/templates/presentation/templates_page_test.dart` "localized shortcut navigates in $locale, dark: $dark".
-- [ ] When settings are still loading (`SettingsStatus.initial` or `loading`, held with `readGate`), then no `AppTag` is shown, and it appears once the load completes. Check: `test/features/templates/presentation/templates_page_test.dart` "Timer Setup shows no template tag while settings load".
-- [ ] When Timer Setup shows `Default` at 320 × 568 in English with text scale 1.0 or 1.5, then the tag shows, nothing overflows and the grid scrolls to `Rounds`. Check: `test/features/templates/presentation/templates_page_test.dart` "selected setup scrolls at compact size with text scale $scale".
-- [ ] When Timer Setup shows at 320 × 568 in Spanish with `TextScaler.linear(1.5)`, once with Full Abs stored (`Abdominales completos`) and once with no stored template (`Personalizado`), then the tag shows, nothing overflows and the grid scrolls to `Rondas`. Check: `test/features/templates/presentation/templates_page_test.dart` "Spanish compact setup shows the $tag tag at text scale 1.5".
-- [ ] When the user picks Hyrox, goes back, then reopens and leaves Templates without choosing, then the tag still shows `Hyrox`. Check: `test/features/templates/presentation/templates_page_test.dart` "reopening Templates preserves selected template and settings".
-- [ ] When Timer Setup is captured with custom settings, then the `Custom` tag shows above the grid. Check: `test/snapshots/goldens/setup_custom.png`.
-- [ ] When Timer Setup is captured with Hyrox selected, then the `Hyrox` tag replaces the old shortcut. Check: `test/snapshots/goldens/setup_template_selected.png`.
-- [ ] When the time picker opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/setup_time_picker.png`.
-- [ ] When the rounds picker opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/setup_rounds_picker.png`.
-- [ ] When the drawer opens over Timer Setup, then the tag shows behind the scrim. Check: `test/snapshots/goldens/home_drawer.png`.
-- [ ] When the account sheet opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/account_sheet.png`.
-- [ ] When the sign-out dialog opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/account_sign_out_dialog.png`.
-- [ ] When the change is checked, then format, analyze, the mirrored tests, the boundary test and the snapshots pass. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When `AppTag` is shown without `color` in light or dark theme, then it is a box with no fill, an `AppRadius.r8` radius, an `AppBorderWidth.thin` `outlineVariant` border and `EdgeInsets.symmetric(horizontal: AppSpacing.s8, vertical: 4)` padding. Check: `test/shared/presentation/widgets/app_tag_test.dart` "draws an unfilled bordered box without color".
+- [x] When `AppTag` is given a `color`, then the box is filled with it. Check: `test/shared/presentation/widgets/app_tag_test.dart` "fills the box with the given color".
+- [x] When `AppTag` is shown, then it holds a 16 px `primary` icon, `Gap(AppSpacing.s8)` and a `labelMedium` label in `onSurface` with `maxLines: 1` and an ellipsis. Check: `test/shared/presentation/widgets/app_tag_test.dart` "shows a primary icon and a one-line label".
+- [x] When `AppTag` has no `onTap`, then there is no `InkWell` and no button flag, and a given `semanticLabel` replaces the text for screen readers. Check: `test/shared/presentation/widgets/app_tag_test.dart` "without onTap is plain text with an optional semantic label".
+- [x] When `AppTag` has `onTap`, then it is one button node labelled `semanticLabel ?? label` and tapping it calls `onTap`. Check: `test/shared/presentation/widgets/app_tag_test.dart` "with onTap is one button that calls onTap".
+- [x] When `AppTag` has `onTap`, then its tap area is at least 48 dp high (`tester.getSize`) and `meetsGuideline(androidTapTargetGuideline)` passes. Check: `test/shared/presentation/widgets/app_tag_test.dart` "with onTap has a 48 dp tap area".
+- [x] When the label is longer than a narrow parent, then it ends with an ellipsis on one line and no exception is thrown. Check: `test/shared/presentation/widgets/app_tag_test.dart` "ellipsizes a long label in a narrow parent".
+- [x] When `TemplatesPage` builds its tiles, then the five built-in icons are unchanged. Check: `test/features/templates/presentation/templates_page_test.dart` "shows Custom first followed by the five templates in order".
+- [x] When the Templates snapshots are captured, then they do not change. Check: `test/snapshots/goldens/templates_custom.png`.
+- [x] Given loaded custom settings, when Timer Setup shows in English or Spanish, light or dark, then an `AppTag` with `Icons.tune` and `Custom` / `Personalizado` is left-aligned above the grid, reads `"Template: Custom"` / `"Plantilla: Personalizado"` as a button, and tapping it opens `TemplatesPage`. Check: `test/features/templates/presentation/templates_page_test.dart` "localized shortcut navigates in $locale, dark: $dark".
+- [x] Given a built-in template is selected (Full Abs, then Hyrox), when the user returns to Timer Setup, then the tag shows that template's `TemplateId.icon` and `l10n.templateName(id)` with no `Template:` prefix, reads `l10n.setupTemplateLabel(name)` as a button, and tapping it opens `TemplatesPage`, in English and Spanish, light and dark. Check: `test/features/templates/presentation/templates_page_test.dart` "localized shortcut navigates in $locale, dark: $dark".
+- [x] When settings are still loading (`SettingsStatus.initial` or `loading`, held with `readGate`), then no `AppTag` is shown, and it appears once the load completes. Check: `test/features/templates/presentation/templates_page_test.dart` "Timer Setup shows no template tag while settings load".
+- [x] When Timer Setup shows `Default` at 320 × 568 in English with text scale 1.0 or 1.5, then the tag shows, nothing overflows and the grid scrolls to `Rounds`. Check: `test/features/templates/presentation/templates_page_test.dart` "selected setup scrolls at compact size with text scale $scale".
+- [x] When Timer Setup shows at 320 × 568 in Spanish with `TextScaler.linear(1.5)`, once with Full Abs stored (`Abdominales completos`) and once with no stored template (`Personalizado`), then the tag shows, nothing overflows and the grid scrolls to `Rondas`. Check: `test/features/templates/presentation/templates_page_test.dart` "Spanish compact setup shows the $tag tag at text scale 1.5".
+- [x] When the user picks Hyrox, goes back, then reopens and leaves Templates without choosing, then the tag still shows `Hyrox`. Check: `test/features/templates/presentation/templates_page_test.dart` "reopening Templates preserves selected template and settings".
+- [x] When Timer Setup is captured with custom settings, then the `Custom` tag shows above the grid. Check: `test/snapshots/goldens/setup_custom.png`.
+- [x] When Timer Setup is captured with Hyrox selected, then the `Hyrox` tag replaces the old shortcut. Check: `test/snapshots/goldens/setup_template_selected.png`.
+- [x] When the time picker opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/setup_time_picker.png`.
+- [x] When the rounds picker opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/setup_rounds_picker.png`.
+- [x] When the drawer opens over Timer Setup, then the tag shows behind the scrim. Check: `test/snapshots/goldens/home_drawer.png`.
+- [x] When the account sheet opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/account_sheet.png`.
+- [x] When the sign-out dialog opens over Timer Setup, then the tag shows behind it. Check: `test/snapshots/goldens/account_sign_out_dialog.png`.
+- [x] When the change is checked, then format, analyze, the mirrored tests, the boundary test and the snapshots pass. Check: `fvm dart tool/agent_check.dart --skip-build`.

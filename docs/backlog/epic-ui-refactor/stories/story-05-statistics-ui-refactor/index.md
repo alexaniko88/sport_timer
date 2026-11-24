@@ -25,4 +25,4 @@ As a user reviewing my training, I want each day's card to show its totals at a 
 ## Shared contracts
 
 - Prepare the statistics card state (UI-05-01) provides `compactStatisticsDuration`, `TimerSession.matchingTemplateId`, the `StatisticsState` open-day fields and `StatisticsViewModel.toggleDay` / `retryDay`. It is unwired; Rethink statistics cards and details (UI-05-02) wires them into the cards and page.
-- UI-05-02 also uses `AppTag` and `TemplateId.icon` from [Add a shared AppTag widget and use it on Timer Setup (IMP-05)](../../../improvements/task-05-add-shared-app-tag/index.md).
+- UI-05-02 also uses `AppTag` and `TemplateId.icon` from [Add a shared AppTag widget and use it on Timer Setup (IMP-05)](../../../improvements/done/task-05-add-shared-app-tag/index.md).
