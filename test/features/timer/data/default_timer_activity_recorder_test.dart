@@ -474,6 +474,7 @@ void main() {
       fake.flushMicrotasks();
       expect(repository.drafts, hasLength(2));
       expect(repository.drafts.last.phases.map((phase) => phase.durationMs), [10000, 5000, 10000]);
+      expect(fake.periodicTimerCount, 0);
 
       fake.elapse(const Duration(seconds: 60));
       expect(repository.drafts, hasLength(2));
@@ -554,6 +555,7 @@ void main() {
 
       run.pause(const Duration(seconds: 27));
       run.resume();
+      expect(fake.periodicTimerCount, 0);
       fake.elapse(const Duration(seconds: 60));
       expect(repository.drafts, hasLength(1));
       recorder.dispose();
@@ -568,6 +570,7 @@ void main() {
       now = start.add(const Duration(seconds: 5));
       run.reconcile(const Duration(seconds: 5));
       run.resume();
+      expect(fake.periodicTimerCount, 1);
       fake.elapse(const Duration(seconds: 5));
       expect(repository.drafts, hasLength(1));
       recorder.dispose();
