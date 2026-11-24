@@ -59,9 +59,10 @@ flutter:
     - assets/icons/
 
 icons_launcher:
-  image_path: "assets/icons/app_icon.png"
   platforms:
     android:
       enable: true
-    ios:
-      enable: true
+      image_path: "assets/icons/launcher/android_legacy.png"
+      adaptive_background_color: "#FF5252"
+      adaptive_foreground_image: "assets/icons/launcher/android_foreground.png"
+      adaptive_monochrome_image: "assets/icons/launcher/android_monochrome.png"
