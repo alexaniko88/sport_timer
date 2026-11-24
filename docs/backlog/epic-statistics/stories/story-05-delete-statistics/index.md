@@ -26,7 +26,7 @@ A signed-in user can delete all their recorded statistics on this device and kee
 
 ## Tasks
 
-1. [Delete local statistics](task-01-delete-local-statistics/index.md)
+1. [Delete local statistics](done/task-01-delete-local-statistics/index.md)
 2. [Add the delete action to Statistics](task-02-add-delete-action/index.md)
 
 ## Shared contracts

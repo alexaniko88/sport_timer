@@ -1,6 +1,6 @@
 ---
 id: STAT-05-01
-status: ready
+status: done
 type: feat
 complexity: 8
 depends-on: [DEV-01-01, STAT-06-03]
@@ -14,9 +14,9 @@ skills: []
 
 # Delete local statistics
 
-Story: [Delete statistics](../index.md)
+Story: [Delete statistics](../../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../index.md)
 
 ## Goal
 
@@ -57,13 +57,13 @@ Add a storage operation that deletes the signed-in account's local activity (ses
 
 ## Acceptance
 
-- [ ] Given sessions, phases and drafts for accounts A and B with A signed in, when `deleteAccountActivity()` runs, then A has no rows in `timer_sessions`, `completed_phases` and `draft_phases`, B's rows are unchanged, and it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "deletes only the signed-in account".
-- [ ] Given A has no activity, when `deleteAccountActivity()` runs, then it returns `Success` and `changes` emits. Check: `test/features/statistics/data/activity_access_test.dart` "deleting an empty account succeeds".
-- [ ] When no account is signed in or the access is closed, then it returns `Failure` and nothing is deleted. Check: `test/features/statistics/data/activity_access_test.dart` "delete needs an account and an open access".
-- [ ] Given the account switches from A to B after the call starts and before its transaction, when the delete finishes, then it returns `Failure` and neither account loses rows. Check: `test/features/statistics/data/activity_access_test.dart` "account change aborts the delete".
-- [ ] Given a creation and a handle for A issued before the delete, when `createPreparedSession`, `finishRun` and `saveDraft` run after it, then nothing is written for A, each returns `Success` and `changes` does not emit. Check: `test/features/statistics/data/activity_access_test.dart` "drops the account's writes from before the delete".
-- [ ] Given a handle for B issued before A's delete, when B's `finishRun` runs after it, then B's run is stored. Check: `test/features/statistics/data/activity_access_test.dart` "other accounts keep their pending writes".
-- [ ] Given A has an unfinished draft, when A's statistics are deleted and `recoverUnfinishedRuns` runs, then nothing is restored for A and it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "recovery restores nothing after a delete".
-- [ ] When A records a new session after the delete, then it is stored and appears in `readDailyActivity()`. Check: `test/features/statistics/data/activity_access_test.dart` "records new activity after a delete".
-- [ ] Given a purge (`deleteAllActivity`) and then a new handle, when it writes, then it is stored, so the two epochs do not block each other. Check: `test/features/statistics/data/activity_access_test.dart` "purge and account delete epochs are independent".
-- [ ] When the checks run, then everything passes. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] Given sessions, phases and drafts for accounts A and B with A signed in, when `deleteAccountActivity()` runs, then A has no rows in `timer_sessions`, `completed_phases` and `draft_phases`, B's rows are unchanged, and it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "deletes only the signed-in account".
+- [x] Given A has no activity, when `deleteAccountActivity()` runs, then it returns `Success` and `changes` emits. Check: `test/features/statistics/data/activity_access_test.dart` "deleting an empty account succeeds".
+- [x] When no account is signed in or the access is closed, then it returns `Failure` and nothing is deleted. Check: `test/features/statistics/data/activity_access_test.dart` "delete needs an account and an open access".
+- [x] Given the account switches from A to B after the call starts and before its transaction, when the delete finishes, then it returns `Failure` and neither account loses rows. Check: `test/features/statistics/data/activity_access_test.dart` "account change aborts the delete".
+- [x] Given a creation and a handle for A issued before the delete, when `createPreparedSession`, `finishRun` and `saveDraft` run after it, then nothing is written for A, each returns `Success` and `changes` does not emit. Check: `test/features/statistics/data/activity_access_test.dart` "drops the account's writes from before the delete".
+- [x] Given a handle for B issued before A's delete, when B's `finishRun` runs after it, then B's run is stored. Check: `test/features/statistics/data/activity_access_test.dart` "other accounts keep their pending writes".
+- [x] Given A has an unfinished draft, when A's statistics are deleted and `recoverUnfinishedRuns` runs, then nothing is restored for A and it returns `Success`. Check: `test/features/statistics/data/activity_access_test.dart` "recovery restores nothing after a delete".
+- [x] When A records a new session after the delete, then it is stored and appears in `readDailyActivity()`. Check: `test/features/statistics/data/activity_access_test.dart` "records new activity after a delete".
+- [x] Given a purge (`deleteAllActivity`) and then a new handle, when it writes, then it is stored, so the two epochs do not block each other. Check: `test/features/statistics/data/activity_access_test.dart` "purge and account delete epochs are independent".
+- [x] When the checks run, then everything passes. Check: `fvm dart tool/agent_check.dart --skip-build`.

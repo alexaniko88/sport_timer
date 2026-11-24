@@ -15,6 +15,7 @@ class _ActivitySessionHandle implements ActivitySessionHandle {
   final Object issuer;
   final String accountId;
   final int purgeEpoch;
+  final int accountEpoch;
   @override
   final String sessionId;
 
@@ -23,6 +24,7 @@ class _ActivitySessionHandle implements ActivitySessionHandle {
     this.accountId,
     this.sessionId,
     this.purgeEpoch,
+    this.accountEpoch,
   );
 }
 
@@ -30,11 +32,13 @@ class _ActivitySessionCreation implements ActivitySessionCreation {
   final Object issuer;
   final TimerSession session;
   final int purgeEpoch;
+  final int accountEpoch;
 
   _ActivitySessionCreation(
     this.issuer,
     this.session,
     this.purgeEpoch,
+    this.accountEpoch,
   );
 }
 
@@ -46,6 +50,8 @@ class ActivityAccess {
   int _generation = 0;
   // Bumped by every purge. Writes issued before a purge carry an older value and are dropped.
   int _purgeEpoch = 0;
+  // Bumped by every delete of one account's activity. Writes of that account issued before it are dropped.
+  final Map<String, int> _accountEpochs = {};
   bool _closed = false;
 
   ActivityAccess(this._database, this._accounts) {
@@ -83,6 +89,15 @@ class ActivityAccess {
     return handle;
   }
 
+  bool _isStale({required int purgeEpoch, required String accountId, required int accountEpoch}) =>
+      purgeEpoch != _purgeEpoch || accountEpoch != (_accountEpochs[accountId] ?? 0);
+
+  bool _isHandleStale(_ActivitySessionHandle handle) => _isStale(
+        purgeEpoch: handle.purgeEpoch,
+        accountId: handle.accountId,
+        accountEpoch: handle.accountEpoch,
+      );
+
   void _notifyChange() {
     if (!_closed) _changes.add(null);
   }
@@ -90,7 +105,7 @@ class ActivityAccess {
   ActivitySessionCreation prepareSession(TimerSession session) {
     final account = _requireAccount();
     if (session.accountId != account) throw StateError('Session belongs to another account');
-    return _ActivitySessionCreation(this, session, _purgeEpoch);
+    return _ActivitySessionCreation(this, session, _purgeEpoch, _accountEpochs[account] ?? 0);
   }
 
   Future<ActivitySessionHandle> createSession(TimerSession session) async =>
@@ -105,7 +120,11 @@ class ActivityAccess {
     var isStale = false;
     final db = await _database.connection;
     await db.transaction((txn) async {
-      if (creation.purgeEpoch != _purgeEpoch) {
+      if (_isStale(
+        purgeEpoch: creation.purgeEpoch,
+        accountId: account,
+        accountEpoch: creation.accountEpoch,
+      )) {
         isStale = true;
         return;
       }
@@ -126,13 +145,20 @@ class ActivityAccess {
       });
     });
     if (!isStale) _notifyChange();
-    return _ActivitySessionHandle(this, account, session.id, creation.purgeEpoch);
+    return _ActivitySessionHandle(
+      this,
+      account,
+      session.id,
+      creation.purgeEpoch,
+      creation.accountEpoch,
+    );
   }
 
   Future<ActivitySessionHandle> openSession(String sessionId) async {
     final account = _requireAccount();
     final generation = _generation;
     final purgeEpoch = _purgeEpoch;
+    final accountEpoch = _accountEpochs[account] ?? 0;
     final db = await _database.connection;
     final rows = await db.query(
       'timer_sessions',
@@ -142,7 +168,7 @@ class ActivityAccess {
     );
     _verifyRead(account, generation);
     if (rows.isEmpty) throw StateError('Session not found');
-    return _ActivitySessionHandle(this, account, sessionId, purgeEpoch);
+    return _ActivitySessionHandle(this, account, sessionId, purgeEpoch, accountEpoch);
   }
 
   Future<List<TimerSession>> readSessions() async {
@@ -169,7 +195,7 @@ class ActivityAccess {
     var isStale = false;
     final db = await _database.connection;
     await db.transaction((txn) async {
-      if (handle.purgeEpoch != _purgeEpoch) {
+      if (_isHandleStale(handle)) {
         isStale = true;
         return;
       }
@@ -193,7 +219,7 @@ class ActivityAccess {
     var isStale = false;
     final db = await _database.connection;
     await db.transaction((txn) async {
-      if (handle.purgeEpoch != _purgeEpoch) {
+      if (_isHandleStale(handle)) {
         isStale = true;
         return;
       }
@@ -216,7 +242,7 @@ class ActivityAccess {
     var isStale = false;
     final db = await _database.connection;
     await db.transaction((txn) async {
-      if (handle.purgeEpoch != _purgeEpoch) {
+      if (_isHandleStale(handle)) {
         isStale = true;
         return;
       }
@@ -257,7 +283,7 @@ class ActivityAccess {
     }
     final db = await _database.connection;
     await db.transaction((txn) async {
-      if (handle.purgeEpoch != _purgeEpoch) return;
+      if (_isHandleStale(handle)) return;
       final rows = await txn.query(
         'timer_sessions',
         columns: ['ended_at_utc_ms'],
@@ -393,6 +419,26 @@ class ActivityAccess {
     await db.transaction((txn) async {
       await txn.delete('completed_phases');
       await txn.delete('timer_sessions');
+    });
+    _notifyChange();
+  }
+
+  Future<void> deleteAccountActivity() async {
+    if (_closed) throw StateError('Activity access is closed');
+    final account = _requireAccount();
+    final generation = _generation;
+    _accountEpochs[account] = (_accountEpochs[account] ?? 0) + 1;
+    final db = await _database.connection;
+    await db.transaction((txn) async {
+      if (_generation != generation || _accounts.currentAccountId != account) {
+        throw StateError('Account changed during delete');
+      }
+      await txn.delete(
+        'completed_phases',
+        where: 'session_id IN (SELECT id FROM timer_sessions WHERE account_id = ?)',
+        whereArgs: [account],
+      );
+      await txn.delete('timer_sessions', where: 'account_id = ?', whereArgs: [account]);
     });
     _notifyChange();
   }
