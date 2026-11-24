@@ -30,7 +30,7 @@ Epic: [Developer tools](../../../../index.md)
 
 ## Goal
 
-Add a storage operation that deletes all local activity (sessions and their phases) for every account on the device. Writes prepared before the purge never bring purged history back, and workouts after the purge record normally. Serves R2, R3 and R4. This task has no UI; the ViewModel in [Add the developer tools view model (DEV-01-02)](../../task-02-add-developer-tools-view-model/index.md) calls the operation.
+Add a storage operation that deletes all local activity (sessions and their phases) for every account on the device. Writes prepared before the purge never bring purged history back, and workouts after the purge record normally. Serves R2, R3 and R4. This task has no UI; the ViewModel in [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md) calls the operation.
 
 ## Context
 
@@ -70,7 +70,7 @@ Add a storage operation that deletes all local activity (sessions and their phas
 
 ## Out of scope
 
-- The developer tools ViewModel (that is [Add the developer tools view model (DEV-01-02)](../../task-02-add-developer-tools-view-model/index.md)) and any UI, route or drawer change (that is [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md)).
+- The developer tools ViewModel (that is [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md)) and any UI, route or drawer change (that is [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md)).
 - Account-scoped deletion (the delete statistics story), deleting single days or runs, deleting settings or signing out.
 - Changing `DefaultTimerActivityRecorder`, the schema or the schema version.
 - Adding an Android `integration_test/` suite.

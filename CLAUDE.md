@@ -45,7 +45,7 @@ lib/
     presentation/               ViewModel, state, pages, widgets
 ```
 
-A feature has only the layers it needs. Features: `user` (domain, data), `login`, `account`, `home` (presentation only), `settings`, `templates`, `timer` and `statistics`.
+A feature has only the layers it needs. Features: `user` (domain, data), `login`, `account`, `home` (presentation only), `settings`, `templates`, `timer`, `statistics` and `developer` (presentation only).
 
 - `main.dart` holds `main()` and `MyApp`. It initializes Firebase, then calls `configureDependencies()` before `runApp`.
 - `user`: the `UserRepository` contract returns the app's own `AppUser`, not a Firebase type. `FirebaseUserRepository` (data) maps the Firebase user with the `toAppUser()` extension. `login` and `account` have a ViewModel, state and pages in their presentation layer.
@@ -53,6 +53,7 @@ A feature has only the layers it needs. Features: `user` (domain, data), `login`
 - `templates`: `WorkoutTemplate` and the built-in templates are in domain. The templates page, its ViewModel and `TemplateTile` are in presentation.
 - `timer`: `TimerParams`, `TimerSchedule`, `TimerStatus` and the `AudioManager` and `BackgroundKeepAlive` contracts are in domain. `DefaultAudioManager` and `DefaultBackgroundKeepAlive` (data) play sounds and keep the app alive with the screen off. The timer ViewModel, state, page and style views are in presentation. `TimerPage` uses `wakelock_plus` directly (the one documented exception to the platform rule).
 - `statistics`: session models and the `ActivityAccountSource` contract are in domain. The `sqflite` database (`activity.db`), `ActivityAccess` and the Firebase account source are in data. The statistics page owns a `StatisticsViewModel` and displays account-scoped daily totals.
+- `developer`: debug-only Developer tools ViewModel and state, presentation only.
 - `navigation.dart` defines the routes (`/` login, `/home`, `/timer`, `/timer-styles`, `/templates`) and passes the `TimerParams` from `state.extra` to `TimerPage`. Each page creates and disposes its own ViewModel.
 - `lib/di/di.dart` is the composition point. It registers the app-wide singletons by hand: `AudioPlayer`, the repositories, `AudioManager`, `BackgroundKeepAlive` and the activity database. ViewModels are not registered. Keep the registration order, because `ActivityAccess` is closed before `ActivityDatabase`.
 - `lib/core/` holds the sealed `Result<T>` (`Success` and `Failure`, with `fold`) and the `Duration` extension (`asMinutesAndSeconds`). Repositories return `Result` from the methods that can fail, and the ViewModels turn it into state. Logging uses `debugPrint`.

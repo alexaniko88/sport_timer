@@ -1,6 +1,6 @@
 ---
 id: DEV-01-02
-status: ready
+status: done
 type: feat
 complexity: 4
 depends-on: [DEV-01-01]
@@ -14,17 +14,17 @@ skills: []
 
 # Add the developer tools view model
 
-Story: [Purge local activity](../index.md)
+Story: [Purge local activity](../../index.md)
 
-Epic: [Developer tools](../../../index.md)
+Epic: [Developer tools](../../../../index.md)
 
 ## Goal
 
-Add the Developer tools state and ViewModel that run the purge, report success or failure, and block a second purge while one is pending. Serves R2, R3 and R5. This task has no UI; the page in [Add the developer page (DEV-01-03)](../task-03-add-developer-page/index.md) creates and uses the ViewModel.
+Add the Developer tools state and ViewModel that run the purge, report success or failure, and block a second purge while one is pending. Serves R2, R3 and R5. This task has no UI; the page in [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md) creates and uses the ViewModel.
 
 ## Context
 
-- `ActivityRepository` (`lib/features/statistics/domain/activity_repository.dart`) is registered in `getIt` in `lib/di/di.dart`. Its `deleteAllActivity()` is added by [Purge activity storage (DEV-01-01)](../done/task-01-purge-activity-storage/index.md). Statistics screens refresh on `changes`, which the purge emits, so the ViewModel does nothing extra to refresh them.
+- `ActivityRepository` (`lib/features/statistics/domain/activity_repository.dart`) is registered in `getIt` in `lib/di/di.dart`. Its `deleteAllActivity()` is added by [Purge activity storage (DEV-01-01)](../task-01-purge-activity-storage/index.md). Statistics screens refresh on `changes`, which the purge emits, so the ViewModel does nothing extra to refresh them.
 - ViewModel pattern to copy: `lib/features/login/presentation/login_view_model.dart` and `login_state.dart` (`ValueNotifier` state exposed as `ValueListenable`, `Future<bool>` for a one-time result, `_disposed` flag, `Result.fold`).
 - `lib/features/developer/` does not exist yet; this task creates it with a `presentation/` folder only.
 - `CLAUDE.md` "Project layout" lists every feature folder ("Features: `user` (domain, data), …, `timer` and `statistics`." plus one bullet per feature). `test/architecture/ai_setup_test.dart` "every folder under lib/features is named in the "Project layout" section of CLAUDE.md" fails once `lib/features/developer/` exists and is not named, and CI runs the full `flutter test`, so this task adds the feature to `CLAUDE.md`. DEV-01-03 later extends the bullet and the routes.
@@ -45,8 +45,8 @@ Add the Developer tools state and ViewModel that run the purge, report success o
 
 ## Out of scope
 
-- The page, dialog, snackbars, drawer entry, route, the `/developer` route in `CLAUDE.md`, goldens and snapshot README (that is [Add the developer page (DEV-01-03)](../task-03-add-developer-page/index.md)).
-- The storage purge itself (that is [Purge activity storage (DEV-01-01)](../done/task-01-purge-activity-storage/index.md)).
+- The page, dialog, snackbars, drawer entry, route, the `/developer` route in `CLAUDE.md`, goldens and snapshot README (that is [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md)).
+- The storage purge itself (that is [Purge activity storage (DEV-01-01)](../task-01-purge-activity-storage/index.md)).
 
 ## Files and tests
 
@@ -56,9 +56,9 @@ Add the Developer tools state and ViewModel that run the purge, report success o
 
 ## Acceptance
 
-- [ ] When `purge()` succeeds, then it returns `true` and the state is back to `isPurging: false` with no error. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "purge succeeds".
-- [ ] When `purge()` fails, then it returns `false`, `isPurging` is false and `errorMessage` holds the error text. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "purge failure sets the error message".
-- [ ] While a purge is pending, when `purge()` is called again, then it returns `false` at once and the repository is called only once. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "second purge while pending is ignored".
-- [ ] When the ViewModel is disposed while a purge is pending, then `purge()` returns `false` and no error is thrown when the purge completes. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "dispose while purging".
-- [ ] When `lib/features/developer` exists, then `CLAUDE.md` "Project layout" names `developer`. Check: `test/architecture/ai_setup_test.dart` "every folder under lib/features is named in the "Project layout" section of CLAUDE.md".
-- [ ] When the checks run, then they pass, including the layer boundary test. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When `purge()` succeeds, then it returns `true` and the state is back to `isPurging: false` with no error. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "purge succeeds".
+- [x] When `purge()` fails, then it returns `false`, `isPurging` is false and `errorMessage` holds the error text. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "purge failure sets the error message".
+- [x] While a purge is pending, when `purge()` is called again, then it returns `false` at once and the repository is called only once. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "second purge while pending is ignored".
+- [x] When the ViewModel is disposed while a purge is pending, then `purge()` returns `false` and no error is thrown when the purge completes. Check: `test/features/developer/presentation/developer_tools_view_model_test.dart` "dispose while purging".
+- [x] When `lib/features/developer` exists, then `CLAUDE.md` "Project layout" names `developer`. Check: `test/architecture/ai_setup_test.dart` "every folder under lib/features is named in the "Project layout" section of CLAUDE.md".
+- [x] When the checks run, then they pass, including the layer boundary test. Check: `fvm dart tool/agent_check.dart --skip-build`.
