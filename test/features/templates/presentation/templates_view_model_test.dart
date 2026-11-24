@@ -9,6 +9,8 @@ import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/domain/custom_template.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_icon.dart';
 import 'package:sport_timer/features/templates/presentation/templates_state.dart';
 import 'package:sport_timer/features/templates/presentation/templates_view_model.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
@@ -59,6 +61,30 @@ class _FakeSettingsRepository implements SettingsRepository {
   @override
   Future<Result<void>> saveTimerStyle(TimerStyle style) async => const Success(null);
 }
+
+const _tabata = CustomTemplate(
+  id: 'custom-1',
+  name: 'Tabata',
+  icon: CustomTemplateIcon.timer,
+  settings: TimerSettings(
+    preparationTime: Duration(seconds: 10),
+    roundTime: Duration(seconds: 20),
+    restTime: Duration(seconds: 10),
+    rounds: 8,
+  ),
+);
+
+const _circuit = CustomTemplate(
+  id: 'custom-2',
+  name: 'Circuit',
+  icon: CustomTemplateIcon.weights,
+  settings: TimerSettings(
+    preparationTime: Duration(seconds: 15),
+    roundTime: Duration(seconds: 45),
+    restTime: Duration(seconds: 15),
+    rounds: 10,
+  ),
+);
 
 void main() {
   late _FakeSettingsRepository repository;
@@ -206,6 +232,92 @@ void main() {
       expect(notifications, 1);
       expect(repository.storedSettings, builtInTemplates[1].settings);
       expect(settings.state.value.status, SettingsStatus.saved);
+    });
+  });
+
+  group('own templates', () {
+    Future<void> useTemplates(
+      List<CustomTemplate> own, {
+      TimerSettings? settingsValue,
+      String? selectedId,
+    }) async {
+      templates.dispose();
+      settings.dispose();
+      repository.selectedTemplateId = selectedId;
+      if (settingsValue != null) repository.storedSettings = settingsValue;
+      settings = SettingsViewModel(repository, FakeCustomTemplateRepository(stored: own));
+      await settings.loadSettings();
+      templates = TemplatesViewModel(settings);
+    }
+
+    test('own templates follow the settings state', () async {
+      expect(templates.state.value.customTemplates, isEmpty);
+
+      await useTemplates([_tabata, _circuit]);
+
+      expect(templates.state.value.customTemplates, [_tabata, _circuit]);
+
+      await settings.saveCustomTemplate(_tabata.copyWith(name: 'Renamed'));
+
+      expect(templates.state.value.customTemplates.first.name, 'Renamed');
+      expect(templates.state.value.customTemplates, hasLength(2));
+    });
+
+    test('explicit own selection wins', () async {
+      final sameAsBuiltIn = _tabata.copyWith(settings: builtInTemplates.first.settings);
+      await useTemplates(
+        [sameAsBuiltIn],
+        settingsValue: sameAsBuiltIn.settings,
+        selectedId: sameAsBuiltIn.id,
+      );
+
+      expect(templates.state.value.selectedCustomTemplateId, sameAsBuiltIn.id);
+      expect(templates.state.value.selectedTemplateId, isNull);
+    });
+
+    test('explicit built-in selection wins', () async {
+      final builtIn = builtInTemplates[1];
+      final sameAsBuiltIn = _tabata.copyWith(settings: builtIn.settings);
+      await useTemplates(
+        [sameAsBuiltIn],
+        settingsValue: builtIn.settings,
+        selectedId: builtIn.id.name,
+      );
+
+      expect(templates.state.value.selectedTemplateId, builtIn.id);
+      expect(templates.state.value.selectedCustomTemplateId, isNull);
+    });
+
+    test('matching prefers built-in templates', () async {
+      await useTemplates([_tabata, _circuit], settingsValue: _circuit.settings);
+
+      expect(templates.state.value.selectedTemplateId, isNull);
+      expect(templates.state.value.selectedCustomTemplateId, _circuit.id);
+
+      final sameAsBuiltIn = _tabata.copyWith(settings: builtInTemplates[1].settings);
+      await useTemplates([sameAsBuiltIn], settingsValue: builtInTemplates[1].settings);
+
+      expect(templates.state.value.selectedTemplateId, builtInTemplates[1].id);
+      expect(templates.state.value.selectedCustomTemplateId, isNull);
+    });
+
+    test('no match shows Custom', () async {
+      await useTemplates(
+        [_tabata],
+        settingsValue: builtInTemplates.first.settings.copyWith(rounds: 99),
+      );
+
+      expect(templates.state.value.selectedTemplateId, isNull);
+      expect(templates.state.value.selectedCustomTemplateId, isNull);
+    });
+
+    test('applying an own template selects it', () async {
+      await useTemplates([_tabata, _circuit]);
+      await templates.applyCustomTemplate(_circuit);
+
+      expect(settings.state.value.selectedCustomTemplate, _circuit);
+      expect(templates.state.value.selectedCustomTemplateId, _circuit.id);
+      expect(templates.state.value.timerSettings, _circuit.settings);
     });
   });
 

@@ -23,6 +23,7 @@ import 'package:sport_timer/features/statistics/presentation/statistics_view_mod
 import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
 import 'package:sport_timer/features/templates/domain/custom_template.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_icon.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
 import 'package:sport_timer/features/timer/domain/audio_manager.dart';
@@ -63,6 +64,31 @@ const TimerSettings _customSettings = TimerSettings(
   restTime: Duration(seconds: 15),
   rounds: 3,
 );
+
+const List<CustomTemplate> _ownTemplates = [
+  CustomTemplate(
+    id: 'custom-1',
+    name: 'Tabata',
+    icon: CustomTemplateIcon.timer,
+    settings: TimerSettings(
+      preparationTime: Duration(seconds: 10),
+      roundTime: Duration(seconds: 20),
+      restTime: Duration(seconds: 10),
+      rounds: 8,
+    ),
+  ),
+  CustomTemplate(
+    id: 'custom-2',
+    name: 'Kettlebell circuit for the gym',
+    icon: CustomTemplateIcon.weights,
+    settings: TimerSettings(
+      preparationTime: Duration(seconds: 15),
+      roundTime: Duration(seconds: 45),
+      restTime: Duration(seconds: 15),
+      rounds: 10,
+    ),
+  ),
+];
 
 final WorkoutTemplate _hyroxTemplate = builtInTemplates.firstWhere(
   (template) => template.id == TemplateId.hyrox,
@@ -547,6 +573,26 @@ void main() {
             constraints: _pairConstraints,
             builder: () {
               configureFakeDependencies();
+              return _lightAndDarkGroup(
+                builder: () {
+                  final viewModel = SettingsViewModel(getIt(), getIt())..loadSettings();
+                  addTearDown(viewModel.dispose);
+                  return TemplatesPage(viewModel: viewModel);
+                },
+              );
+            },
+          );
+
+          goldenTest(
+            'templates page with an own template selected',
+            fileName: 'templates_own',
+            constraints: _pairConstraints,
+            builder: () {
+              configureFakeDependencies(
+                settings: _ownTemplates.first.settings,
+                selectedTemplateId: 'custom-1',
+                customTemplates: _ownTemplates,
+              );
               return _lightAndDarkGroup(
                 builder: () {
                   final viewModel = SettingsViewModel(getIt(), getIt())..loadSettings();
