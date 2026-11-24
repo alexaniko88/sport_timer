@@ -1,6 +1,6 @@
 ---
 id: IMP-06
-status: ready
+status: done
 type: improve
 complexity: 3
 depends-on: []
@@ -14,9 +14,9 @@ skills: []
 
 # Add a barbell notification icon on Android
 
-Improvements: [Improvements](../index.md)
+Improvements: [Improvements](../../index.md)
 
-Related: [Adaptive launcher icon for iOS and Android (IMP-07)](../task-07-adaptive-launcher-icon/index.md).
+Related: [Adaptive launcher icon for iOS and Android (IMP-07)](../../task-07-adaptive-launcher-icon/index.md).
 
 ## Goal
 
@@ -29,7 +29,7 @@ Give the Android workout notification its own small icon: a white barbell on a t
 - The file is in the `timer` feature, `data` layer, which may use platform packages (`audio_service`). There is no test for `DefaultBackgroundKeepAlive` yet and no fake for `AudioService.init`.
 - `android/app/src/main/res/` has `drawable/` (only `launch_background.xml`) and no `raw/` folder yet.
 - iOS is not affected: `audio_service` uses no notification icon there.
-- The barbell is the drawing in the `BARBELL` constant (100 × 100 canvas) of IMP-07's approved [mockup.html](../task-07-adaptive-launcher-icon/mockup.html). This task needs no mockup of its own: the notification icon is a single-color silhouette of that drawing.
+- The barbell is the drawing in the `BARBELL` constant (100 × 100 canvas) of IMP-07's approved [mockup.html](../../task-07-adaptive-launcher-icon/mockup.html). This task needs no mockup of its own: the notification icon is a single-color silhouette of that drawing.
 - File-reading tests in this repo follow `test/architecture/ai_setup_test.dart`: `dart:io` reads a repository-relative path.
 
 ## Contract
@@ -92,8 +92,8 @@ Give the Android workout notification its own small icon: a white barbell on a t
 
 ## Acceptance
 
-- [ ] When the workout notification config is built, then `androidNotificationIcon` is `'drawable/ic_stat_sport_timer'`. Check: `test/features/timer/data/default_background_keep_alive_test.dart` "uses the barbell drawable as the notification icon".
-- [ ] When the workout notification config is built, then the channel id is `'sport_timer.workout'`, the channel name is `'Workout'` and `androidStopForegroundOnPause` is `false`, as before. Check: `test/features/timer/data/default_background_keep_alive_test.dart` "keeps the workout channel and foreground settings".
-- [ ] When `android/app/src/main/res/drawable/ic_stat_sport_timer.xml` is read, then it is a `<vector>` whose `android:pathData` is the barbell path in Decisions, with no `fillColor` and `#FFFFFFFF` as its only color. Check: `test/features/timer/data/default_background_keep_alive_test.dart` "the notification icon drawable draws the barbell in white strokes only".
-- [ ] When `android/app/src/main/res/raw/keep.xml` is read, then it keeps `@drawable/ic_stat_sport_timer` and nothing else (no `@drawable/*`). Check: `test/features/timer/data/default_background_keep_alive_test.dart` "keep.xml keeps only the notification icon".
-- [ ] When the change is checked, then format, analyze, the mirrored test and the boundary test pass. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When the workout notification config is built, then `androidNotificationIcon` is `'drawable/ic_stat_sport_timer'`. Check: `test/features/timer/data/default_background_keep_alive_test.dart` "uses the barbell drawable as the notification icon".
+- [x] When the workout notification config is built, then the channel id is `'sport_timer.workout'`, the channel name is `'Workout'` and `androidStopForegroundOnPause` is `false`, as before. Check: `test/features/timer/data/default_background_keep_alive_test.dart` "keeps the workout channel and foreground settings".
+- [x] When `android/app/src/main/res/drawable/ic_stat_sport_timer.xml` is read, then it is a `<vector>` whose `android:pathData` is the barbell path in Decisions, with no `fillColor` and `#FFFFFFFF` as its only color. Check: `test/features/timer/data/default_background_keep_alive_test.dart` "the notification icon drawable draws the barbell in white strokes only".
+- [x] When `android/app/src/main/res/raw/keep.xml` is read, then it keeps `@drawable/ic_stat_sport_timer` and nothing else (no `@drawable/*`). Check: `test/features/timer/data/default_background_keep_alive_test.dart` "keep.xml keeps only the notification icon".
+- [x] When the change is checked, then format, analyze, the mirrored test and the boundary test pass. Check: `fvm dart tool/agent_check.dart --skip-build`.

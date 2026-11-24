@@ -20,7 +20,7 @@ skills: []
 
 Improvements: [Improvements](../index.md)
 
-Related: [IMP-06: Notification icon](../task-06-add-notification-icon/index.md).
+Related: [IMP-06: Notification icon](../done/task-06-add-notification-icon/index.md).
 
 > **Run this task by hand in an interactive session, not with `skill-dispatcher`.** It needs `rsvg-convert` (Homebrew `librsvg`) and `fvm dart run icons_launcher:create`, which dispatcher runners may not run. That is why it stays `draft`: the dispatcher only picks `ready` tasks. Ask the user before installing `librsvg` if `rsvg-convert` is missing.
 
@@ -117,7 +117,7 @@ Consumers: the iOS and Android launchers. No Dart code changes.
 
 ## Out of scope
 
-- The Android notification icon ([IMP-06](../task-06-add-notification-icon/index.md)).
+- The Android notification icon ([IMP-06](../done/task-06-add-notification-icon/index.md)).
 - macOS, web and desktop icons.
 - Showing the app icon inside the app UI.
 - The Android 12+ splash screen (it uses the launcher icon automatically; no separate config).

@@ -9,6 +9,15 @@ import 'package:sport_timer/features/timer/domain/background_keep_alive.dart';
 typedef AsyncAction = Future<void> Function();
 
 class DefaultBackgroundKeepAlive extends BackgroundKeepAlive {
+  @visibleForTesting
+  static const AudioServiceConfig notificationConfig = AudioServiceConfig(
+    androidNotificationChannelId: 'sport_timer.workout',
+    androidNotificationChannelName: 'Workout',
+    androidNotificationIcon: 'drawable/ic_stat_sport_timer',
+    // The service stays in the foreground while paused, so it is never restarted from the background.
+    androidStopForegroundOnPause: false,
+  );
+
   _SilentAudioHandler? _handler;
   Future<_SilentAudioHandler>? _handlerFuture;
   String _text = '';
@@ -83,12 +92,7 @@ class DefaultBackgroundKeepAlive extends BackgroundKeepAlive {
 
   Future<_SilentAudioHandler> _createHandler() => AudioService.init(
         builder: _SilentAudioHandler.new,
-        config: const AudioServiceConfig(
-          androidNotificationChannelId: 'sport_timer.workout',
-          androidNotificationChannelName: 'Workout',
-          // The service stays in the foreground while paused, so it is never restarted from the background.
-          androidStopForegroundOnPause: false,
-        ),
+        config: notificationConfig,
       );
 
   // Asked once, on the first start. The foreground service works when this is
