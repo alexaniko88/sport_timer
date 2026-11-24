@@ -3,7 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
-import 'package:sport_timer/features/templates/domain/workout_template.dart';
+import 'package:sport_timer/features/templates/presentation/extensions/template_icon_extension.dart';
 import 'package:sport_timer/features/templates/presentation/extensions/template_names_extension.dart';
 import 'package:sport_timer/features/templates/presentation/templates_state.dart';
 import 'package:sport_timer/features/templates/presentation/templates_view_model.dart';
@@ -108,17 +108,9 @@ class _TemplatesPageState extends State<TemplatesPage> {
                     Builder(
                       key: ValueKey(template.id),
                       builder: (context) {
-                        final icon = switch (template.id) {
-                          TemplateId.standard => Icons.assignment,
-                          TemplateId.fullAbs => Icons.sports_gymnastics,
-                          TemplateId.hyrox => Icons.directions_run,
-                          TemplateId.stretching => Icons.self_improvement,
-                          TemplateId.strength => Icons.fitness_center,
-                        };
-
                         return TemplateTile(
                           name: l10n.templateName(template.id),
-                          icon: icon,
+                          icon: template.id.icon,
                           settings: template.settings,
                           totalTime: template.totalTime,
                           isSelected: !isLoading && template.id == state.selectedTemplateId,
