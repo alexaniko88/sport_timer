@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/statistics/domain/activity_account_source.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
+import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_creation.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
@@ -14,7 +15,7 @@ import 'package:sport_timer/features/timer/domain/timer_params.dart';
 import 'package:sport_timer/features/timer/domain/timer_schedule.dart';
 import 'package:uuid/uuid.dart';
 
-typedef _PendingWrite = Future<Result<void>> Function();
+typedef _WriteAction = Future<Result<void>> Function();
 typedef _FailureCallback = void Function(Exception error);
 typedef _DrainedCallback = void Function(_RecordingRun run);
 
@@ -107,8 +108,16 @@ class DefaultTimerActivityRecorder implements TimerActivityRecorder {
   }
 }
 
+class _PendingWrite {
+  final _WriteAction action;
+  final bool isDraft;
+
+  _PendingWrite(this.action, {this.isDraft = false});
+}
+
 class _RecordingRun implements TimerActivityRun {
   static const _retryDelay = Duration(seconds: 5);
+  static const _draftPeriod = Duration(seconds: 10);
   static const _maxAutoRetries = 5;
 
   final ActivityRepository _repository;
@@ -119,11 +128,16 @@ class _RecordingRun implements TimerActivityRun {
   final _pending = Queue<_PendingWrite>();
   ActivitySessionHandle? _session;
   bool _ended = false;
+  bool _paused = false;
+  bool _isWriting = false;
   bool _draining = false;
   bool _blocked = false;
   bool _disposed = false;
   int _failedAttempts = 0;
   Timer? _retryTimer;
+  Timer? _draftTimer;
+  List<CompletedPhase>? _lastDraftPhases;
+  DateTime? _lastDraftInstant;
 
   _RecordingRun({
     required ActivityRepository repository,
@@ -148,6 +162,7 @@ class _RecordingRun implements TimerActivityRun {
         _onDrained = onDrained;
 
   void begin() {
+    _draftTimer = Timer.periodic(_draftPeriod, (_) => _saveDraft());
     _enqueue(() async {
       final result = await _repository.createPreparedSession(_creation);
       return result.fold(
@@ -163,19 +178,54 @@ class _RecordingRun implements TimerActivityRun {
   @override
   void reconcile(Duration elapsed) {
     if (_ended) return;
-    _tracker.reconcile(elapsed);
+    final completed = _tracker.reconcile(elapsed);
+    if (completed.isNotEmpty) _saveDraft();
+    if (_tracker.isFinished) _stopDraftTimer();
   }
 
   @override
   void pause(Duration elapsed) {
-    if (_ended) return;
+    if (_paused || _ended || _tracker.isFinished || elapsed < _tracker.lastElapsed) return;
     _tracker.pause(elapsed);
+    _paused = true;
+    _saveDraft();
+    _stopDraftTimer();
   }
 
   @override
   void resume() {
-    if (_ended) return;
+    if (!_paused || _ended) return;
     _tracker.resume();
+    _paused = false;
+    if (!_tracker.isFinished) _draftTimer = Timer.periodic(_draftPeriod, (_) => _saveDraft());
+  }
+
+  void _stopDraftTimer() {
+    _draftTimer?.cancel();
+    _draftTimer = null;
+  }
+
+  // Keeps a hidden copy of the run so a killed app loses at most the time since the last draft.
+  void _saveDraft() {
+    if (_ended || _disposed) return;
+    final phases = _tracker.snapshot();
+    final checkpoint = _tracker.endInstant;
+    if (phases.isEmpty) return;
+    if (_lastDraftInstant == checkpoint && listEquals(_lastDraftPhases, phases)) return;
+    _lastDraftPhases = phases;
+    _lastDraftInstant = checkpoint;
+    _enqueue(
+      () async {
+        final session = _session;
+        if (session == null) return Failure(Exception('Activity session is unavailable'));
+        return _repository.saveDraft(
+          session: session,
+          phases: phases,
+          checkpointAtUtcMs: checkpoint.millisecondsSinceEpoch,
+        );
+      },
+      isDraft: true,
+    );
   }
 
   @override
@@ -186,6 +236,7 @@ class _RecordingRun implements TimerActivityRun {
     final phases = _tracker.snapshot();
     final endedAtUtcMs = _tracker.endInstant.millisecondsSinceEpoch;
     _ended = true;
+    _stopDraftTimer();
     _enqueue(() async {
       final session = _session;
       if (session == null) return Failure(Exception('Activity session is unavailable'));
@@ -193,9 +244,26 @@ class _RecordingRun implements TimerActivityRun {
     });
   }
 
-  void _enqueue(_PendingWrite write) {
-    _pending.add(write);
+  void _enqueue(_WriteAction action, {bool isDraft = false}) {
+    _dropWaitingDrafts();
+    _pending.add(_PendingWrite(action, isDraft: isDraft));
     if (!_blocked) unawaited(_drain());
+  }
+
+  // A newer write replaces every draft that is not being written right now,
+  // including a failed draft at the head of a blocked queue.
+  void _dropWaitingDrafts() {
+    if (_pending.isEmpty) return;
+    final head = _pending.first;
+    final isHeadWriting = _isWriting;
+    final hadFailedHead = head.isDraft && !isHeadWriting;
+    _pending.removeWhere((write) => write.isDraft && !(isHeadWriting && identical(write, head)));
+    if (hadFailedHead && _blocked) {
+      _retryTimer?.cancel();
+      _retryTimer = null;
+      _blocked = false;
+      _failedAttempts = 0;
+    }
   }
 
   // A manual retry starts a fresh set of automatic attempts.
@@ -206,6 +274,7 @@ class _RecordingRun implements TimerActivityRun {
 
   void dispose() {
     _disposed = true;
+    _stopDraftTimer();
     _retryTimer?.cancel();
     _retryTimer = null;
   }
@@ -222,9 +291,19 @@ class _RecordingRun implements TimerActivityRun {
     if (_draining || _blocked || _disposed) return;
     _draining = true;
     while (_pending.isNotEmpty && !_disposed) {
-      final result = await _pending.first();
+      final write = _pending.first;
+      _isWriting = true;
+      final result = await write.action();
+      _isWriting = false;
       if (_disposed) break;
       if (result case Failure<void>(:final error)) {
+        if (write.isDraft && _pending.length > 1) {
+          // A write is already waiting, so the stale draft is dropped instead of blocking it.
+          _onFailure(error);
+          _pending.removeFirst();
+          _failedAttempts = 0;
+          continue;
+        }
         _blocked = true;
         _failedAttempts++;
         _onFailure(error);

@@ -5,7 +5,9 @@ abstract interface class TimerActivityRecorder {
   // Captures the current account before returning and queues the session write.
   Result<TimerActivityRun> start(TimerParams params);
 
-  // Failed writes remain queued until retried; events report each failure.
+  // Failed session creation and finishRun writes stay queued until retried.
+  // A failed draft is dropped when a newer write replaces it or a write waits behind it.
+  // Events report each failure.
   Stream<Exception> get failures;
   void retryPendingWrites();
 }
