@@ -1,13 +1,13 @@
 # STORY 1: Purge local activity
 
-Epic: [Developer tools](../../index.md)
+Epic: [Developer tools](../../../index.md)
 
 As a developer, I can clear local activity for all accounts from a debug-only page so I can start testing with an empty history.
 
 ## Scope
 
 - In: a debug-only entry at the bottom of the navigation drawer and a developer page with a single purge action. A confirmation dialog explains the scope. Texts are English only, with no localization.
-- Out: other tools in this version; any change to settings or authentication. The story does not depend on the [Delete statistics story](../../../epic-statistics/stories/story-05-delete-statistics/index.md), which is account-specific.
+- Out: other tools in this version; any change to settings or authentication. The story does not depend on the [Delete statistics story](../../../../../epic-statistics/stories/story-05-delete-statistics/index.md), which is account-specific.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ As a developer, I can clear local activity for all accounts from a debug-only pa
 
 1. [Purge activity storage](done/task-01-purge-activity-storage/index.md)
 2. [Add the developer tools view model](done/task-02-add-developer-tools-view-model/index.md)
-3. [Add the developer page](task-03-add-developer-page/index.md)
+3. [Add the developer page](done/task-03-add-developer-page/index.md)
 
 ## Shared contracts
 
@@ -31,4 +31,4 @@ As a developer, I can clear local activity for all accounts from a debug-only pa
 
 ## References
 
-Visual references: the [drawer golden](../../../../../test/snapshots/goldens/home_drawer.png) and the [snapshot flow index](../../../../../test/snapshots/README.md). The approved [mockup](mockup.html) shows the new page and dialog.
+Visual references: the [drawer golden](../../../../../../../test/snapshots/goldens/home_drawer.png) and the [snapshot flow index](../../../../../../../test/snapshots/README.md). The approved [mockup](mockup.html) shows the new page and dialog.

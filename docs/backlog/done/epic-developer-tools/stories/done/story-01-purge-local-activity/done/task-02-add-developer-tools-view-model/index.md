@@ -16,11 +16,11 @@ skills: []
 
 Story: [Purge local activity](../../index.md)
 
-Epic: [Developer tools](../../../../index.md)
+Epic: [Developer tools](../../../../../index.md)
 
 ## Goal
 
-Add the Developer tools state and ViewModel that run the purge, report success or failure, and block a second purge while one is pending. Serves R2, R3 and R5. This task has no UI; the page in [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md) creates and uses the ViewModel.
+Add the Developer tools state and ViewModel that run the purge, report success or failure, and block a second purge while one is pending. Serves R2, R3 and R5. This task has no UI; the page in [Add the developer page (DEV-01-03)](../task-03-add-developer-page/index.md) creates and uses the ViewModel.
 
 ## Context
 
@@ -45,7 +45,7 @@ Add the Developer tools state and ViewModel that run the purge, report success o
 
 ## Out of scope
 
-- The page, dialog, snackbars, drawer entry, route, the `/developer` route in `CLAUDE.md`, goldens and snapshot README (that is [Add the developer page (DEV-01-03)](../../task-03-add-developer-page/index.md)).
+- The page, dialog, snackbars, drawer entry, route, the `/developer` route in `CLAUDE.md`, goldens and snapshot README (that is [Add the developer page (DEV-01-03)](../task-03-add-developer-page/index.md)).
 - The storage purge itself (that is [Purge activity storage (DEV-01-01)](../task-01-purge-activity-storage/index.md)).
 
 ## Files and tests

@@ -1,6 +1,6 @@
 ---
 id: DEV-01-03
-status: ready
+status: done
 type: feat
 complexity: 7
 depends-on: [DEV-01-01, DEV-01-02, IMP-02]
@@ -22,9 +22,9 @@ skills: []
 
 # Add the developer page
 
-Story: [Purge local activity](../index.md)
+Story: [Purge local activity](../../index.md)
 
-Epic: [Developer tools](../../../index.md)
+Epic: [Developer tools](../../../../../index.md)
 
 ## Goal
 
@@ -32,12 +32,12 @@ Add a debug-only "Developer tools" page, opened from the bottom of the navigatio
 
 ## Context
 
-- The drawer redesign [Rethink the navigation drawer (IMP-02)](../../../../improvements/done/task-02-rethink-navigation-drawer/index.md) is done. `lib/features/home/presentation/home_page.dart` builds a `Drawer` with a `SafeArea` and a `Column` holding a header (`Icons.timer_outlined` badge and the `Sport Timer` title), a `Divider`, and an `Expanded` `ListView` of private `_DrawerTile` (`AppSurface`) items for "Templates" and "Styles". `_onDrawerTileTapped` closes the drawer with `_scaffoldKey.currentState?.closeDrawer()` before it pushes.
+- The drawer redesign [Rethink the navigation drawer (IMP-02)](../../../../../../../improvements/done/task-02-rethink-navigation-drawer/index.md) is done. `lib/features/home/presentation/home_page.dart` builds a `Drawer` with a `SafeArea` and a `Column` holding a header (`Icons.timer_outlined` badge and the `Sport Timer` title), a `Divider`, and an `Expanded` `ListView` of private `_DrawerTile` (`AppSurface`) items for "Templates" and "Styles". `_onDrawerTileTapped` closes the drawer with `_scaffoldKey.currentState?.closeDrawer()` before it pushes.
 - Routes: `lib/navigation.dart` has the `RoutePath` enum and `Routes.router`, a `static final GoRouter`. Its initial route `/` is the login route, whose `redirect` reads `getIt<UserRepository>().isUserLoggedIn()`. `HomePage` is created there as `const HomePage()`.
-- `DeveloperToolsViewModel` and `DeveloperToolsState` exist in `lib/features/developer/presentation/` after [Add the developer tools view model (DEV-01-02)](../done/task-02-add-developer-tools-view-model/index.md). The ViewModel takes the `ActivityRepository` registered in `getIt` in `lib/di/di.dart`, whose `deleteAllActivity()` comes from [Purge activity storage (DEV-01-01)](../done/task-01-purge-activity-storage/index.md). Statistics screens refresh on `changes`, which the purge emits, so this page does nothing extra to refresh them.
+- `DeveloperToolsViewModel` and `DeveloperToolsState` exist in `lib/features/developer/presentation/` after [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md). The ViewModel takes the `ActivityRepository` registered in `getIt` in `lib/di/di.dart`, whose `deleteAllActivity()` comes from [Purge activity storage (DEV-01-01)](../task-01-purge-activity-storage/index.md). Statistics screens refresh on `changes`, which the purge emits, so this page does nothing extra to refresh them.
 - Page pattern to copy: `lib/features/login/presentation/login_page.dart` (creates its ViewModel in `State`, awaits it, checks `mounted`, shows a snackbar).
 - Shared pieces: `AppSurface` (`lib/shared/presentation/widgets/app_surface.dart`, `onTap` is nullable), `AppSpacing` (`lib/shared/presentation/theme/app_spacing.dart`), text roles `tileTitle` and `tileSecondary` (`lib/shared/presentation/extensions/text_theme_extension.dart`), dialog shape from `SportTheme` (`dialogTheme`).
-- Goldens: [home_drawer.png](../../../../../../test/snapshots/goldens/home_drawer.png) (drawer today), [templates_selected.png](../../../../../../test/snapshots/goldens/templates_selected.png) (page with app bar and tiles, built without a router), [account_sign_out_dialog.png](../../../../../../test/snapshots/goldens/account_sign_out_dialog.png) (confirmation dialog). Golden tests are in `test/snapshots/ui_snapshots_test.dart` (`configureFakeDependencies`, `_lightAndDarkGroup`, `_tapInBothFrames`, and a `setUp` that registers `_FakeActivityRepository`), indexed in `test/snapshots/README.md`.
+- Goldens: [home_drawer.png](../../../../../../../../../test/snapshots/goldens/home_drawer.png) (drawer today), [templates_selected.png](../../../../../../../../../test/snapshots/goldens/templates_selected.png) (page with app bar and tiles, built without a router), [account_sign_out_dialog.png](../../../../../../../../../test/snapshots/goldens/account_sign_out_dialog.png) (confirmation dialog). Golden tests are in `test/snapshots/ui_snapshots_test.dart` (`configureFakeDependencies`, `_lightAndDarkGroup`, `_tapInBothFrames`, and a `setUp` that registers `_FakeActivityRepository`), indexed in `test/snapshots/README.md`.
 - `test/features/home/presentation/home_page_test.dart` has the drawer tests from IMP-02, with private `_FakeSettingsRepository` and `_FakeUserRepository` and `FakeEmptyActivityRepository` registered in `getIt`.
 - `flutter test` always runs in debug mode, so `kDebugMode` is always true in tests. That is why the gate is a flag tests can set.
 - `CLAUDE.md` "Project layout" names `developer` after DEV-01-02 (features line and a `developer` bullet). Its `navigation.dart` bullet lists the routes (`/` login, `/home`, `/timer`, `/timer-styles`, `/templates`).
@@ -54,7 +54,7 @@ Add a debug-only "Developer tools" page, opened from the bottom of the navigatio
 
 ## View spec
 
-Where the [mockup](../mockup.html) and this View spec differ, this text wins; the mockup is the visual reference. For example, the mockup dims the tile while deleting; the app does not (see Purging below).
+Where the [mockup](../../mockup.html) and this View spec differ, this text wins; the mockup is the visual reference. For example, the mockup dims the tile while deleting; the app does not (see Purging below).
 
 - **Drawer footer (`home_page.dart`):** when `developerToolsEnabled` is true, below the `Expanded` `ListView` inside the drawer's `Column`, render `Divider(height: 1, indent: AppSpacing.s16, endIndent: AppSpacing.s16)` followed by `Padding(padding: const EdgeInsets.fromLTRB(AppSpacing.s16, AppSpacing.s12, AppSpacing.s16, AppSpacing.s24))` holding an `AppSurface` tile wrapped in `Semantics(button: true, child: ...)`.
   - Inside `AppSurface`: a `Row` with `Icon(Icons.bug_report_outlined, color: colorScheme.primary)`, `const Gap(AppSpacing.s12)`, `Expanded(child: Text('Developer tools', maxLines: 1, overflow: TextOverflow.ellipsis, style: textTheme.tileTitle))`, `const Gap(AppSpacing.s12)` and `Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant)`.
@@ -88,7 +88,7 @@ Where the [mockup](../mockup.html) and this View spec differ, this text wins; th
 
 ## Mockup
 
-[mockup.html](../mockup.html), approved by the user. It shows the drawer footer, the page, the confirmation, and the deleting, success and failure states, in light and dark. This task implements all of them.
+[mockup.html](../../mockup.html), approved by the user. It shows the drawer footer, the page, the confirmation, and the deleting, success and failure states, in light and dark. This task implements all of them.
 
 ## Decisions
 
@@ -97,12 +97,12 @@ Where the [mockup](../mockup.html) and this View spec differ, this text wins; th
 - **Page, tile and dialog texts as in the mockup:** approved by the user.
 - **No localization:** the page texts in `lib/features/developer/` and the drawer entry label "Developer tools" in `lib/features/home/presentation/home_page.dart` are hardcoded English with no ARB keys, under the Developer tools exception in the "Strings" rule of `.agents/planner-dispatcher/project-overrides.md` (debug-only, never shipped in release builds). Chosen by the user.
 - **Double taps blocked in the ViewModel and in the UI:** the ViewModel guard is in DEV-01-02; this task disables the tile while purging. Chosen by the user.
-- **Not dependent on the [Delete statistics story](../../../../epic-statistics/stories/story-05-delete-statistics/index.md):** chosen by the user.
+- **Not dependent on the [Delete statistics story](../../../../../../../epic-statistics/stories/story-05-delete-statistics/index.md):** chosen by the user.
 
 ## Out of scope
 
-- The storage purge itself and stale-write handling (that is [Purge activity storage (DEV-01-01)](../done/task-01-purge-activity-storage/index.md)).
-- The ViewModel and state logic (that is [Add the developer tools view model (DEV-01-02)](../done/task-02-add-developer-tools-view-model/index.md)).
+- The storage purge itself and stale-write handling (that is [Purge activity storage (DEV-01-01)](../task-01-purge-activity-storage/index.md)).
+- The ViewModel and state logic (that is [Add the developer tools view model (DEV-01-02)](../task-02-add-developer-tools-view-model/index.md)).
 - Any other developer tool, showing row counts, account-specific deletion, or changes to settings or sign-in.
 - Localization and Spanish strings for this page.
 
@@ -121,22 +121,22 @@ Where the [mockup](../mockup.html) and this View spec differ, this text wins; th
 
 ## Acceptance
 
-- [ ] Given a router built with `Routes.build(developerToolsEnabled: true)`, when the drawer is open, then the footer shows "Developer tools" as a button. Check: `test/features/home/presentation/home_page_test.dart` "drawer shows the Developer tools entry when enabled".
-- [ ] Given a router built with `Routes.build(developerToolsEnabled: true)`, when the "Developer tools" entry is tapped, then the drawer closes and `DeveloperToolsPage` is shown. Check: `test/features/home/presentation/home_page_test.dart` "tapping Developer tools closes the drawer and opens /developer".
-- [ ] Given the shared `setUp` router with `HomePage(developerToolsEnabled: false)`, when the drawer is open, then it has no "Developer tools" entry and no footer divider. Check: `test/features/home/presentation/home_page_test.dart` "drawer hides the Developer tools entry when disabled".
-- [ ] Given the shared `setUp` router with `HomePage(developerToolsEnabled: false)`, when the drawer is open, then it still shows the header, one `Divider` and the two tiles with the active values. Check: `test/features/home/presentation/home_page_test.dart` "drawer shows the header and two tiles with the active values".
-- [ ] When the router is built with `developerToolsEnabled: false` and goes to `/developer`, then no `DeveloperToolsPage` is built. Check: `test/navigation_test.dart` "developer route does not exist when developer tools are disabled".
-- [ ] When the confirmation is cancelled with "Cancel", then `deleteAllActivity()` is never called and no snackbar shows. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "Cancel does not delete".
-- [ ] When the confirmation is dismissed by tapping outside it, then `deleteAllActivity()` is never called and no snackbar shows. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "tapping outside the dialog does not delete".
-- [ ] When the user taps "Delete" and the purge succeeds, then `deleteAllActivity()` is called exactly once and "All local activity deleted." shows. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "Delete purges and shows the success snackbar".
-- [ ] While a purge is pending, then the tile shows a `CircularProgressIndicator` and tapping it opens no dialog. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "tile is blocked while purging".
-- [ ] When the purge fails, then "Could not delete activity: <error>" shows and "All local activity deleted." does not. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "failure shows the error snackbar".
-- [ ] When the page is shown in light and dark, then it meets `androidTapTargetGuideline`, `iOSTapTargetGuideline` and `textContrastGuideline`. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "page meets accessibility guidelines".
-- [ ] When the page renders at `TextScaler.linear(2)`, then no overflow exception is thrown. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "page renders at 2x text scale".
-- [ ] When the confirmation dialog is open in light and dark, then it meets `androidTapTargetGuideline`, `iOSTapTargetGuideline` and `textContrastGuideline`. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "confirmation dialog meets accessibility guidelines".
-- [ ] When the confirmation dialog is open at `TextScaler.linear(2)`, then no overflow exception is thrown. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "confirmation dialog renders at 2x text scale".
-- [ ] When the drawer is open in debug builds, then it shows the footer entry in light and dark. Check: `test/snapshots/goldens/home_drawer.png`.
-- [ ] When the developer page is shown, then it matches the default state in light and dark. Check: `test/snapshots/goldens/developer_tools.png`.
-- [ ] When the tile is tapped, then the confirmation dialog matches in light and dark. Check: `test/snapshots/goldens/developer_tools_dialog.png`.
-- [ ] When `CLAUDE.md` changes, then "Project layout" still names every feature folder, including `developer`. Check: `test/architecture/ai_setup_test.dart` "every folder under lib/features is named in the "Project layout" section of CLAUDE.md".
-- [ ] When the checks run, then they pass, including the layer boundary test. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] Given a router built with `Routes.build(developerToolsEnabled: true)`, when the drawer is open, then the footer shows "Developer tools" as a button. Check: `test/features/home/presentation/home_page_test.dart` "drawer shows the Developer tools entry when enabled".
+- [x] Given a router built with `Routes.build(developerToolsEnabled: true)`, when the "Developer tools" entry is tapped, then the drawer closes and `DeveloperToolsPage` is shown. Check: `test/features/home/presentation/home_page_test.dart` "tapping Developer tools closes the drawer and opens /developer".
+- [x] Given the shared `setUp` router with `HomePage(developerToolsEnabled: false)`, when the drawer is open, then it has no "Developer tools" entry and no footer divider. Check: `test/features/home/presentation/home_page_test.dart` "drawer hides the Developer tools entry when disabled".
+- [x] Given the shared `setUp` router with `HomePage(developerToolsEnabled: false)`, when the drawer is open, then it still shows the header, one `Divider` and the two tiles with the active values. Check: `test/features/home/presentation/home_page_test.dart` "drawer shows the header and two tiles with the active values".
+- [x] When the router is built with `developerToolsEnabled: false` and goes to `/developer`, then no `DeveloperToolsPage` is built. Check: `test/navigation_test.dart` "developer route does not exist when developer tools are disabled".
+- [x] When the confirmation is cancelled with "Cancel", then `deleteAllActivity()` is never called and no snackbar shows. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "Cancel does not delete".
+- [x] When the confirmation is dismissed by tapping outside it, then `deleteAllActivity()` is never called and no snackbar shows. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "tapping outside the dialog does not delete".
+- [x] When the user taps "Delete" and the purge succeeds, then `deleteAllActivity()` is called exactly once and "All local activity deleted." shows. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "Delete purges and shows the success snackbar".
+- [x] While a purge is pending, then the tile shows a `CircularProgressIndicator` and tapping it opens no dialog. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "tile is blocked while purging".
+- [x] When the purge fails, then "Could not delete activity: <error>" shows and "All local activity deleted." does not. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "failure shows the error snackbar".
+- [x] When the page is shown in light and dark, then it meets `androidTapTargetGuideline`, `iOSTapTargetGuideline` and `textContrastGuideline`. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "page meets accessibility guidelines".
+- [x] When the page renders at `TextScaler.linear(2)`, then no overflow exception is thrown. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "page renders at 2x text scale".
+- [x] When the confirmation dialog is open in light and dark, then it meets `androidTapTargetGuideline`, `iOSTapTargetGuideline` and `textContrastGuideline`. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "confirmation dialog meets accessibility guidelines".
+- [x] When the confirmation dialog is open at `TextScaler.linear(2)`, then no overflow exception is thrown. Check: `test/features/developer/presentation/developer_tools_page_test.dart` "confirmation dialog renders at 2x text scale".
+- [x] When the drawer is open in debug builds, then it shows the footer entry in light and dark. Check: `test/snapshots/goldens/home_drawer.png`.
+- [x] When the developer page is shown, then it matches the default state in light and dark. Check: `test/snapshots/goldens/developer_tools.png`.
+- [x] When the tile is tapped, then the confirmation dialog matches in light and dark. Check: `test/snapshots/goldens/developer_tools_dialog.png`.
+- [x] When `CLAUDE.md` changes, then "Project layout" still names every feature folder, including `developer`. Check: `test/architecture/ai_setup_test.dart` "every folder under lib/features is named in the "Project layout" section of CLAUDE.md".
+- [x] When the checks run, then they pass, including the layer boundary test. Check: `fvm dart tool/agent_check.dart --skip-build`.
