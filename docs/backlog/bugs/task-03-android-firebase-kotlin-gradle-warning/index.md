@@ -26,7 +26,7 @@ Android builds without the warning that `firebase_auth` and `firebase_core` appl
 - **Cause (confirmed):**
   - The FlutterFire plugins apply KGP only when the app opts out of built-in Kotlin with `android.builtInKotlin=false`. Their build files say: "AGP 9+ has built-in Kotlin support unless Flutter opts out via android.builtInKotlin=false" ([FlutterFire discussion #18756](https://github.com/firebase/flutterfire/discussions/18756)).
   - Flutter finds KGP use by searching the plugins' `build.gradle` text, so it warns even when that line is skipped.
-- **Experiment (5 November 2026):** with `firebase_core` 4.15.0, `firebase_auth` 6.7.0 (the [BUG-01](../task-01-ios-auth-dependency-conflict/index.md) versions) and `android.builtInKotlin=true`, `fvm flutter build apk --debug` succeeded, but the warning was still printed. So the app side can migrate today, but the warning only goes away when FlutterFire removes the line ([FlutterFire issue #18304, "Migrates to built-in Kotlin"](https://github.com/firebase/flutterfire/issues/18304), open).
+- **Experiment (5 November 2026):** with `firebase_core` 4.15.0, `firebase_auth` 6.7.0 (the [BUG-01](../done/task-01-ios-auth-dependency-conflict/index.md) versions) and `android.builtInKotlin=true`, `fvm flutter build apk --debug` succeeded, but the warning was still printed. So the app side can migrate today, but the warning only goes away when FlutterFire removes the line ([FlutterFire issue #18304, "Migrates to built-in Kotlin"](https://github.com/firebase/flutterfire/issues/18304), open).
 - Not tested yet: the app running on a phone with built-in Kotlin on (Firebase initialization, Google sign-in and sign-out).
 
 ## Next step (before this task can be `ready`)

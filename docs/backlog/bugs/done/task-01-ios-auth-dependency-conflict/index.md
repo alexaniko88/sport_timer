@@ -1,6 +1,6 @@
 ---
 id: BUG-01
-status: ready
+status: done
 type: fix
 complexity: 9
 depends-on: []
@@ -14,7 +14,7 @@ skills: []
 
 # iOS build fails to resolve authentication dependencies
 
-Category: [Bugs](../index.md)
+Category: [Bugs](../../index.md)
 
 > **Run this task by hand in an interactive session, not with `skill-dispatcher`.** It needs an iOS and an Android build, which the dispatcher's runners cannot run (they skip builds and, on Codex, have no network). When the dispatcher offers BUG-01, skip it.
 
@@ -46,7 +46,7 @@ The unsigned iOS debug build resolves its Swift Package Manager dependencies and
 ## Out of scope
 
 - `google_sign_in` and every other package.
-- The Android KGP warning ([BUG-03](../task-03-android-firebase-kotlin-gradle-warning/index.md)) and `android/gradle.properties`.
+- The Android KGP warning ([BUG-03](../../task-03-android-firebase-kotlin-gradle-warning/index.md)) and `android/gradle.properties`.
 - macOS: the repo has no configured macOS desktop project (`fvm flutter build macos` reports "No macOS desktop project configured").
 
 ## Files and tests
@@ -56,8 +56,8 @@ The unsigned iOS debug build resolves its Swift Package Manager dependencies and
 
 ## Acceptance
 
-- [ ] When the iOS app is built, then dependency resolution and the build succeed. Check: `fvm flutter build ios --debug --no-codesign`.
-- [ ] When the Android app is built, then it still builds. Check: `fvm flutter build apk --debug`.
-- [ ] When the analyzer and the tests run, then there are no issues and every test passes. Check: `fvm flutter analyze` and `fvm flutter test`.
-- [ ] When `pubspec.yaml` is read, then `firebase_core: 4.15.0` and `firebase_auth: 6.7.0` are pinned exactly and no other dependency changed. Check: `git diff master -- pubspec.yaml` shows only those two lines.
-- [ ] When a user signs in with Google and signs out on the iOS simulator, then both work as before. Check: manual run with `fvm flutter run` on an iOS simulator, recorded in `notes.md`.
+- [x] When the iOS app is built, then dependency resolution and the build succeed. Check: `fvm flutter build ios --debug --no-codesign`.
+- [x] When the Android app is built, then it still builds. Check: `fvm flutter build apk --debug`.
+- [x] When the analyzer and the tests run, then there are no issues and every test passes. Check: `fvm flutter analyze` and `fvm flutter test`.
+- [x] When `pubspec.yaml` is read, then `firebase_core: 4.15.0` and `firebase_auth: 6.7.0` are pinned exactly and no other dependency changed. Check: `git diff master -- pubspec.yaml` shows only those two lines.
+- [x] When a user signs in with Google and signs out on the iOS simulator, then both work as before. Check: manual run with `fvm flutter run` on an iOS simulator, recorded in `notes.md`.
