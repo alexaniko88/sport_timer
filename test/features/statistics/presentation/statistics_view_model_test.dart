@@ -5,12 +5,16 @@ import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/features/statistics/domain/activity_period.dart';
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/daily_activity.dart';
+import 'package:sport_timer/features/statistics/domain/run_activity_summary.dart';
+import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_state.dart';
 import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 
 class FakeActivityRepository implements ActivityRepository {
   final controller = StreamController<void>.broadcast(sync: true);
   final reads = <Completer<Result<List<DailyActivity>>>>[];
+  final dayReadDates = <String>[];
+  final dayReads = <Completer<Result<List<RunActivitySummary>>>>[];
 
   @override
   Future<Result<void>> deleteAllActivity() async => const Success(null);
@@ -28,12 +32,32 @@ class FakeActivityRepository implements ActivityRepository {
   }
 
   @override
+  Future<Result<List<RunActivitySummary>>> readDayActivity(String localDate) {
+    dayReadDates.add(localDate);
+    final completer = Completer<Result<List<RunActivitySummary>>>();
+    dayReads.add(completer);
+    return completer.future;
+  }
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
   const first = DailyActivity(localDate: '2026-10-31', roundCount: 2, workDurationMs: 60, restDurationMs: 30);
   const second = DailyActivity(localDate: '2026-11-01', roundCount: 1, workDurationMs: 50, restDurationMs: 0);
+  const run = RunActivitySummary(
+    session: TimerSession(
+      id: 'run',
+      accountId: 'account',
+      startedAtUtcMs: 0,
+      preparationDurationMs: 0,
+      workDurationMs: 60,
+      restDurationMs: 30,
+      roundCount: 2,
+    ),
+    activity: first,
+  );
   late FakeActivityRepository repository;
   late StatisticsViewModel viewModel;
 
@@ -244,5 +268,140 @@ void main() {
     expect(vm.state.value.selectedBucket, isNull);
     vm.previousPeriod();
     expect(vm.period.start, DateTime.utc(2024, 1));
+  });
+
+  group('open day', () {
+    Future<void> settle() => Future<void>.delayed(Duration.zero);
+
+    setUp(() async {
+      repository.reads[0].complete(const Success([first, second]));
+      await settle();
+    });
+
+    test('toggleDay opens a day and loads its runs', () async {
+      viewModel.toggleDay('2026-10-31');
+      expect(viewModel.state.value.expandedDate, '2026-10-31');
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.loading);
+      expect(repository.dayReadDates, ['2026-10-31']);
+      repository.dayReads[0].complete(const Success([run]));
+      await settle();
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.content);
+      expect(viewModel.state.value.dayRuns, [run]);
+      expect(repository.dayReadDates, ['2026-10-31']);
+    });
+
+    test('toggleDay on the open day closes it', () async {
+      viewModel.toggleDay('2026-10-31');
+      repository.dayReads[0].complete(const Success([run]));
+      await settle();
+      viewModel.toggleDay('2026-10-31');
+      expect(viewModel.state.value.expandedDate, isNull);
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.initial);
+      expect(viewModel.state.value.dayRuns, isEmpty);
+    });
+
+    test('toggleDay on another day closes the first', () async {
+      viewModel.toggleDay('2026-10-31');
+      repository.dayReads[0].complete(const Success([run]));
+      await settle();
+      viewModel.toggleDay('2026-11-01');
+      expect(viewModel.state.value.expandedDate, '2026-11-01');
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.loading);
+      expect(viewModel.state.value.dayRuns, isEmpty);
+    });
+
+    test('toggleDay shows a cached day without reading again', () async {
+      viewModel.toggleDay('2026-10-31');
+      repository.dayReads[0].complete(const Success([run]));
+      await settle();
+      viewModel.toggleDay('2026-10-31');
+      viewModel.toggleDay('2026-10-31');
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.content);
+      expect(viewModel.state.value.dayRuns, [run]);
+      expect(repository.dayReadDates, ['2026-10-31']);
+    });
+
+    test('a day with no runs is empty', () async {
+      viewModel.toggleDay('2026-11-01');
+      repository.dayReads[0].complete(const Success([]));
+      await settle();
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.empty);
+      viewModel.toggleDay('2026-11-01');
+      viewModel.toggleDay('2026-11-01');
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.empty);
+      expect(repository.dayReadDates, ['2026-11-01']);
+    });
+
+    test('a failed day shows an error and retryDay loads it again', () async {
+      viewModel.toggleDay('2026-10-31');
+      repository.dayReads[0].complete(Failure(Exception('failed')));
+      await settle();
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.error);
+
+      final retry = viewModel.retryDay();
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.loading);
+      repository.dayReads[1].complete(const Success([run]));
+      await retry;
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.content);
+      expect(viewModel.state.value.dayRuns, [run]);
+      expect(repository.dayReadDates, ['2026-10-31', '2026-10-31']);
+    });
+
+    test('retryDay does nothing when no day is open', () async {
+      await viewModel.retryDay();
+      expect(repository.dayReadDates, isEmpty);
+    });
+
+    test('ignores a day result after it closed, another opened or disposal', () async {
+      viewModel.toggleDay('2026-10-31');
+      viewModel.toggleDay('2026-10-31');
+      repository.dayReads[0].complete(const Success([run]));
+      await settle();
+      expect(viewModel.state.value.expandedDate, isNull);
+      expect(viewModel.state.value.dayRuns, isEmpty);
+
+      viewModel.toggleDay('2026-10-31');
+      viewModel.toggleDay('2026-11-01');
+      repository.dayReads[1].complete(const Success([run]));
+      await settle();
+      expect(viewModel.state.value.expandedDate, '2026-11-01');
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.loading);
+      expect(viewModel.state.value.dayRuns, isEmpty);
+
+      final repo = FakeActivityRepository();
+      final vm = StatisticsViewModel(repo);
+      addTearDown(repo.closeChanges);
+      repo.reads[0].complete(const Success([first]));
+      await settle();
+      vm.toggleDay('2026-10-31');
+      vm.dispose();
+      repo.dayReads[0].complete(const Success([run]));
+      await settle();
+    });
+
+    test('changes and refresh close the open day and clear the cache', () async {
+      viewModel.toggleDay('2026-10-31');
+      repository.dayReads[0].complete(const Success([run]));
+      await settle();
+
+      repository.controller.add(null);
+      expect(viewModel.state.value.expandedDate, isNull);
+      expect(viewModel.state.value.dayRuns, isEmpty);
+      repository.reads[1].complete(const Success([first]));
+      await settle();
+      viewModel.toggleDay('2026-10-31');
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.loading);
+      expect(repository.dayReadDates.length, 2);
+      repository.dayReads[1].complete(const Success([run]));
+      await settle();
+
+      final refresh = viewModel.refresh();
+      expect(viewModel.state.value.expandedDate, isNull);
+      repository.reads[2].complete(const Success([first]));
+      await refresh;
+      viewModel.toggleDay('2026-10-31');
+      expect(viewModel.state.value.dayStatus, StatisticsStatus.loading);
+      expect(repository.dayReadDates.length, 3);
+    });
   });
 }
