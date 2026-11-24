@@ -1,6 +1,6 @@
 ---
 id: TPL-03-04
-status: ready
+status: done
 type: feat
 complexity: 6
 depends-on: [TPL-03-02]
@@ -19,9 +19,9 @@ skills: []
 
 # Track own templates in settings
 
-Story: [Create your own templates](../index.md)
+Story: [Create your own templates](../../index.md)
 
-Epic: [Templates](../../../index.md)
+Epic: [Templates](../../../../index.md)
 
 ## Goal
 
@@ -72,17 +72,17 @@ Epic: [Templates](../../../index.md)
 
 ## Acceptance
 
-- [ ] Given stored own templates, when settings load, then `customTemplates` holds them in stored order. Check: `test/features/settings/presentation/settings_view_model_test.dart` "loads own templates with the settings".
-- [ ] When loading own templates fails, then `customTemplates` is empty and the timer settings still load. Check: `test/features/settings/presentation/settings_view_model_test.dart` "own template load failure keeps settings".
-- [ ] Given a saved selection `custom-1` with settings equal to that template, when settings load, then `selectedCustomTemplate` is it and `selectedTemplateId` is null; with different settings or an unknown id, both are null. Check: `test/features/settings/presentation/settings_view_model_test.dart` "restores a valid own selection only".
-- [ ] Given a saved built-in selection, when settings load, then `selectedTemplateId` is restored as before and `selectedCustomTemplate` is null. Check: `test/features/settings/presentation/settings_view_model_test.dart` "built-in selection still restores".
-- [ ] When `selectCustomTemplate` runs, then the settings become its values, `selectedCustomTemplate` is set and the saved configuration has its id. Check: `test/features/settings/presentation/settings_view_model_test.dart` "selecting an own template saves its id".
-- [ ] When a setting is changed after selecting an own template, then the selection is cleared and saved without an id. Check: `test/features/settings/presentation/settings_view_model_test.dart` "editing a setting clears the own selection".
-- [ ] When `saveCustomTemplate` saves a new template, then it is appended, the result is `true` and `timerSettings` is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "saving a new template appends it".
-- [ ] When an existing template is saved, then it keeps its position. Check: `test/features/settings/presentation/settings_view_model_test.dart` "editing keeps the position".
-- [ ] Given 20 own templates, when a new one is saved, then the result is `false` and `saveCalls` does not grow. Check: `test/features/settings/presentation/settings_view_model_test.dart` "the 21st template is refused".
-- [ ] Given the selected own template, when it is saved with a new name and the same settings, then `selectedCustomTemplate` has the new name; when saved with other settings, then the selection is cleared and `timerSettings` is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "editing the selected template updates or clears the selection".
-- [ ] When the selected own template is deleted, then it leaves the list, the selection is cleared and `timerSettings` is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "deleting the selected template clears the selection".
-- [ ] When the repository fails on save or delete, then the result is `false` and the state is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "failed template write keeps the state".
-- [ ] Given the load of own templates failed, when a template is saved and the retry also fails, then the result is `false` and `saveCalls` is 0; when the retry succeeds, the save goes on with the loaded list. Check: `test/features/settings/presentation/settings_view_model_test.dart` "no write after a failed load".
-- [ ] When the checks run, then everything passes and no golden changes. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] Given stored own templates, when settings load, then `customTemplates` holds them in stored order. Check: `test/features/settings/presentation/settings_view_model_test.dart` "loads own templates with the settings".
+- [x] When loading own templates fails, then `customTemplates` is empty and the timer settings still load. Check: `test/features/settings/presentation/settings_view_model_test.dart` "own template load failure keeps settings".
+- [x] Given a saved selection `custom-1` with settings equal to that template, when settings load, then `selectedCustomTemplate` is it and `selectedTemplateId` is null; with different settings or an unknown id, both are null. Check: `test/features/settings/presentation/settings_view_model_test.dart` "restores a valid own selection only".
+- [x] Given a saved built-in selection, when settings load, then `selectedTemplateId` is restored as before and `selectedCustomTemplate` is null. Check: `test/features/settings/presentation/settings_view_model_test.dart` "built-in selection still restores".
+- [x] When `selectCustomTemplate` runs, then the settings become its values, `selectedCustomTemplate` is set and the saved configuration has its id. Check: `test/features/settings/presentation/settings_view_model_test.dart` "selecting an own template saves its id".
+- [x] When a setting is changed after selecting an own template, then the selection is cleared and saved without an id. Check: `test/features/settings/presentation/settings_view_model_test.dart` "editing a setting clears the own selection".
+- [x] When `saveCustomTemplate` saves a new template, then it is appended, the result is `true` and `timerSettings` is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "saving a new template appends it".
+- [x] When an existing template is saved, then it keeps its position. Check: `test/features/settings/presentation/settings_view_model_test.dart` "editing keeps the position".
+- [x] Given 20 own templates, when a new one is saved, then the result is `false` and `saveCalls` does not grow. Check: `test/features/settings/presentation/settings_view_model_test.dart` "the 21st template is refused".
+- [x] Given the selected own template, when it is saved with a new name and the same settings, then `selectedCustomTemplate` has the new name; when saved with other settings, then the selection is cleared and `timerSettings` is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "editing the selected template updates or clears the selection".
+- [x] When the selected own template is deleted, then it leaves the list, the selection is cleared and `timerSettings` is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "deleting the selected template clears the selection".
+- [x] When the repository fails on save or delete, then the result is `false` and the state is unchanged. Check: `test/features/settings/presentation/settings_view_model_test.dart` "failed template write keeps the state".
+- [x] Given the load of own templates failed, when a template is saved and the retry also fails, then the result is `false` and `saveCalls` is 0; when the retry succeeds, the save goes on with the loaded list. Check: `test/features/settings/presentation/settings_view_model_test.dart` "no write after a failed load".
+- [x] When the checks run, then everything passes and no golden changes. Check: `fvm dart tool/agent_check.dart --skip-build`.
