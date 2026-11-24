@@ -41,6 +41,8 @@ import 'package:sport_timer/features/timer/presentation/widgets/rounds_strip_tim
 import 'package:sport_timer/features/settings/presentation/timer_styles/timer_styles_page.dart';
 import 'package:sport_timer/features/templates/presentation/templates_page.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
+import '../features/templates/fake_custom_template_repository.dart';
 
 typedef _WidgetFactory = Widget Function();
 
@@ -327,6 +329,7 @@ void main() {
       _FakeUserRepository(buildFixtureUser()),
     );
     getIt.registerSingleton<SettingsRepository>(settingsRepository);
+    getIt.registerSingleton<CustomTemplateRepository>(FakeCustomTemplateRepository());
     getIt.registerSingleton<ActivityRepository>(activityRepository);
     getIt.registerSingleton<AudioManager>(_SilentAudioManager());
     getIt.registerSingleton<BackgroundKeepAlive>(_SilentKeepAlive());
@@ -483,7 +486,7 @@ void main() {
               );
               return _lightAndDarkGroup(
                 builder: () {
-                  final viewModel = SettingsViewModel(getIt())..loadSettings();
+                  final viewModel = SettingsViewModel(getIt(), getIt())..loadSettings();
                   addTearDown(viewModel.dispose);
                   return TemplatesPage(viewModel: viewModel);
                 },
@@ -499,7 +502,7 @@ void main() {
               configureFakeDependencies();
               return _lightAndDarkGroup(
                 builder: () {
-                  final viewModel = SettingsViewModel(getIt())..loadSettings();
+                  final viewModel = SettingsViewModel(getIt(), getIt())..loadSettings();
                   addTearDown(viewModel.dispose);
                   return TemplatesPage(viewModel: viewModel);
                 },
@@ -685,7 +688,7 @@ void main() {
               configureFakeDependencies();
               return _lightAndDarkGroup(
                 builder: () {
-                  final viewModel = SettingsViewModel(getIt())..loadSettings();
+                  final viewModel = SettingsViewModel(getIt(), getIt())..loadSettings();
                   addTearDown(viewModel.dispose);
                   return TimerStylesPage(viewModel: viewModel);
                 },

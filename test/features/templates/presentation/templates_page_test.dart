@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/settings/domain/settings_repository.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
 import 'package:sport_timer/features/settings/domain/timer_configuration.dart';
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
@@ -28,6 +29,7 @@ import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 import 'package:sport_timer/shared/presentation/theme/timer_colors.dart';
 import 'package:sport_timer/shared/presentation/widgets/app_surface.dart';
 import '../../statistics/fake_activity_repository.dart';
+import '../fake_custom_template_repository.dart';
 
 class _SettingsRepository implements SettingsRepository {
   String? selectedTemplateId;
@@ -157,6 +159,7 @@ void main() {
     await getIt.reset();
     repository = _SettingsRepository();
     getIt.registerSingleton<SettingsRepository>(repository);
+    getIt.registerSingleton<CustomTemplateRepository>(FakeCustomTemplateRepository());
     getIt.registerSingleton<UserRepository>(_UserRepository());
     getIt.registerSingleton<ActivityRepository>(FakeEmptyActivityRepository());
     startedParams = null;
@@ -656,7 +659,7 @@ void main() {
   }
 
   testWidgets('shows the Custom card label in Spanish', (tester) async {
-    final settings = SettingsViewModel(repository);
+    final settings = SettingsViewModel(repository, FakeCustomTemplateRepository());
     addTearDown(settings.dispose);
     await settings.loadSettings();
     await tester.pumpWidget(
@@ -678,7 +681,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       repository.stored = _cases.first.settings;
-      final settings = SettingsViewModel(repository);
+      final settings = SettingsViewModel(repository, FakeCustomTemplateRepository());
       addTearDown(settings.dispose);
       final handle = tester.ensureSemantics();
       await settings.loadSettings();
@@ -716,7 +719,7 @@ void main() {
     repository.stored = _cases[2].settings;
     final gate = Completer<void>();
     repository.readGate = gate;
-    final settings = SettingsViewModel(repository);
+    final settings = SettingsViewModel(repository, FakeCustomTemplateRepository());
     addTearDown(settings.dispose);
     final loading = settings.loadSettings();
 
@@ -744,7 +747,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     repository.stored = _cases.first.settings;
-    final settings = SettingsViewModel(repository);
+    final settings = SettingsViewModel(repository, FakeCustomTemplateRepository());
     addTearDown(settings.dispose);
     await settings.loadSettings();
     await tester.pumpWidget(

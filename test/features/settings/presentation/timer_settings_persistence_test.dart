@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
 import 'package:sport_timer/features/settings/domain/settings_repository.dart';
+import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
 import 'package:sport_timer/features/settings/domain/timer_configuration.dart';
 import 'package:sport_timer/features/settings/domain/timer_settings.dart';
 import 'package:sport_timer/features/settings/domain/timer_style.dart';
@@ -15,6 +16,7 @@ import 'package:sport_timer/features/settings/presentation/widgets/timer_setting
 import 'package:sport_timer/features/settings/presentation/widgets/timer_settings_picker_wheel.dart';
 import 'package:sport_timer/shared/presentation/theme/sport_theme.dart';
 import '../../statistics/fake_activity_repository.dart';
+import '../../templates/fake_custom_template_repository.dart';
 
 class _SettingsRepository implements SettingsRepository {
   String? selectedTemplateId;
@@ -104,6 +106,7 @@ void main() {
     await getIt.reset();
     repository = _SettingsRepository();
     getIt.registerSingleton<SettingsRepository>(repository);
+    getIt.registerSingleton<CustomTemplateRepository>(FakeCustomTemplateRepository());
     getIt.registerSingleton<UserRepository>(_UserRepository());
     getIt.registerSingleton<ActivityRepository>(FakeEmptyActivityRepository());
   });
