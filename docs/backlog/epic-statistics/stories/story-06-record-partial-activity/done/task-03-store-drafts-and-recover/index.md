@@ -69,7 +69,7 @@ Startup — changed in `lib/main.dart`: after `configureDependencies()`, start `
 
 ## Decisions
 
-- **Separate `draft_phases` table with cascade delete:** chosen by the user. Deleting a session (the purge in DEV-01-01, or [Delete statistics](../../../story-05-delete-statistics/index.md)) removes its draft, so deleted history cannot come back.
+- **Separate `draft_phases` table with cascade delete:** chosen by the user. Deleting a session (the purge in DEV-01-01, or [Delete statistics](../../../done/story-05-delete-statistics/index.md)) removes its draft, so deleted history cannot come back.
 - **Recovered under the original account:** the draft's session already stores its `account_id`, so recovery does not depend on who is signed in.
 - **Recovered end time:** the session's end and the date of its last partial phase come from the last draft, not from when the app opens again.
 - **Only sessions started before recovery began (planner choice):** so recovery never touches a workout started right after the app opens.

@@ -354,6 +354,30 @@
   "@statisticsEmpty": {
     "description": "Statistics: statisticsEmpty."
   },
+  "statisticsDeleteAction": "Delete statistics",
+  "@statisticsDeleteAction": {
+    "description": "Statistics: app bar menu item that deletes all statistics of the account on this device."
+  },
+  "statisticsDeleteDialogTitle": "Delete statistics?",
+  "@statisticsDeleteDialogTitle": {
+    "description": "Statistics: title of the dialog that confirms deleting the statistics."
+  },
+  "statisticsDeleteDialogBody": "All statistics of this account on this device will be deleted. This can't be undone.",
+  "@statisticsDeleteDialogBody": {
+    "description": "Statistics: body of the delete confirmation dialog."
+  },
+  "statisticsDeleteDialogConfirm": "Delete",
+  "@statisticsDeleteDialogConfirm": {
+    "description": "Statistics: confirm button of the delete dialog."
+  },
+  "statisticsDeleted": "Statistics deleted",
+  "@statisticsDeleted": {
+    "description": "Statistics: snackbar shown after the statistics were deleted."
+  },
+  "statisticsDeleteError": "Couldn't delete statistics. Try again.",
+  "@statisticsDeleteError": {
+    "description": "Statistics: snackbar shown when deleting the statistics failed."
+  },
   "statisticsError": "Could not load your statistics.",
   "@statisticsError": {
     "description": "Statistics: statisticsError."

@@ -50,4 +50,15 @@ void main() {
     expect(cleared.dayStatus, StatisticsStatus.initial);
     expect(cleared.dayRuns, isEmpty);
   });
+
+  test('isDeleting is part of the state', () {
+    final base = StatisticsState();
+    final deleting = base.copyWith(isDeleting: true);
+
+    expect(base.isDeleting, isFalse);
+    expect(deleting.isDeleting, isTrue);
+    expect(deleting, isNot(base));
+    expect(deleting, base.copyWith(isDeleting: true));
+    expect(deleting.hashCode, base.copyWith(isDeleting: true).hashCode);
+  });
 }

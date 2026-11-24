@@ -19,7 +19,7 @@ Give developers a place in debug builds to perform useful local maintenance whil
 - **Debug gate:** one `developerToolsEnabled` flag, set from `kDebugMode` by the app and settable by tests, so the release behavior is tested too.
 - **No localization:** the developer page is never seen by end users, so its texts are plain English constants in the code, with no ARB keys.
 - **Purge means purge:** writes queued before a purge (for example by the timer recorder) are dropped silently and can never bring purged history back.
-- The app stores activity in a local SQLite database (`activity.db`). The [delete statistics story](../../epic-statistics/stories/story-05-delete-statistics/index.md) is a separate, user-facing, account-specific action; this epic does not depend on it.
+- The app stores activity in a local SQLite database (`activity.db`). The [delete statistics story](../../epic-statistics/stories/done/story-05-delete-statistics/index.md) is a separate, user-facing, account-specific action; this epic does not depend on it.
 
 ## Stories
 

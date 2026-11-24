@@ -135,6 +135,14 @@ class StatisticsViewModel {
     }
   }
 
+  Future<bool> deleteStatistics() async {
+    if (_state.value.isDeleting) return false;
+    _state.value = _state.value.copyWith(isDeleting: true);
+    final result = await _repository.deleteAccountActivity();
+    if (!_disposed) _state.value = _state.value.copyWith(isDeleting: false);
+    return result.fold(onSuccess: (_) => true, onFailure: (_) => false);
+  }
+
   void toggleDay(String localDate) {
     if (_state.value.expandedDate == localDate) {
       _state.value = _state.value.copyWith(clearExpanded: true);

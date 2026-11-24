@@ -32,8 +32,18 @@ class _FakeActivityRepository implements ActivityRepository {
   final changesController = StreamController<void>.broadcast(sync: true);
   final reads = <Completer<Result<List<DailyActivity>>>>[];
 
+  Result<void> deleteResult = const Success(null);
+  Completer<Result<void>>? deleteCompleter;
+  int deleteCalls = 0;
+
   @override
   Future<Result<void>> deleteAllActivity() async => const Success(null);
+
+  @override
+  Future<Result<void>> deleteAccountActivity() {
+    deleteCalls++;
+    return deleteCompleter?.future ?? Future.value(deleteResult);
+  }
 
   @override
   Stream<void> get changes => changesController.stream;
@@ -440,4 +450,163 @@ void main() {
       await tester.pump();
     });
   }
+
+  Future<void> showContent(WidgetTester tester, {Locale? locale, TextScaler? textScaler}) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) => textScaler == null
+            ? child!
+            : MediaQuery(data: MediaQuery.of(context).copyWith(textScaler: textScaler), child: child!),
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}),
+      ),
+    );
+    repository.reads.single.complete(const Success([first]));
+    await tester.pump();
+  }
+
+  Future<void> openDeleteDialog(WidgetTester tester, {String action = 'Delete statistics'}) async {
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(action));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('confirm deletes and reports success', (tester) async {
+    await showContent(tester);
+    await openDeleteDialog(tester);
+    expect(find.text('Delete statistics?'), findsOneWidget);
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    expect(repository.deleteCalls, 1);
+    expect(find.text('Statistics deleted'), findsOneWidget);
+  });
+
+  testWidgets('failed delete shows an error', (tester) async {
+    repository.deleteResult = Failure(Exception('failed'));
+    await showContent(tester);
+    await openDeleteDialog(tester);
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Couldn't delete statistics. Try again."), findsOneWidget);
+    expect(find.text('Statistics deleted'), findsNothing);
+  });
+
+  testWidgets('cancel keeps the statistics', (tester) async {
+    await showContent(tester);
+    await openDeleteDialog(tester);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.text('Delete statistics?'), findsNothing);
+
+    await openDeleteDialog(tester);
+    await tester.tapAt(const Offset(1, 1));
+    await tester.pumpAndSettle();
+    expect(find.text('Delete statistics?'), findsNothing);
+
+    expect(repository.deleteCalls, 0);
+    expect(find.text('Statistics deleted'), findsNothing);
+    expect(find.text('October 31, 2026'), findsOneWidget);
+  });
+
+  testWidgets('delete item is disabled while deleting', (tester) async {
+    repository.deleteCompleter = Completer<Result<void>>();
+    await showContent(tester);
+    await openDeleteDialog(tester);
+    await tester.tap(find.text('Delete'));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+
+    final enabledItems = find.byWidgetPredicate((widget) => widget is PopupMenuItem && widget.enabled);
+    expect(find.byWidgetPredicate((widget) => widget is PopupMenuItem), findsOneWidget);
+    expect(enabledItems, findsNothing);
+    repository.deleteCompleter!.complete(const Success(null));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('menu button is labelled', (tester) async {
+    await showContent(tester);
+
+    expect(find.byTooltip('Show menu'), findsOneWidget);
+    final node = tester.getSemantics(find.byTooltip('Show menu'));
+    final matcher = matchesSemantics(
+      isButton: true,
+      hasTapAction: true,
+      hasFocusAction: true,
+      hasEnabledState: true,
+      isEnabled: true,
+      hasExpandedState: true,
+      isFocusable: true,
+      tooltip: 'Show menu',
+    );
+    expect(node, matcher);
+  });
+
+  testWidgets('Spanish dialog fits at large text', (tester) async {
+    await showContent(tester, locale: const Locale('es'), textScaler: const TextScaler.linear(2));
+    await openDeleteDialog(tester, action: 'Eliminar estadísticas');
+
+    expect(find.text('¿Eliminar las estadísticas?'), findsOneWidget);
+    expect(
+      find.text('Se eliminarán todas las estadísticas de esta cuenta en este dispositivo. No se puede deshacer.'),
+      findsOneWidget,
+    );
+    expect(find.text('Eliminar'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('empty history hides the switcher in both views', (tester) async {
+    final vm = StatisticsViewModel(repository, clock: () => DateTime(2026, 10, 31));
+    addTearDown(vm.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StatisticPage(accountViewModel: account, onMenuPressed: () {}, viewModel: vm),
+      ),
+    );
+    repository.reads.single.complete(const Success([]));
+    await tester.pump();
+
+    for (final view in StatisticsView.values) {
+      vm.setView(view);
+      await tester.pumpAndSettle();
+      expect(find.byType(SegmentedButton<StatisticsView>), findsNothing);
+      expect(find.byTooltip('Previous period'), findsNothing);
+      expect(find.text('No completed activity yet.'), findsOneWidget);
+    }
+  });
+
+  testWidgets('menu shows only with content', (tester) async {
+    await showPage(tester);
+    expect(find.byIcon(Icons.more_vert), findsNothing);
+
+    repository.reads[0].complete(Failure(Exception('failed')));
+    await tester.pump();
+    expect(find.byIcon(Icons.more_vert), findsNothing);
+
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+    expect(find.byIcon(Icons.more_vert), findsNothing);
+    repository.reads[1].complete(const Success([first]));
+    await tester.pump();
+    expect(find.byIcon(Icons.more_vert), findsOneWidget);
+
+    await openDeleteDialog(tester);
+    await tester.tap(find.text('Delete'));
+    await tester.pumpAndSettle();
+    repository.changesController.add(null);
+    await tester.pump();
+    expect(find.byIcon(Icons.more_vert), findsNothing);
+    repository.reads[2].complete(const Success([]));
+    await tester.pump();
+    expect(find.byIcon(Icons.more_vert), findsNothing);
+    expect(find.byType(SegmentedButton<StatisticsView>), findsNothing);
+    expect(find.text('No completed activity yet.'), findsOneWidget);
+  });
 }

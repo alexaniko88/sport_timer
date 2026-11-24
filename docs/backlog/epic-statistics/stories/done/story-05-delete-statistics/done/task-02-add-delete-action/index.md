@@ -1,6 +1,6 @@
 ---
 id: STAT-05-02
-status: ready
+status: done
 type: feat
 complexity: 4
 depends-on: [STAT-05-01]
@@ -20,9 +20,9 @@ skills: []
 
 # Add the delete action to Statistics
 
-Story: [Delete statistics](../index.md)
+Story: [Delete statistics](../../index.md)
 
-Epic: [Statistics](../../../index.md)
+Epic: [Statistics](../../../../../index.md)
 
 ## Goal
 
@@ -63,7 +63,7 @@ A ⋮ menu in the Statistics app bar with "Delete statistics", a confirmation di
 - **Menu, not a direct icon:** chosen by the user, to leave room for later options.
 - **No menu without actions:** the menu shows only when it has an available action; delete is available only with content. Chosen by the user.
 - **Empty screen without the switcher:** chosen by the user; there is nothing to switch between.
-- Mockup: [mockup.html](../mockup.html), approved by the user: data with ⋮, menu open, menu while deleting, dialog, after delete, failed delete, empty history; both themes and languages.
+- Mockup: [mockup.html](../../mockup.html), approved by the user: data with ⋮, menu open, menu while deleting, dialog, after delete, failed delete, empty history; both themes and languages.
 
 ## Out of scope
 
@@ -79,21 +79,21 @@ A ⋮ menu in the Statistics app bar with "Delete statistics", a confirmation di
 
 ## Acceptance
 
-- [ ] When two states differ only in `isDeleting`, then they are not equal, and `copyWith(isDeleting: true)` sets it. Check: `test/features/statistics/presentation/statistics_state_test.dart` "isDeleting is part of the state".
-- [ ] When `deleteStatistics()` succeeds, then it returns `true` and `isDeleting` goes `true` then `false`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "delete succeeds and clears the busy flag".
-- [ ] When the repository fails, then `deleteStatistics()` returns `false` and `isDeleting` is `false` again. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "failed delete returns false".
-- [ ] When `deleteStatistics()` is called twice before the first ends, then the repository is called once and the second call returns `false`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "a second delete while busy is ignored".
-- [ ] When the user confirms the dialog and the delete succeeds, then "Statistics deleted" shows. Check: `test/features/statistics/presentation/statistics_page_test.dart` "confirm deletes and reports success".
-- [ ] When the delete fails, then "Couldn't delete statistics. Try again." shows and no success message appears. Check: `test/features/statistics/presentation/statistics_page_test.dart` "failed delete shows an error".
-- [ ] When the dialog is cancelled or dismissed, then the repository's delete is not called. Check: `test/features/statistics/presentation/statistics_page_test.dart` "cancel keeps the statistics".
-- [ ] Given a delete is running, when the menu opens, then "Delete statistics" is disabled. Check: `test/features/statistics/presentation/statistics_page_test.dart` "delete item is disabled while deleting".
-- [ ] When a screen reader reads the app bar, then the ⋮ is a button with the Material "Show menu" tooltip. Check: `test/features/statistics/presentation/statistics_page_test.dart` "menu button is labelled".
-- [ ] Given the Spanish locale and 2x text, when the dialog opens, then it shows "¿Eliminar las estadísticas?", the Spanish body and "Eliminar" with no overflow. Check: `test/features/statistics/presentation/statistics_page_test.dart` "Spanish dialog fits at large text".
-- [ ] When the history is empty, then there is no ⋮, no List/Charts switcher, and "No completed activity yet." is centered, in both themes. Check: `test/snapshots/goldens/statistics_empty.png`.
-- [ ] When the history has content, then the ⋮ is in the app bar. Check: `test/snapshots/goldens/statistics.png`.
-- [ ] Given an empty history with the view set to charts, when the page shows, then there is no switcher, no chart controls and only the centered empty text. Check: `test/features/statistics/presentation/statistics_page_test.dart` "empty history hides the switcher in both views".
-- [ ] Given history only outside the shown period, when the charts view shows, then the switcher, the period controls and the empty-period chart are there. Check: `test/snapshots/goldens/statistics_chart_empty.png`.
-- [ ] When the status is loading, empty or error, then no ⋮ is shown; after a successful delete, the ⋮ and the switcher disappear. Check: `test/features/statistics/presentation/statistics_page_test.dart` "menu shows only with content".
-- [ ] When the ⋮ is tapped, then the menu shows "Delete statistics" in both themes. Check: `test/snapshots/goldens/statistics_menu.png`.
-- [ ] When "Delete statistics" is tapped, then the dialog shows the title, the explanation, Cancel and Delete. Check: `test/snapshots/goldens/statistics_delete_dialog.png`.
-- [ ] When the checks run, then everything passes, including `gen-l10n`. Check: `fvm dart tool/agent_check.dart --skip-build`.
+- [x] When two states differ only in `isDeleting`, then they are not equal, and `copyWith(isDeleting: true)` sets it. Check: `test/features/statistics/presentation/statistics_state_test.dart` "isDeleting is part of the state".
+- [x] When `deleteStatistics()` succeeds, then it returns `true` and `isDeleting` goes `true` then `false`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "delete succeeds and clears the busy flag".
+- [x] When the repository fails, then `deleteStatistics()` returns `false` and `isDeleting` is `false` again. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "failed delete returns false".
+- [x] When `deleteStatistics()` is called twice before the first ends, then the repository is called once and the second call returns `false`. Check: `test/features/statistics/presentation/statistics_view_model_test.dart` "a second delete while busy is ignored".
+- [x] When the user confirms the dialog and the delete succeeds, then "Statistics deleted" shows. Check: `test/features/statistics/presentation/statistics_page_test.dart` "confirm deletes and reports success".
+- [x] When the delete fails, then "Couldn't delete statistics. Try again." shows and no success message appears. Check: `test/features/statistics/presentation/statistics_page_test.dart` "failed delete shows an error".
+- [x] When the dialog is cancelled or dismissed, then the repository's delete is not called. Check: `test/features/statistics/presentation/statistics_page_test.dart` "cancel keeps the statistics".
+- [x] Given a delete is running, when the menu opens, then "Delete statistics" is disabled. Check: `test/features/statistics/presentation/statistics_page_test.dart` "delete item is disabled while deleting".
+- [x] When a screen reader reads the app bar, then the ⋮ is a button with the Material "Show menu" tooltip. Check: `test/features/statistics/presentation/statistics_page_test.dart` "menu button is labelled".
+- [x] Given the Spanish locale and 2x text, when the dialog opens, then it shows "¿Eliminar las estadísticas?", the Spanish body and "Eliminar" with no overflow. Check: `test/features/statistics/presentation/statistics_page_test.dart` "Spanish dialog fits at large text".
+- [x] When the history is empty, then there is no ⋮, no List/Charts switcher, and "No completed activity yet." is centered, in both themes. Check: `test/snapshots/goldens/statistics_empty.png`.
+- [x] When the history has content, then the ⋮ is in the app bar. Check: `test/snapshots/goldens/statistics.png`.
+- [x] Given an empty history with the view set to charts, when the page shows, then there is no switcher, no chart controls and only the centered empty text. Check: `test/features/statistics/presentation/statistics_page_test.dart` "empty history hides the switcher in both views".
+- [x] Given history only outside the shown period, when the charts view shows, then the switcher, the period controls and the empty-period chart are there. Check: `test/snapshots/goldens/statistics_chart_empty.png`.
+- [x] When the status is loading, empty or error, then no ⋮ is shown; after a successful delete, the ⋮ and the switcher disappear. Check: `test/features/statistics/presentation/statistics_page_test.dart` "menu shows only with content".
+- [x] When the ⋮ is tapped, then the menu shows "Delete statistics" in both themes. Check: `test/snapshots/goldens/statistics_menu.png`.
+- [x] When "Delete statistics" is tapped, then the dialog shows the title, the explanation, Cancel and Delete. Check: `test/snapshots/goldens/statistics_delete_dialog.png`.
+- [x] When the checks run, then everything passes, including `gen-l10n`. Check: `fvm dart tool/agent_check.dart --skip-build`.
