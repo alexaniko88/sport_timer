@@ -7,7 +7,6 @@ import 'package:sport_timer/features/statistics/domain/activity_account_source.d
 import 'package:sport_timer/features/statistics/domain/activity_repository.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_creation.dart';
 import 'package:sport_timer/features/statistics/domain/activity_session_handle.dart';
-import 'package:sport_timer/features/statistics/domain/completed_phase.dart';
 import 'package:sport_timer/features/statistics/domain/timer_session.dart';
 import 'package:sport_timer/features/timer/data/activity_run_tracker.dart';
 import 'package:sport_timer/features/timer/domain/timer_activity_recorder.dart';
@@ -164,13 +163,13 @@ class _RecordingRun implements TimerActivityRun {
   @override
   void reconcile(Duration elapsed) {
     if (_ended) return;
-    _recordPhases(_tracker.reconcile(elapsed));
+    _tracker.reconcile(elapsed);
   }
 
   @override
   void pause(Duration elapsed) {
     if (_ended) return;
-    _recordPhases(_tracker.pause(elapsed));
+    _tracker.pause(elapsed);
   }
 
   @override
@@ -182,22 +181,15 @@ class _RecordingRun implements TimerActivityRun {
   @override
   void end(Duration elapsed) {
     if (_ended || elapsed < _tracker.lastElapsed) return;
-    _recordPhases(_tracker.reconcile(elapsed));
-    final end = _tracker.endInstant;
+    _tracker.reconcile(elapsed);
+    // Captured once so a retry sends the same phases and end time.
+    final phases = _tracker.snapshot();
+    final endedAtUtcMs = _tracker.endInstant.millisecondsSinceEpoch;
     _ended = true;
     _enqueue(() async {
       final session = _session;
       if (session == null) return Failure(Exception('Activity session is unavailable'));
-      return _repository.endSession(session: session, endedAtUtcMs: end.millisecondsSinceEpoch);
-    });
-  }
-
-  void _recordPhases(List<CompletedPhase> phases) {
-    if (phases.isEmpty) return;
-    _enqueue(() async {
-      final session = _session;
-      if (session == null) return Failure(Exception('Activity session is unavailable'));
-      return _repository.recordPhases(session: session, phases: phases);
+      return _repository.finishRun(session: session, phases: phases, endedAtUtcMs: endedAtUtcMs);
     });
   }
 

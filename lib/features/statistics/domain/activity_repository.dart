@@ -17,15 +17,11 @@ abstract interface class ActivityRepository {
   Future<Result<ActivitySessionHandle>> createSession(TimerSession session);
   Future<Result<ActivitySessionHandle>> openSession(String sessionId);
 
-  // Retry a failed batch with the same phase IDs and values. Only advance a
-  // completion checkpoint after this method succeeds.
-  Future<Result<void>> recordPhases({
+  // Stores the phases and the end time in one transaction. Retry a failure with
+  // the same phase IDs, values and end time.
+  Future<Result<void>> finishRun({
     required ActivitySessionHandle session,
     required List<CompletedPhase> phases,
-  });
-
-  Future<Result<void>> endSession({
-    required ActivitySessionHandle session,
     required int endedAtUtcMs,
   });
 

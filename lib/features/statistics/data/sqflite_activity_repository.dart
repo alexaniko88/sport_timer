@@ -61,18 +61,12 @@ class SqfliteActivityRepository implements ActivityRepository {
       _run(() => _access.openSession(sessionId), checkAccount: true);
 
   @override
-  Future<Result<void>> recordPhases({
+  Future<Result<void>> finishRun({
     required ActivitySessionHandle session,
     required List<CompletedPhase> phases,
-  }) =>
-      _run(() => _access.addPhases(session: session, phases: phases));
-
-  @override
-  Future<Result<void>> endSession({
-    required ActivitySessionHandle session,
     required int endedAtUtcMs,
   }) =>
-      _run(() => _access.endSession(session: session, endedAtUtcMs: endedAtUtcMs));
+      _run(() => _access.finishRun(session: session, phases: phases, endedAtUtcMs: endedAtUtcMs));
 
   @override
   Future<Result<void>> deleteAllActivity() => _run(_access.deleteAllActivity);

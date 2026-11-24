@@ -190,8 +190,6 @@ class TimerViewModel {
     _updateNotificationText(next);
 
     if (next.timerStatus == TimerStatus.finished) {
-      _activityRun?.end(elapsed);
-      _activityRun = null;
       _runningSince = null;
       _elapsedBeforeRun = elapsed;
       _keepAlive.stop();
