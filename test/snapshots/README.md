@@ -35,7 +35,8 @@ fvm flutter test test/snapshots/ui_snapshots_test.dart
    ▼
 [Home (/home)] ──(App bar menu icon)──► [Navigation Drawer]
    │                                       ├── ("Templates")──► [Templates (/templates)]
-   │                                       └── ("Styles")──► [Timer Styles (/timer-styles)]
+   │                                       ├── ("Styles")──► [Timer Styles (/timer-styles)]
+   │                                       └── ("Developer tools", debug only)──► [Developer tools (/developer)]
    ├── Tab 0: Timer / Setup ("Are you prepared?")
    │     ├── Tap the template tag (<name> or Custom) ──► [Templates (/templates)]
    │     ├── Tap Preparation / Work / Rest card ──► opens Time Picker bottom sheet
@@ -74,9 +75,11 @@ fvm flutter test test/snapshots/ui_snapshots_test.dart
 
 | Snapshot | Screen & State | Themes | Next Screens / Transitions |
 | --- | --- | --- | --- |
-| [`goldens/home_drawer.png`](goldens/home_drawer.png) | **Navigation Drawer (`HomePage` drawer)** — Open side drawer with rounded trailing corners, a `"Sport Timer"` header with a timer icon badge, a divider, and two `AppSurface` tiles: `"Templates"` (`"Custom"`) and `"Styles"` (`"Ring"`), each with a trailing chevron. | Light & Dark | • Tap `"Templates"` → closes drawer and pushes [`Templates`](goldens/templates_selected.png) (`/templates`)<br>• Tap `"Styles"` → closes drawer and pushes [`Timer Styles`](goldens/timer_styles.png) (`/timer-styles`). |
+| [`goldens/home_drawer.png`](goldens/home_drawer.png) | **Navigation Drawer (`HomePage` drawer)** — Open side drawer with rounded trailing corners, a `"Sport Timer"` header with a timer icon badge, a divider, and two `AppSurface` tiles: `"Templates"` (`"Custom"`) and `"Styles"` (`"Ring"`), each with a trailing chevron, and a `Developer tools` entry pinned at the bottom (debug builds only). | Light & Dark | • Tap `"Templates"` → closes drawer and pushes [`Templates`](goldens/templates_selected.png) (`/templates`)<br>• Tap `"Styles"` → closes drawer and pushes [`Timer Styles`](goldens/timer_styles.png) (`/timer-styles`)<br>• Tap `Developer tools` → [Developer tools](goldens/developer_tools.png) (`/developer`). |
 | [`goldens/account_sheet.png`](goldens/account_sheet.png) | **Account Bottom Sheet (`AccountAvatarButton`)** — Modal bottom sheet showing avatar initial `"A"`, display name `"Alex Runner"`, email `"alex@example.com"`, and `"Sign out"` action. | Light & Dark | Tapping `"Sign out"` opens [`Sign-Out Confirmation Dialog`](goldens/account_sign_out_dialog.png). Dismissing returns to the underlying Home tab. |
 | [`goldens/account_sign_out_dialog.png`](goldens/account_sign_out_dialog.png) | **Sign-Out Confirmation Dialog (`AlertDialog`)** — Confirmation dialog (`"Sign out?"` / `"Do you want to sign out of your account?"`) layered over the account sheet. | Light & Dark | • Tap `"Cancel"` → closes dialog back to [`Account Sheet`](goldens/account_sheet.png)<br>• Tap `"Sign out"` → signs out and navigates to [`Login`](goldens/login.png) (`/`). |
+| [`goldens/developer_tools.png`](goldens/developer_tools.png) | **Developer tools (`DeveloperToolsPage`, `/developer`)** — App bar titled `"Developer tools"` and one `AppSurface` tile, `"Delete all activity"`, with a description and a trailing chevron. | Light & Dark | • Tap the tile → [`Delete Confirmation Dialog`](goldens/developer_tools_dialog.png)<br>• Back → [`Home`](goldens/home_drawer.png). |
+| [`goldens/developer_tools_dialog.png`](goldens/developer_tools_dialog.png) | **Delete Confirmation Dialog (`AlertDialog`)** — Confirmation dialog (`"Delete all activity?"`) layered over the Developer tools page, with `"Cancel"` and `"Delete"` buttons. | Light & Dark | • Tap `"Cancel"` → closes dialog back to [`Developer tools`](goldens/developer_tools.png)<br>• Tap `"Delete"` → deletes all local activity and shows a snackbar. |
 
 ---
 

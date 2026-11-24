@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sport_timer/core/result.dart';
 import 'package:sport_timer/di/di.dart';
+import 'package:sport_timer/features/developer/presentation/developer_tools_page.dart';
 import 'package:sport_timer/features/home/presentation/home_page.dart';
 import 'package:sport_timer/features/settings/domain/settings_repository.dart';
 import 'package:sport_timer/features/templates/domain/custom_template_repository.dart';
@@ -97,7 +98,7 @@ void main() {
     getIt.registerSingleton<ActivityRepository>(FakeEmptyActivityRepository());
     router = GoRouter(
       routes: [
-        GoRoute(path: '/', builder: (context, state) => const HomePage()),
+        GoRoute(path: '/', builder: (context, state) => const HomePage(developerToolsEnabled: false)),
         GoRoute(
           path: RoutePath.templates.value,
           name: RoutePath.templates.value,
@@ -122,13 +123,14 @@ void main() {
     Locale locale = const Locale('en'),
     ThemeData? theme,
     double textScale = 1,
+    GoRouter? customRouter,
   }) async {
     tester.view.physicalSize = const Size(800, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp.router(
-        routerConfig: router,
+        routerConfig: customRouter ?? router,
         theme: theme ?? SportTheme.light,
         locale: locale,
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -172,6 +174,48 @@ void main() {
       expect(text.maxLines, 1);
       expect(text.overflow, TextOverflow.ellipsis);
     }
+  });
+
+  testWidgets('drawer hides the Developer tools entry when disabled', (tester) async {
+    await openDrawer(tester);
+
+    expect(inDrawer(find.text('Developer tools')), findsNothing);
+    expect(inDrawer(find.byIcon(Icons.bug_report_outlined)), findsNothing);
+    expect(inDrawer(find.byType(Divider)), findsOneWidget);
+  });
+
+  group('with developer tools enabled', () {
+    late GoRouter developerRouter;
+
+    setUp(() {
+      developerRouter = Routes.build(developerToolsEnabled: true);
+      addTearDown(developerRouter.dispose);
+      developerRouter.go(RoutePath.home.value);
+    });
+
+    testWidgets('drawer shows the Developer tools entry when enabled', (tester) async {
+      await openDrawer(tester, customRouter: developerRouter);
+
+      expect(inDrawer(find.byType(Divider)), findsNWidgets(2));
+      expect(inDrawer(find.byIcon(Icons.bug_report_outlined)), findsOneWidget);
+      expect(tile('Developer tools'), findsOneWidget);
+      expect(
+        find.ancestor(
+          of: tile('Developer tools'),
+          matching: find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.button == true),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tapping Developer tools closes the drawer and opens /developer', (tester) async {
+      await openDrawer(tester, customRouter: developerRouter);
+      await tester.tap(tile('Developer tools'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DeveloperToolsPage), findsOneWidget);
+      expect(find.byType(Drawer), findsNothing);
+    });
   });
 
   testWidgets('Templates subtitle shows the selected template name', (tester) async {
