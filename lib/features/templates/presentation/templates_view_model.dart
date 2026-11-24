@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:sport_timer/features/settings/domain/timer_settings.dart';
+import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/domain/custom_template.dart';
 import 'package:sport_timer/features/templates/presentation/templates_state.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 
@@ -11,7 +12,7 @@ class TemplatesViewModel {
   bool _disposed = false;
 
   TemplatesViewModel(this._settingsViewModel) {
-    _state = ValueNotifier(_stateFor(_settingsViewModel.state.value.timerSettings));
+    _state = ValueNotifier(_stateFor(_settingsViewModel.state.value));
     _settingsViewModel.state.addListener(_onSettingsChanged);
   }
 
@@ -22,20 +23,45 @@ class TemplatesViewModel {
     await _settingsViewModel.selectTemplate(template);
   }
 
-  void _onSettingsChanged() {
+  Future<void> applyCustomTemplate(CustomTemplate template) async {
     if (_disposed) return;
-    _state.value = _stateFor(_settingsViewModel.state.value.timerSettings);
+    await _settingsViewModel.selectCustomTemplate(template);
   }
 
-  TemplatesState _stateFor(TimerSettings settings) {
-    TemplateId? selectedTemplateId;
-    for (final template in builtInTemplates) {
-      if (template.settings == settings) {
-        selectedTemplateId = template.id;
-        break;
+  void _onSettingsChanged() {
+    if (_disposed) return;
+    _state.value = _stateFor(_settingsViewModel.state.value);
+  }
+
+  TemplatesState _stateFor(SettingsState settingsState) {
+    final settings = settingsState.timerSettings;
+    final customTemplates = settingsState.customTemplates;
+    TemplateId? selectedTemplateId = settingsState.selectedTemplateId;
+    String? selectedCustomTemplateId = selectedTemplateId == null ? settingsState.selectedCustomTemplate?.id : null;
+
+    if (selectedTemplateId == null && selectedCustomTemplateId == null) {
+      for (final template in builtInTemplates) {
+        if (template.settings == settings) {
+          selectedTemplateId = template.id;
+          break;
+        }
+      }
+      if (selectedTemplateId == null) {
+        for (final template in customTemplates) {
+          if (template.settings == settings) {
+            selectedCustomTemplateId = template.id;
+            break;
+          }
+        }
       }
     }
-    return TemplatesState(timerSettings: settings, selectedTemplateId: selectedTemplateId);
+
+    return TemplatesState(
+      timerSettings: settings,
+      selectedTemplateId: selectedTemplateId,
+      customTemplates: customTemplates,
+      selectedCustomTemplateId: selectedCustomTemplateId,
+    );
   }
 
   void dispose() {

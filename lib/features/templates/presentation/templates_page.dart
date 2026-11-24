@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:sport_timer/features/settings/presentation/settings_state.dart';
 import 'package:sport_timer/features/settings/presentation/settings_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/presentation/extensions/custom_template_icon_extension.dart';
 import 'package:sport_timer/features/templates/presentation/extensions/template_icon_extension.dart';
 import 'package:sport_timer/features/templates/presentation/extensions/template_names_extension.dart';
 import 'package:sport_timer/features/templates/presentation/templates_state.dart';
@@ -64,7 +65,8 @@ class _TemplatesPageState extends State<TemplatesPage> {
             valueListenable: _templatesViewModel.state,
             builder: (context, state, _) {
               final settings = state.timerSettings;
-              final showCustom = !isLoading && state.selectedTemplateId == null;
+              final showCustom =
+                  !isLoading && state.selectedTemplateId == null && state.selectedCustomTemplateId == null;
               final totalTime = settings.preparationTime +
                   settings.roundTime * settings.rounds +
                   settings.restTime * (settings.rounds - 1);
@@ -117,6 +119,18 @@ class _TemplatesPageState extends State<TemplatesPage> {
                           onTap: () => _templatesViewModel.applyTemplate(template),
                         );
                       },
+                    ),
+                  ],
+                  for (final template in state.customTemplates) ...[
+                    const Gap(AppSpacing.s8),
+                    TemplateTile(
+                      key: ValueKey(template.id),
+                      name: template.name,
+                      icon: template.icon.iconData,
+                      settings: template.settings,
+                      totalTime: template.totalTime,
+                      isSelected: !isLoading && template.id == state.selectedCustomTemplateId,
+                      onTap: () => _templatesViewModel.applyCustomTemplate(template),
                     ),
                   ],
                 ],

@@ -22,6 +22,7 @@ import 'package:sport_timer/features/statistics/presentation/statistics_state.da
 import 'package:sport_timer/features/statistics/presentation/statistics_view_model.dart';
 import 'package:sport_timer/features/account/presentation/account_view_model.dart';
 import 'package:sport_timer/features/templates/domain/built_in_templates.dart';
+import 'package:sport_timer/features/templates/domain/custom_template.dart';
 import 'package:sport_timer/features/templates/domain/workout_template.dart';
 import 'package:sport_timer/features/timer/presentation/timer_state.dart';
 import 'package:sport_timer/features/timer/domain/audio_manager.dart';
@@ -311,6 +312,7 @@ Interaction _tapInBothFrames(Finder finder) {
 void main() {
   late _FakeSettingsRepository settingsRepository;
   late _FakeActivityRepository activityRepository;
+  late FakeCustomTemplateRepository customTemplateRepository;
 
   AppUser buildFixtureUser() {
     return const AppUser(
@@ -323,11 +325,13 @@ void main() {
     TimerSettings settings = _customSettings,
     String? selectedTemplateId,
     TimerStyle style = TimerStyle.ring,
+    List<CustomTemplate> customTemplates = const [],
   }) {
     settingsRepository
       ..storedSettings = settings
       ..selectedTemplateId = selectedTemplateId
       ..storedStyle = style;
+    customTemplateRepository.stored = customTemplates;
   }
 
   setUp(() async {
@@ -338,7 +342,8 @@ void main() {
       _FakeUserRepository(buildFixtureUser()),
     );
     getIt.registerSingleton<SettingsRepository>(settingsRepository);
-    getIt.registerSingleton<CustomTemplateRepository>(FakeCustomTemplateRepository());
+    customTemplateRepository = FakeCustomTemplateRepository();
+    getIt.registerSingleton<CustomTemplateRepository>(customTemplateRepository);
     getIt.registerSingleton<ActivityRepository>(activityRepository);
     getIt.registerSingleton<AudioManager>(_SilentAudioManager());
     getIt.registerSingleton<BackgroundKeepAlive>(_SilentKeepAlive());

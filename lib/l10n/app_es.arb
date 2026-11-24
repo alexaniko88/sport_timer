@@ -43,6 +43,7 @@
   "templateCustomTileSemantics": "Ajustes personalizados. Tiempo de preparación {preparation}, tiempo de ronda {round}, tiempo de descanso {rest}, {rounds, plural, =1{1 ronda} other{{rounds} rondas}}, tiempo total {total}",
   "templateCustomTileSummary": "{preparation} preparación · {work} trabajo · {rest} descanso · {rounds, plural, =1{1 ronda} other{{rounds} rondas}}",
   "templateDefaultName": "Por defecto",
+  "templateEditHint": "Editar plantilla",
   "templateHyroxName": "Hyrox",
   "templateStretchingName": "Estiramientos",
   "templateStrengthName": "Fuerza",

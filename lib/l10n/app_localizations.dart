@@ -350,6 +350,12 @@ abstract class AppLocalizations {
   /// **'Default'**
   String get templateDefaultName;
 
+  /// Accessibility hint for the long press on an own template tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit template'**
+  String get templateEditHint;
+
   /// Name of the Hyrox workout template.
   ///
   /// In en, this message translates to:
