@@ -34,3 +34,5 @@ Flag these, with a file and a line:
 - An unapproved contract change, missing named wiring or an unmet acceptance check (critical). If a contract itself must change, require planner reconciliation rather than suggesting a private redesign.
 - Out-of-scope helpers or scripts, unplanned test infrastructure, or test kinds the task does not justify (general). Check the task's check plan and the reported evidence; do not infer unobserved command execution from the diff.
 - After a change that applies a rule across the project (a style sweep, a rename), run your own search for the pattern and check the matches by hand. Do not rely only on the diff.
+- A criterion whose only test covers the happy path, or only checks that nothing throws (general).
+- A test that passes without exercising the changed branch (general; critical when the criterion is not proven at all).
