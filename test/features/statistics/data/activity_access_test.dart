@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sport_timer/core/result.dart';
@@ -338,5 +339,372 @@ void main() {
       expect(summaries.single.activity.workDurationMs, 60000);
       expect(summaries.single.activity.restDurationMs, 10000);
     });
+  });
+
+  Future<List<String>> draftIds(String sessionId) async {
+    final db = await database.connection;
+    final rows = await db.query(
+      'draft_phases',
+      columns: ['id'],
+      where: 'session_id = ?',
+      whereArgs: [sessionId],
+      orderBy: 'id',
+    );
+    return rows.map((row) => row['id']! as String).toList();
+  }
+
+  Future<int?> checkpointOf(String sessionId) async {
+    final db = await database.connection;
+    final rows = await db.query(
+      'timer_sessions',
+      columns: ['checkpoint_at_utc_ms'],
+      where: 'id = ?',
+      whereArgs: [sessionId],
+    );
+    return rows.single['checkpoint_at_utc_ms'] as int?;
+  }
+
+  group('saveDraft', () {
+    test('saveDraft replaces the draft and statistics ignore it', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      var emissions = 0;
+      final subscription = repository.changes.listen((_) => emissions++);
+      addTearDown(subscription.cancel);
+
+      final first = await repository.saveDraft(
+        session: handle,
+        phases: [_work('d1', 'run-a', 0, 30000), _work('d2', 'run-a', 1, 10000)],
+        checkpointAtUtcMs: 3000,
+      );
+      final second = await repository.saveDraft(
+        session: handle,
+        phases: [_work('d3', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 4000,
+      );
+
+      expect(first, isA<Success<void>>());
+      expect(second, isA<Success<void>>());
+      expect(await draftIds('run-a'), ['d3']);
+      expect(await checkpointOf('run-a'), 4000);
+      expect(emissions, 0);
+      final days = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
+      expect(days, isEmpty);
+    });
+
+    test('saveDraft writes nothing for an ended session or a stale handle', () async {
+      final ended = await access.createSession(_session('run-a', 'a'));
+      await access.endSession(session: ended, endedAtUtcMs: 5000);
+      final endedResult = await repository.saveDraft(
+        session: ended,
+        phases: [_work('d1', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 3000,
+      );
+
+      expect(endedResult, isA<Success<void>>());
+      expect(await count('draft_phases'), 0);
+      expect(await checkpointOf('run-a'), isNull);
+
+      final stale = await access.createSession(_session('run-b', 'a'));
+      await repository.deleteAllActivity();
+      final staleResult = await repository.saveDraft(
+        session: stale,
+        phases: [_work('d2', 'run-b', 0, 30000)],
+        checkpointAtUtcMs: 3000,
+      );
+
+      expect(staleResult, isA<Success<void>>());
+      expect(await count('draft_phases'), 0);
+      expect(await count('timer_sessions'), 0);
+    });
+
+    test('saveDraft rejects a phase from another session', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+
+      final result = await repository.saveDraft(
+        session: handle,
+        phases: [_work('d1', 'run-other', 0, 30000)],
+        checkpointAtUtcMs: 3000,
+      );
+
+      expect(result, isA<Failure<void>>());
+      expect(await count('draft_phases'), 0);
+      expect(await checkpointOf('run-a'), isNull);
+    });
+
+    test('saveDraft fails when the session is missing', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      final db = await database.connection;
+      await db.delete('timer_sessions');
+
+      final result = await repository.saveDraft(
+        session: handle,
+        phases: [_work('d1', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 3000,
+      );
+
+      expect(result, isA<Failure<void>>());
+      expect(await count('draft_phases'), 0);
+    });
+
+    test('finishRun removes the draft', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      await access.saveDraft(
+        session: handle,
+        phases: [_work('p1', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 3000,
+      );
+      expect(await count('draft_phases'), 1);
+
+      final result = await repository.finishRun(
+        session: handle,
+        phases: [_work('p1', 'run-a', 0, 30000), _work('p2', 'run-a', 1, 10000)],
+        endedAtUtcMs: 5000,
+      );
+
+      expect(result, isA<Success<void>>());
+      expect(await count('draft_phases'), 0);
+      expect(await count('completed_phases'), 2);
+      expect(await endOf('run-a'), 5000);
+    });
+  });
+
+  group('recoverUnfinishedRuns', () {
+    CompletedPhase dated(String id, int position, String date, int offset) => CompletedPhase(
+          id: id,
+          runId: 'run-a',
+          schedulePosition: position,
+          type: CompletedPhaseType.work,
+          roundNumber: 1,
+          durationMs: 30000,
+          completedAtUtcMs: 2000,
+          localCompletionDate: date,
+          utcOffsetMinutes: offset,
+        );
+
+    test('recovery turns a draft into completed phases', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      final phases = [dated('d1', 0, '2026-01-01', 0), dated('d2', 1, '2026-01-02', 60)];
+      await access.saveDraft(session: handle, phases: phases, checkpointAtUtcMs: 9000);
+      var emissions = 0;
+      final subscription = repository.changes.listen((_) => emissions++);
+      addTearDown(subscription.cancel);
+
+      final result = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+
+      expect(result, isA<Success<void>>());
+      expect(await access.readPhases('run-a'), unorderedEquals(phases));
+      expect(await endOf('run-a'), 9000);
+      expect(await count('draft_phases'), 0);
+      expect(emissions, 1);
+    });
+
+    test('recovery runs only once per draft', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      await access.saveDraft(
+        session: handle,
+        phases: [_work('d1', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 9000,
+      );
+      await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+      var emissions = 0;
+      final subscription = repository.changes.listen((_) => emissions++);
+      addTearDown(subscription.cancel);
+
+      final result = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+
+      expect(result, isA<Success<void>>());
+      expect(await count('completed_phases'), 1);
+      expect(await endOf('run-a'), 9000);
+      expect(emissions, 0);
+    });
+
+    test('recovery keeps the account that started the run', () async {
+      accounts.account = 'b';
+      final handleB = await access.createSession(_session('run-b', 'b'));
+      await access.saveDraft(
+        session: handleB,
+        phases: [_work('d1', 'run-b', 0, 30000)],
+        checkpointAtUtcMs: 9000,
+      );
+      accounts.account = 'a';
+
+      final withOtherAccount = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+      final daysOfA = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
+
+      expect(withOtherAccount, isA<Success<void>>());
+      expect(daysOfA, isEmpty);
+      expect(await endOf('run-b'), 9000);
+
+      accounts.account = 'b';
+      final handleC = await access.createSession(_session('run-c', 'b'));
+      await access.saveDraft(
+        session: handleC,
+        phases: [_work('d2', 'run-c', 0, 30000)],
+        checkpointAtUtcMs: 9000,
+      );
+      accounts.account = null;
+
+      final withNoAccount = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+
+      expect(withNoAccount, isA<Success<void>>());
+      expect(await endOf('run-c'), 9000);
+      accounts.account = 'a';
+      final stillEmpty = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
+      expect(stillEmpty, isEmpty);
+      accounts.account = 'b';
+      final daysOfB = (await repository.readDailyActivity() as Success<List<DailyActivity>>).value;
+      expect(daysOfB, hasLength(1));
+    });
+
+    test('deleted sessions lose their drafts and stay deleted', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      await access.saveDraft(
+        session: handle,
+        phases: [_work('d1', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 9000,
+      );
+      expect(await count('draft_phases'), 1);
+
+      await repository.deleteAllActivity();
+      final result = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+
+      expect(result, isA<Success<void>>());
+      expect(await count('draft_phases'), 0);
+      expect(await count('timer_sessions'), 0);
+      expect(await count('completed_phases'), 0);
+    });
+
+    test('recovery skips sessions started after it began', () async {
+      final handle = await access.createSession(_session('run-a', 'a'));
+      await access.saveDraft(
+        session: handle,
+        phases: [_work('d1', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 9000,
+      );
+      var emissions = 0;
+      final subscription = repository.changes.listen((_) => emissions++);
+      addTearDown(subscription.cancel);
+
+      final result = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 1000);
+
+      expect(result, isA<Success<void>>());
+      expect(await endOf('run-a'), isNull);
+      expect(await draftIds('run-a'), ['d1']);
+      expect(await count('completed_phases'), 0);
+      expect(emissions, 0);
+    });
+
+    test('recovery keeps going after one session fails', () async {
+      final bad = await access.createSession(_session('run-a', 'a'));
+      final good = await access.createSession(_session('run-b', 'a'));
+      await access.addPhases(session: bad, phases: [_work('existing', 'run-a', 0, 99000)]);
+      await access.saveDraft(
+        session: bad,
+        phases: [_work('d1', 'run-a', 0, 30000)],
+        checkpointAtUtcMs: 9000,
+      );
+      await access.saveDraft(
+        session: good,
+        phases: [_work('d2', 'run-b', 0, 30000)],
+        checkpointAtUtcMs: 9000,
+      );
+
+      final result = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+
+      expect(result, isA<Failure<void>>());
+      expect(await endOf('run-b'), 9000);
+      expect(await draftIds('run-b'), isEmpty);
+      expect(await endOf('run-a'), isNull);
+      expect(await draftIds('run-a'), ['d1']);
+      expect(await count('completed_phases'), 2);
+    });
+
+    test('recovery fails when the access is closed', () async {
+      await access.close();
+
+      final result = await repository.recoverUnfinishedRuns(startedBeforeUtcMs: 5000);
+
+      expect(result, isA<Failure<void>>());
+    });
+  });
+
+  test('upgrades a version 2 database to version 3', () async {
+    final directory = await Directory.systemTemp.createTemp('activity_upgrade');
+    addTearDown(() => directory.delete(recursive: true));
+    final databasePath = '${directory.path}/activity.db';
+    final old = await databaseFactory.openDatabase(
+      databasePath,
+      options: OpenDatabaseOptions(
+        version: 2,
+        onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
+        onCreate: (db, version) async {
+          await db.execute('''
+            CREATE TABLE timer_sessions (
+              id TEXT PRIMARY KEY NOT NULL,
+              account_id TEXT NOT NULL CHECK (length(account_id) > 0),
+              started_at_utc_ms INTEGER NOT NULL,
+              preparation_duration_ms INTEGER NOT NULL CHECK (preparation_duration_ms >= 0),
+              work_duration_ms INTEGER NOT NULL CHECK (work_duration_ms >= 0),
+              rest_duration_ms INTEGER NOT NULL CHECK (rest_duration_ms >= 0),
+              round_count INTEGER NOT NULL CHECK (round_count > 0),
+              ended_at_utc_ms INTEGER
+            )
+          ''');
+          await db.execute('CREATE INDEX timer_sessions_account_id ON timer_sessions(account_id)');
+          await db.execute('''
+            CREATE TABLE completed_phases (
+              id TEXT PRIMARY KEY NOT NULL,
+              session_id TEXT NOT NULL REFERENCES timer_sessions(id) ON DELETE RESTRICT,
+              schedule_position INTEGER NOT NULL CHECK (schedule_position >= 0),
+              type TEXT NOT NULL CHECK (type IN ('work', 'rest')),
+              round_number INTEGER NOT NULL CHECK (round_number > 0),
+              duration_ms INTEGER NOT NULL CHECK (duration_ms > 0),
+              completed_at_utc_ms INTEGER NOT NULL,
+              local_completion_date TEXT NOT NULL,
+              utc_offset_minutes INTEGER NOT NULL,
+              UNIQUE (session_id, schedule_position)
+            )
+          ''');
+          await db.execute(
+            'CREATE INDEX completed_phases_session_date ON completed_phases(session_id, local_completion_date)',
+          );
+        },
+      ),
+    );
+    await old.insert('timer_sessions', {
+      'id': 'run-a',
+      'account_id': 'a',
+      'started_at_utc_ms': 1000,
+      'preparation_duration_ms': 0,
+      'work_duration_ms': 30000,
+      'rest_duration_ms': 10000,
+      'round_count': 2,
+      'ended_at_utc_ms': 5000,
+    });
+    await old.insert('completed_phases', {
+      'id': 'p1',
+      'session_id': 'run-a',
+      'schedule_position': 0,
+      'type': 'work',
+      'round_number': 1,
+      'duration_ms': 30000,
+      'completed_at_utc_ms': 2000,
+      'local_completion_date': '2026-01-01',
+      'utc_offset_minutes': 0,
+    });
+    await old.close();
+
+    final upgraded = ActivityDatabase(databasePath: databasePath);
+    addTearDown(upgraded.close);
+    final db = await upgraded.connection;
+
+    expect(await db.getVersion(), 3);
+    expect(await db.query('timer_sessions'), hasLength(1));
+    expect(await db.query('completed_phases'), hasLength(1));
+    expect(await db.query('draft_phases'), isEmpty);
+    final columns = await db.rawQuery('PRAGMA table_info(timer_sessions)');
+    expect(columns.map((column) => column['name']), contains('checkpoint_at_utc_ms'));
+    final session = (await db.query('timer_sessions')).single;
+    expect(session['checkpoint_at_utc_ms'], isNull);
   });
 }
