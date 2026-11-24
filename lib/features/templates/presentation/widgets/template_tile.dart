@@ -19,6 +19,7 @@ class TemplateTile extends StatelessWidget {
   final bool isSelected;
   final bool isCustom;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
   const TemplateTile({
     super.key,
@@ -29,6 +30,7 @@ class TemplateTile extends StatelessWidget {
     this.isSelected = false,
     this.isCustom = false,
     this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -50,6 +52,8 @@ class TemplateTile extends StatelessWidget {
       button: onTap != null,
       selected: isCustom ? null : isSelected,
       onTap: onTap,
+      onLongPress: onLongPress,
+      onLongPressHint: onLongPress == null ? null : l10n.templateEditHint,
       excludeSemantics: true,
       label: isCustom
           ? l10n.templateCustomTileSemantics(
@@ -72,6 +76,7 @@ class TemplateTile extends StatelessWidget {
         color: background,
         borderColor: borderColor,
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

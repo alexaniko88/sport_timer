@@ -207,6 +207,10 @@
   "@templateDefaultName": {
     "description": "Name of the default workout template."
   },
+  "templateEditHint": "Edit template",
+  "@templateEditHint": {
+    "description": "Accessibility hint for the long press on an own template tile."
+  },
   "templateHyroxName": "Hyrox",
   "@templateHyroxName": {
     "description": "Name of the Hyrox workout template."

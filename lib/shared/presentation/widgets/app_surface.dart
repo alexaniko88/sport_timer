@@ -6,6 +6,7 @@ class AppSurface extends StatelessWidget {
 
   final Widget child;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool isSelected;
   final bool excludeFromSemantics;
   final EdgeInsets padding;
@@ -17,6 +18,7 @@ class AppSurface extends StatelessWidget {
     super.key,
     required this.child,
     this.onTap,
+    this.onLongPress,
     this.isSelected = false,
     this.excludeFromSemantics = false,
     this.padding = const EdgeInsets.all(defaultPadding),
@@ -47,11 +49,12 @@ class AppSurface extends StatelessWidget {
           borderRadius: borderRadius,
           border: Border.all(color: border, width: borderWidth),
         ),
-        child: onTap == null
+        child: onTap == null && onLongPress == null
             ? Padding(padding: innerPadding, child: child)
             : InkWell(
                 borderRadius: borderRadius,
                 onTap: onTap,
+                onLongPress: onLongPress,
                 excludeFromSemantics: excludeFromSemantics,
                 child: Padding(padding: innerPadding, child: child),
               ),
