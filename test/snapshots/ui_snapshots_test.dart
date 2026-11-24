@@ -171,6 +171,10 @@ class _FailedActivityRecorder implements TimerActivityRecorder {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+const _historyOutsideShownPeriod = Success<List<DailyActivity>>([
+  DailyActivity(localDate: '2025-01-15', roundCount: 12, workDurationMs: 1200000, restDurationMs: 360000),
+]);
+
 class _FakeActivityRepository implements ActivityRepository {
   Result<List<DailyActivity>> result = const Success([
     DailyActivity(localDate: '2026-10-31', roundCount: 12, workDurationMs: 1200000, restDurationMs: 360000),
@@ -206,6 +210,9 @@ class _FakeActivityRepository implements ActivityRepository {
 
   @override
   Future<Result<void>> deleteAllActivity() async => const Success(null);
+
+  @override
+  Future<Result<void>> deleteAccountActivity() async => const Success(null);
 
   @override
   Stream<void> get changes => const Stream.empty();
@@ -559,6 +566,40 @@ void main() {
           );
 
           goldenTest(
+            'home statistics menu',
+            fileName: 'statistics_menu',
+            constraints: _pairConstraints,
+            whilePerforming: (tester) async {
+              await _tapInBothFrames(find.text('Statistics'))(tester);
+              await _tapInBothFrames(find.byIcon(Icons.more_vert))(tester);
+              return null;
+            },
+            builder: () => _lightAndDarkGroup(builder: () => const HomePage()),
+          );
+
+          // A dialog covers both frames of a light and dark pair, so this one is a single light frame.
+          goldenTest(
+            'home statistics delete dialog',
+            fileName: 'statistics_delete_dialog',
+            constraints: const BoxConstraints(minWidth: 420, maxWidth: 420, maxHeight: 960),
+            whilePerforming: (tester) async {
+              await _tapInBothFrames(find.text('Statistics'))(tester);
+              await _tapInBothFrames(find.byIcon(Icons.more_vert))(tester);
+              await _tapInBothFrames(find.text('Delete statistics'))(tester);
+              return null;
+            },
+            builder: () => GoldenTestGroup(
+              columns: 1,
+              children: [
+                GoldenTestScenario(
+                  name: 'Light',
+                  child: _phoneFrame(theme: SportTheme.light, child: const HomePage()),
+                ),
+              ],
+            ),
+          );
+
+          goldenTest(
             'home statistics empty',
             fileName: 'statistics_empty',
             constraints: _pairConstraints,
@@ -597,7 +638,7 @@ void main() {
                 return null;
               },
               builder: () {
-                if (chartState == 'empty') activityRepository.result = const Success([]);
+                if (chartState == 'empty') activityRepository.result = _historyOutsideShownPeriod;
                 if (chartState == 'error') activityRepository.result = Failure(Exception('Unable to load'));
                 return _lightAndDarkGroup(
                   builder: () {
@@ -674,7 +715,7 @@ void main() {
                 return null;
               },
               builder: () {
-                if (calendarState == 'empty') activityRepository.result = const Success([]);
+                if (calendarState == 'empty') activityRepository.result = _historyOutsideShownPeriod;
                 return _lightAndDarkGroup(
                   builder: () {
                     final account = AccountViewModel(getIt());

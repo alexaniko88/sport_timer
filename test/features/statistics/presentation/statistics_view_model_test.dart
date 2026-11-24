@@ -16,8 +16,19 @@ class FakeActivityRepository implements ActivityRepository {
   final dayReadDates = <String>[];
   final dayReads = <Completer<Result<List<RunActivitySummary>>>>[];
 
+  final deleteResults = <Completer<Result<void>>>[];
+  int deleteCalls = 0;
+
   @override
   Future<Result<void>> deleteAllActivity() async => const Success(null);
+
+  @override
+  Future<Result<void>> deleteAccountActivity() {
+    deleteCalls++;
+    final completer = Completer<Result<void>>();
+    deleteResults.add(completer);
+    return completer.future;
+  }
 
   @override
   Stream<void> get changes => controller.stream;
@@ -403,5 +414,36 @@ void main() {
       expect(viewModel.state.value.dayStatus, StatisticsStatus.loading);
       expect(repository.dayReadDates.length, 3);
     });
+  });
+
+  test('delete succeeds and clears the busy flag', () async {
+    final busy = <bool>[];
+    viewModel.state.addListener(() => busy.add(viewModel.state.value.isDeleting));
+
+    final delete = viewModel.deleteStatistics();
+    expect(viewModel.state.value.isDeleting, isTrue);
+    repository.deleteResults.single.complete(const Success(null));
+
+    expect(await delete, isTrue);
+    expect(viewModel.state.value.isDeleting, isFalse);
+    expect(busy, [true, false]);
+  });
+
+  test('failed delete returns false', () async {
+    final delete = viewModel.deleteStatistics();
+    repository.deleteResults.single.complete(Failure(Exception('failed')));
+
+    expect(await delete, isFalse);
+    expect(viewModel.state.value.isDeleting, isFalse);
+  });
+
+  test('a second delete while busy is ignored', () async {
+    final first = viewModel.deleteStatistics();
+    final second = await viewModel.deleteStatistics();
+
+    expect(second, isFalse);
+    expect(repository.deleteCalls, 1);
+    repository.deleteResults.single.complete(const Success(null));
+    expect(await first, isTrue);
   });
 }
